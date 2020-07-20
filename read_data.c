@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "datatypes.c"
 
 int read_resid_data(struct Model *m, char *filename, int dt) {
 	FILE *fp;
@@ -20,7 +19,10 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 	while(fgets(line, len, fp)) {
 		k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
 		switch (dt) {
-			case DATA_S2: m->residues[resid].S2_dipolar = val; break;
+			case DATA_S2: 
+				m->residues[resid].S2_dipolar = val; 
+				if (val == -1) m->residues[resid].ignore = 1;
+				break;
 			case DATA_CSISON: 
 				m->residues[resid].csisoN = val;
 				/* 15N CSA parametrization according to isotropic chemical shift
@@ -144,6 +146,8 @@ int read_relaxation_data(struct Model *m, char *filename) {
 			sscanf(line, "%d %f %f\n", &resid, &R, &Re);
 			//printf("%d, %d, %f, %f\n", rel, resid, R, Re);
 			m->residues[resid-1].relaxation[rel].R = R;
+			if (R == -1)
+				m->residues[resid-1].ignore = 1;
 			m->residues[resid-1].relaxation[rel].Rerror = Re; // note indexing from 0
 		}
 	}
@@ -194,6 +198,7 @@ int read_system_file(char *filename, struct Model * m) {
 				m->residues[i].relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * N_RELAXATION);
 				m->residues[i].lim_relaxation = N_RELAXATION;
 				m->residues[i].n_relaxation = 0;
+				m->residues[i].ignore = 0;
 			}
 				
 			int t=0;
@@ -290,6 +295,9 @@ int print_system(struct Model *m) {
 	struct Relaxation *r;
 	for (i = 0; i < m->n_residues; i++) {
 		printf("=== Residue %d ===\n", i+1);
+		if (m->residues[i].ignore == 1)
+			printf("--- IGNORING ---\n");
+		
 		printf("\tS2 = %f\n\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].S2_dipolar, m->residues[i].csisoN, m->residues[i].csisoC);
 		printf("\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);  
 		printf("\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]); 
@@ -300,40 +308,6 @@ int print_system(struct Model *m) {
 		}
 	}
 	return 1;
-	/* struct Model {
-	int max_func_evals, max_iter;
-	int model;
-	struct Residue * residues;
-	int n_residues;
-};
 
-struct Residue {
-	float S2_dipolar;
-	float csisoN;
-	float csisoC;
-	float csaN[3];
-	float csaC[3];
-	float orients[10][2]; // theta,phi
-	struct Relaxation * relaxation;
-	int n_relaxation;
-	int lim_relaxation;
-	long double parameters[20];
-};
-
-struct Relaxation {
-	float field; // in MHz
-	float wr; // in Hz
-	float w1; // in Hz
-	int type;
-	float R;
-	float Rerror;
-	float T; // in Kelvin
-};*/
 }
 
-int main(void) {
-	struct Model m;
-	printf("%d\n", read_system_file("system/model.dx", &m));
-	print_system(&m);
-	return 1;
-}

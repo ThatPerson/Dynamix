@@ -44,6 +44,7 @@ struct Residue {
 	struct Relaxation * relaxation;
 	int n_relaxation;
 	int lim_relaxation;
+	int ignore;
 	long double parameters[20];
 };
 
