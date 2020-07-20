@@ -1,0 +1,29 @@
+MODEL  =  SMF
+S2DIP  =  system/s2_dipolar_jozef.csv
+CSISON  =  system/csisoN.csv
+MAXFUNCEVALS  =  20000
+MAXITER  =  20000
+N_RESIDUES  =  56
+#RELAXATION
+system/15N_R1_600_50_0_271.csv
+system/15N_R1_600_50_0_282.csv
+system/15N_R1_600_50_0_292.csv
+system/15N_R1_600_50_0_301.csv
+system/15N_R1_600_50_0_308.csv
+system/15N_R1_700_50_0_299.csv
+system/15N_R1_850_50_0_298.csv
+system/15N_R1p_600_50_8_268.csv
+system/15N_R1p_600_50_8_270.csv
+system/15N_R1p_600_50_8_281.csv
+system/15N_R1p_600_50_8_285.csv
+system/15N_R1p_600_50_8_290.csv
+system/15N_R1p_600_50_8_294.csv
+system/15N_R1p_600_50_8_301.csv
+system/15N_R1p_700_50_10_278.csv
+system/15N_R1p_700_50_10_290.csv
+system/15N_R1p_700_50_10_294.csv
+system/15N_R1p_700_50_10_299.csv
+system/15N_R1p_700_50_10_309.csv
+system/15N_R1p_850_50_10_278.csv
+system/15N_R1p_850_50_10_291.csv
+system/15N_R1p_850_50_10_299.csv
