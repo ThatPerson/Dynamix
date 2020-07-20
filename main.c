@@ -15,8 +15,8 @@ void * run_residue(void *input) {
 	struct Residue * resid = ((struct rrargs*)input)->resid;
 	int model = ((struct rrargs*)input)->model;
 
-	printf("RESIDUE %d\n", i+1);
-	printf("Number of relaxations: %f\n", resid->relaxation[1].R);
+	//printf("RESIDUE %d\n", i+1);
+	//printf("Number of relaxations: %d\n", resid->n_relaxation);
 		
 	if (resid->ignore == 1) {
 		printf("%d, %f, -1, -1\n", i+1, 1000.);
@@ -60,7 +60,7 @@ int main(void) {
 	 */
 	n_spawns = m.n_residues / NTHREADS;
 	n_spawns ++;
-	printf("%d spawns\n", n_spawns);
+	//printf("%d spawns\n", n_spawns);
 
 	struct rrargs RRA[NTHREADS]; // = (struct rrargs *)malloc(sizeof(struct rrargs));
 
@@ -74,7 +74,7 @@ int main(void) {
 			RRA[i].resid = &(m.residues[current_residue + i]);
 			RRA[i].model = m.model;
 			thread_args[i] = i;
-			printf("spawning thread %d (residue %d)\n", i, current_residue + i);
+			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
 			rc = pthread_create(&threads[i], NULL, run_residue, (void *) &RRA[i]);
 		}
 		current_residue += NTHREADS;
