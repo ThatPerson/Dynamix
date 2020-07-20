@@ -9,15 +9,6 @@
 
 #define NTHREADS 2
 
-void *myFun(void *x)
-{
-  int tid;
-  tid = *((int *) x);
-  printf("Hi from thread %d!\n", tid);
-  return NULL;
-}
-
-
 
 void * run_residue(void *input) {
 	int i = ((struct rrargs*)input)->i;
