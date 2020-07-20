@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #define MOD_SMF 	0
 #define MOD_EMF 	1
 #define MOD_EMFT	2
@@ -57,3 +58,18 @@ struct Relaxation {
 	float Rerror;
 	float T; // in Kelvin
 };
+
+struct rrargs {
+	int i;
+	struct Residue * resid;
+	int model;
+};
+
+void free_all(struct Model *m) {
+	int res;
+	for (res = 0; res < m->n_residues; res++) {
+		free(m->residues[res].relaxation);
+	}
+	free(m->residues);
+	return;
+}

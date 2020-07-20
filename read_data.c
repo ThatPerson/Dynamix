@@ -18,6 +18,7 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 	int k;
 	while(fgets(line, len, fp)) {
 		k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
+		resid = resid - 1; // 0 indexed in C
 		switch (dt) {
 			case DATA_S2: 
 				m->residues[resid].S2_dipolar = val; 
@@ -43,6 +44,7 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 			default:break;
 		}
 	}
+	fclose(fp);
 	return 1;
 }
 
@@ -97,6 +99,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 					m->residues[i].relaxation = (struct Relaxation *) realloc(m->residues[i].relaxation, sizeof(struct Relaxation) * (m->residues[i].lim_relaxation));
 					if (m->residues[i].relaxation == NULL) {
 						printf("Pointer loss\n");
+						fclose(fp); // clean up on the way out
 						exit(-1);
 					}
 				}
@@ -140,6 +143,8 @@ int read_relaxation_data(struct Model *m, char *filename) {
 					type = R_15NR1p;
 			} else {
 				printf("Parameter %s unknown.\n", key);
+				fclose(fp);
+				free_all(m);
 				return -1;
 			}
 		} else if (mode == 1) {
@@ -151,6 +156,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 			m->residues[resid-1].relaxation[rel].Rerror = Re; // note indexing from 0
 		}
 	}
+	fclose(fp);
 	return 1;
 }
 
