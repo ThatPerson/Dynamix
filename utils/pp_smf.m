@@ -16,7 +16,7 @@ set grid xtics
 
 set xrange [0:56]
 set yrange [0.7:1]
-plot 'output/final.dat' u 1:($5 > 0 ? $5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'smf/final.dat' u 1:($5 > 0 ? $5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
 
 set ylabel "{/Symbol t} (ns)"
 #set ytics (0.8, 0.9, 1.0)
@@ -29,5 +29,5 @@ set grid xtics
 set xrange [0:56]
 set yrange [1:1e2]
 set xlabel "Peptide plane number (^{15}N_{i})"
-plot 'output/final.dat' u 1:($4 > 1e-13 ? $4 * 1e9 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'smf/final.dat' u 1:($4 > 1e-13 ? $4 * 1e9 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
 
