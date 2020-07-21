@@ -1,4 +1,4 @@
-MODEL  =  SMF
+MODEL  =  SMFT
 S2DIP  =  system/s2_dipolar_jozef.csv
 CSISON  =  system/csisoN.csv
 MAXFUNCEVALS  =  20000
