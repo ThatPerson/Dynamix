@@ -1,4 +1,4 @@
-MODEL  =  EMF
+MODEL  =  SMF
 S2DIP  =  system/s2_dipolar_jozef.csv
 CSISON  =  system/csisoN.csv
 MAXFUNCEVALS  =  20000
@@ -6,6 +6,7 @@ MAXITER  =  20000
 N_RESIDUES  =  56
 OUTPUT = output/
 N_ITER = 10
+IGNORE = 42
 #RELAXATION
 system/15N_R1_600_50_0_271.csv
 system/15N_R1_600_50_0_282.csv
