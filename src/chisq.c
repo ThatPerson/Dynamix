@@ -10,22 +10,33 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 	double chisq = 0;
 	long double upper_lim_tf = (long double) 1 * pow(10, -8);
 	long double upper_lim_ts = (long double) 1 * pow(10, -5);
-	if (model == MOD_SMF) {
+	//printf("%d %d: %d\n", model, MOD_SMFT, model == MOD_SMFT);
+	if (model == MOD_SMF || model == MOD_SMFT) {
 		/* Simple Model Free Analysis */
 		long double tau = opts[0];
 		long double S2 = opts[1];
+		long double tau_eff;
+		long double Ea;
+		if (model == MOD_SMFT)
+			Ea = opts[2];
+		else
+			tau_eff = tau;
+
 		if (tau < 0)
 			chisq += 100000000;
 		if (S2 < 0 || S2 > 1)
 			chisq += 100000000;
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (model == MOD_SMFT)
+				tau_eff = tau * expl(Ea / (RYD * resid->relaxation[i].T));
+			//printf("%Le\n", tau_eff);
 			switch (resid->relaxation[i].type) {
 				case R_15NR1:
-					calc_R = SMF_15NR1(resid, &(resid->relaxation[i]), tau, S2);
+					calc_R = SMF_15NR1(resid, &(resid->relaxation[i]), tau_eff, S2);
 					break;
 				case R_15NR1p:
-					calc_R = SMF_15NR2(resid, &(resid->relaxation[i]), tau, S2);
+					calc_R = SMF_15NR2(resid, &(resid->relaxation[i]), tau_eff, S2);
 					break;
 				default: 
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
@@ -131,19 +142,26 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 	}
 	
 	
-	if (model == MOD_SMF) {
+	if (model == MOD_SMF || model == MOD_SMFT) {
 		/* Simple Model Free Analysis */
 		long double tau = opts[0];
 		long double S2 = opts[1];
-
+		long double tau_eff, Ea;
+		if (model == MOD_SMFT)
+			Ea = opts[2];
+		else
+			tau_eff = tau;
+		
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (model == MOD_SMFT)
+				tau_eff = tau * expl(Ea / (RYD * resid->relaxation[i].T));
 			switch (resid->relaxation[i].type) {
 				case R_15NR1:
-					calc_R = SMF_15NR1(resid, &(resid->relaxation[i]), tau, S2);
+					calc_R = SMF_15NR1(resid, &(resid->relaxation[i]), tau_eff, S2);
 					break;
 				case R_15NR1p:
-					calc_R = SMF_15NR2(resid, &(resid->relaxation[i]), tau, S2);
+					calc_R = SMF_15NR2(resid, &(resid->relaxation[i]), tau_eff, S2);
 					break;
 				default: 
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);

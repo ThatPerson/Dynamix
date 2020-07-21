@@ -17,7 +17,7 @@ set yrange [0.80:1]
 
 plot 'emft/final.dat' u 1:($5 > 0 ? $5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
 
-set ylabel "{/Symbol t}_{slow} (ns)"
+set ylabel "{/Symbol t}_{slow}"
 #set ytics (0.8, 0.9, 1.0)
 unset xtics
 unset ytics
@@ -46,7 +46,7 @@ set xrange [0:56]
 set yrange [0.5:1]
 plot 'emft/final.dat' u 1:($5 > 0 ? $2/$5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
 
-set ylabel "{/Symbol t}_{fast} (ps)"
+set ylabel "{/Symbol t}_{fast}"
 #set ytics (0.8, 0.9, 1.0)
 
 #unset ytics

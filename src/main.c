@@ -34,6 +34,7 @@ void * run_residue(void *input) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT: params= 5; break;
+		case MOD_SMFT: params= 3; break;
 		default: params = 0; break;
 	}
 	//printf("%d\n", params);
@@ -65,6 +66,10 @@ void * run_residue(void *input) {
 			opts[3] = (rand()%60000)/1.;
 			opts[4] = (rand()%60000)/1.;
 			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
+		} else if (model == MOD_SMFT) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
+			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
+			opts[2] = (rand()%60000)/1.;
 		}
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
@@ -165,6 +170,7 @@ int main(void) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT:params = 5; break;
+		case MOD_SMFT:params = 3; break;
 		default: params = 0; break;
 	}
 	long double c = -1;
