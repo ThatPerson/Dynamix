@@ -190,7 +190,8 @@ int read_system_file(char *filename, struct Model * m) {
 	for (i = 0; i < 10; i++) {
 		strcpy(pp_orient[i], "");
 	}
-
+	strcpy(m->outputdir, "./");
+	m->n_iter = 1;
 	while(fgets(line, len, fp)) {
 		if (strcmp(line, "#RELAXATION\n") == 0) {
 			if (n_resid == -1) {
@@ -273,6 +274,10 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "N_RESIDUES") == 0){ 
 				m->n_residues = atoi(val);
 				n_resid = atoi(val);
+			} else if (strcmp(key, "N_ITER") == 0) {
+				m->n_iter = atoi(val);
+			} else if (strcmp(key, "OUTPUT") == 0) {
+				strcpy(m->outputdir, val);
 			}
 			//printf("%s: %s\n", key, val);
 		} else if (mode == 1) {

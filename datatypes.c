@@ -29,7 +29,8 @@
 #define N_RELAXATION 50
 
 struct Model {
-	int max_func_evals, max_iter;
+	int max_func_evals, max_iter, n_iter;
+	char outputdir[255];
 	int model;
 	struct Residue * residues;
 	int n_residues;
@@ -46,6 +47,7 @@ struct Residue {
 	int n_relaxation;
 	int lim_relaxation;
 	int ignore;
+	double min_val; 
 	long double parameters[20];
 };
 
@@ -63,6 +65,8 @@ struct rrargs {
 	int i;
 	struct Residue * resid;
 	int model;
+	int n_iter;
+	char outputdir[255];
 };
 
 void free_all(struct Model *m) {

@@ -52,7 +52,7 @@ long double rosen(long double x[])
 
 double simplex(double (*func)(long double[], struct Residue*, int), long double start[],int n, long double EPSILON, long double scale, struct Residue * resid, int model)
 {
-  
+  //printf("SIMPLEX %Le\n", start[2]);
   int vs;        	/* vertex with smallest value */
   int vh;        	/* vertex with next smallest value */
   int vg;        	/* vertex with largest value */
@@ -128,6 +128,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
   
   /* begin the main loop of the minimization */
   for (itr=1;itr<=MAX_IT;itr++) {     
+	 // printf("%Le\n", vr[2]);
     /* find the index of the largest value */
     vg=0;
     for (j=0;j<=n;j++) {
@@ -285,7 +286,10 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
   free(ve);
   free(vc);
   free(vm);
-  free(*v);
+  for (i=0;i<=n;i++) {
+	free(v[i]);
+  }
+  free(v);
   return min;
 }
 /*
