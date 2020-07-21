@@ -7,8 +7,7 @@
 #include <time.h>
 #include <pthread.h>
 
-#define NTHREADS 2
-#define MIN_VAL 10000000
+
 
 void * run_residue(void *input) {
 	int i = ((struct rrargs*)input)->i;
@@ -34,7 +33,7 @@ void * run_residue(void *input) {
 	switch (model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
-		case MOD_EMFT: params= 4; break;
+		case MOD_EMFT: params= 5; break;
 		default: params = 0; break;
 	}
 	//printf("%d\n", params);
@@ -52,18 +51,19 @@ void * run_residue(void *input) {
 		}
 		//long double opts[20] = {0, 0};
 		if (model == MOD_SMF) {
-			opts[0] = ((rand() % 100)/100.) * pow(10, -8);
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 		} else if (model == MOD_EMF) {
-			opts[0] = ((rand() % 100)/100.) * pow(10, -8);			
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8);			
 			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from 0.5 to 1
-			opts[2] = ((rand() % 100)/100.) * pow(10, -11);
+			opts[2] = ((rand() % 100)/100.) * powl(10, -11);
 			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_EMFT) {
-			opts[0] = ((rand() % 100)/100.) * pow(10, -8);			
+			opts[0] = ((rand() % 100)/100.) * powl(10, -15);			
 			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from 0.5 to 1
-			opts[2] = ((rand() % 100)/100.) * pow(10, -11);
+			opts[2] = ((rand() % 100)/100.) * powl(10, -20);
 			opts[3] = (rand()%60000)/1.;
+			opts[4] = (rand()%60000)/1.;
 			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
 		}
 		
@@ -164,6 +164,7 @@ int main(void) {
 	switch (m.model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
+		case MOD_EMFT:params = 5; break;
 		default: params = 0; break;
 	}
 	long double c = -1;

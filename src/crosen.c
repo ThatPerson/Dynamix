@@ -94,8 +94,8 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
   /* create the initial simplex */
   /* assume one of the vertices is 0,0 */
   
-  pn = scale*(sqrt(n+1)-1+n)/(n*sqrt(2));
-  qn = scale*(sqrt(n+1)-1)/(n*sqrt(2));
+  pn = scale*(sqrtl(n+1)-1+n)/(n*sqrtl(2));
+  qn = scale*(sqrtl(n+1)-1)/(n*sqrtl(2));
   
   for (i=0;i<n;i++) {
     v[0][i] = start[i];
@@ -257,7 +257,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
     for (j=0;j<=n;j++) {
       s += pow((f[j]-favg),2.0)/(n);
     }
-    s = sqrt(s);
+    s = sqrtl(s);
     if (s < EPSILON) break;
   }
   /* end main loop of the minimization */

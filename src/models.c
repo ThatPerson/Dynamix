@@ -7,13 +7,13 @@
 //#define J0_SMF_den(omega) (1 + pow(omega * tau, 2))
 
 long double J0_SMF(double omega, long double * tau, long double * S2) {
-	return (((1 - (*S2)) * (*tau)) / (1 + pow((omega) * (*tau), 2)));
+	return (((1 - (*S2)) * (*tau)) / (1 + powl((omega) * (*tau), 2)));
 }
 
 long double J0_EMF(double omega, long double * taus, long double * S2s, long double * tauf, long double * S2f) {
 	long double fast, slow;
-	fast = (((1 - (*S2f)) * (*tauf)) / (1 + pow((omega) * (*tauf), 2)));
-	slow = (((*S2f) * (1 - (*S2s)) * (*taus)) / (1 + pow((omega) * (*taus), 2)));
+	fast = (((1 - (*S2f)) * (*tauf)) / (1 + powl((omega) * (*tauf), 2)));
+	slow = (((*S2f) * (1 - (*S2s)) * (*taus)) / (1 + powl((omega) * (*taus), 2)));
 	return fast + slow;
 }
 

@@ -1,32 +1,36 @@
 #include <stdlib.h>
-#define MOD_SMF 	0
-#define MOD_EMF 	1
-#define MOD_EMFT	2
-#define MOD_SMFT 	3
-#define MOD_GAF 	4
-#define MOD_GAFT 	5
+#define MOD_SMF 		0
+#define MOD_EMF 		1
+#define MOD_EMFT		2
+#define MOD_SMFT 		3
+#define MOD_GAF 		4
+#define MOD_GAFT 		5
 
-#define DATA_S2		0
-#define DATA_CSISON	1
-#define DATA_CSISOC	2
+#define DATA_S2			0
+#define DATA_CSISON		1
+#define DATA_CSISOC		2
 
-#define R_15NR1 	0
-#define R_15NR1p	1
+#define R_15NR1 		0
+#define R_15NR1p		1
 
-#define OR_NH		0
-#define OR_NC		1
-#define OR_NCA		2
-#define OR_NCSA		3
-#define OR_NCCAp	4
-#define OR_NCCAc	5
-#define OR_CN		6
-#define OR_CNH		7
-#define OR_CH		8
+#define OR_NH			0
+#define OR_NC			1
+#define OR_NCA			2
+#define OR_NCSA			3
+#define OR_NCCAp		4
+#define OR_NCCAc		5
+#define OR_CN			6
+#define OR_CNH			7
+#define OR_CH			8
 
-#define THETA 		0
-#define PHI			1
+#define THETA 			0
+#define PHI				1
 
-#define N_RELAXATION 50
+#define N_RELAXATION	50
+#define NTHREADS		2
+#define MIN_VAL			10000000
+
+#define RYD 			8.3144621
 
 struct Model {
 	int max_func_evals, max_iter, n_iter;
