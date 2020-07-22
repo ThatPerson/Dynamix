@@ -143,7 +143,12 @@ int main(int argc, char * argv[]) {
 	//int i;
 	
 	
+
+	
 	pthread_t threads[NTHREADS];
+	pthread_attr_t threadattr;
+	pthread_attr_init(&threadattr);
+	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
 	int rc;
 	
 	int current_residue = 0;
@@ -170,7 +175,11 @@ int main(int argc, char * argv[]) {
 			RRA[i].n_iter = m.n_iter;
 			strcpy(RRA[i].outputdir, m.outputdir);
 			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
-			rc = pthread_create(&threads[i], NULL, run_residue, (void *) &RRA[i]);
+			rc = pthread_create(&threads[i], &threadattr, run_residue, (void *) &RRA[i]);
+			if (rc != 0) {
+				printf("Failed to spawn thread %d. Crashing gracefully...\n", current_residue + i);
+				exit(-1);
+			}
 		}
 		current_residue += NTHREADS;
 
