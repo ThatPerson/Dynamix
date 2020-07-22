@@ -228,7 +228,11 @@ int main(int argc, char * argv[]) {
 				RRA[i].n_iter = m.n_error_iter;
 				//strcpy(RRA[i].outputdir, m.outputdir);
 				//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
-				rc = pthread_create(&threads[i], NULL, calc_errors, (void *) &RRA[i]);
+				rc = pthread_create(&threads[i], &threadattr, calc_errors, (void *) &RRA[i]);
+				if (rc != 0) {
+					printf("Failed to spawn thread %d. Crashing gracefully...\n", current_residue + i);
+					exit(-1);
+				}
 			}
 			current_residue += NTHREADS;
 
