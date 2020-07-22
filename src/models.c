@@ -19,13 +19,13 @@ long double J0_EMF(double omega, long double * taus, long double * S2s, long dou
 
 double SMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	
+
 	long double field = relax->field * 1000000; // conversion to Hz
 	
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and 
+	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
-	
+
 	long double d = -72084.44597;
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -44,13 +44,13 @@ double SMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau,
 
 double SMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau, long double S2) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	
+
 	long double field = relax->field * 1000000; // conversion to Hz
-	
+
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and 
+	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
-	
+
 	long double d = -72084.44597;
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -58,22 +58,22 @@ double SMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau,
 
 	long double w1 = relax->w1;
 	long double wr = relax->wr;
-	
+
 	long double R2NH = 0, R2NCSA = 0;
 	long double J0sum = 0;
 	J0sum += (2/3.) * J0_SMF(2 * M_PI * (w1 - 2 * wr), &tau, &S2);
 	J0sum += (2/3.) * J0_SMF(2 * M_PI * (w1 + 2 * wr), &tau, &S2);
 	J0sum += (4/3.) * J0_SMF(2 * M_PI * (w1 - wr), &tau, &S2);
 	J0sum += (4/3.) * J0_SMF(2 * M_PI * (w1 + wr), &tau, &S2);
-	
+
 	long double JNH = J0sum + 3 * J0_SMF(omega_15N, &tau, &S2);
 	JNH += J0_SMF(omega_1H - omega_15N, &tau, &S2);
 	JNH += 6 * J0_SMF(omega_1H, &tau, &S2);
 	JNH += 6 * J0_SMF(omega_1H + omega_15N, &tau, &S2);
-	
-	
+
+
 	R2NH = (1/20.) * d * d * JNH;
-	R2NCSA = (1/45.) * d2 * d2 * (J0sum + 3 * J0_SMF(omega_15N, &tau, &S2));	
+	R2NCSA = (1/45.) * d2 * d2 * (J0sum + 3 * J0_SMF(omega_15N, &tau, &S2));
 	return R2NH + R2NCSA;
 }
 
@@ -81,11 +81,11 @@ double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	long double S2f = res->S2_dipolar / S2s;
 	long double field = relax->field * 1000000; // conversion to Hz
-	
+
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and 
+	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
-	
+
 	long double d = -72084.44597;
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -93,7 +93,7 @@ double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 
 	double R1NH = 0, R1NCSA = 0;
 	long double Jcomp = 0;
-	
+
 	// long double * taus, long double * S2s, long double * tauf, long double * S2f)
 	Jcomp += J0_EMF(omega_1H - omega_15N, &taus, &S2s, &tauf, &S2f);
 	Jcomp += 3 * J0_EMF(omega_15N, &taus, &S2s, &tauf, &S2f);
@@ -101,7 +101,7 @@ double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1NH = 0.1 * d * d * Jcomp;
 	R1NCSA = (2/15.) * d2 * d2 * J0_EMF(omega_15N, &taus, &S2s, &tauf, &S2f);
 
-	
+
 	return R1NH + R1NCSA;
 }
 
@@ -111,9 +111,9 @@ double EMF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	long double field = relax->field * 1000000; // conversion to Hz
 	//printf("Field: %0.1f MHz\nS2f: %Le\nS2s: %Le\nts: %Le\ntf: %Le\nS2d: %f\ncsiso: %f\n", relax->field, S2f, S2s, taus, tauf, res->S2_dipolar, res->csisoN);
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and 
+	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
-	
+
 	long double d = -72084.44597;
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -121,21 +121,21 @@ double EMF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 
 	long double w1 = relax->w1;
 	long double wr = relax->wr;
-	
+
 	long double R2NH = 0, R2NCSA = 0;
 	long double J0sum = 0;
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), &taus, &S2s, &tauf, &S2f);
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), &taus, &S2s, &tauf, &S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 - wr), &taus, &S2s, &tauf, &S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 + wr), &taus, &S2s, &tauf, &S2f);
-	
+
 	long double JNH = J0sum + 3 * J0_EMF(omega_15N, &taus, &S2s, &tauf, &S2f);
 	JNH += J0_EMF(omega_1H - omega_15N, &taus, &S2s, &tauf, &S2f);
 	JNH += 6 * J0_EMF(omega_1H, &taus, &S2s, &tauf, &S2f);
 	JNH += 6 * J0_EMF(omega_1H + omega_15N, &taus, &S2s, &tauf, &S2f);
-	
-	
+
+
 	R2NH = (1/20.) * d * d * JNH;
-	R2NCSA = (1/45.) * d2 * d2 * (J0sum + 3 * J0_EMF(omega_15N, &taus, &S2s, &tauf, &S2f));	
+	R2NCSA = (1/45.) * d2 * d2 * (J0sum + 3 * J0_EMF(omega_15N, &taus, &S2s, &tauf, &S2f));
 	return R2NH + R2NCSA;
 }

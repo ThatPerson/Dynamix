@@ -133,6 +133,8 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 	 * 
 	 *  for SMF, [tau, S2]
 	 */
+	//if (opts[0] == -1)
+	//	return -1;
 	double calc_R = 0;
 	FILE * fp;
 	fp = fopen(filename, "w");
@@ -151,6 +153,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 			Ea = opts[2];
 		else
 			tau_eff = tau;
+
 		
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
@@ -177,6 +180,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		long double taus = opts[0];
 		long double S2s = opts[1];
 		long double tauf = opts[2];
+		
 		int i;
 		//double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf) 
 		for (i = 0; i < resid->n_relaxation; i++) {

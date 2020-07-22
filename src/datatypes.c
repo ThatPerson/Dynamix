@@ -27,13 +27,13 @@
 #define PHI				1
 
 #define N_RELAXATION	50
-#define NTHREADS		2
+#define NTHREADS		4
 #define MIN_VAL			10000000
 
 #define RYD 			8.3144621
 
 struct Model {
-	int max_func_evals, max_iter, n_iter;
+	int max_func_evals, max_iter, n_iter, n_error_iter;
 	char outputdir[255];
 	int model;
 	struct Residue * residues;
@@ -48,11 +48,16 @@ struct Residue {
 	float csaC[3];
 	float orients[10][2]; // theta,phi
 	struct Relaxation * relaxation;
+	struct Relaxation * temp_relaxation;
+	long double ** error_params;
+	
 	int n_relaxation;
 	int lim_relaxation;
 	int ignore;
 	double min_val; 
-	long double parameters[20];
+	long double * parameters;
+	long double * errors_std;
+	long double * errors_mean;
 };
 
 struct Relaxation {
@@ -74,10 +79,31 @@ struct rrargs {
 };
 
 void free_all(struct Model *m) {
-	int res;
+	int res, k;
+	int params;
+	switch (m->model) {
+		case MOD_SMF: params = 2; break;
+		case MOD_EMF: params = 3; break;
+		case MOD_EMFT:params = 5; break;
+		case MOD_SMFT:params = 3; break;
+		default: params = 0; break;
+	}
+	
 	for (res = 0; res < m->n_residues; res++) {
 		free(m->residues[res].relaxation);
+		free(m->residues[res].parameters);
+		if (m->residues[res].error_params != NULL) {
+			for (k = 0; k < params; k++) {
+				if (m->residues[res].error_params[k] != NULL)
+					free(m->residues[res].error_params[k]);
+			}
+		}
+		if (m->residues[res].errors_mean != NULL)
+			free(m->residues[res].errors_mean);
+		if (m->residues[res].errors_std != NULL)
+			free(m->residues[res].errors_std);
 	}
 	free(m->residues);
+	
 	return;
 }

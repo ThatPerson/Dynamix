@@ -287,6 +287,8 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "IGNORE") == 0) {
 				to_ignore[ig] = atoi(val);
 				ig++;
+			} else if (strcmp(key, "N_ERROR_ITER") == 0){ 
+				m->n_error_iter = atoi(val);
 			}
 			//printf("%s: %s\n", key, val);
 		} else if (mode == 1) {
