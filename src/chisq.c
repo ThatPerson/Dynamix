@@ -144,7 +144,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, calc_R, resid->relaxation[i].R, resid->relaxation[i].Rerror); 
+			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror); 
 		}
 		fclose(fp);
 		return 1;
@@ -183,7 +183,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, calc_R, resid->relaxation[i].R, resid->relaxation[i].Rerror); 
+			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror); 
 		}
 		fclose(fp);
 		return 1;
