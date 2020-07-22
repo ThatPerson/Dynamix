@@ -17,32 +17,49 @@ long double J0_EMF(double omega, long double * taus, long double * S2s, long dou
 	return fast + slow;
 }
 
-double SMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2) {
+double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 
 	long double field = relax->field * 1000000; // conversion to Hz
 	
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
 	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
-	 * software division) I've predefined it. Bond length taken as 1.02 A */
+	 * software division) I've predefined it. Constants are in datatypes.c */
 
-	long double d = -72084.44597;
 	long double omega_1H = 2 * M_PI * field;
-	long double omega_15N = 2 * M_PI * field / 9.869683408806043;
-	long double d2=(-170)*(pow(10, -6))*(omega_15N);
+	long double omega_L;
+	long double d, d2x, d2y, d2xy, d2tot, d2;
+	float *csa;
 
-	double R1NH = 0, R1NCSA = 0;
+	if (mode == MODE_15N) {
+		csa = res->csaN;
+		omega_L = 2 * M_PI * field / 9.869683408806043;
+		d = -D_NH;
+	} else if (mode == MODE_13C) {
+		csa = res->csaC;
+		omega_L = 2 * M_PI * field / 3.976489314034722;
+		d = -D_CH;
+	}
+
+	d2x = powl(((csa[2] - csa[0]) * powl(10.,-6.)) * omega_L, 2.);
+	d2y = powl(((csa[1] - csa[0]) * powl(10.,-6.)) * omega_L, 2.);
+	d2xy= powl(powl(10.,-6.) * omega_L, 2.) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2tot= (powl(csa[2], 2) + powl(csa[1], 2) + powl(csa[0], 2));
+	d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
+	d2tot*=powl(powl(10., -6.) * omega_L, 2);
+	
+	double R1D = 0, R1CSA = 0;
 	long double Jcomp = 0;
-	Jcomp += J0_SMF(omega_1H - omega_15N, &tau, &S2);
-	Jcomp += 3 * J0_SMF(omega_15N, &tau, &S2);
-	Jcomp += 6 * J0_SMF(omega_1H + omega_15N, &tau, &S2);
-	R1NH = 0.1 * d * d * Jcomp;
-	R1NCSA = (2/15.) * d2 * d2 * J0_SMF(omega_15N, &tau, &S2);
+	Jcomp += J0_SMF(omega_1H - omega_L, &tau, &S2);
+	Jcomp += 3 * J0_SMF(omega_L, &tau, &S2);
+	Jcomp += 6 * J0_SMF(omega_1H + omega_L, &tau, &S2);
+	R1D = 0.1 * d * d * Jcomp;
+	R1CSA = (2/15.) * d2tot * J0_SMF(omega_L, &tau, &S2);
 
-	return R1NH + R1NCSA;
+	return R1D + R1CSA;
 }
 
-double SMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau, long double S2) {
+double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 
 	long double field = relax->field * 1000000; // conversion to Hz
@@ -51,11 +68,32 @@ double SMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau,
 	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
-	long double d = -72084.44597;
+	//long double d = -72084.44597;
 	long double omega_1H = 2 * M_PI * field;
-	long double omega_15N = 2 * M_PI * field / 9.869683408806043;
-	long double d2=(-170)*(pow(10, -6))*(omega_15N);
+	//long double omega_15N = 2 * M_PI * field / 9.869683408806043;
+	//long double d2=(-170)*(pow(10, -6))*(omega_15N);
 
+	long double omega_L;
+	long double d, d2x, d2y, d2xy, d2tot, d2;
+	float *csa;
+
+	if (mode == MODE_15N) {
+		csa = res->csaN;
+		omega_L = 2 * M_PI * field / 9.869683408806043;
+		d = -D_NH;
+	} else if (mode == MODE_13C) {
+		csa = res->csaC;
+		omega_L = 2 * M_PI * field / 3.976489314034722;
+		d = -D_CH;
+	}
+
+	d2x = powl(((csa[2] - csa[0]) * powl(10.,-6.)) * omega_L, 2.);
+	d2y = powl(((csa[1] - csa[0]) * powl(10.,-6.)) * omega_L, 2.);
+	d2xy= powl(powl(10.,-6.) * omega_L, 2.) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2tot= (powl(csa[2], 2) + powl(csa[1], 2) + powl(csa[0], 2));
+	d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
+	d2tot*=powl(powl(10., -6.) * omega_L, 2);
+	
 	long double w1 = relax->w1;
 	long double wr = relax->wr;
 
@@ -66,14 +104,14 @@ double SMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau,
 	J0sum += (4/3.) * J0_SMF(2 * M_PI * (w1 - wr), &tau, &S2);
 	J0sum += (4/3.) * J0_SMF(2 * M_PI * (w1 + wr), &tau, &S2);
 
-	long double JNH = J0sum + 3 * J0_SMF(omega_15N, &tau, &S2);
-	JNH += J0_SMF(omega_1H - omega_15N, &tau, &S2);
+	long double JNH = J0sum + 3 * J0_SMF(omega_L, &tau, &S2);
+	JNH += J0_SMF(omega_1H - omega_L, &tau, &S2);
 	JNH += 6 * J0_SMF(omega_1H, &tau, &S2);
-	JNH += 6 * J0_SMF(omega_1H + omega_15N, &tau, &S2);
+	JNH += 6 * J0_SMF(omega_1H + omega_L, &tau, &S2);
 
 
 	R2NH = (1/20.) * d * d * JNH;
-	R2NCSA = (1/45.) * d2 * d2 * (J0sum + 3 * J0_SMF(omega_15N, &tau, &S2));
+	R2NCSA = (1/45.) * d2tot * (J0sum + 3 * J0_SMF(omega_L, &tau, &S2));
 	return R2NH + R2NCSA;
 }
 

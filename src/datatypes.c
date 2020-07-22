@@ -12,6 +12,8 @@
 
 #define R_15NR1 		0
 #define R_15NR1p		1
+#define R_13CR1 		2
+#define R_13CR1p		3
 
 #define OR_NH			0
 #define OR_NC			1
@@ -31,6 +33,18 @@
 #define MIN_VAL			10000000
 
 #define RYD 			8.3144621
+
+/* These constants are extracted from NHCO_3GAFSquaredEa, using the bond lengths defined in there */
+#define D_NH			72038.41107
+#define D_CC			13467.66052
+#define D_CH			22362.47724
+#define D_CHr			31491.71046
+#define D_CN			8175.2
+#define D_CaN			6180.1
+#define D_HNr			13108.32273
+
+#define MODE_15N		0
+#define MODE_13C		1
 
 struct Model {
 	int max_func_evals, max_iter, n_iter, n_error_iter;
