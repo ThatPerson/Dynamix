@@ -87,10 +87,16 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 				chisq += 100000000;
 			switch (resid->relaxation[i].type) {
 				case R_15NR1:
-					calc_R = EMF_15NR1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff);
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
 					break;
 				case R_15NR1p:
-					calc_R = EMF_15NR2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff);
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
+					break;
+				case R_13CR1:
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
+					break;
+				case R_13CR1p:
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
 					break;
 				default: 
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
@@ -185,10 +191,16 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 			}
 			switch (resid->relaxation[i].type) {
 				case R_15NR1:
-					calc_R = EMF_15NR1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff);
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
 					break;
 				case R_15NR1p:
-					calc_R = EMF_15NR2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff);
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
+					break;
+				case R_13CR1:
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
+					break;
+				case R_13CR1p:
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
 					break;
 				default: 
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
