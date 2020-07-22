@@ -17,6 +17,8 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 	float err;
 	int k;
 	while(fgets(line, len, fp)) {
+		if (line[0] == '%')
+			continue; // comment
 		k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
 		resid = resid - 1; // 0 indexed in C
 		switch (dt) {
@@ -62,6 +64,8 @@ int read_pp(struct Model *m, char *filename, int orient) {
 	float phi;
 	int k;
 	while(fgets(line, len, fp)) {
+		if (line[0] == '%')
+			continue; // comment
 		k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
 		resid = resid -1; // index from 0
 		m->residues[resid].orients[orient][THETA] = theta;
@@ -91,6 +95,8 @@ int read_relaxation_data(struct Model *m, char *filename) {
 	int rel = -1;
 	float R, Re;
 	while(fgets(line, len, fp)) {
+		if (line[0] == '%')
+			continue; // comment
 		if (strcmp(line, "#DATA\n") == 0) {
 			for (i = 0; i < m->n_residues; i++) {
 				/* first check we have enough memory */
@@ -197,6 +203,8 @@ int read_system_file(char *filename, struct Model * m) {
 	int to_ignore[50];
 	int ig = 0;
 	while(fgets(line, len, fp)) {
+		if (line[0] == '%')
+			continue; // comment
 		if (strcmp(line, "#RELAXATION\n") == 0) {
 			if (n_resid == -1) {
 				printf("Error: Number of residues must be defined\n");

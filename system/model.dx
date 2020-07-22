@@ -1,13 +1,24 @@
 MODEL  = EMFT 
+
+
+% Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
 S2DIP  =  system/s2_dipolar_jozef.csv
+
+
+% Zhou, Donghua; Shea, John; Nieuwkoop, Andrew; Franks, W. Trent; Wylie, Benjamin; Mullen, Charles; Sandoz, Dennis; Rienstra, Chad. "Solid-State Protein Structure Determination with Proton-Detected Triple Resonance 3D Magic-Angle Spinning NMR Spectroscopy"  Angew. Chem. Int. Ed. ., .-..
+% http://www.bmrb.wisc.edu/data_library/summary/?bmrbId=15156
 CSISON  =  system/csisoN.csv
 CSISOC  =  system/csisoC.csv
-MAXFUNCEVALS  =  20000
-MAXITER  =  20000
+
+
 N_RESIDUES  =  56
 OUTPUT = output/
 N_ITER = 10
 IGNORE = 42
+N_ERROR_ITER = 10
+
+
+% Orientations taken from Lienin 1998
 OR_NH = system/or_NH.csv
 OR_NC = system/or_NC.csv
 OR_NCA = system/or_NCA.csv
@@ -21,6 +32,9 @@ OR_CNH = system/or_CNH.csv
 OR_CCSAxx = system/or_CCSAxx.csv
 OR_CCSAyy = system/or_CCSAyy.csv
 OR_CCSAzz = system/or_CCSAzz.csv
+
+
+
 #RELAXATION
 system/15N_R1_600_50_0_271.csv
 system/15N_R1_600_50_0_282.csv
