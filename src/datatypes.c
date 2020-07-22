@@ -18,12 +18,17 @@
 #define OR_NH			0
 #define OR_NC			1
 #define OR_NCA			2
-#define OR_NCSA			3
-#define OR_NCCAp		4
-#define OR_NCCAc		5
-#define OR_CN			6
-#define OR_CNH			7
-#define OR_CH			8
+#define OR_NCSAxx		3
+#define OR_NCSAyy 		4
+#define OR_NCSAzz		5
+#define OR_NCCAp		6
+#define OR_NCCAc		7
+#define OR_CN			8
+#define OR_CNH			9
+#define OR_CH			10
+#define OR_CCSAxx		11
+#define OR_CCSAyy		12
+#define OR_CCSAzz		13
 
 #define THETA 			0
 #define PHI				1
@@ -60,7 +65,7 @@ struct Residue {
 	float csisoC;
 	float csaN[3];
 	float csaC[3];
-	float orients[10][2]; // theta,phi
+	float orients[14][2]; // theta,phi
 	struct Relaxation * relaxation;
 	struct Relaxation * temp_relaxation;
 	long double ** error_params;

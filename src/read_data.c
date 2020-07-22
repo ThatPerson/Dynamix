@@ -63,6 +63,7 @@ int read_pp(struct Model *m, char *filename, int orient) {
 	int k;
 	while(fgets(line, len, fp)) {
 		k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
+		resid = resid -1; // index from 0
 		m->residues[resid].orients[orient][THETA] = theta;
 		m->residues[resid].orients[orient][PHI] = phi;
 	}
@@ -150,6 +151,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 		} else if (mode == 1) {
 			sscanf(line, "%d %f %f\n", &resid, &R, &Re);
 			//printf("%d, %d, %f, %f\n", rel, resid, R, Re);
+			// index from 0
 			m->residues[resid-1].relaxation[rel].R = R;
 			if (R == -1)
 				m->residues[resid-1].ignore = 1;
@@ -185,7 +187,7 @@ int read_system_file(char *filename, struct Model * m) {
 	char csisoN[255] = "";
 	char csisoC[255] = "";
 	int n_resid = -1;
-	char pp_orient[10][255];
+	char pp_orient[14][255];
 	int i;
 	for (i = 0; i < 10; i++) {
 		strcpy(pp_orient[i], "");
@@ -233,13 +235,13 @@ int read_system_file(char *filename, struct Model * m) {
 				return -1;
 			}
 			t = 0;
-			for (i = 0; i < 10; i++) {
+			for (i = 0; i < 14; i++) {
 				if (strcmp(pp_orient[i], "") != 0)
 					t += read_pp(m, pp_orient[i], i);
 				else
 					t++;
 			}
-			if (t != 10) {
+			if (t != 14) {
 				printf("Error: Error in reading orientations\n");
 				return -1;
 			}
@@ -289,7 +291,36 @@ int read_system_file(char *filename, struct Model * m) {
 				ig++;
 			} else if (strcmp(key, "N_ERROR_ITER") == 0){ 
 				m->n_error_iter = atoi(val);
+			} else if (strcmp(key, "OR_NH") == 0) {
+				strcpy(pp_orient[OR_NH], val);
+			} else if (strcmp(key, "OR_NC") == 0) {
+				strcpy(pp_orient[OR_NC], val);
+			} else if (strcmp(key, "OR_NCA") == 0) {
+				strcpy(pp_orient[OR_NCA], val);
+			} else if (strcmp(key, "OR_NCSAxx") == 0) {
+				strcpy(pp_orient[OR_NCSAxx], val);
+			} else if (strcmp(key, "OR_NCSAyy") == 0) {
+				strcpy(pp_orient[OR_NCSAyy], val);
+			} else if (strcmp(key, "OR_NCSAzz") == 0) {
+				strcpy(pp_orient[OR_NCSAzz], val);
+			} else if (strcmp(key, "OR_NCCAp") == 0) {
+				strcpy(pp_orient[OR_NCCAp], val);
+			} else if (strcmp(key, "OR_NCCAc") == 0) {
+				strcpy(pp_orient[OR_NCCAc], val);
+			} else if (strcmp(key, "OR_CN") == 0) {
+				strcpy(pp_orient[OR_CN], val);
+			} else if (strcmp(key, "OR_CNH") == 0) {
+				strcpy(pp_orient[OR_CNH], val);
+			} else if (strcmp(key, "OR_CH") == 0) {
+				strcpy(pp_orient[OR_CH], val);
+			} else if (strcmp(key, "OR_CCSAxx") == 0) {
+				strcpy(pp_orient[OR_CCSAxx], val);
+			} else if (strcmp(key, "OR_CCSAyy") == 0) {
+				strcpy(pp_orient[OR_CCSAyy], val);
+			} else if (strcmp(key, "OR_CCSAzz") == 0) {
+				strcpy(pp_orient[OR_CCSAzz], val);
 			}
+
 			//printf("%s: %s\n", key, val);
 		} else if (mode == 1) {
 			sscanf(line, "%s\n", &key);
@@ -310,25 +341,36 @@ int read_system_file(char *filename, struct Model * m) {
 	
 }
 
-int print_system(struct Model *m) {
-	printf("MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
-	printf("Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
+int print_system(struct Model *m, char *filename) {
+	FILE * fp;
+	fp = fopen(filename, "w");
+	if (fp == NULL) {
+		printf("%s not found.\n", filename);
+		return -1;
+	}
+	fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
+	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
 	int i, j;
 	struct Relaxation *r;
 	for (i = 0; i < m->n_residues; i++) {
-		printf("=== Residue %d ===\n", i+1);
+		fprintf(fp, "=== Residue %d ===\n", i+1);
 		if (m->residues[i].ignore == 1)
-			printf("--- IGNORING ---\n");
+			fprintf(fp, "--- IGNORING ---\n");
 		
-		printf("\tS2 = %f\n\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].S2_dipolar, m->residues[i].csisoN, m->residues[i].csisoC);
-		printf("\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);  
-		printf("\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]); 
-		printf("\tRelaxation Constraints: %d\n", m->residues[i].n_relaxation);
+		fprintf(fp, "\tS2 = %f\n\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].S2_dipolar, m->residues[i].csisoN, m->residues[i].csisoC);
+		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);  
+		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]); 
+		fprintf(fp, "\tOrients;\n");
+		for (j = 0; j < 14; j++) {
+			fprintf(fp, "\t\t%d: %f, %f\n", j, m->residues[i].orients[j][0], m->residues[i].orients[j][1]);
+		}
+		fprintf(fp, "\tRelaxation Constraints: %d\n", m->residues[i].n_relaxation);
 		for (j = 0; j < m->residues[i].n_relaxation; j++) {
 			r = &(m->residues[i].relaxation[j]);
-			printf("\t\t%d: %d [%f, %f, %f, %f] %f +- %f\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R, r->Rerror);
+			fprintf(fp, "\t\t%d: %d [%f, %f, %f, %f] %f +- %f\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R, r->Rerror);
 		}
 	}
+	fclose(fp);
 	return 1;
 
 }

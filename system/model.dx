@@ -1,12 +1,26 @@
-MODEL  =  SMFT
+MODEL  = EMFT 
 S2DIP  =  system/s2_dipolar_jozef.csv
 CSISON  =  system/csisoN.csv
+CSISOC  =  system/csisoC.csv
 MAXFUNCEVALS  =  20000
 MAXITER  =  20000
 N_RESIDUES  =  56
 OUTPUT = output/
 N_ITER = 10
 IGNORE = 42
+OR_NH = system/or_NH.csv
+OR_NC = system/or_NC.csv
+OR_NCA = system/or_NCA.csv
+OR_NCSAxx = system/or_NCSAxx.csv
+OR_NCSAyy = system/or_NCSAyy.csv
+OR_NCSAzz = system/or_NCSAzz.csv
+OR_NCCAp = system/or_CCAp.csv
+OR_NCCAc = system/or_CCAc.csv
+OR_CN = system/or_CN.csv
+OR_CNH = system/or_CNH.csv
+OR_CCSAxx = system/or_CCSAxx.csv
+OR_CCSAyy = system/or_CCSAyy.csv
+OR_CCSAzz = system/or_CCSAzz.csv
 #RELAXATION
 system/15N_R1_600_50_0_271.csv
 system/15N_R1_600_50_0_282.csv

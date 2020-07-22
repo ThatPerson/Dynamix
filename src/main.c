@@ -127,8 +127,9 @@ int main(int argc, char * argv[]) {
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
 	printf("%d\n", ret);
-	//print_system(&m);
-	
+	char filename[300];
+	sprintf(filename, "%s/model.txt", m.outputdir);
+	print_system(&m, filename);
 	/*for (i = 0; i < 10; i++) {
 		long double taus = (long double) ((rand() % 100) / 100.) * pow(10, -(5+(rand()%5)));
 		long double S2s = (long double) ((rand()%100)/100.);
@@ -178,7 +179,6 @@ int main(int argc, char * argv[]) {
 			rc = pthread_join(threads[i], NULL);
 		}
 	}
-	char filename[300];
 	FILE * fp;
 	sprintf(filename, "%s/final.dat", m.outputdir);
 	fp = fopen(filename, "w");
