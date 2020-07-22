@@ -189,6 +189,14 @@ int main(int argc, char * argv[]) {
 	int params;
 	FILE * ep = NULL;
 	
+	switch (m.model) {
+		case MOD_SMF: params = 2; break;
+		case MOD_EMF: params = 3; break;
+		case MOD_EMFT:params = 5; break;
+		case MOD_SMFT:params = 3; break;
+		default: params = 0; break;
+	}
+	
 	if (error_mode == 1) {
 		sprintf(filename, "%s/errors.dat", m.outputdir);
 		ep = fopen(filename, "w");
@@ -198,13 +206,7 @@ int main(int argc, char * argv[]) {
 		}
 	
 		
-		switch (m.model) {
-			case MOD_SMF: params = 2; break;
-			case MOD_EMF: params = 3; break;
-			case MOD_EMFT:params = 5; break;
-			case MOD_SMFT:params = 3; break;
-			default: params = 0; break;
-		}
+		
 		printf("Calculating Errors...\n");
 		current_residue = 0;
 		for (l = 0; l < n_spawns; l++) {
@@ -247,19 +249,22 @@ int main(int argc, char * argv[]) {
 			}
 		}
 		fprintf(fp, "%d\t%f\t%f", l, m.residues[l].S2_dipolar, m.residues[l].min_val);
-		if (error_mode == 1)
+		if (error_mode == 1) {
 			fprintf(ep, "%d, %f, %f", l, m.residues[l].S2_dipolar, m.residues[l].min_val);
+		}
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);
-			if (error_mode == 1)
+			if (error_mode == 1) {
 				fprintf(ep, ", %Le, %Le", m.residues[l].parameters[i], 2 * m.residues[l].errors_std[i]);
+			}
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
 			 * The error_means are generally not minimal. */
 		}
 		
 		fprintf(fp, "\n");
-		if (error_mode == 1)
+		if (error_mode == 1) {
 			fprintf(ep, "\n");
+		}
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, file);
 	}
