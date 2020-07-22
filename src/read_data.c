@@ -134,7 +134,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 			continue;
 		}
 		if (mode == 0) {
-			sscanf(line, "%s = %s\n", &key, &val);
+			sscanf(line, "%255s = %255s\n", key, val);
 			if (strcmp(key, "FIELD") == 0)
 				field = atof(val);
 			else if (strcmp(key, "WR") == 0)
@@ -259,7 +259,7 @@ int read_system_file(char *filename, struct Model * m) {
 		if (mode == 0) {
 			if (line[0] == '#')
 				continue;
-			sscanf(line, "%s = %s\n", &key, &val);
+			sscanf(line, "%255s = %255s\n", key, val);
 			if (strcmp(key, "MODEL") == 0) {
 				if (strcmp(val, "SMF") == 0)
 					m->model = MOD_SMF;
@@ -331,7 +331,7 @@ int read_system_file(char *filename, struct Model * m) {
 
 			//printf("%s: %s\n", key, val);
 		} else if (mode == 1) {
-			sscanf(line, "%s\n", &key);
+			sscanf(line, "%255s\n", key);
 			//printf("Read file: %s\n", key);
 			//int read_relaxation_data(struct Model *m, char *filename) {
 

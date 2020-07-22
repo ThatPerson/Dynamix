@@ -34,7 +34,7 @@
 #define PHI				1
 
 #define N_RELAXATION	50
-#define NTHREADS		4
+#define NTHREADS		4	
 #define MIN_VAL			10000000
 
 #define RYD 			8.3144621
