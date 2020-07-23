@@ -470,7 +470,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), &taus, &S2CNs, &tauf, &S2CNf);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 + wr), &taus, &S2CNs, &tauf, &S2CNf);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 - wr), &taus, &S2CNs, &tauf, &S2CNf);
-	R2NHr   = (1/20.) * powl(D_CN, 2.) * (J0sum + 3 * J1 + J0HC + 6 * J1H + 6 * J2HC);
+	R2CN   = (1/20.) * powl(D_CN, 2.) * (J0sum + 3 * J1 + J0HC + 6 * J1H + 6 * J2HC);
 	
 	// CaN
 	J0HC = J0_EMF(omega_13C - omega_15N, &taus, &S2CaNs, &tauf, &S2CaNf);
@@ -481,7 +481,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), &taus, &S2CaNs, &tauf, &S2CaNf);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 + wr), &taus, &S2CaNs, &tauf, &S2CaNf);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 - wr), &taus, &S2CaNs, &tauf, &S2CaNf);
-	R2NHr   = (1/20.) * powl(D_CaN, 2.) * (J0sum + 3 * J1 + J0HC + 6 * J1H + 6 * J2HC);
+	R2CaN   = (1/20.) * powl(D_CaN, 2.) * (J0sum + 3 * J1 + J0HC + 6 * J1H + 6 * J2HC);
 
 	return R2CSA + R2NH + R2NHr + R2CN + R2CaN;
 }
