@@ -68,8 +68,9 @@ int read_pp(struct Model *m, char *filename, int orient) {
 			continue; // comment
 		k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
 		resid = resid -1; // index from 0
-		m->residues[resid].orients[orient][THETA] = theta;
-		m->residues[resid].orients[orient][PHI] = phi;
+		m->residues[resid].orients[orient].theta = theta;
+		m->residues[resid].orients[orient].phi = phi;
+		calculate_Y2(&(m->residues[resid].orients[orient]));
 	}
 	return 1;
 }
@@ -370,7 +371,7 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]); 
 		fprintf(fp, "\tOrients;\n");
 		for (j = 0; j < 14; j++) {
-			fprintf(fp, "\t\t%d: %f, %f\n", j, m->residues[i].orients[j][0], m->residues[i].orients[j][1]);
+			fprintf(fp, "\t\t%d: %f, %f\n", j, m->residues[i].orients[j].theta, m->residues[i].orients[j].phi);
 		}
 		fprintf(fp, "\tRelaxation Constraints: %d\n", m->residues[i].n_relaxation);
 		for (j = 0; j < m->residues[i].n_relaxation; j++) {

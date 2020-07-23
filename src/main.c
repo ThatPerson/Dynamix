@@ -9,7 +9,6 @@
 #include <pthread.h>
 
 
-
 void * run_residue(void *input) {
 	int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i + 1);
@@ -105,7 +104,11 @@ void * run_residue(void *input) {
 
 
 int main(int argc, char * argv[]) {
+	
+	/* Initialisation */
 	srand(time(NULL));
+	initialise_dwig();
+	
 	int error_mode = 0;
 	char system_file[255] = "";
 	int i;
@@ -130,21 +133,29 @@ int main(int argc, char * argv[]) {
 	char filename[300];
 	sprintf(filename, "%s/model.txt", m.outputdir);
 	print_system(&m, filename);
-	/*for (i = 0; i < 10; i++) {
-		long double taus = (long double) ((rand() % 100) / 100.) * pow(10, -(5+(rand()%5)));
-		long double S2s = (long double) ((rand()%100)/100.);
-		long double tauf = (long double) ((rand() % 100) / 100.) * pow(10, -(7 + (rand()%5)));
-		printf("%f\n", EMF_15NR2(&(m.residues[40]), &(m.residues[40].relaxation[19]), taus, S2s, tauf));
-		printf("\n\n\n\n");
-	}
 	
-	exit(-1);*/
-	
-	//int i;
-	
+	/*int AS;
+	long double sA, sB, sG;
 	
 
-	
+	for (AS = 0; AS < 14; AS++) {
+		sA = 2.591225;
+		sB = 1.511158;
+		sG = 0.684270;
+
+
+		//printf("\n\n\nPhi %f, Theta %f\n", m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta);
+		//printf("\nGAF_ord_paramTT(%Lf, %Lf, %Lf, %f, %f, %f, %f)\n\n", sA, sB, sG, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta);
+		
+		//printf("\tsA: %Lf\n\tsB: %Lf\n\tsG: %Lf\n", sA, sB, sG);
+		printf("\nGAF_ord_paramTT(%Lf, %Lf, %Lf, %f, %f, %f, %f)\n\n", sA, sB, sG, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta);
+		printf("\t\t... S2 = %0.36Lf\n", GAF_S2(sA, sB, sG, &(m.residues[28].orients[AS]), &(m.residues[28].orients[AS]), MODE_REAL));
+		
+		printf("\n\n\n");
+		
+	}*/
+
+
 	pthread_t threads[NTHREADS];
 	pthread_attr_t threadattr;
 	pthread_attr_init(&threadattr);

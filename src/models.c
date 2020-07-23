@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <complex.h>
 
 //#define J0_SMF(omega) (((1 - S2) * tau) / (1 + pow(omega * tau, 2)))
 
@@ -211,3 +212,44 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0_EMF(omega_L, &taus, &S2s, &tauf, &S2f));
 	return R2D + R2CSA;
 }
+
+
+long double GAF_S2(long double sigmaA, long double sigmaB, long double sigmaG, struct Orient * A, struct Orient * B, int mode) {
+	/* #define MODE_REAL		0
+#define MODE_IMAG		1
+#define MODE_COMP		2*/
+	
+	int l, m, mp, k, kp;
+	long double complex Amp;
+	long double complex temp;
+	long double expo = 0;
+	//l = 2;k=0;kp=2; m=0;mp=0;
+	for (l = -2; l <= 2; l++) {
+		for (m = -2; m <= 2; m++) {
+			for (mp = -2; mp <= 2; mp++) {
+				for (k = -2; k <= 2; k++) {
+					for (kp = -2; kp <= 2; kp++) {
+						temp = 0;
+						temp = cpowl(-1 * I, k - kp);
+						expo = 0;
+						expo = -(powl(sigmaA, 2.) * (powl(k, 2) + powl(kp, 2)) / 2.);
+						expo -= (powl(sigmaB * l, 2.));
+						expo -= (powl(sigmaG, 2.) * (powl(m, 2) + powl(mp, 2)) / 2.);
+						temp *= expl(expo);
+						temp *= Dwig[k+2][l+2] * Dwig[kp+2][l+2] * Dwig[m+2][k+2] * Dwig[mp+2][kp+2];
+						temp *= A->Y2[m+2] * B->Y2c[mp+2];
+						Amp += temp;
+					}
+				}
+			}
+		}
+	}
+	Amp *= (4 * M_PI / 5.);
+	switch (mode) {
+		case MODE_REAL: return creall(Amp); break;
+		case MODE_IMAG: return cimagl(Amp); break;
+		default: break;
+	}
+	return -1;
+}
+						
