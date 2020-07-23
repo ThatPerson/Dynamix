@@ -196,13 +196,24 @@ int read_system_file(char *filename, struct Model * m) {
 	int n_resid = -1;
 	char pp_orient[14][255];
 	int i;
-	for (i = 0; i < 10; i++) {
+	for (i = 0; i < 14; i++) {
 		strcpy(pp_orient[i], "");
 	}
 	strcpy(m->outputdir, "./");
 	m->n_iter = 1;
 	int to_ignore[50];
 	int ig = 0;
+	
+	/* Initialise */
+	m->max_func_evals = 20000;
+	m->max_iter = 20000;
+	m->n_iter = -1;
+	m->n_error_iter = -1;
+	m->model = -1;
+	m->n_residues = -1;
+	m->nthreads = 1; 
+	
+	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -328,6 +339,12 @@ int read_system_file(char *filename, struct Model * m) {
 				strcpy(pp_orient[OR_CCSAyy], val);
 			} else if (strcmp(key, "OR_CCSAzz") == 0) {
 				strcpy(pp_orient[OR_CCSAzz], val);
+			} else if (strcmp(key, "NTHREADS") == 0) {
+				m->nthreads = atoi(val);
+				if (m->nthreads <= 0) {
+					printf("Number of threads must be greater than 0.\n");
+					exit(-1);
+				}
 			}
 
 			//printf("%s: %s\n", key, val);
@@ -340,6 +357,21 @@ int read_system_file(char *filename, struct Model * m) {
 		}
 	}
 	fclose(fp);
+
+	/*Check requirements */
+	if (m->n_iter < 0) {
+		printf("Please provide N_ITER\n");
+		return -1;
+	}
+	if (m->model < 0) {
+		printf("Please provide MODEL\n");
+		return -1;
+	}
+	if (m->n_residues < 0){ 
+		printf("Please provide residue count\n");
+		return -1;
+	}
+	
 	return 1;
 	
 	
@@ -357,7 +389,7 @@ int print_system(struct Model *m, char *filename) {
 		printf("%s not found.\n", filename);
 		return -1;
 	}
-	fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
+	//fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
 	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
 	int i, j;
 	struct Relaxation *r;
@@ -371,6 +403,7 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]); 
 		fprintf(fp, "\tOrients;\n");
 		for (j = 0; j < 14; j++) {
+			//if (m->residues[i].orients[j] != NULL)
 			fprintf(fp, "\t\t%d: %f, %f\n", j, m->residues[i].orients[j].theta, m->residues[i].orients[j].phi);
 		}
 		fprintf(fp, "\tRelaxation Constraints: %d\n", m->residues[i].n_relaxation);

@@ -252,4 +252,7 @@ long double GAF_S2(long double sigmaA, long double sigmaB, long double sigmaG, s
 	}
 	return -1;
 }
+
+
+
 						

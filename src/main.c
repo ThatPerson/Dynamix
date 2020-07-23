@@ -109,13 +109,13 @@ int main(int argc, char * argv[]) {
 	srand(time(NULL));
 	initialise_dwig();
 	
-	int error_mode = 0;
 	char system_file[255] = "";
 	int i;
+	int err_mod = 0;
 	for (i = 1; i < argc; i++) {
 		//printf("%s\n", argv[i]);
 		if (strcmp(argv[i], "-e") == 0)
-			error_mode = 1;
+			err_mod = 1;
 		else
 			strcpy(system_file, argv[i]);
 	}
@@ -129,10 +129,21 @@ int main(int argc, char * argv[]) {
 	
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
+	m.error_mode = err_mod;
+	if (m.error_mode == 1 && m.n_error_iter < 0) {
+		printf("Please provide number of error iterations\n");
+		ret = -1;
+	}
+	
+	if (ret == -1) {
+		printf("Error found, crashing peacefully...\n");
+		exit(-1);
+	}
+	
 	printf("%d\n", ret);
 	char filename[300];
 	sprintf(filename, "%s/model.txt", m.outputdir);
-	print_system(&m, filename);
+	//print_system(&m, filename);
 	
 	/*int AS;
 	long double sA, sB, sG;
@@ -156,7 +167,7 @@ int main(int argc, char * argv[]) {
 	}*/
 
 
-	pthread_t threads[NTHREADS];
+	pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * m.nthreads);
 	pthread_attr_t threadattr;
 	pthread_attr_init(&threadattr);
 	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
@@ -168,16 +179,16 @@ int main(int argc, char * argv[]) {
 	 * 56 / 4 spawn events (= 14). Add 1 in case (eg for 57).
 	 * Then loop over threads, increment current_residue and assign pointers.
 	 */
-	n_spawns = m.n_residues / NTHREADS;
+	n_spawns = m.n_residues / m.nthreads;
 	n_spawns ++;
 	//printf("%d spawns\n", n_spawns);
 
-	struct rrargs RRA[NTHREADS]; // = (struct rrargs *)malloc(sizeof(struct rrargs));
+	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m.nthreads);
 	printf("Optimizing...\n");
 	/* spawn the threads */
 	int l = 0;
 	for (l = 0; l < n_spawns; l++) {
-		for (i=0; i<NTHREADS; ++i) {
+		for (i=0; i<m.nthreads; ++i) {
 			RRA[i].i = current_residue + i;
 			if (current_residue + i >= m.n_residues)
 				continue;
@@ -189,16 +200,20 @@ int main(int argc, char * argv[]) {
 			rc = pthread_create(&threads[i], &threadattr, run_residue, (void *) &RRA[i]);
 			if (rc != 0) {
 				printf("Failed to spawn thread %d. Crashing gracefully...\n", current_residue + i);
+				free_all(&m);
+				free(RRA);
+				free(threads);
 				exit(-1);
 			}
 		}
-		current_residue += NTHREADS;
+		current_residue += m.nthreads;
 
 	
-		for (i=0; i<NTHREADS; ++i) {
+		for (i=0; i<m.nthreads; ++i) {
 			rc = pthread_join(threads[i], NULL);
 		}
 	}
+
 	FILE * fp;
 	sprintf(filename, "%s/final.dat", m.outputdir);
 	fp = fopen(filename, "w");
@@ -217,7 +232,7 @@ int main(int argc, char * argv[]) {
 		default: params = 0; break;
 	}
 	
-	if (error_mode == 1) {
+	if (m.error_mode == 1) {
 		sprintf(filename, "%s/errors.dat", m.outputdir);
 		ep = fopen(filename, "w");
 		if (ep == NULL) {
@@ -230,7 +245,7 @@ int main(int argc, char * argv[]) {
 		printf("Calculating Errors...\n");
 		current_residue = 0;
 		for (l = 0; l < n_spawns; l++) {
-			for (i=0; i<NTHREADS; ++i) {
+			for (i=0; i<m.nthreads; ++i) {
 				RRA[i].i = current_residue + i;
 				if (current_residue + i >= m.n_residues)
 					continue;
@@ -245,14 +260,17 @@ int main(int argc, char * argv[]) {
 					exit(-1);
 				}
 			}
-			current_residue += NTHREADS;
+			current_residue += m.nthreads;
 
 		
-			for (i=0; i<NTHREADS; ++i) {
+			for (i=0; i<m.nthreads; ++i) {
 				rc = pthread_join(threads[i], NULL);
 			}
 		}
 	}
+	
+	free(RRA);
+	free(threads);
 	
 	int k;
 	
@@ -261,7 +279,7 @@ int main(int argc, char * argv[]) {
 	long double c = -1;
 	char file[300];
 	for (l = 0; l < m.n_residues; l++) {
-		if (error_mode == 1) {
+		if (m.error_mode == 1) {
 			for (k = 0; k < params; k++) {
 				calc_statistics(m.residues[l].error_params[k], m.n_error_iter, &(m.residues[l].errors_mean[k]), &(m.residues[l].errors_std[k])); 
 			}
@@ -273,12 +291,12 @@ int main(int argc, char * argv[]) {
 			}
 		}
 		fprintf(fp, "%d\t%f\t%f", l, m.residues[l].S2_dipolar, m.residues[l].min_val);
-		if (error_mode == 1) {
+		if (m.error_mode == 1) {
 			fprintf(ep, "%d, %f, %f", l, m.residues[l].S2_dipolar, m.residues[l].min_val);
 		}
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);
-			if (error_mode == 1) {
+			if (m.error_mode == 1) {
 				fprintf(ep, ", %Le, %Le", m.residues[l].parameters[i], 2 * m.residues[l].errors_std[i]);
 			}
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
@@ -286,7 +304,7 @@ int main(int argc, char * argv[]) {
 		}
 		
 		fprintf(fp, "\n");
-		if (error_mode == 1) {
+		if (m.error_mode == 1) {
 			fprintf(ep, "\n");
 		}
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
@@ -295,7 +313,7 @@ int main(int argc, char * argv[]) {
 	
 	
 	fclose(fp);
-	if (error_mode == 1)
+	if (m.error_mode == 1)
 		fclose(ep);
 	free_all(&m);
 	return 1;

@@ -70,6 +70,8 @@ struct Model {
 	int model;
 	struct Residue * residues;
 	int n_residues;
+	int nthreads;
+	int error_mode;
 };
 
 struct Orient {
@@ -192,18 +194,23 @@ void free_all(struct Model *m) {
 	}
 	
 	for (res = 0; res < m->n_residues; res++) {
-		free(m->residues[res].relaxation);
-		free(m->residues[res].parameters);
-		if (m->residues[res].error_params != NULL) {
-			for (k = 0; k < params; k++) {
-				if (m->residues[res].error_params[k] != NULL)
-					free(m->residues[res].error_params[k]);
+		if (m->residues[res].relaxation != NULL)
+			free(m->residues[res].relaxation);
+		if (m->residues[res].parameters != NULL)
+			free(m->residues[res].parameters);
+		if (m->error_mode == 1) {
+			if (m->residues[res].error_params != NULL) {
+				for (k = 0; k < params; k++) {
+					if (m->residues[res].error_params[k] != NULL)
+						free(m->residues[res].error_params[k]);
+				}
+				free(m->residues[res].error_params);
 			}
+			if (m->residues[res].errors_mean != NULL)
+				free(m->residues[res].errors_mean);
+			if (m->residues[res].errors_std != NULL)
+				free(m->residues[res].errors_std);
 		}
-		if (m->residues[res].errors_mean != NULL)
-			free(m->residues[res].errors_mean);
-		if (m->residues[res].errors_std != NULL)
-			free(m->residues[res].errors_std);
 	}
 	free(m->residues);
 	
