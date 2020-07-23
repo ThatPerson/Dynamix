@@ -32,6 +32,7 @@
 #define OR_CCSAyy		12
 #define OR_CCSAzz		13
 
+
 #define N_RELAXATION	50
 #define NTHREADS		40	
 #define THREAD_STACK	32768
