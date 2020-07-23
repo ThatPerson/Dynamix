@@ -35,7 +35,7 @@
 
 #define N_RELAXATION	50
 #define NTHREADS		40	
-#define THREAD_STACK	32768
+#define THREAD_STACK	32768*2
 
 
 

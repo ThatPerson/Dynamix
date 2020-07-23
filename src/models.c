@@ -254,7 +254,7 @@ long double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int
 }
 
 /* This has not been directly tested against the MATLAB model as I don't really have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest but I don't have the setup around it for the Legendre polynomials) */
-double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double sigs[3], long double sigf[3]) {
+double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	long double field = relax->field * 1000000; // conversion to Hz
 
@@ -350,13 +350,13 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	J1   = J0_EMF(omega_15N, &taus, &S2CaNs, &tauf, &S2CaNf);
 	J2HC = J0_EMF(omega_13C + omega_15N, &taus, &S2CaNs, &tauf, &S2CaNf);
 	R1CaN = (0.1) * powl(D_CaN, 2.) * (J0HC + 3 * J1 + 6 * J2HC);
-	
+		
 	return R1CSA + R1NH + R1NHr + R1CN + R1CaN;
 }
 
 
 /* ditto as GAF_15NR1 */
-double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double sigs[3], long double sigf[3]) {
+double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	long double field = relax->field * 1000000; // conversion to Hz
 	float w1 = relax->w1, wr = relax->wr;

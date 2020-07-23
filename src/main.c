@@ -36,6 +36,8 @@ void * run_residue(void *input) {
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT: params= 5; break;
 		case MOD_SMFT: params= 3; break;
+		case MOD_GAF: params = 8; break;
+		case MOD_GAFT:params = 10; break;
 		default: params = 0; break;
 	}
 	//printf("%d\n", params);
@@ -71,6 +73,22 @@ void * run_residue(void *input) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 			opts[2] = (rand()%60000)/1.;
+		} else if (model == MOD_GAF) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
+			opts[1] = ((rand() % 100)/100.) * powl(10, -11);
+			for (k = 2; k <= 7; k++) {
+				// 15 degrees = 0.26180 radians
+				opts[k] = ((rand () % 250)/1000.);
+			}
+		} else if (model == MOD_GAFT) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
+			opts[1] = ((rand() % 100)/100.) * powl(10, -20);
+			for (k = 2; k <= 7; k++) {
+				// 15 degrees = 0.26180 radians
+				opts[k] = ((rand () % 250)/1000.);
+			}
+			opts[8] = (rand()%60000)/1.;
+			opts[9] = (rand()%60000)/1.;
 		}
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
@@ -229,6 +247,8 @@ int main(int argc, char * argv[]) {
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT:params = 5; break;
 		case MOD_SMFT:params = 3; break;
+		case MOD_GAF: params = 8; break;
+		case MOD_GAFT:params = 10; break;
 		default: params = 0; break;
 	}
 	
