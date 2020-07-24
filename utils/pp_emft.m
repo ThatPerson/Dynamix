@@ -15,7 +15,7 @@ set grid xtics
 set xrange [0:56]
 set yrange [0.80:1]
 
-plot 'emft/final.dat' u 1:($5 > 0 ? $5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($5 > 0 ? $5 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 set ylabel "{/Symbol t}_{slow}"
 #set ytics (0.8, 0.9, 1.0)
@@ -34,7 +34,7 @@ set xrange [0:56]
 #set yrange [1:1e5]
 set ytics ("-16" 1e-16, "-12" 1e-12, "-8" 1e-8)
 
-plot 'emft/final.dat' u 1:($4 > 0 ? $4 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($4 > 0 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
 set ylabel "S^{2}_{fast}"
@@ -44,7 +44,7 @@ set grid xtics
 
 set xrange [0:56]
 set yrange [0.5:1]
-plot 'emft/final.dat' u 1:($5 > 0 ? $2/$5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($5 > 0 ? $2/$5 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 set ylabel "{/Symbol t}_{fast}"
 #set ytics (0.8, 0.9, 1.0)
@@ -59,7 +59,7 @@ set autoscale
 
 set xrange [0:56]
 #set yrange [0.1:1e3]
-plot 'emft/final.dat' u 1:($6 > 0 ? $6 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($6 > 0 ? $6 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 unset logscale y
 set ylabel "Ea_{slow} / kJ/mol"
@@ -69,7 +69,7 @@ set grid xtics
 
 set xrange [0:56]
 set yrange [0:60000]
-plot 'emft/final.dat' u 1:($7 > 0 ? $7 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($7 > 0 ? $7 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 set ylabel "Ea_{fast} / kJ/mol"
 set ytics ("0" 0, "20" 20000, "40" 40000, "60" 60000)
@@ -81,7 +81,7 @@ set yrange [0:60000]
 
 set xlabel "Peptide plane number (^{15}N_{i})"
 set xtics (10, 20, 30, 40, 50)
-plot 'emft/final.dat' u 1:($8 > 0 ? $8 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($8 > 0 ? $8 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
 

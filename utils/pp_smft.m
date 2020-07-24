@@ -16,7 +16,7 @@ set grid xtics
 
 set xrange [0:56]
 set yrange [0.7:1]
-plot 'smft/final.dat' u 1:($5 > 0 ? $5 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'smft/final.dat' u 1:($5 > 0 ? $5 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 set ylabel "{/Symbol t}"
 #set ytics (0.8, 0.9, 1.0)
@@ -30,7 +30,7 @@ set ytics
 set autoscale
 set xrange [0:56]
 
-plot 'smft/final.dat' u 1:($4 > 0 ? $4 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'smft/final.dat' u 1:($4 > 0 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
 set ylabel "Ea / kJ/mol"
@@ -43,5 +43,5 @@ set xrange [0:56]
 
 set xlabel "Peptide plane number (^{15}N_{i})"
 set xtics (10, 20, 30, 40, 50)
-plot 'smft/final.dat' u 1:($6 > 0 ? $6 : NaN):($2>0?$2:NaN) w points palette pt 7 notitle
+plot 'smft/final.dat' u 1:($6 > 0 ? $6 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
