@@ -3,7 +3,7 @@
 
 double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 	/* opts is a pointer to an array containing;
-	 * 
+	 *
 	 *  for SMF, [tau, S2]
 	 */
 	double calc_R = 0;
@@ -44,7 +44,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 				case R_13CR1p:
 					calc_R = SMF_R2(resid, &(resid->relaxation[i]), tau_eff, S2, MODE_13C);
 					break;
-				default: 
+				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
 					break;
@@ -98,7 +98,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 				case R_13CR1p:
 					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
 					break;
-				default: 
+				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
 					break;
@@ -136,7 +136,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		if (tauf > upper_lim_tf || taus > upper_lim_ts)
 			chisq += 100000000;
-		
+
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (model == MOD_EMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
@@ -151,13 +151,13 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 				case R_15NR1p:
 					calc_R = GAF_15NR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
 					break;
-				default: 
+				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
 					break;
 			}
 			//printf("%f\n", calc_R);
-			
+
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
 		}
 		return chisq;
@@ -170,7 +170,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 
 int back_calculate(long double * opts, struct Residue * resid, int model, char *filename) {
 	/* opts is a pointer to an array containing;
-	 * 
+	 *
 	 *  for SMF, [tau, S2]
 	 */
 	//if (opts[0] == -1)
@@ -182,8 +182,8 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		printf("%s not found.\n", filename);
 		return -1;
 	}
-	
-	
+
+
 	if (model == MOD_SMF || model == MOD_SMFT) {
 		/* Simple Model Free Analysis */
 		long double tau = opts[0];
@@ -194,7 +194,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		else
 			tau_eff = tau;
 
-		
+
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (model == MOD_SMFT)
@@ -212,12 +212,12 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 				case R_13CR1p:
 					calc_R = SMF_R2(resid, &(resid->relaxation[i]), tau_eff, S2, MODE_13C);
 					break;
-				default: 
+				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror); 
+			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 		}
 		fclose(fp);
 		return 1;
@@ -234,11 +234,11 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 			taus_eff = taus;
 			tauf_eff = tauf;
 		}
-		
-	
-		
+
+
+
 		int i;
-		//double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf) 
+		//double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf)
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (model == MOD_EMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
@@ -257,12 +257,12 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 				case R_13CR1p:
 					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
 					break;
-				default: 
+				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror); 
+			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 		}
 		fclose(fp);
 		return 1;
@@ -283,7 +283,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
 		int i;
-		
+
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (model == MOD_EMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
@@ -297,7 +297,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 				case R_15NR1p:
 					calc_R = GAF_15NR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
 					break;
-				default: 
+				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
 					break;
