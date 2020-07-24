@@ -1,4 +1,4 @@
-MODEL  = SMFT
+MODEL  =   GAF 
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
@@ -13,7 +13,7 @@ CSISOC  =  system/csisoC.csv
 
 N_RESIDUES  =  56
 OUTPUT = output/
-N_ITER = 100
+N_ITER = 1
 IGNORE = 42
 N_ERROR_ITER = 1
 
