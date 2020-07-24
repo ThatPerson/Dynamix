@@ -151,6 +151,12 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 				case R_15NR1p:
 					calc_R = GAF_15NR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
 					break;
+				case R_13CR1:
+					calc_R = GAF_13CR1(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
+					break;
+				case R_13CR1p:
+					calc_R = GAF_13CR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
+					break;
 				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
 					exit(0);
@@ -296,6 +302,12 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 					break;
 				case R_15NR1p:
 					calc_R = GAF_15NR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
+					break;
+				case R_13CR1:
+					calc_R = GAF_13CR1(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
+					break;
+				case R_13CR1p:
+					calc_R = GAF_13CR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
 					break;
 				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
