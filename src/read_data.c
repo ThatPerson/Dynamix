@@ -1,8 +1,26 @@
+/**
+ * @file read_data.c
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-
+/**
+ * Reads residue specific data from datafile. \n
+ * Data file being read should be set out in columns, with spaces between them.\n
+ * \t Column one should contain the residue number as an integer, indexed from 1.\n
+ * \t Column two should contain the data of note.\n
+ * \t Column three should contain the error (or 0).\n
+ * @note Comments may be inserted by preceeding a line with '%'\n
+ * @param m
+ *  Pointer to model
+ * @param filename
+ *  File to read
+ * @param dt
+ *  Data type (one of DATA_S2, DATA_CSISOC, DATA_CSISON)
+ * @return 1 if successful, -1 else.
+ */
 int read_resid_data(struct Model *m, char *filename, int dt) {
 	FILE *fp;
 	char line[255];
@@ -50,6 +68,20 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 	return 1;
 }
 
+/**
+ * Reads peptide plane orientation data. Should be in a file with 3 spaced columns;\n
+ * \t Column 1 should contain the residue number indexed from 1\n
+ * \t Column 2 should contain the theta angle (in radians)\n
+ * \t Column 3 should contain the phi angle (in radians)\n
+ * @note Comments may be inserted by preceeding a line with '%'\n
+ * @param m
+ *  Pointer to model
+ * @param filename
+ *  Filename
+ * @param orient
+ *  One of OR_* denoting which orientations are being read.
+ * @return 1 if successful, else -1.
+ */
 int read_pp(struct Model *m, char *filename, int orient) {
 	FILE *fp;
 	char line[255];
@@ -75,6 +107,29 @@ int read_pp(struct Model *m, char *filename, int orient) {
 	return 1;
 }
 
+/**
+ * Reads relaxation data. Relaxation data should be set out with two components.\n
+ * The file should begin with the keys 'FIELD', 'WR', 'W1', 'TYPE' denoting the form of the data, eg\n
+ * \t FIELD = 700\n
+ * \t WR = 50000\n
+ * \t W1 = 0\n
+ * \t TEMP = 300\n
+ * \t TYPE = 15NR1\n
+ * Each parameter will default to -1 so if one is not set this may cause errors (though a warning will be given). \n
+ * TYPE may be one of [15NR1, 15NR1p, 13CR1, 13CR1p] currently, though it should be noted that 13C has not been tested.\n
+ * @warning There must be a space on each size of the equals sign (eg, TEMP = 300 is good, TEMP=300 is bad)\n
+ * Once this head section is complete, it should be followed by "#DATA".\n
+ * After this, data should be split into three columns;\n
+ * \t Column 1: residue number (starting from 1)\n
+ * \t Column 2: Relaxation rate (in s-1)\n
+ * \t Column 3: Relaxation error, two standard deviations (in s-1)\n
+ * @note Comments may be inserted by preceeding a line with '%'\n
+ * @param m
+ *  Pointer to model
+ * @param filename
+ *  Filename
+ * @return 1 if successful, else -1.
+ */
 int read_relaxation_data(struct Model *m, char *filename) {
 	FILE *fp;
 	char line[255];
@@ -149,6 +204,10 @@ int read_relaxation_data(struct Model *m, char *filename) {
 					type = R_15NR1;
 				else if (strcmp(val, "15NR1p") == 0)
 					type = R_15NR1p;
+				else if (strcmp(val, "13CR1") == 0)
+					type = R_13CR1;
+				else if (strcmp(val, "13CR1p") == 0)
+					type = R_13CR1p;
 			} else {
 				printf("Parameter %s unknown.\n", key);
 				fclose(fp);
@@ -169,6 +228,31 @@ int read_relaxation_data(struct Model *m, char *filename) {
 	return 1;
 }
 
+/**
+ * Reads system file. System file should begin with key value pairs laid out as\n
+ * \t KEY = VALUE\n
+ * With spaces either side of the equals. Keys which may be used are as follows;\n
+ * \t MODEL (one of SMF, SMFT, EMF, EMFT, GAF, GAFT)\n
+ * \t S2DIP (file containing dipolar order parameters)\n
+ * \t CSISON (file containing isotropic chemical shifts for N)\n
+ * \t CSISOC (file containign isotropic chemical shifts for C)\n
+ * \t N_RESIDUES (number of residues in protein)\n
+ * \t OUTPUT (directory for output data)\n
+ * \t N_ITER (number of iterations for main fitting) \n
+ * \t IGNORE (may be repeated, once for each residue to ignore.)\n
+ * \t N_ERROR_ITER (number of iterations for error calculation) \n
+ * \t OR_* (file containing orientation data. May be one of OR_NH, OR_NC, OR_NCA, OR_NCSAxx, OR_NCSAyy, OR_NCSAzz, OR_CCAp, OR_CCAc, OR_CN, OR_CNH, OR_CCSAxx, OR_CCAyy, OR_CCAzz. Should be set out as in read_pp().)\n
+ * \t NTHREADS (number of parallel threads to spawn)\n
+ * This should then be followed by "#RELAXATION". After this, the files containing relaxation data (as set out in read_relaxation_data()) should be listed.
+ * 
+ * @note Comments may be inserted by preceeding a line with '%'
+ * @warning There must be a space on each size of the equals sign (eg, TEMP = 300 is good, TEMP=300 is bad)\n
+ * @param filename
+ *  filename
+ * @param m
+ *  Pointer to model
+ * @return 1 if successful, else -1.
+ */
 int read_system_file(char *filename, struct Model * m) {
 	/* This function reads a *.dx file as laid out in the docs.
 	 * It reads in parameters to the struct m, and then calls

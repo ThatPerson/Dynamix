@@ -1,0 +1,401 @@
+\hypertarget{models_8c}{}\doxysection{models.\+c File Reference}
+\label{models_8c}\index{models.c@{models.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$complex.\+h$>$}\newline
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{models_8c_a517dd5da2af5eed1a959bb59ff22e299}{J0\+\_\+\+S\+MF}}(omega,  tau,  S2)
+\begin{DoxyCompactList}\small\item\em Calculates spectral density function for given frequency (omega) according to simple model free analysis. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\+\_\+\+E\+MF}}(omega,  taus,  S2s,  tauf,  S2f)
+\begin{DoxyCompactList}\small\item\em Calculates spectral density function for given frequency according to extended model free analysis. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{models_8c_a04b78333b07479a6466e2f09c37fa53a}\label{models_8c_a04b78333b07479a6466e2f09c37fa53a}} 
+\#define \mbox{\hyperlink{models_8c_a04b78333b07479a6466e2f09c37fa53a}{sq\+\_\+i}}(x)~((int) x $\ast$ (int) x)
+\begin{DoxyCompactList}\small\item\em Squares integer x. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{models_8c_ae7616788b30810a219d9cdee95904ba4}\label{models_8c_ae7616788b30810a219d9cdee95904ba4}} 
+\#define \mbox{\hyperlink{models_8c_ae7616788b30810a219d9cdee95904ba4}{sq}}(x)~((double) x $\ast$ (double) x)
+\begin{DoxyCompactList}\small\item\em Squares double x. \end{DoxyCompactList}\item 
+\#define {\bfseries G\+A\+F\+\_\+\+Dipolar\+\_\+\+R1}(omega\+\_\+obs,  omega\+\_\+neigh,  taus,  S2s,  tauf,  S2f,  D)
+\item 
+\#define \mbox{\hyperlink{models_8c_a027bfa60881c53ea28bb91600a44cc19}{G\+A\+F\+\_\+\+C\+S\+A\+\_\+\+R2}}(omega,  w1,  wr,  taus,  S2s,  tauf,  S2f,  D2)
+\item 
+\#define \mbox{\hyperlink{models_8c_a47b1ad74ad786d6e1227ba2ee4d057cb}{G\+A\+F\+\_\+\+Dipolar\+\_\+\+R2}}(omega\+\_\+obs,  omega\+\_\+neigh,  w1,  wr,  taus,  S2s,  tauf,  S2f,  D)
+\begin{DoxyCompactList}\small\item\em !$<$ D2 is the squared D22x/\+D22y/\+D22xy variable (dependent on C\+SA) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{models_8c_a140a9318a12298b2837a0256e7f9d069}{S\+M\+F\+\_\+\+R1}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double tau, long double S2, int mode)
+\begin{DoxyCompactList}\small\item\em !$<$ Calculates R2 contribution of dipolar interaction between two atoms as in G\+A\+F\+\_\+\+Dipolar\+\_\+\+R1 \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{models_8c_ae60e2bbf2ddc985fae27178fdbeed620}{S\+M\+F\+\_\+\+R2}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double tau, long double S2, int mode)
+\item 
+double \mbox{\hyperlink{models_8c_a20cdb066e2edf9cd6f26e08a4b87c7fe}{E\+M\+F\+\_\+\+R1}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double S2s, long double tauf, int mode)
+\item 
+double \mbox{\hyperlink{models_8c_a2569ecc4f3474961467e59ddd9a410c8}{E\+M\+F\+\_\+\+R2}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double S2s, long double tauf, int mode)
+\item 
+double \mbox{\hyperlink{models_8c_abf1ea9a8f9871b3cf1e2bbd5f81a0f28}{G\+A\+F\+\_\+\+S2}} (long double sig\mbox{[}3\mbox{]}, struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$A, struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$B, int mode)
+\item 
+double \mbox{\hyperlink{models_8c_a95c2a2ce7993dd369b9a5915d0d1522f}{G\+A\+F\+\_\+15\+N\+R1}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double tauf, long double $\ast$sigs, long double $\ast$sigf)
+\item 
+double \mbox{\hyperlink{models_8c_a8cb701e390613d63b3a1cff186ac0aba}{G\+A\+F\+\_\+15\+N\+R2}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double tauf, long double $\ast$sigs, long double $\ast$sigf)
+\item 
+double \mbox{\hyperlink{models_8c_a742584d587bfb7b6182f273f79dfe8cd}{G\+A\+F\+\_\+13\+C\+R1}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double tauf, long double $\ast$sigs, long double $\ast$sigf)
+\item 
+double \mbox{\hyperlink{models_8c_affe2193e2deb27960f4398bfda1e07a7}{G\+A\+F\+\_\+13\+C\+R2}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double tauf, long double $\ast$sigs, long double $\ast$sigf)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{models_8c_a027bfa60881c53ea28bb91600a44cc19}\label{models_8c_a027bfa60881c53ea28bb91600a44cc19}} 
+\index{models.c@{models.c}!GAF\_CSA\_R2@{GAF\_CSA\_R2}}
+\index{GAF\_CSA\_R2@{GAF\_CSA\_R2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_CSA\_R2}{GAF\_CSA\_R2}}
+{\footnotesize\ttfamily \#define G\+A\+F\+\_\+\+C\+S\+A\+\_\+\+R2(\begin{DoxyParamCaption}\item[{}]{omega,  }\item[{}]{w1,  }\item[{}]{wr,  }\item[{}]{taus,  }\item[{}]{S2s,  }\item[{}]{tauf,  }\item[{}]{S2f,  }\item[{}]{D2 }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    (double) \{ \(\backslash\)}
+\DoxyCodeLine{    ( \(\backslash\)}
+\DoxyCodeLine{        (1/45.) * (double) D2 * ( \(\backslash\)}
+\DoxyCodeLine{            (2/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 -\/ 2 * wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (2/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (4/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 -\/ wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (4/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 + wr), taus, S2s, tauf, S2f) + \(\backslash\)}
+\DoxyCodeLine{            (3.)   * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega, taus, S2s, tauf, S2f)\(\backslash\)}
+\DoxyCodeLine{        )\(\backslash\)}
+\DoxyCodeLine{    )\(\backslash\)}
+\DoxyCodeLine{  \}}
+
+\end{DoxyCode}
+!$<$ Calculates R1 contribution under G\+AF model for Dipolar interaction between two atoms. !$<$ omega\+\_\+obs is the frequency of the observed nucleus, omega\+\_\+neigh is the frequency of the other atoms.~\newline
+ $<$ D is the dipolar coupling in rad/s. \mbox{\Hypertarget{models_8c_a59e37444fd506199d5bef00f410a5edf}\label{models_8c_a59e37444fd506199d5bef00f410a5edf}} 
+\index{models.c@{models.c}!GAF\_Dipolar\_R1@{GAF\_Dipolar\_R1}}
+\index{GAF\_Dipolar\_R1@{GAF\_Dipolar\_R1}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_Dipolar\_R1}{GAF\_Dipolar\_R1}}
+{\footnotesize\ttfamily \#define G\+A\+F\+\_\+\+Dipolar\+\_\+\+R1(\begin{DoxyParamCaption}\item[{}]{omega\+\_\+obs,  }\item[{}]{omega\+\_\+neigh,  }\item[{}]{taus,  }\item[{}]{S2s,  }\item[{}]{tauf,  }\item[{}]{S2f,  }\item[{}]{D }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    (double) \{\(\backslash\)}
+\DoxyCodeLine{    (0.1) * \mbox{\hyperlink{models_8c_ae7616788b30810a219d9cdee95904ba4}{sq}}(D) * ( \(\backslash\)}
+\DoxyCodeLine{        (\mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_neigh -\/ omega\_obs, taus, S2s, tauf, S2f)) \(\backslash\)}
+\DoxyCodeLine{         + 3 * (\mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_obs, taus, S2s, tauf, S2f)) \(\backslash\)}
+\DoxyCodeLine{          + 6 * (\mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_neigh + omega\_obs, taus, S2s, tauf, S2f)) \(\backslash\)}
+\DoxyCodeLine{      ) \(\backslash\)}
+\DoxyCodeLine{  \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{models_8c_a47b1ad74ad786d6e1227ba2ee4d057cb}\label{models_8c_a47b1ad74ad786d6e1227ba2ee4d057cb}} 
+\index{models.c@{models.c}!GAF\_Dipolar\_R2@{GAF\_Dipolar\_R2}}
+\index{GAF\_Dipolar\_R2@{GAF\_Dipolar\_R2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_Dipolar\_R2}{GAF\_Dipolar\_R2}}
+{\footnotesize\ttfamily \#define G\+A\+F\+\_\+\+Dipolar\+\_\+\+R2(\begin{DoxyParamCaption}\item[{}]{omega\+\_\+obs,  }\item[{}]{omega\+\_\+neigh,  }\item[{}]{w1,  }\item[{}]{wr,  }\item[{}]{taus,  }\item[{}]{S2s,  }\item[{}]{tauf,  }\item[{}]{S2f,  }\item[{}]{D }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    (double) \{\(\backslash\)}
+\DoxyCodeLine{    (\(\backslash\)}
+\DoxyCodeLine{        (1/20.) * \mbox{\hyperlink{models_8c_ae7616788b30810a219d9cdee95904ba4}{sq}}(D) * (\(\backslash\)}
+\DoxyCodeLine{            (2/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (2/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 -\/ 2 * wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (4/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 + wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (4/3.) * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(2 * M\_PI * (w1 -\/ wr), taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (3.)   * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_obs, taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (1.)   * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_neigh -\/ omega\_obs, taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (6.)   * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_neigh, taus, S2s, tauf, S2f) +\(\backslash\)}
+\DoxyCodeLine{            (6.)   * \mbox{\hyperlink{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}{J0\_EMF}}(omega\_neigh + omega\_obs, taus, S2s, tauf, S2f)\(\backslash\)}
+\DoxyCodeLine{        )\(\backslash\)}
+\DoxyCodeLine{    )\(\backslash\)}
+\DoxyCodeLine{  \}}
+
+\end{DoxyCode}
+
+
+!$<$ D2 is the squared D22x/\+D22y/\+D22xy variable (dependent on C\+SA) 
+
+!$<$ Calculates the R2 contribution of C\+SA of nuclei with frequency omega. \mbox{\Hypertarget{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}\label{models_8c_a7c2c2f6d8f03c4e7025edd130a501744}} 
+\index{models.c@{models.c}!J0\_EMF@{J0\_EMF}}
+\index{J0\_EMF@{J0\_EMF}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{J0\_EMF}{J0\_EMF}}
+{\footnotesize\ttfamily \#define J0\+\_\+\+E\+MF(\begin{DoxyParamCaption}\item[{}]{omega,  }\item[{}]{taus,  }\item[{}]{S2s,  }\item[{}]{tauf,  }\item[{}]{S2f }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{     (\textcolor{keywordtype}{long} double) \{\(\backslash\)}
+\DoxyCodeLine{     ( \(\backslash\)}
+\DoxyCodeLine{        ( \(\backslash\)}
+\DoxyCodeLine{            ((((1 -\/ (double) S2f)) * (\textcolor{keywordtype}{long} \textcolor{keywordtype}{double}) tauf)) \(\backslash\)}
+\DoxyCodeLine{            / (1 + ((double) omega * (\textcolor{keywordtype}{long} \textcolor{keywordtype}{double}) tauf * (double) omega * (\textcolor{keywordtype}{long} \textcolor{keywordtype}{double}) tauf)) \(\backslash\)}
+\DoxyCodeLine{        )\(\backslash\)}
+\DoxyCodeLine{        +\(\backslash\)}
+\DoxyCodeLine{        (\(\backslash\)}
+\DoxyCodeLine{            (((\textcolor{keywordtype}{double}) S2f) * (1 -\/ (\textcolor{keywordtype}{double}) S2s) * (\textcolor{keywordtype}{long} \textcolor{keywordtype}{double}) taus)\(\backslash\)}
+\DoxyCodeLine{            / (1 + ((\textcolor{keywordtype}{double}) omega * (\textcolor{keywordtype}{long} double) taus * (\textcolor{keywordtype}{double}) omega * (\textcolor{keywordtype}{long} double) taus))\(\backslash\)}
+\DoxyCodeLine{        )\(\backslash\)}
+\DoxyCodeLine{    )\(\backslash\)}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+Calculates spectral density function for given frequency according to extended model free analysis. 
+
+\mbox{\Hypertarget{models_8c_a517dd5da2af5eed1a959bb59ff22e299}\label{models_8c_a517dd5da2af5eed1a959bb59ff22e299}} 
+\index{models.c@{models.c}!J0\_SMF@{J0\_SMF}}
+\index{J0\_SMF@{J0\_SMF}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{J0\_SMF}{J0\_SMF}}
+{\footnotesize\ttfamily \#define J0\+\_\+\+S\+MF(\begin{DoxyParamCaption}\item[{}]{omega,  }\item[{}]{tau,  }\item[{}]{S2 }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    (\textcolor{keywordtype}{long} double) \{ \(\backslash\)}
+\DoxyCodeLine{    ( \(\backslash\)}
+\DoxyCodeLine{        (((1 -\/ (double) S2) * (\textcolor{keywordtype}{long} double) tau)) \(\backslash\)}
+\DoxyCodeLine{        / (1 + ((\textcolor{keywordtype}{double}) omega * (\textcolor{keywordtype}{long} double) tau * (\textcolor{keywordtype}{double}) omega * (\textcolor{keywordtype}{long} double) tau)) \(\backslash\)}
+\DoxyCodeLine{    ) \(\backslash\)}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+Calculates spectral density function for given frequency (omega) according to simple model free analysis. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{models_8c_a20cdb066e2edf9cd6f26e08a4b87c7fe}\label{models_8c_a20cdb066e2edf9cd6f26e08a4b87c7fe}} 
+\index{models.c@{models.c}!EMF\_R1@{EMF\_R1}}
+\index{EMF\_R1@{EMF\_R1}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{EMF\_R1()}{EMF\_R1()}}
+{\footnotesize\ttfamily double E\+M\+F\+\_\+\+R1 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{taus,  }\item[{long double}]{S2s,  }\item[{long double}]{tauf,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+
+Calculates R1 relaxation rate using extended model free analysis 
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em taus} & Correlation time of slow motion \\
+\hline
+{\em S2s} & Order parameter of slow motion \\
+\hline
+{\em tauf} & Correlation time of fast motion \\
+\hline
+{\em mode} & One of M\+O\+D\+E\+\_\+15N or M\+O\+D\+E\+\_\+13C depending on relaxation data type considered. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R1 Returns R1 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_a2569ecc4f3474961467e59ddd9a410c8}\label{models_8c_a2569ecc4f3474961467e59ddd9a410c8}} 
+\index{models.c@{models.c}!EMF\_R2@{EMF\_R2}}
+\index{EMF\_R2@{EMF\_R2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{EMF\_R2()}{EMF\_R2()}}
+{\footnotesize\ttfamily double E\+M\+F\+\_\+\+R2 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{taus,  }\item[{long double}]{S2s,  }\item[{long double}]{tauf,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+
+Calculates R2 relaxation rate using extended model free analysis 
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em taus} & Correlation time of slow motion \\
+\hline
+{\em S2s} & Order parameter of slow motion \\
+\hline
+{\em tauf} & Correlation time of fast motion \\
+\hline
+{\em mode} & One of M\+O\+D\+E\+\_\+15N or M\+O\+D\+E\+\_\+13C depending on relaxation data type considered. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R2 Returns R2 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_a742584d587bfb7b6182f273f79dfe8cd}\label{models_8c_a742584d587bfb7b6182f273f79dfe8cd}} 
+\index{models.c@{models.c}!GAF\_13CR1@{GAF\_13CR1}}
+\index{GAF\_13CR1@{GAF\_13CR1}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_13CR1()}{GAF\_13CR1()}}
+{\footnotesize\ttfamily double G\+A\+F\+\_\+13\+C\+R1 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{taus,  }\item[{long double}]{tauf,  }\item[{long double $\ast$}]{sigs,  }\item[{long double $\ast$}]{sigf }\end{DoxyParamCaption})}
+
+Calculates R1 relaxation rate for 13C nucleus under gaussian axial fluctuations. \begin{DoxyWarning}{Warning}
+Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{}t really an equivalent to it that I have set up. 
+
+Has not been tested on 13C data 
+
+Currently omits N\+C\+S\+Axy due to error in this calculation. 
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em taus} & Correlation time of slow motion \\
+\hline
+{\em tauf} & Correlation time of fast motion \\
+\hline
+{\em sigs} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for slow motion \\
+\hline
+{\em sigf} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for fast motion \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R1 Returns R1 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_affe2193e2deb27960f4398bfda1e07a7}\label{models_8c_affe2193e2deb27960f4398bfda1e07a7}} 
+\index{models.c@{models.c}!GAF\_13CR2@{GAF\_13CR2}}
+\index{GAF\_13CR2@{GAF\_13CR2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_13CR2()}{GAF\_13CR2()}}
+{\footnotesize\ttfamily double G\+A\+F\+\_\+13\+C\+R2 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{taus,  }\item[{long double}]{tauf,  }\item[{long double $\ast$}]{sigs,  }\item[{long double $\ast$}]{sigf }\end{DoxyParamCaption})}
+
+Calculates R2 relaxation rate for 13C nucleus under gaussian axial fluctuations. \begin{DoxyWarning}{Warning}
+Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{}t really an equivalent to it that I have set up. 
+
+Has not been tested on 13C data 
+
+Currently omits N\+C\+S\+Axy due to error in this calculation. 
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em taus} & Correlation time of slow motion \\
+\hline
+{\em tauf} & Correlation time of fast motion \\
+\hline
+{\em sigs} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for slow motion \\
+\hline
+{\em sigf} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for fast motion \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R2 Returns R2 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_a95c2a2ce7993dd369b9a5915d0d1522f}\label{models_8c_a95c2a2ce7993dd369b9a5915d0d1522f}} 
+\index{models.c@{models.c}!GAF\_15NR1@{GAF\_15NR1}}
+\index{GAF\_15NR1@{GAF\_15NR1}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_15NR1()}{GAF\_15NR1()}}
+{\footnotesize\ttfamily double G\+A\+F\+\_\+15\+N\+R1 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{taus,  }\item[{long double}]{tauf,  }\item[{long double $\ast$}]{sigs,  }\item[{long double $\ast$}]{sigf }\end{DoxyParamCaption})}
+
+Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations. \begin{DoxyWarning}{Warning}
+Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{}t really an equivalent to it that I have set up. 
+
+Currently omits N\+C\+S\+Axy due to error in this calculation. 
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em taus} & Correlation time of slow motion \\
+\hline
+{\em tauf} & Correlation time of fast motion \\
+\hline
+{\em sigs} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for slow motion \\
+\hline
+{\em sigf} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for fast motion \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R1 Returns R1 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_a8cb701e390613d63b3a1cff186ac0aba}\label{models_8c_a8cb701e390613d63b3a1cff186ac0aba}} 
+\index{models.c@{models.c}!GAF\_15NR2@{GAF\_15NR2}}
+\index{GAF\_15NR2@{GAF\_15NR2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_15NR2()}{GAF\_15NR2()}}
+{\footnotesize\ttfamily double G\+A\+F\+\_\+15\+N\+R2 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{taus,  }\item[{long double}]{tauf,  }\item[{long double $\ast$}]{sigs,  }\item[{long double $\ast$}]{sigf }\end{DoxyParamCaption})}
+
+Calculates R2 relaxation rate for 15N nucleus under gaussian axial fluctuations. \begin{DoxyWarning}{Warning}
+Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{}t really an equivalent to it that I have set up. 
+
+Currently omits N\+C\+S\+Axy due to error in this calculation. 
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em taus} & Correlation time of slow motion \\
+\hline
+{\em tauf} & Correlation time of fast motion \\
+\hline
+{\em sigs} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for slow motion \\
+\hline
+{\em sigf} & Deflection angles \mbox{[}alpha, beta, gamma\mbox{]} for fast motion \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R2 Returns R2 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_abf1ea9a8f9871b3cf1e2bbd5f81a0f28}\label{models_8c_abf1ea9a8f9871b3cf1e2bbd5f81a0f28}} 
+\index{models.c@{models.c}!GAF\_S2@{GAF\_S2}}
+\index{GAF\_S2@{GAF\_S2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{GAF\_S2()}{GAF\_S2()}}
+{\footnotesize\ttfamily double G\+A\+F\+\_\+\+S2 (\begin{DoxyParamCaption}\item[{long double}]{sig\mbox{[}3\mbox{]},  }\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$}]{A,  }\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$}]{B,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+
+Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. 
+\begin{DoxyParams}{Parameters}
+{\em sig} & Array containing \mbox{[}alpha, beta, gamma\mbox{]} deflection angles \\
+\hline
+{\em A} & Orientation vector A \\
+\hline
+{\em B} & Orientation vector B \\
+\hline
+{\em mode} & M\+O\+D\+E\+\_\+\+R\+E\+AL or M\+O\+D\+E\+\_\+\+I\+M\+AG depending on which result is being returned. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+S2 Returns order parameter as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_a140a9318a12298b2837a0256e7f9d069}\label{models_8c_a140a9318a12298b2837a0256e7f9d069}} 
+\index{models.c@{models.c}!SMF\_R1@{SMF\_R1}}
+\index{SMF\_R1@{SMF\_R1}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{SMF\_R1()}{SMF\_R1()}}
+{\footnotesize\ttfamily double S\+M\+F\+\_\+\+R1 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{tau,  }\item[{long double}]{S2,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+
+
+
+!$<$ Calculates R2 contribution of dipolar interaction between two atoms as in G\+A\+F\+\_\+\+Dipolar\+\_\+\+R1 
+
+Calculates R1 relaxation rate using simple model free analysis 
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em tau} & Correlation time of motion being optimized \\
+\hline
+{\em S2} & Order parameter of motion \\
+\hline
+{\em mode} & One of M\+O\+D\+E\+\_\+15N or M\+O\+D\+E\+\_\+13C depending on relaxation data type considered. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R1 Returns R1 as double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{models_8c_ae60e2bbf2ddc985fae27178fdbeed620}\label{models_8c_ae60e2bbf2ddc985fae27178fdbeed620}} 
+\index{models.c@{models.c}!SMF\_R2@{SMF\_R2}}
+\index{SMF\_R2@{SMF\_R2}!models.c@{models.c}}
+\doxysubsubsection{\texorpdfstring{SMF\_R2()}{SMF\_R2()}}
+{\footnotesize\ttfamily double S\+M\+F\+\_\+\+R2 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{res,  }\item[{struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$}]{relax,  }\item[{long double}]{tau,  }\item[{long double}]{S2,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+
+Calculates R2 relaxation rate using simple model free analysis 
+\begin{DoxyParams}{Parameters}
+{\em res} & Pointer to residue being considered \\
+\hline
+{\em relax} & Pointer to relaxation measurement being modelled \\
+\hline
+{\em tau} & Correlation time of motion being optimized \\
+\hline
+{\em S2} & Order parameter of motion \\
+\hline
+{\em mode} & One of M\+O\+D\+E\+\_\+15N or M\+O\+D\+E\+\_\+13C depending on relaxation data type considered. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+R2 Returns R2 as double 
+\end{DoxyReturn}

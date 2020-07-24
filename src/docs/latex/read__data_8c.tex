@@ -1,0 +1,152 @@
+\hypertarget{read__data_8c}{}\doxysection{read\+\_\+data.\+c File Reference}
+\label{read__data_8c}\index{read\_data.c@{read\_data.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{read__data_8c_ad45b8dc1e2d88c7de25fe3bf4af00e60}{read\+\_\+resid\+\_\+data}} (struct \mbox{\hyperlink{structModel}{Model}} $\ast$m, char $\ast$filename, int dt)
+\item 
+int \mbox{\hyperlink{read__data_8c_a0d338caf4c415c43610ce1d26a5c945e}{read\+\_\+pp}} (struct \mbox{\hyperlink{structModel}{Model}} $\ast$m, char $\ast$filename, int orient)
+\item 
+int \mbox{\hyperlink{read__data_8c_a2c057e191f6a317126bf14e66690f09f}{read\+\_\+relaxation\+\_\+data}} (struct \mbox{\hyperlink{structModel}{Model}} $\ast$m, char $\ast$filename)
+\item 
+int \mbox{\hyperlink{read__data_8c_aac466a80af89bf6d2c69b637a750fd72}{read\+\_\+system\+\_\+file}} (char $\ast$filename, struct \mbox{\hyperlink{structModel}{Model}} $\ast$m)
+\item 
+\mbox{\Hypertarget{read__data_8c_a9ec61007a241da307b2b56ae38ff516c}\label{read__data_8c_a9ec61007a241da307b2b56ae38ff516c}} 
+int {\bfseries print\+\_\+system} (struct \mbox{\hyperlink{structModel}{Model}} $\ast$m, char $\ast$filename)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{read__data_8c_a0d338caf4c415c43610ce1d26a5c945e}\label{read__data_8c_a0d338caf4c415c43610ce1d26a5c945e}} 
+\index{read\_data.c@{read\_data.c}!read\_pp@{read\_pp}}
+\index{read\_pp@{read\_pp}!read\_data.c@{read\_data.c}}
+\doxysubsubsection{\texorpdfstring{read\_pp()}{read\_pp()}}
+{\footnotesize\ttfamily int read\+\_\+pp (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structModel}{Model}} $\ast$}]{m,  }\item[{char $\ast$}]{filename,  }\item[{int}]{orient }\end{DoxyParamCaption})}
+
+Reads peptide plane orientation data. Should be in a file with 3 spaced columns;~\newline
+\textbackslash{}t Column 1 should contain the residue number indexed from 1~\newline
+\textbackslash{}t Column 2 should contain the theta angle (in radians)~\newline
+\textbackslash{}t Column 3 should contain the phi angle (in radians)~\newline
+\begin{DoxyNote}{Note}
+Comments may be inserted by preceeding a line with \textquotesingle{}\textquotesingle{}~\newline
+
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em m} & Pointer to model \\
+\hline
+{\em filename} & Filename \\
+\hline
+{\em orient} & One of O\+R\+\_\+$\ast$ denoting which orientations are being read. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if successful, else -\/1. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{read__data_8c_a2c057e191f6a317126bf14e66690f09f}\label{read__data_8c_a2c057e191f6a317126bf14e66690f09f}} 
+\index{read\_data.c@{read\_data.c}!read\_relaxation\_data@{read\_relaxation\_data}}
+\index{read\_relaxation\_data@{read\_relaxation\_data}!read\_data.c@{read\_data.c}}
+\doxysubsubsection{\texorpdfstring{read\_relaxation\_data()}{read\_relaxation\_data()}}
+{\footnotesize\ttfamily int read\+\_\+relaxation\+\_\+data (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structModel}{Model}} $\ast$}]{m,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+Reads relaxation data. \mbox{\hyperlink{structRelaxation}{Relaxation}} data should be set out with two components.~\newline
+The file should begin with the keys \textquotesingle{}F\+I\+E\+LD\textquotesingle{}, \textquotesingle{}WR\textquotesingle{}, \textquotesingle{}W1\textquotesingle{}, \textquotesingle{}T\+Y\+PE\textquotesingle{} denoting the form of the data, eg~\newline
+\textbackslash{}t F\+I\+E\+LD = 700~\newline
+\textbackslash{}t WR = 50000~\newline
+\textbackslash{}t W1 = 0~\newline
+\textbackslash{}t T\+E\+MP = 300~\newline
+\textbackslash{}t T\+Y\+PE = 15N\+R1~\newline
+Each parameter will default to -\/1 so if one is not set this may cause errors (though a warning will be given). ~\newline
+T\+Y\+PE may be one of \mbox{[}15N\+R1, 15N\+R1p, 13C\+R1, 13C\+R1p\mbox{]} currently, though it should be noted that 13C has not been tested.~\newline
+\begin{DoxyWarning}{Warning}
+There must be a space on each size of the equals sign (eg, T\+E\+MP = 300 is good, T\+E\+MP=300 is bad)~\newline
+Once this head section is complete, it should be followed by \char`\"{}\#\+D\+A\+T\+A\char`\"{}.~\newline
+After this, data should be split into three columns;~\newline
+\textbackslash{}t Column 1\+: residue number (starting from 1)~\newline
+\textbackslash{}t Column 2\+: \mbox{\hyperlink{structRelaxation}{Relaxation}} rate (in s-\/1)~\newline
+\textbackslash{}t Column 3\+: \mbox{\hyperlink{structRelaxation}{Relaxation}} error, two standard deviations (in s-\/1)~\newline
+
+\end{DoxyWarning}
+\begin{DoxyNote}{Note}
+Comments may be inserted by preceeding a line with \textquotesingle{}\textquotesingle{}~\newline
+
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em m} & Pointer to model \\
+\hline
+{\em filename} & Filename \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if successful, else -\/1. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{read__data_8c_ad45b8dc1e2d88c7de25fe3bf4af00e60}\label{read__data_8c_ad45b8dc1e2d88c7de25fe3bf4af00e60}} 
+\index{read\_data.c@{read\_data.c}!read\_resid\_data@{read\_resid\_data}}
+\index{read\_resid\_data@{read\_resid\_data}!read\_data.c@{read\_data.c}}
+\doxysubsubsection{\texorpdfstring{read\_resid\_data()}{read\_resid\_data()}}
+{\footnotesize\ttfamily int read\+\_\+resid\+\_\+data (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structModel}{Model}} $\ast$}]{m,  }\item[{char $\ast$}]{filename,  }\item[{int}]{dt }\end{DoxyParamCaption})}
+
+Reads residue specific data from datafile. ~\newline
+Data file being read should be set out in columns, with spaces between them.~\newline
+\textbackslash{}t Column one should contain the residue number as an integer, indexed from 1.~\newline
+\textbackslash{}t Column two should contain the data of note.~\newline
+\textbackslash{}t Column three should contain the error (or 0).~\newline
+\begin{DoxyNote}{Note}
+Comments may be inserted by preceeding a line with \textquotesingle{}\textquotesingle{}~\newline
+
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em m} & Pointer to model \\
+\hline
+{\em filename} & File to read \\
+\hline
+{\em dt} & Data type (one of D\+A\+T\+A\+\_\+\+S2, D\+A\+T\+A\+\_\+\+C\+S\+I\+S\+OC, D\+A\+T\+A\+\_\+\+C\+S\+I\+S\+ON) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if successful, -\/1 else. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{read__data_8c_aac466a80af89bf6d2c69b637a750fd72}\label{read__data_8c_aac466a80af89bf6d2c69b637a750fd72}} 
+\index{read\_data.c@{read\_data.c}!read\_system\_file@{read\_system\_file}}
+\index{read\_system\_file@{read\_system\_file}!read\_data.c@{read\_data.c}}
+\doxysubsubsection{\texorpdfstring{read\_system\_file()}{read\_system\_file()}}
+{\footnotesize\ttfamily int read\+\_\+system\+\_\+file (\begin{DoxyParamCaption}\item[{char $\ast$}]{filename,  }\item[{struct \mbox{\hyperlink{structModel}{Model}} $\ast$}]{m }\end{DoxyParamCaption})}
+
+Reads system file. System file should begin with key value pairs laid out as~\newline
+\textbackslash{}t K\+EY = V\+A\+L\+UE~\newline
+With spaces either side of the equals. Keys which may be used are as follows;~\newline
+\textbackslash{}t M\+O\+D\+EL (one of S\+MF, S\+M\+FT, E\+MF, E\+M\+FT, G\+AF, G\+A\+FT)~\newline
+\textbackslash{}t S2\+D\+IP (file containing dipolar order parameters)~\newline
+\textbackslash{}t C\+S\+I\+S\+ON (file containing isotropic chemical shifts for N)~\newline
+\textbackslash{}t C\+S\+I\+S\+OC (file containign isotropic chemical shifts for C)~\newline
+\textbackslash{}t N\+\_\+\+R\+E\+S\+I\+D\+U\+ES (number of residues in protein)~\newline
+\textbackslash{}t O\+U\+T\+P\+UT (directory for output data)~\newline
+\textbackslash{}t N\+\_\+\+I\+T\+ER (number of iterations for main fitting) ~\newline
+\textbackslash{}t I\+G\+N\+O\+RE (may be repeated, once for each residue to ignore.)~\newline
+\textbackslash{}t N\+\_\+\+E\+R\+R\+O\+R\+\_\+\+I\+T\+ER (number of iterations for error calculation) ~\newline
+\textbackslash{}t O\+R\+\_\+$\ast$ (file containing orientation data. May be one of O\+R\+\_\+\+NH, O\+R\+\_\+\+NC, O\+R\+\_\+\+N\+CA, O\+R\+\_\+\+N\+C\+S\+Axx, O\+R\+\_\+\+N\+C\+S\+Ayy, O\+R\+\_\+\+N\+C\+S\+Azz, O\+R\+\_\+\+C\+C\+Ap, O\+R\+\_\+\+C\+C\+Ac, O\+R\+\_\+\+CN, O\+R\+\_\+\+C\+NH, O\+R\+\_\+\+C\+C\+S\+Axx, O\+R\+\_\+\+C\+C\+Ayy, O\+R\+\_\+\+C\+C\+Azz. Should be set out as in \mbox{\hyperlink{read__data_8c_a0d338caf4c415c43610ce1d26a5c945e}{read\+\_\+pp()}}.)~\newline
+\textbackslash{}t N\+T\+H\+R\+E\+A\+DS (number of parallel threads to spawn)~\newline
+This should then be followed by \char`\"{}\#\+R\+E\+L\+A\+X\+A\+T\+I\+O\+N\char`\"{}. After this, the files containing relaxation data (as set out in \mbox{\hyperlink{read__data_8c_a2c057e191f6a317126bf14e66690f09f}{read\+\_\+relaxation\+\_\+data()}}) should be listed.
+
+\begin{DoxyNote}{Note}
+Comments may be inserted by preceeding a line with \textquotesingle{}\textquotesingle{} 
+\end{DoxyNote}
+\begin{DoxyWarning}{Warning}
+There must be a space on each size of the equals sign (eg, T\+E\+MP = 300 is good, T\+E\+MP=300 is bad)~\newline
+
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & filename \\
+\hline
+{\em m} & Pointer to model \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if successful, else -\/1. 
+\end{DoxyReturn}

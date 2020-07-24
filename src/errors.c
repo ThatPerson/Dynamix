@@ -1,10 +1,28 @@
+/**
+ * @file errors.c
+ */
+
 #include <stdio.h>
 #include <math.h>
 
+/** 
+ * Generates uniform random long double from 0 to 1 inclusive.
+ * @return long double
+ *  Long double containing uniform random number.
+ */
 long double uniform_rand(void) {
 	return ((long double) rand() + 1.) / ((long double) RAND_MAX + 1.);
 }
 
+/**
+ * Uses Box-Muller method to generate a normally distributed random number.
+ * @param mean
+ *  Mean of normal distribution to select random variable from
+ * @param std
+ *  Standard deviation of normal distribution from which random variable selected
+ * @return float
+ *  Returns normally distributed random number
+ */
 float norm_rand(float mean, float std) {
 	// Box-Muller method
 	float rnd1, rnd2;
@@ -16,6 +34,17 @@ float norm_rand(float mean, float std) {
 	return mean + std * unadj;
 }
 
+/**
+ * Calculates mean and standard deviation of values contained in array, then puts these into the given pointers.
+ * @param vals
+ *  Pointer to array of values to take statistics of
+ * @param length
+ *  Length of vals
+ * @param mean
+ *  Pointer to long double to contain mean
+ * @param std
+ *  Pointer to long double to contain standard deviation
+ */
 void calc_statistics(long double * vals, int length, long double * mean, long double * std) {
 	int k;
 	*mean = 0;
@@ -30,7 +59,14 @@ void calc_statistics(long double * vals, int length, long double * mean, long do
 
 }
 
-
+/**
+ * Calculates errors for a given residue.
+ * Error calculation is done by varying the relaxation values according to a normal distribution with mean (R) and standard deviation (Rerror/2).
+ * Then simplex optimization is performed, and the newly optimized parameters stored. Then statistics of these back optimized parameters are taken,
+ * with the errors being the standard deviation of these.
+ * @param input
+ *  rrarg struct containing the residue under consideration.
+ */
 void * calc_errors(void *input) {
 	int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i+1);
@@ -66,6 +102,10 @@ void * calc_errors(void *input) {
 		if (resid->ignore == 1) {
 			return NULL;
 		}
+		
+		/* As the simplex optimization looks in the relaxation pointer, we temporarily
+		 * store the relaxation pointer elsewhere while we perform the optimization
+		 */
 		resid->temp_relaxation = (resid->relaxation);
 		resid->relaxation = NULL;
 		resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);

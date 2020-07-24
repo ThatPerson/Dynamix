@@ -1,0 +1,56 @@
+\hypertarget{chisq_8c}{}\doxysection{chisq.\+c File Reference}
+\label{chisq_8c}\index{chisq.c@{chisq.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{chisq_8c_a684bc59d2fd157bed96d2cb036b80c8d}{optimize\+\_\+chisq}} (long double $\ast$opts, struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$resid, int model)
+\item 
+int \mbox{\hyperlink{chisq_8c_a835dcedeb29961f390bfd71056f9d01b}{back\+\_\+calculate}} (long double $\ast$opts, struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$resid, int model, char $\ast$filename)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{chisq_8c_a835dcedeb29961f390bfd71056f9d01b}\label{chisq_8c_a835dcedeb29961f390bfd71056f9d01b}} 
+\index{chisq.c@{chisq.c}!back\_calculate@{back\_calculate}}
+\index{back\_calculate@{back\_calculate}!chisq.c@{chisq.c}}
+\doxysubsubsection{\texorpdfstring{back\_calculate()}{back\_calculate()}}
+{\footnotesize\ttfamily int back\+\_\+calculate (\begin{DoxyParamCaption}\item[{long double $\ast$}]{opts,  }\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{resid,  }\item[{int}]{model,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+Back calculation function. Loops over all relaxation measurements and predicts using models.~\newline
+Outputs file containing \mbox{[}relaxation id, calculated, real, real error\mbox{]}.~\newline
+
+\begin{DoxyParams}{Parameters}
+{\em opts} & Pointer to array containing parameters. \\
+\hline
+{\em resid} & Pointer to residue being considered \\
+\hline
+{\em model} & M\+O\+D\+\_\+\+S\+MF etc. \\
+\hline
+{\em filename} & File to output calculations into \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns 1 if successful, else -\/1. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{chisq_8c_a684bc59d2fd157bed96d2cb036b80c8d}\label{chisq_8c_a684bc59d2fd157bed96d2cb036b80c8d}} 
+\index{chisq.c@{chisq.c}!optimize\_chisq@{optimize\_chisq}}
+\index{optimize\_chisq@{optimize\_chisq}!chisq.c@{chisq.c}}
+\doxysubsubsection{\texorpdfstring{optimize\_chisq()}{optimize\_chisq()}}
+{\footnotesize\ttfamily double optimize\+\_\+chisq (\begin{DoxyParamCaption}\item[{long double $\ast$}]{opts,  }\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{resid,  }\item[{int}]{model }\end{DoxyParamCaption})}
+
+Optimization function. Loops over all relaxation measurements and predicts using models.~\newline
+Calculates (real -\/ calc)$^\wedge$2 / (error$^\wedge$2) over all relaxation measurements and returns.~\newline
+
+\begin{DoxyParams}{Parameters}
+{\em opts} & Pointer to array containing parameters. \\
+\hline
+{\em resid} & Pointer to residue being considered \\
+\hline
+{\em model} & M\+O\+D\+\_\+\+S\+MF etc. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns chisq value. 
+\end{DoxyReturn}

@@ -1,0 +1,201 @@
+\hypertarget{datatypes_8c}{}\doxysection{datatypes.\+c File Reference}
+\label{datatypes_8c}\index{datatypes.c@{datatypes.c}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$complex.\+h$>$}\newline
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structModel}{Model}}
+\item 
+struct \mbox{\hyperlink{structOrient}{Orient}}
+\item 
+struct \mbox{\hyperlink{structResidue}{Residue}}
+\item 
+struct \mbox{\hyperlink{structRelaxation}{Relaxation}}
+\item 
+struct \mbox{\hyperlink{structrrargs}{rrargs}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{datatypes_8c_afa2ab7ee5af70c992fd08091c8361748}\label{datatypes_8c_afa2ab7ee5af70c992fd08091c8361748}} 
+\#define \mbox{\hyperlink{datatypes_8c_afa2ab7ee5af70c992fd08091c8361748}{M\+O\+D\+\_\+\+S\+MF}}~0
+\begin{DoxyCompactList}\small\item\em Simple \mbox{\hyperlink{structModel}{Model}} Free. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a1e1c9ea931da20af9857ec98962c8376}\label{datatypes_8c_a1e1c9ea931da20af9857ec98962c8376}} 
+\#define \mbox{\hyperlink{datatypes_8c_a1e1c9ea931da20af9857ec98962c8376}{M\+O\+D\+\_\+\+E\+MF}}~1
+\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_ac1331db6ccdcfb9655b8e1bc5af61c55}\label{datatypes_8c_ac1331db6ccdcfb9655b8e1bc5af61c55}} 
+\#define \mbox{\hyperlink{datatypes_8c_ac1331db6ccdcfb9655b8e1bc5af61c55}{M\+O\+D\+\_\+\+E\+M\+FT}}~2
+\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free with Temperature Dependence. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_aec919bd24c35427360f949fa687c3789}\label{datatypes_8c_aec919bd24c35427360f949fa687c3789}} 
+\#define \mbox{\hyperlink{datatypes_8c_aec919bd24c35427360f949fa687c3789}{M\+O\+D\+\_\+\+S\+M\+FT}}~3
+\begin{DoxyCompactList}\small\item\em Simple \mbox{\hyperlink{structModel}{Model}} Free with Temperature Dependence. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}\label{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}} 
+\#define \mbox{\hyperlink{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}{M\+O\+D\+\_\+\+G\+AF}}~4
+\begin{DoxyCompactList}\small\item\em Gaussian Axial Fluctuations model. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}\label{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}} 
+\#define \mbox{\hyperlink{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}{M\+O\+D\+\_\+\+G\+A\+FT}}~5
+\begin{DoxyCompactList}\small\item\em Gaussian Axial Fluctuations model with Temperature Dependence. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a354378a0743b5aaad90b7113e89abccb}\label{datatypes_8c_a354378a0743b5aaad90b7113e89abccb}} 
+\#define {\bfseries D\+A\+T\+A\+\_\+\+S2}~0
+\item 
+\mbox{\Hypertarget{datatypes_8c_a645b6c91bc43ab66f3a5acec604b3b0a}\label{datatypes_8c_a645b6c91bc43ab66f3a5acec604b3b0a}} 
+\#define {\bfseries D\+A\+T\+A\+\_\+\+C\+S\+I\+S\+ON}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_ad20d2a8a74abd4755d7153ca871bca46}\label{datatypes_8c_ad20d2a8a74abd4755d7153ca871bca46}} 
+\#define {\bfseries D\+A\+T\+A\+\_\+\+C\+S\+I\+S\+OC}~2
+\item 
+\mbox{\Hypertarget{datatypes_8c_a33960cfe6141298a4d8de1b358302ced}\label{datatypes_8c_a33960cfe6141298a4d8de1b358302ced}} 
+\#define {\bfseries R\+\_\+15\+N\+R1}~0
+\item 
+\mbox{\Hypertarget{datatypes_8c_a1ebf7f193ef1d62d743f0045f3958495}\label{datatypes_8c_a1ebf7f193ef1d62d743f0045f3958495}} 
+\#define {\bfseries R\+\_\+15\+N\+R1p}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_ad869c655274d2cbba086074cf9c9a921}\label{datatypes_8c_ad869c655274d2cbba086074cf9c9a921}} 
+\#define {\bfseries R\+\_\+13\+C\+R1}~2
+\item 
+\mbox{\Hypertarget{datatypes_8c_a9a1a509d27c3b37be4618fcb8e8d9b1e}\label{datatypes_8c_a9a1a509d27c3b37be4618fcb8e8d9b1e}} 
+\#define {\bfseries R\+\_\+13\+C\+R1p}~3
+\item 
+\mbox{\Hypertarget{datatypes_8c_a4a9fd9452cb1cbae4617873f20d3b9dd}\label{datatypes_8c_a4a9fd9452cb1cbae4617873f20d3b9dd}} 
+\#define {\bfseries O\+R\+\_\+\+NH}~0
+\item 
+\mbox{\Hypertarget{datatypes_8c_a09771872f89acb0ec2a1a7f5827876d2}\label{datatypes_8c_a09771872f89acb0ec2a1a7f5827876d2}} 
+\#define {\bfseries O\+R\+\_\+\+NC}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_a6a6669ccbdaa6dcefb4647ec5c40a56c}\label{datatypes_8c_a6a6669ccbdaa6dcefb4647ec5c40a56c}} 
+\#define {\bfseries O\+R\+\_\+\+N\+CA}~2
+\item 
+\mbox{\Hypertarget{datatypes_8c_a79298fe1f86422a413ccd440715306cd}\label{datatypes_8c_a79298fe1f86422a413ccd440715306cd}} 
+\#define {\bfseries O\+R\+\_\+\+N\+C\+S\+Axx}~3
+\item 
+\mbox{\Hypertarget{datatypes_8c_a652a8a7d79a701e7e883d5226b84a2e0}\label{datatypes_8c_a652a8a7d79a701e7e883d5226b84a2e0}} 
+\#define {\bfseries O\+R\+\_\+\+N\+C\+S\+Ayy}~4
+\item 
+\mbox{\Hypertarget{datatypes_8c_ace442a4556bbbab9e0abd1b1a2759441}\label{datatypes_8c_ace442a4556bbbab9e0abd1b1a2759441}} 
+\#define {\bfseries O\+R\+\_\+\+N\+C\+S\+Azz}~5
+\item 
+\mbox{\Hypertarget{datatypes_8c_aae3fa82985f374ce1e0b4e251e7662a7}\label{datatypes_8c_aae3fa82985f374ce1e0b4e251e7662a7}} 
+\#define {\bfseries O\+R\+\_\+\+C\+C\+Ap}~6
+\item 
+\mbox{\Hypertarget{datatypes_8c_ad5efa0a4c063745e96d38ef5b9731229}\label{datatypes_8c_ad5efa0a4c063745e96d38ef5b9731229}} 
+\#define {\bfseries O\+R\+\_\+\+C\+C\+Ac}~7
+\item 
+\mbox{\Hypertarget{datatypes_8c_a8b78e8d34c6d09f04eea8f6a15dacb61}\label{datatypes_8c_a8b78e8d34c6d09f04eea8f6a15dacb61}} 
+\#define {\bfseries O\+R\+\_\+\+CN}~8
+\item 
+\mbox{\Hypertarget{datatypes_8c_aa891337077195a818d903ff9d2b3bbe9}\label{datatypes_8c_aa891337077195a818d903ff9d2b3bbe9}} 
+\#define {\bfseries O\+R\+\_\+\+C\+NH}~9
+\item 
+\mbox{\Hypertarget{datatypes_8c_a1d4e8e3b35f596ceaf0d964d02879f50}\label{datatypes_8c_a1d4e8e3b35f596ceaf0d964d02879f50}} 
+\#define {\bfseries O\+R\+\_\+\+CH}~10
+\item 
+\mbox{\Hypertarget{datatypes_8c_ae5893bb1766033b20668fdc9de04f174}\label{datatypes_8c_ae5893bb1766033b20668fdc9de04f174}} 
+\#define {\bfseries O\+R\+\_\+\+C\+C\+S\+Axx}~11
+\item 
+\mbox{\Hypertarget{datatypes_8c_a9f9a6a35b415585e4f8ca237c5cc36a6}\label{datatypes_8c_a9f9a6a35b415585e4f8ca237c5cc36a6}} 
+\#define {\bfseries O\+R\+\_\+\+C\+C\+S\+Ayy}~12
+\item 
+\mbox{\Hypertarget{datatypes_8c_a2d710ce457fda0cb15fcfbe82611a9ea}\label{datatypes_8c_a2d710ce457fda0cb15fcfbe82611a9ea}} 
+\#define {\bfseries O\+R\+\_\+\+C\+C\+S\+Azz}~13
+\item 
+\mbox{\Hypertarget{datatypes_8c_a5e5537c5f417fca385b0f080ac9d0be7}\label{datatypes_8c_a5e5537c5f417fca385b0f080ac9d0be7}} 
+\#define \mbox{\hyperlink{datatypes_8c_a5e5537c5f417fca385b0f080ac9d0be7}{N\+\_\+\+R\+E\+L\+A\+X\+A\+T\+I\+ON}}~50
+\begin{DoxyCompactList}\small\item\em Approximate number of relaxation measurements; will dynamically allocate if overflows. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a51ca9914034cd3e92903476fd4eebbd6}\label{datatypes_8c_a51ca9914034cd3e92903476fd4eebbd6}} 
+\#define \mbox{\hyperlink{datatypes_8c_a51ca9914034cd3e92903476fd4eebbd6}{N\+T\+H\+R\+E\+A\+DS}}~40
+\begin{DoxyCompactList}\small\item\em Unused. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_af9a5d6addf893be0502ae41f52e794b2}\label{datatypes_8c_af9a5d6addf893be0502ae41f52e794b2}} 
+\#define \mbox{\hyperlink{datatypes_8c_af9a5d6addf893be0502ae41f52e794b2}{T\+H\+R\+E\+A\+D\+\_\+\+S\+T\+A\+CK}}~32768$\ast$2
+\begin{DoxyCompactList}\small\item\em Bytes per thread. Raise if stack overflows, lower if insufficient stack for number of workers. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a0b7d3509aaa80be4c33c5d503be7aded}\label{datatypes_8c_a0b7d3509aaa80be4c33c5d503be7aded}} 
+\#define \mbox{\hyperlink{datatypes_8c_a0b7d3509aaa80be4c33c5d503be7aded}{M\+I\+N\+\_\+\+V\+AL}}~10000000
+\begin{DoxyCompactList}\small\item\em Maximum value of chisq function for which it will be considered fit. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a8651fcb7d3b1f0582aa4fbd404e23498}\label{datatypes_8c_a8651fcb7d3b1f0582aa4fbd404e23498}} 
+\#define \mbox{\hyperlink{datatypes_8c_a8651fcb7d3b1f0582aa4fbd404e23498}{R\+YD}}~8.\+3144621
+\begin{DoxyCompactList}\small\item\em Rydberg Constant in J\+K-\/1mol-\/1. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a07e200ee99e95bd5659401930c1167e6}\label{datatypes_8c_a07e200ee99e95bd5659401930c1167e6}} 
+\#define \mbox{\hyperlink{datatypes_8c_a07e200ee99e95bd5659401930c1167e6}{D\+\_\+\+NH}}~72038.\+41107
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for amide N-\/H. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_af2f0d24065b4d8f00817e8a43fd84318}\label{datatypes_8c_af2f0d24065b4d8f00817e8a43fd84318}} 
+\#define \mbox{\hyperlink{datatypes_8c_af2f0d24065b4d8f00817e8a43fd84318}{D\+\_\+\+CC}}~13467.\+66052
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for alphatic C-\/\+Calpha. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a174127d6f2e382d9de773fa271d99c4c}\label{datatypes_8c_a174127d6f2e382d9de773fa271d99c4c}} 
+\#define \mbox{\hyperlink{datatypes_8c_a174127d6f2e382d9de773fa271d99c4c}{D\+\_\+\+CH}}~22362.\+47724
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for C-\/H. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a1be3cc4fee1af87cd204e69900e48ec9}\label{datatypes_8c_a1be3cc4fee1af87cd204e69900e48ec9}} 
+\#define \mbox{\hyperlink{datatypes_8c_a1be3cc4fee1af87cd204e69900e48ec9}{D\+\_\+\+C\+Hr}}~31491.\+71046
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for C-\/\+Hrest. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a0b326a9349de48ac5ab590cf0cce03e1}\label{datatypes_8c_a0b326a9349de48ac5ab590cf0cce03e1}} 
+\#define \mbox{\hyperlink{datatypes_8c_a0b326a9349de48ac5ab590cf0cce03e1}{D\+\_\+\+CN}}~8175.\+2
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for C-\/N. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_ad5a4896f082f15cba6c91ba0bec85c80}\label{datatypes_8c_ad5a4896f082f15cba6c91ba0bec85c80}} 
+\#define \mbox{\hyperlink{datatypes_8c_ad5a4896f082f15cba6c91ba0bec85c80}{D\+\_\+\+CaN}}~6180.\+1
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for amide N -\/ aliphatic C. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a991a7a7b1d309d56d161b2058c9196e1}\label{datatypes_8c_a991a7a7b1d309d56d161b2058c9196e1}} 
+\#define \mbox{\hyperlink{datatypes_8c_a991a7a7b1d309d56d161b2058c9196e1}{D\+\_\+\+H\+Nr}}~13108.\+32273
+\begin{DoxyCompactList}\small\item\em Dipolar couplings taken from N\+H\+C\+O\+\_\+3\+G\+A\+F\+Squared\+Ea for amide N-\/\+Hrest. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a252d53eb4de7ac1e25851322f873550f}\label{datatypes_8c_a252d53eb4de7ac1e25851322f873550f}} 
+\#define {\bfseries M\+O\+D\+E\+\_\+15N}~0
+\item 
+\mbox{\Hypertarget{datatypes_8c_ac11f09c7d5073256ef5c0d2331926fc7}\label{datatypes_8c_ac11f09c7d5073256ef5c0d2331926fc7}} 
+\#define {\bfseries M\+O\+D\+E\+\_\+13C}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_ac0895f86110565b1be9ad9071f0544b7}\label{datatypes_8c_ac0895f86110565b1be9ad9071f0544b7}} 
+\#define {\bfseries M\+O\+D\+E\+\_\+\+R\+E\+AL}~0
+\item 
+\mbox{\Hypertarget{datatypes_8c_a4f4ac87bcb40c1a2d3287ee4d787c529}\label{datatypes_8c_a4f4ac87bcb40c1a2d3287ee4d787c529}} 
+\#define {\bfseries M\+O\+D\+E\+\_\+\+I\+M\+AG}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_a3a225059bd6f6cbace814ec73de8cd3e}\label{datatypes_8c_a3a225059bd6f6cbace814ec73de8cd3e}} 
+\#define {\bfseries M\+O\+D\+E\+\_\+\+C\+O\+MP}~2
+\item 
+\mbox{\Hypertarget{datatypes_8c_ae3ec3219e4eee3b0992bfd59c2e2bc42}\label{datatypes_8c_ae3ec3219e4eee3b0992bfd59c2e2bc42}} 
+\#define {\bfseries H\+A\+L\+F\+\_\+\+PI}~M\+\_\+\+PI / 2.
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{datatypes_8c_ad044ce922001c8ddba6bf1ff7046a120}{calculate\+\_\+\+Y2}} (struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$or)
+\item 
+void \mbox{\hyperlink{datatypes_8c_a822d0736b9154a462cf3a8be130775a7}{initialise\+\_\+dwig}} (void)
+\item 
+void \mbox{\hyperlink{datatypes_8c_aa81c24474c3a9224310a0316a6d53adb}{free\+\_\+all}} (struct \mbox{\hyperlink{structModel}{Model}} $\ast$m)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{datatypes_8c_a973994acf5bb382d8fd53a78616c9f82}\label{datatypes_8c_a973994acf5bb382d8fd53a78616c9f82}} 
+long double \mbox{\hyperlink{datatypes_8c_a973994acf5bb382d8fd53a78616c9f82}{Dwig}} \mbox{[}5\mbox{]}\mbox{[}5\mbox{]}
+\begin{DoxyCompactList}\small\item\em 5x5 array containing Wigner components for pi/2 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{datatypes_8c_ad044ce922001c8ddba6bf1ff7046a120}\label{datatypes_8c_ad044ce922001c8ddba6bf1ff7046a120}} 
+\index{datatypes.c@{datatypes.c}!calculate\_Y2@{calculate\_Y2}}
+\index{calculate\_Y2@{calculate\_Y2}!datatypes.c@{datatypes.c}}
+\doxysubsubsection{\texorpdfstring{calculate\_Y2()}{calculate\_Y2()}}
+{\footnotesize\ttfamily void calculate\+\_\+\+Y2 (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$}]{or }\end{DoxyParamCaption})}
+
+Populates the second order spherical harmonics for orientation vector passed as pointer. 
+\begin{DoxyParams}{Parameters}
+{\em or} & Orientation vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+N\+U\+LL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{datatypes_8c_aa81c24474c3a9224310a0316a6d53adb}\label{datatypes_8c_aa81c24474c3a9224310a0316a6d53adb}} 
+\index{datatypes.c@{datatypes.c}!free\_all@{free\_all}}
+\index{free\_all@{free\_all}!datatypes.c@{datatypes.c}}
+\doxysubsubsection{\texorpdfstring{free\_all()}{free\_all()}}
+{\footnotesize\ttfamily void free\+\_\+all (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structModel}{Model}} $\ast$}]{m }\end{DoxyParamCaption})}
+
+Function to free all allocated memory within \mbox{\hyperlink{structModel}{Model}}. @params m Pointer to \mbox{\hyperlink{structModel}{Model}} to be freed. \mbox{\Hypertarget{datatypes_8c_a822d0736b9154a462cf3a8be130775a7}\label{datatypes_8c_a822d0736b9154a462cf3a8be130775a7}} 
+\index{datatypes.c@{datatypes.c}!initialise\_dwig@{initialise\_dwig}}
+\index{initialise\_dwig@{initialise\_dwig}!datatypes.c@{datatypes.c}}
+\doxysubsubsection{\texorpdfstring{initialise\_dwig()}{initialise\_dwig()}}
+{\footnotesize\ttfamily void initialise\+\_\+dwig (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Initialises Wigner D matrix in global space. 

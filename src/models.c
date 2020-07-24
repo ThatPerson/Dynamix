@@ -1,3 +1,7 @@
+/**
+ * @file models.c
+ */
+
 #include <stdio.h>
 #include <math.h>
 #include <complex.h>
@@ -7,7 +11,7 @@
 		(((1 - (double) S2) * (long double) tau)) \
 		/ (1 + ((double) omega * (long double) tau * (double) omega * (long double) tau)) \
 	) \
-}
+} ///< Calculates spectral density function for given frequency (omega) according to simple model free analysis.
 
 #define J0_EMF(omega, taus, S2s, tauf, S2f) (long double) {\
 	 ( \
@@ -21,10 +25,10 @@
 			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
 		)\
 	)\
-}
+} ///< Calculates spectral density function for given frequency according to extended model free analysis.
 
-#define sq_i(x) ((int) x * (int) x)
-#define sq(x) ((double) x * (double) x)
+#define sq_i(x) ((int) x * (int) x) ///< Squares integer x
+#define sq(x) ((double) x * (double) x) ///< Squares double x
 
 #define GAF_Dipolar_R1(omega_obs, omega_neigh, taus, S2s, tauf, S2f, D) (double) {\
 	(0.1) * sq(D) * ( \
@@ -32,7 +36,9 @@
 		 + 3 * (J0_EMF(omega_obs, taus, S2s, tauf, S2f)) \
 		  + 6 * (J0_EMF(omega_neigh + omega_obs, taus, S2s, tauf, S2f)) \
 	  ) \
-  }
+  } ///!< Calculates R1 contribution under GAF model for Dipolar interaction between two atoms.
+    ///!< omega_obs is the frequency of the observed nucleus, omega_neigh is the frequency of the other atoms.\n
+    ///!< D is the dipolar coupling in rad/s.
 
 #define GAF_CSA_R2(omega, w1, wr, taus, S2s, tauf, S2f, D2) (double) { \
   	( \
@@ -44,7 +50,8 @@
   			(3.)   * J0_EMF(omega, taus, S2s, tauf, S2f)\
   		)\
   	)\
-  }
+  } ///!< Calculates the R2 contribution of CSA of nuclei with frequency omega.
+    ///!< D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)
 
   #define GAF_Dipolar_R2(omega_obs, omega_neigh, w1, wr, taus, S2s, tauf, S2f, D) (double) {\
   	(\
@@ -59,9 +66,23 @@
   			(6.)   * J0_EMF(omega_neigh + omega_obs, taus, S2s, tauf, S2f)\
   		)\
   	)\
-  }
+  } ///!< Calculates R2 contribution of dipolar interaction between two atoms as in GAF_Dipolar_R1
 
-
+/**
+ * Calculates R1 relaxation rate using simple model free analysis
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param tau
+ *  Correlation time of motion being optimized
+ * @param S2
+ *  Order parameter of motion
+ * @param mode
+ *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
+ * @return R1
+ *  Returns R1 as double
+ */
 double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 
@@ -101,6 +122,22 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	return R1D + R1CSA;
 }
 
+
+/**
+ * Calculates R2 relaxation rate using simple model free analysis
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param tau
+ *  Correlation time of motion being optimized
+ * @param S2
+ *  Order parameter of motion
+ * @param mode
+ *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
+ * @return R2
+ *  Returns R2 as double
+ */
 double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
 
 	long double field = relax->field * 1000000; // conversion to Hz
@@ -150,6 +187,23 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	return R2NH + R2NCSA;
 }
 
+/**
+ * Calculates R1 relaxation rate using extended model free analysis
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param taus
+ *  Correlation time of slow motion
+ * @param S2s
+ *  Order parameter of slow motion
+ * @param tauf
+ *  Correlation time of fast motion
+ * @param mode
+ *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
+ * @return R1
+ *  Returns R1 as double
+ */
 double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, int mode) {
 	long double S2f = res->S2_dipolar / S2s;
 	long double field = relax->field * 1000000; // conversion to Hz
@@ -190,6 +244,23 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 	return R1D + R1CSA;
 }
 
+/**
+ * Calculates R2 relaxation rate using extended model free analysis
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param taus
+ *  Correlation time of slow motion
+ * @param S2s
+ *  Order parameter of slow motion
+ * @param tauf
+ *  Correlation time of fast motion
+ * @param mode
+ *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
+ * @return R2
+ *  Returns R2 as double
+ */
 double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, int mode) {
 	long double S2f = res->S2_dipolar / S2s;
 	long double field = relax->field * 1000000; // conversion to Hz
@@ -237,7 +308,19 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	return R2D + R2CSA;
 }
 
-
+/**
+ * Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig.
+ * @param sig
+ *  Array containing [alpha, beta, gamma] deflection angles
+ * @param A
+ *  Orientation vector A
+ * @param B
+ *  Orientation vector B
+ * @param mode
+ *  MODE_REAL or MODE_IMAG depending on which result is being returned.
+ * @return S2
+ *  Returns order parameter as double
+ */
 double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode) {
 	int l, m, mp, k, kp;
 	double complex Amp = 0;
@@ -259,8 +342,8 @@ double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode
 						ksqsum = sq_i(k) + sq_i(kp);
 						kexp = -(sq(sig[0]) * ksqsum / 2.);
 						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
-						if (cimag(A->Y2[m+2]) < 0.00001 && cimag(B->Y2[mp+2]) < 0.00001) {
-							/* in this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
+						if (cimag(A->Y2[m+2]) < 0.00001 && cimag(B->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
+							/* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
 							 * If mode is MODE_REAL, then, we may safely ignore any case in which
 							 *  cpowl(-1*I, k-kp)
 							 * is imaginary (as this will give only an imaginary component to the Amp).
@@ -303,6 +386,26 @@ double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode
  * have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest
  * but I don't have the setup around it for the Legendre polynomials) */
  /* WARNING: NCSAxy IS OMITTED */
+ 
+/**
+ * Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations.
+ * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
+ * @warning Currently omits NCSAxy due to error in this calculation.
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param taus
+ *  Correlation time of slow motion
+ * @param tauf
+ *  Correlation time of fast motion
+ * @param sigs
+ *  Deflection angles [alpha, beta, gamma] for slow motion
+ * @param sigf
+ *  Deflection angles [alpha, beta, gamma] for fast motion
+ * @return R1
+ *  Returns R1 as double
+ */
 double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
@@ -363,7 +466,25 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	return R1CSA + R1NH + R1NHr + R1CN + R1CaN;
 }
 
-
+/**
+ * Calculates R2 relaxation rate for 15N nucleus under gaussian axial fluctuations.
+ * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
+ * @warning Currently omits NCSAxy due to error in this calculation.
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param taus
+ *  Correlation time of slow motion
+ * @param tauf
+ *  Correlation time of fast motion
+ * @param sigs
+ *  Deflection angles [alpha, beta, gamma] for slow motion
+ * @param sigf
+ *  Deflection angles [alpha, beta, gamma] for fast motion
+ * @return R2
+ *  Returns R2 as double
+ */
 double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
@@ -427,6 +548,28 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
  * have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest
  * but I don't have the setup around it for the Legendre polynomials) */
  /* WARNING: CSAxy IS OMITTED */
+ 
+ /**
+ * Calculates R1 relaxation rate for 13C nucleus under gaussian axial fluctuations.
+ * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
+ * @warning Has not been tested on 13C data
+ * @warning Currently omits NCSAxy due to error in this calculation.
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param taus
+ *  Correlation time of slow motion
+ * @param tauf
+ *  Correlation time of fast motion
+ * @param sigs
+ *  Deflection angles [alpha, beta, gamma] for slow motion
+ * @param sigf
+ *  Deflection angles [alpha, beta, gamma] for fast motion
+ * @return R1
+ *  Returns R1 as double
+ */
+
 double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
@@ -489,6 +632,26 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	return R1CSA + R1CH + R1CHr + R1CN + R1CC;
 }
 
+/**
+ * Calculates R2 relaxation rate for 13C nucleus under gaussian axial fluctuations.
+ * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
+ * @warning Has not been tested on 13C data
+ * @warning Currently omits NCSAxy due to error in this calculation.
+ * @param res
+ *  Pointer to residue being considered
+ * @param relax
+ *  Pointer to relaxation measurement being modelled
+ * @param taus
+ *  Correlation time of slow motion
+ * @param tauf
+ *  Correlation time of fast motion
+ * @param sigs
+ *  Deflection angles [alpha, beta, gamma] for slow motion
+ * @param sigf
+ *  Deflection angles [alpha, beta, gamma] for fast motion
+ * @return R2
+ *  Returns R2 as double
+ */
 
 double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */

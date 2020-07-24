@@ -1,0 +1,58 @@
+\hypertarget{crosen_8c}{}\doxysection{crosen.\+c File Reference}
+\label{crosen_8c}\index{crosen.c@{crosen.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$malloc.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{crosen_8c_a8b2017af5ff641e7483447cb49f8fcf2}\label{crosen_8c_a8b2017af5ff641e7483447cb49f8fcf2}} 
+\#define \mbox{\hyperlink{crosen_8c_a8b2017af5ff641e7483447cb49f8fcf2}{M\+A\+X\+\_\+\+IT}}~1000
+\begin{DoxyCompactList}\small\item\em maximum number of iterations \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{crosen_8c_af5abd28c44c29b7397c84f1fec4b1d84}\label{crosen_8c_af5abd28c44c29b7397c84f1fec4b1d84}} 
+\#define \mbox{\hyperlink{crosen_8c_af5abd28c44c29b7397c84f1fec4b1d84}{A\+L\+P\+HA}}~1.\+0
+\begin{DoxyCompactList}\small\item\em reflection coefficient \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{crosen_8c_a1b996515309fc3c03449912bb33046e3}\label{crosen_8c_a1b996515309fc3c03449912bb33046e3}} 
+\#define \mbox{\hyperlink{crosen_8c_a1b996515309fc3c03449912bb33046e3}{B\+E\+TA}}~0.\+5
+\begin{DoxyCompactList}\small\item\em contraction coefficient \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{crosen_8c_a8659b9de3e544ff142b153b076f30fd5}\label{crosen_8c_a8659b9de3e544ff142b153b076f30fd5}} 
+\#define \mbox{\hyperlink{crosen_8c_a8659b9de3e544ff142b153b076f30fd5}{G\+A\+M\+MA}}~2.\+0
+\begin{DoxyCompactList}\small\item\em expansion coefficient \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{crosen_8c_a5bde0114bc9d8c2c6a216c5e8b4c9837}{simplex}} (double($\ast$func)(long double\mbox{[}$\,$\mbox{]}, struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$, int), long double start\mbox{[}$\,$\mbox{]}, int n, long double E\+P\+S\+I\+L\+ON, long double scale, struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$resid, int model)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{crosen_8c_a5bde0114bc9d8c2c6a216c5e8b4c9837}\label{crosen_8c_a5bde0114bc9d8c2c6a216c5e8b4c9837}} 
+\index{crosen.c@{crosen.c}!simplex@{simplex}}
+\index{simplex@{simplex}!crosen.c@{crosen.c}}
+\doxysubsubsection{\texorpdfstring{simplex()}{simplex()}}
+{\footnotesize\ttfamily double simplex (\begin{DoxyParamCaption}\item[{double($\ast$)(long double\mbox{[}$\,$\mbox{]}, struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$, int)}]{func,  }\item[{long double}]{start\mbox{[}$\,$\mbox{]},  }\item[{int}]{n,  }\item[{long double}]{E\+P\+S\+I\+L\+ON,  }\item[{long double}]{scale,  }\item[{struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$}]{resid,  }\item[{int}]{model }\end{DoxyParamCaption})}
+
+Implementation of Nelder-\/\+Mead Simplex method written by Michael F. Hutt.~\newline
+Has been modified to allow for optimization of the \mbox{\hyperlink{chisq_8c_a684bc59d2fd157bed96d2cb036b80c8d}{optimize\+\_\+chisq()}} function directly.~\newline
+
+\begin{DoxyParams}{Parameters}
+{\em $<$em$>$func} & Pointer to function taking arguments (long double\mbox{[}\mbox{]}, struct \mbox{\hyperlink{structResidue}{Residue}}, int) to be optimized (see \mbox{\hyperlink{chisq_8c_a684bc59d2fd157bed96d2cb036b80c8d}{optimize\+\_\+chisq()}})~\newline
+\\
+\hline
+{\em start\mbox{[}$\,$\mbox{]}} & Array of starting parameters \\
+\hline
+{\em n} & Length of start\mbox{[}\mbox{]} (eg how many parameters are included) \\
+\hline
+{\em E\+P\+S\+I\+L\+ON} & Convergence requirement -\/ lower means closer convergence but slower operation \\
+\hline
+{\em scale} & Scale factor \\
+\hline
+{\em resid} & Pointer to residue being optimized \\
+\hline
+{\em model} & \mbox{\hyperlink{structModel}{Model}} type (M\+O\+D\+\_\+\+S\+MF etc) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns minimum of ($\ast$func). 
+\end{DoxyReturn}

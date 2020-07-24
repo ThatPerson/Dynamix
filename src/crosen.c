@@ -1,3 +1,8 @@
+/**
+ * @file crosen.c
+ */
+
+
 /* Adapted from below */
 
 /*
@@ -39,17 +44,31 @@
 #include <malloc.h>
 #include <math.h>
 
-#define MAX_IT      1000      /* maximum number of iterations */
-#define ALPHA       1.0       /* reflection coefficient */
-#define BETA        0.5       /* contraction coefficient */
-#define GAMMA       2.0       /* expansion coefficient */
-
-long double rosen(long double x[])
-{
-  return (100*(x[1]-x[0]*x[0])*(x[1]-x[0]*x[0])+(1.0-x[0])*(1.0-x[0]));
-}
+#define MAX_IT      1000      ///< maximum number of iterations
+#define ALPHA       1.0       ///< reflection coefficient
+#define BETA        0.5       ///< contraction coefficient
+#define GAMMA       2.0       ///< expansion coefficient
 
 
+/**
+ * Implementation of Nelder-Mead Simplex method written by Michael F. Hutt.\n
+ * Has been modified to allow for optimization of the optimize_chisq() function directly.\n
+ * @param *func
+ *  Pointer to function taking arguments (long double[], struct Residue*, int) to be optimized (see optimize_chisq())\n
+ * @param start[]
+ *  Array of starting parameters
+ * @param n
+ *  Length of start[] (eg how many parameters are included)
+ * @param EPSILON
+ *  Convergence requirement - lower means closer convergence but slower operation
+ * @param scale
+ *  Scale factor
+ * @param resid
+ *  Pointer to residue being optimized
+ * @param model
+ *  Model type (MOD_SMF etc)
+ * @return Returns minimum of (*func).
+ */
 double simplex(double (*func)(long double[], struct Residue*, int), long double start[],int n, long double EPSILON, long double scale, struct Residue * resid, int model)
 {
   //printf("SIMPLEX %Le\n", start[2]);

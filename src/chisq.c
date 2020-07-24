@@ -1,6 +1,21 @@
+/**
+ * @file chisq.c
+ */
+
 #include <stdio.h>
 #include <math.h>
 
+/**
+ * Optimization function. Loops over all relaxation measurements and predicts using models.\n
+ * Calculates (real - calc)^2 / (error^2) over all relaxation measurements and returns.\n
+ * @param opts
+ *  Pointer to array containing parameters.
+ * @param resid
+ *  Pointer to residue being considered
+ * @param model
+ *  MOD_SMF etc.
+ * @return Returns chisq value.
+ */
 double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 	/* opts is a pointer to an array containing;
 	 *
@@ -174,6 +189,19 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 	return -1;
 }
 
+/**
+ * Back calculation function. Loops over all relaxation measurements and predicts using models.\n
+ * Outputs file containing [relaxation id, calculated, real, real error].\n
+ * @param opts
+ *  Pointer to array containing parameters.
+ * @param resid
+ *  Pointer to residue being considered
+ * @param model
+ *  MOD_SMF etc.
+ * @param filename
+ *  File to output calculations into
+ * @return Returns 1 if successful, else -1.
+ */
 int back_calculate(long double * opts, struct Residue * resid, int model, char *filename) {
 	/* opts is a pointer to an array containing;
 	 *

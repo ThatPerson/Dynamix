@@ -1,3 +1,7 @@
+/**
+ * @file main.c
+ */
+
 #include <stdio.h>
 #include "datatypes.c"
 #include "read_data.c"
@@ -8,7 +12,11 @@
 #include <time.h>
 #include <pthread.h>
 
-
+/**
+ * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.
+ * @param input
+ *  Pointer to rrarg containing thread information
+ */
 void * run_residue(void *input) {
 	int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i + 1);
@@ -54,6 +62,39 @@ void * run_residue(void *input) {
 			return NULL;
 		}
 		//long double opts[20] = {0, 0};
+		
+		/**
+		 * SMF parameters are \n 
+		 *   [0] tau\n 
+		 *   [1] S2\n 
+		 * SMFT parameters;\n 
+		 *   [0] tau\n 
+		 *   [1] S2\n 
+		 *   [2] Ea\n 
+		 * EMF parameters\n 
+		 *   [0] tau slow\n 
+		 *   [1] S2 slow\n 
+		 *   [2] tau fast\n 
+		 *   NOTE: The fast order parameter is calculated as S2_dipolar/S2s\n 
+		 * EMFT parameters\n 
+		 *   [0] tau slow\n 
+		 *   [1] S2 slow\n 
+		 *   [2] tau fast\n 
+		 *   [3] activation energy for slow motion\n 
+		 *   [4] activation energy for fast motion\n 
+		 * GAF parameters\n 
+		 *   [0] tau slow\n 
+		 *   [1] tau fast\n 
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
+		 *   [5-7] alpha, beta, gamma deflections for fast motions\n 
+		 * GAFT parameters\n 
+		 *   [0] tau slow\n 
+		 *   [1] tau fast\n 
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
+		 *   [5-7] alpha, beta, gamma deflections for fast motions\n 
+		 *   [8] activation energy for slow motion\n 
+		 *   [9] activation energy for fast motion\n 
+		 */
 		if (model == MOD_SMF) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
@@ -121,7 +162,13 @@ void * run_residue(void *input) {
 
 
 
-
+/**
+ * Start function. Initialises parameters, loads files, spawns threads and outputs data.
+ * @opts filename
+ *  Takes input as path to file containing System definition (*dx file)
+ * @opts -e
+ *  Enables error mode
+ */
 int main(int argc, char * argv[]) {
 
 	/* Initialisation */
