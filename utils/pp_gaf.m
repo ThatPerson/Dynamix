@@ -30,7 +30,7 @@ set xrange [0:56]
 set xlabel "Peptide plane number (^{15}N_{i})"
 plot 'gaf/final.dat' u 1:($5 > 0 ? $5 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
-
+unset multiplot
 set terminal postscript eps enhanced solid "Helvetica" 14
 set output "gaf_slow.eps"
 set tmargin 0
@@ -45,6 +45,7 @@ set multiplot layout 3,1 margins 0.15,0.95,.1,.95 spacing 0,0.02
 set ylabel "{/Symbol s}_{A}^{slow}"
 set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
 set grid xtics
+set ytics (10, 20, 30)
 unset logscale y
 set xrange [0:56]
 set yrange [0:30]
@@ -71,7 +72,7 @@ set yrange [0:30]
 
 plot 'gaf/final.dat' u 1:($8 > 0 ? $8 * (180./3.141593) : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
-
+unset multiplot
 set terminal postscript eps enhanced solid "Helvetica" 14
 set output "gaf_fast.eps"
 set tmargin 0
@@ -89,7 +90,7 @@ set grid xtics
 unset logscale y
 set xrange [0:56]
 set yrange [0:30]
-
+set ytics (10, 20, 30)
 plot 'gaf/final.dat' u 1:($9 > 0 ? $9 * (180./3.141593) : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
@@ -99,7 +100,7 @@ set grid xtics
 unset logscale y
 set xrange [0:56]
 set yrange [0:30]
-
+set ytics
 plot 'gaf/final.dat' u 1:($10 > 0 ? $10 * (180./3.141593) : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
