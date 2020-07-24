@@ -1,6 +1,6 @@
 /* Adapted from below */
 
-/* 
+/*
  * Program: rosen.c
  * Author : Michael F. Hutt
  * http://www.mikehutt.com
@@ -39,7 +39,7 @@
 #include <malloc.h>
 #include <math.h>
 
-#define MAX_IT      20000      /* maximum number of iterations */
+#define MAX_IT      1000      /* maximum number of iterations */
 #define ALPHA       1.0       /* reflection coefficient */
 #define BETA        0.5       /* contraction coefficient */
 #define GAMMA       2.0       /* expansion coefficient */
@@ -56,11 +56,11 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
   int vs;        	/* vertex with smallest value */
   int vh;        	/* vertex with next smallest value */
   int vg;        	/* vertex with largest value */
-  
+
   int i,j,m,row;
   int k;		/* track the number of function evaluations */
   int itr;		/* track the number of iterations */
-  
+
   long double **v;           /* holds vertices of simplex */
   long double pn,qn;         /* values used to create initial simplex */
   long double *f;            /* value of function at each vertex */
@@ -72,35 +72,35 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
   long double *vc;           /* contraction - coordinates */
   long double *vm;           /* centroid - coordinates */
   long double min;
-  
+
   long double fsum,favg,s,cent;
-  
+
   /* dynamically allocate arrays */
-  
+
   /* allocate the rows of the arrays */
   v =  (long double **) malloc ((n+1) * sizeof(long double *));
   f =  (long double *) malloc ((n+1) * sizeof(long double));
   vr = (long double *) malloc (n * sizeof(long double));
-  ve = (long double *) malloc (n * sizeof(long double));  
-  vc = (long double *) malloc (n * sizeof(long double));  
-  vm = (long double *) malloc (n * sizeof(long double));  
-  
+  ve = (long double *) malloc (n * sizeof(long double));
+  vc = (long double *) malloc (n * sizeof(long double));
+  vm = (long double *) malloc (n * sizeof(long double));
+
   /* allocate the columns of the arrays */
   for (i=0;i<=n;i++) {
     v[i] = (long double *) malloc (n * sizeof(long double));
   }
-  
-  
+
+
   /* create the initial simplex */
   /* assume one of the vertices is 0,0 */
-  
+
   pn = scale*(sqrtl(n+1)-1+n)/(n*sqrtl(2));
   qn = scale*(sqrtl(n+1)-1)/(n*sqrtl(2));
-  
+
   for (i=0;i<n;i++) {
     v[0][i] = start[i];
   }
-  
+
   for (i=1;i<=n;i++) {
     for (j=0;j<n;j++) {
       if (i-1 == j) {
@@ -111,23 +111,23 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
       }
     }
   }
-  
+
   /* find the initial function values */
   for (j=0;j<=n;j++) {
     f[j] = func(v[j], resid, model);
   }
-  
+
   k = n+1;
-  
+
   /* print out the initial values */
   /*printf("Initial Values\n");
   for (j=0;j<=n;j++) {
     printf("%Le %Le %Le\n",v[j][0],v[j][1],f[j]);
   }*/
-  
-  
+
+
   /* begin the main loop of the minimization */
-  for (itr=1;itr<=MAX_IT;itr++) {     
+  for (itr=1;itr<=MAX_IT;itr++) {
 	 // printf("%Le\n", vr[2]);
     /* find the index of the largest value */
     vg=0;
@@ -136,7 +136,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
 	vg = j;
       }
     }
-    
+
     /* find the index of the smallest value */
     vs=0;
     for (j=0;j<=n;j++) {
@@ -144,7 +144,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
 	vs = j;
       }
     }
-    
+
     /* find the index of the second largest value */
     vh=vs;
     for (j=0;j<=n;j++) {
@@ -152,7 +152,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
 	vh = j;
       }
     }
-    
+
     /* calculate the centroid */
     for (j=0;j<=n-1;j++) {
       cent=0.0;
@@ -163,14 +163,14 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
       }
       vm[j] = cent/n;
     }
-    
+
     /* reflect vg to new vertex vr */
     for (j=0;j<=n-1;j++) {
       vr[j] = (1+ALPHA)*vm[j] - ALPHA*v[vg][j];
     }
     fr = func(vr, resid, model);
     k++;
-    
+
     /* added <= */
     if (fr <= f[vh] && fr > f[vs]) {
       for (j=0;j<=n-1;j++) {
@@ -178,7 +178,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
       }
       f[vg] = fr;
     }
-    
+
     /* investigate a step further in this direction */
     /* added <= */
     if ( fr <=  f[vs]) {
@@ -187,11 +187,11 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
       }
       fe = func(ve, resid, model);
       k++;
-      
+
       /* by making fe < fr as opposed to fe < f[vs],
-	 Rosenbrocks function takes 63 iterations as opposed 
+	 Rosenbrocks function takes 63 iterations as opposed
 	 to 64 when using long doubles and e = 1.0e-6. */
-      
+
       if (fe < fr) {
 	for (j=0;j<=n-1;j++) {
 	  v[vg][j] = ve[j];
@@ -205,7 +205,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
 	f[vg] = fr;
       }
     }
-    
+
     /* check to see if a contraction is necessary */
     if (fr > f[vh]) {
       for (j=0;j<=n-1;j++) {
@@ -220,9 +220,9 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
 	f[vg] = fc;
       }
       /* at this point the contraction is not successful,
-	 we must halve the distance from vs to all the 
+	 we must halve the distance from vs to all the
 	 vertices of the simplex and then continue.
-	 10/31/97 - modified to account for ALL vertices. 
+	 10/31/97 - modified to account for ALL vertices.
       */
       else {
 	for (row=0;row<=n;row++) {
@@ -236,17 +236,17 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
 	k++;
 	f[vh] = func(v[vh], resid, model);
 	k++;
-	
-	
+
+
       }
     }
-    
+
     /* print out the value at each iteration */
     /*printf("Iteration %d\n",itr);
     for (j=0;j<=n;j++) {
       printf("%Le %Le %Le\n",v[j][0],v[j][1],f[j]);
     }*/
-    
+
     /* test for convergence */
     fsum = 0.0;
     for (j=0;j<=n;j++) {
@@ -261,7 +261,7 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
     if (s < EPSILON) break;
   }
   /* end main loop of the minimization */
-  
+
   /* find the index of the smallest value */
   vs=0;
   for (j=0;j<=n;j++) {
@@ -269,18 +269,18 @@ double simplex(double (*func)(long double[], struct Residue*, int), long double 
       vs = j;
     }
   }
-  
-  //printf("The minimum was found at\n"); 
+
+  //printf("The minimum was found at\n");
   for (j=0;j<n;j++) {
     //printf("%Le\n",v[vs][j]);
     start[j] = v[vs][j];
-	
+
   }
   min=func(v[vs], resid, model);
   k++;
   //printf("%d Function Evaluations\n",k);
   //printf("%d Iterations through program\n",itr);
-  
+
   free(f);
   free(vr);
   free(ve);
@@ -298,15 +298,11 @@ int main()
   long double start[] = {-1.2,1.0};
   long double min;
   int i;
-  
+
   min=simplex(rosen,start,2,1.0e-8,1);
-  
+
   for (i=0;i<2;i++) {
     printf("%Le\n",start[i]);
   }
   return 0;
 }*/
-
-
-
-

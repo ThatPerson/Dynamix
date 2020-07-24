@@ -214,7 +214,7 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 }
 
 
-long double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode) {
+double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode) {
 	/* #define MODE_REAL		0
 #define MODE_IMAG		1
 #define MODE_COMP		2*/
@@ -222,22 +222,25 @@ long double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int
 	int l, m, mp, k, kp;
 	double complex Amp;
 	double complex temp;
-	double expo = 0;
 
 	int ksqsum;
 	int lsqsum;
 	int msqsum;
+	double lexp, kexp, mexp;
 	//l = 2;k=0;kp=2; m=0;mp=0;
 	for (l = -2; l <= 2; l++) {
 		lsqsum = sq_i(l);
+		lexp = -(sq(sig[1]) * lsqsum);
 		for (m = -2; m <= 2; m++) {
 			for (mp = -2; mp <= 2; mp++) {
 				msqsum = sq_i(m) + sq_i(mp);
+				mexp = -(sq(sig[2]) * msqsum/2.);
 				for (k = -2; k <= 2; k++) {
 					for (kp = -2; kp <= 2; kp++) {
 						ksqsum = sq_i(k) + sq_i(kp);
-
-						if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
+						kexp = -(sq(sig[0]) * ksqsum / 2.);
+						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
+						if (cimag(A->Y2[m+2]) < 0.00001 && cimag(B->Y2[mp+2]) < 0.00001) {
 							/* in this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
 							 * If mode is MODE_REAL, then, we may safely ignore any case in which
 							 *  cpowl(-1*I, k-kp)
@@ -253,15 +256,9 @@ long double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int
 								temp = -1;
 						} else {
 							/* Other wise we have to go the long route... */
-							temp = cpowl(-1 * I, k - kp);
+							temp = cpow(-1 * I, k - kp);
 						}
-						//temp = 0;
-						//temp = cpowl(-1 * I, k - kp); // come back to this
-						expo = 0;
-						expo = -(sq(sig[0]) * ksqsum / 2.);
-						expo -= (sq(sig[1]) * lsqsum);
-						expo -= (sq(sig[2]) * msqsum / 2.);
-						temp *= expl(expo);
+						temp *= exp(lexp + kexp + mexp);
 						temp *= Dwig[k+2][l+2] * Dwig[kp+2][l+2] * Dwig[m+2][k+2] * Dwig[mp+2][kp+2];
 						temp *= A->Y2[m+2] * B->Y2c[mp+2];
 						Amp += temp;
@@ -272,8 +269,8 @@ long double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int
 	}
 	Amp *= (4 * M_PI / 5.);
 	switch (mode) {
-		case MODE_REAL: return creall(Amp); break;
-		case MODE_IMAG: return cimagl(Amp); break;
+		case MODE_REAL: return creal(Amp); break;
+		case MODE_IMAG: return cimag(Amp); break;
 		default: break;
 	}
 	return -1;
@@ -282,15 +279,15 @@ long double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int
 /* This has not been directly tested against the MATLAB model as I don't really have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest but I don't have the setup around it for the Legendre polynomials) */
 double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	long double field = relax->field * 1000000; // conversion to Hz
+	double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
 	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
-	long double omega_1H = 2 * M_PI * field;
-	long double omega_13C, omega_15N, wCOCa;
-	long double d2x, d2y, d2xy;
+	double omega_1H = 2 * M_PI * field;
+	double omega_13C, omega_15N, wCOCa;
+	double d2x, d2y, d2xy;
 
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
@@ -309,8 +306,8 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 
 
 	/* Calculate all order parameters */
-	long double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
-	long double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
+	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
+	double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
 	S2NHs    = GAF_S2(sigs, &(res->orients[OR_NH]), &(res->orients[OR_NH]), MODE_REAL);
 	S2NCSAxs = GAF_S2(sigs, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAxx]), MODE_REAL);
 	S2NCSAys = GAF_S2(sigs, &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), MODE_REAL);

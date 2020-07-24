@@ -11,7 +11,7 @@ float norm_rand(float mean, float std) {
 	rnd1 = (float) uniform_rand();
 	rnd2 = (float) uniform_rand();
 	float unadj = sqrt(-2 * log(rnd1)) * cos(2 * M_PI * rnd2);
-	
+
 	//printf("%f, %f, %f\n", rnd1, rnd2, mean + std*unadj);
 	return mean + std * unadj;
 }
@@ -61,7 +61,7 @@ void * calc_errors(void *input) {
 		resid->error_params[k] = (long double *) malloc (sizeof(long double) * n_iter);
 	}
 	//resid->min_val = MIN_VAL;*/
-	double val;
+	double val = 0;
 	for (l = 0; l < n_iter; l++) {
 		if (resid->ignore == 1) {
 			return NULL;
@@ -69,7 +69,7 @@ void * calc_errors(void *input) {
 		resid->temp_relaxation = (resid->relaxation);
 		resid->relaxation = NULL;
 		resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
-		
+
 		for (k = 0; k < resid->n_relaxation; k++) {
 			resid->relaxation[k].field = resid->temp_relaxation[k].field;
 			resid->relaxation[k].wr = resid->temp_relaxation[k].wr;
@@ -84,16 +84,16 @@ void * calc_errors(void *input) {
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
-		
+
 		val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
-		
+
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
 		for (k = 0; k < params; k++) {
 			resid->error_params[k][l] = opts[k];
 		}
-		
-		
+
+
 		/* Return our pointers to how they were before... */
 		free(resid->relaxation);
 		resid->relaxation = NULL;

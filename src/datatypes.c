@@ -34,7 +34,7 @@
 
 
 #define N_RELAXATION	50
-#define NTHREADS		40	
+#define NTHREADS		40
 #define THREAD_STACK	32768*2
 
 
@@ -78,8 +78,8 @@ struct Model {
 struct Orient {
 	float phi;
 	float theta;
-	long double complex Y2[5];
-	long double complex Y2c[5];
+	double complex Y2[5];
+	double complex Y2c[5];
 };
 
 struct Residue {
@@ -93,11 +93,11 @@ struct Residue {
 	struct Relaxation * relaxation;
 	struct Relaxation * temp_relaxation;
 	long double ** error_params;
-	
+
 	int n_relaxation;
 	int lim_relaxation;
 	int ignore;
-	double min_val; 
+	double min_val;
 	long double * parameters;
 	long double * errors_std;
 	long double * errors_mean;
@@ -127,25 +127,25 @@ void calculate_Y2(struct Orient * or) {
 	or->Y2[2] = (1/4.) * (sqrtl(5. / M_PI)) * (3 * powl(cosl(or->theta), 2) - 1);
 	or->Y2[3] = (1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(or->theta) * cosl(or->theta) * cexpl(-I * or->phi);
 	or->Y2[4] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(or->theta), 2.)) * cexpl(-2 * I * or->phi);
-	
+
 	or->Y2c[0] = conjl(or->Y2[0]);
 	or->Y2c[1] = conjl(or->Y2[1]);
 	or->Y2c[2] = conjl(or->Y2[2]);
 	or->Y2c[3] = conjl(or->Y2[3]);
 	or->Y2c[4] = conjl(or->Y2[4]);
-	
+
 	return;
-	
+
 }
 
 
 void initialise_dwig(void) {
-	// beta taken as pi/2. 
+	// beta taken as pi/2.
 	/* It could be taken as an argument but hopefully
 	 * doing it this way will mean the compiler will fill it out
 	 * before execution, saving a little time. */
 	// 0 -2
-	// 1 -1 
+	// 1 -1
 	// 2  0
 	// 3  1
 	// 4  2
@@ -156,25 +156,25 @@ void initialise_dwig(void) {
 	Dwig[2][0] = sqrtl(3/8.) * powl(sinp, 2);
 	Dwig[3][0] = (1/2.) * sinp * (cosp - 1);
 	Dwig[4][0] = powl(sinl(HALF_PI/2.), 4);
-	
+
 	Dwig[0][1] = (1/2.) * (1 + cosp) * sinp;
 	Dwig[1][1] = powl(cosp, 2.) - (1/2.) * (1 - cosp);
 	Dwig[2][1] = -sqrtl(3/8.) * sinl(HALF_PI * 2.);
 	Dwig[3][1] = (1/2.) * (1 + cosp) - powl(cosp, 2);
 	Dwig[4][1] = (1/2.) * (cosp - 1) * sinp;
-	
+
 	Dwig[0][2] = sqrtl(3/8.) * powl(sinp, 2);
 	Dwig[1][2] = sqrtl(3/2.) * sinp * cosp;
 	Dwig[2][2] = (1/2.) * (3 * powl(cosp, 2) - 1);
 	Dwig[3][2] = -sqrtl(3/2.) * sinp * cosp;
 	Dwig[4][2] = sqrtl(3/8.) * powl(sinp, 2);
-	
+
 	Dwig[0][3] = -(1/2.) * (cosp - 1) * sinp;
 	Dwig[1][3] = (1/2.) * (1 + cosp) - powl(cosp, 2);
 	Dwig[2][3] = sqrtl(3/8.) * sinl(HALF_PI * 2.);
 	Dwig[3][3] = powl(cosp, 2) - (1/2.)*(1-cosp);
 	Dwig[4][3] = (-1/2.) * (1 + cosp) * sinp;
-	
+
 	Dwig[0][4] = powl(sinl(HALF_PI/2.), 4);
 	Dwig[1][4] = (-1/2.) * (cosp - 1) * sinp;
 	Dwig[2][4] = sqrtl(3/8.) * powl(sinp, 2);
@@ -193,7 +193,7 @@ void free_all(struct Model *m) {
 		case MOD_SMFT:params = 3; break;
 		default: params = 0; break;
 	}
-	
+
 	for (res = 0; res < m->n_residues; res++) {
 		if (m->residues[res].relaxation != NULL)
 			free(m->residues[res].relaxation);
@@ -214,6 +214,6 @@ void free_all(struct Model *m) {
 		}
 	}
 	free(m->residues);
-	
+
 	return;
 }
