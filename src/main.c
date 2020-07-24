@@ -27,7 +27,7 @@ void * run_residue(void *input) {
 		printf("%s not found.\n", filename);
 		return NULL;
 	}
-	
+
 	//printf("RESIDUE %d\n", i+1);
 	//printf("Number of relaxations: %d\n", resid->n_relaxation);
 	int l, k, params = 0;
@@ -45,7 +45,7 @@ void * run_residue(void *input) {
 	opts = (long double *) malloc (sizeof(long double) * params);
 	resid->parameters = (long double *) malloc (sizeof(long double) * params);
 	resid->min_val = MIN_VAL;
-	
+
 	for (l = 0; l < n_iter; l++) {
 		if (resid->ignore == 1) {
 			fprintf(fp, "%d, %f, -1, -1\n", i+1, 1000.);
@@ -58,12 +58,12 @@ void * run_residue(void *input) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 		} else if (model == MOD_EMF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8);			
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
 			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from 0.5 to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -11);
 			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_EMFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -15);			
+			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
 			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from 0.5 to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -20);
 			opts[3] = (rand()%60000)/1.;
@@ -79,6 +79,7 @@ void * run_residue(void *input) {
 			for (k = 2; k <= 7; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
+				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
 			}
 		} else if (model == MOD_GAFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
@@ -90,7 +91,7 @@ void * run_residue(void *input) {
 			opts[8] = (rand()%60000)/1.;
 			opts[9] = (rand()%60000)/1.;
 		}
-		
+
 		//printf("%Le, %Le\n", opts[0], opts[1]);
 		double val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
 		if (val >= 1000000) {
@@ -103,15 +104,15 @@ void * run_residue(void *input) {
 		for (k = 0; k < params; k++) {
 			fprintf(fp, "\t%Le", opts[k]);
 		}
-		
+
 		if (val < resid->min_val && val != -1) {
 			//printf("New lowest %f\n", val);
 			resid->min_val = val;
 			for (k = 0; k < params; k++) {
 				resid->parameters[k] = opts[k];
 			}
-		}	
-		fprintf(fp, "\n"); 
+		}
+		fprintf(fp, "\n");
 	}
 	free(opts);
 	fclose(fp);
@@ -122,11 +123,11 @@ void * run_residue(void *input) {
 
 
 int main(int argc, char * argv[]) {
-	
+
 	/* Initialisation */
 	srand(time(NULL));
 	initialise_dwig();
-	
+
 	char system_file[255] = "";
 	int i;
 	int err_mod = 0;
@@ -137,14 +138,14 @@ int main(int argc, char * argv[]) {
 		else
 			strcpy(system_file, argv[i]);
 	}
-	
-	if (strcmp(system_file, "") == 0){ 
+
+	if (strcmp(system_file, "") == 0){
 		printf("Please provide system file.\n");
 		exit(-1);
 	}
-	
-	
-	
+
+
+
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
 	m.error_mode = err_mod;
@@ -152,20 +153,20 @@ int main(int argc, char * argv[]) {
 		printf("Please provide number of error iterations\n");
 		ret = -1;
 	}
-	
+
 	if (ret == -1) {
 		printf("Error found, crashing peacefully...\n");
 		exit(-1);
 	}
-	
+
 	printf("%d\n", ret);
 	char filename[300];
 	sprintf(filename, "%s/model.txt", m.outputdir);
 	//print_system(&m, filename);
-	
+
 	/*int AS;
 	long double sA, sB, sG;
-	
+
 
 	for (AS = 0; AS < 14; AS++) {
 		sA = 2.591225;
@@ -175,13 +176,13 @@ int main(int argc, char * argv[]) {
 
 		//printf("\n\n\nPhi %f, Theta %f\n", m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta);
 		//printf("\nGAF_ord_paramTT(%Lf, %Lf, %Lf, %f, %f, %f, %f)\n\n", sA, sB, sG, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta);
-		
+
 		//printf("\tsA: %Lf\n\tsB: %Lf\n\tsG: %Lf\n", sA, sB, sG);
 		printf("\nGAF_ord_paramTT(%Lf, %Lf, %Lf, %f, %f, %f, %f)\n\n", sA, sB, sG, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta, m.residues[28].orients[AS].phi, m.residues[28].orients[AS].theta);
 		printf("\t\t... S2 = %0.36Lf\n", GAF_S2(sA, sB, sG, &(m.residues[28].orients[AS]), &(m.residues[28].orients[AS]), MODE_REAL));
-		
+
 		printf("\n\n\n");
-		
+
 	}*/
 
 
@@ -190,10 +191,10 @@ int main(int argc, char * argv[]) {
 	pthread_attr_init(&threadattr);
 	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
 	int rc;
-	
+
 	int current_residue = 0;
 	int n_spawns = 0;
-	/* if we have 56 residues and 4 threads then we need 
+	/* if we have 56 residues and 4 threads then we need
 	 * 56 / 4 spawn events (= 14). Add 1 in case (eg for 57).
 	 * Then loop over threads, increment current_residue and assign pointers.
 	 */
@@ -226,7 +227,7 @@ int main(int argc, char * argv[]) {
 		}
 		current_residue += m.nthreads;
 
-	
+
 		for (i=0; i<m.nthreads; ++i) {
 			rc = pthread_join(threads[i], NULL);
 		}
@@ -241,7 +242,7 @@ int main(int argc, char * argv[]) {
 	}
 	int params;
 	FILE * ep = NULL;
-	
+
 	switch (m.model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
@@ -251,7 +252,7 @@ int main(int argc, char * argv[]) {
 		case MOD_GAFT:params = 10; break;
 		default: params = 0; break;
 	}
-	
+
 	if (m.error_mode == 1) {
 		sprintf(filename, "%s/errors.dat", m.outputdir);
 		ep = fopen(filename, "w");
@@ -259,9 +260,9 @@ int main(int argc, char * argv[]) {
 			printf("%s not found.\n", filename);
 			return -1;
 		}
-	
-		
-		
+
+
+
 		printf("Calculating Errors...\n");
 		current_residue = 0;
 		for (l = 0; l < n_spawns; l++) {
@@ -282,26 +283,26 @@ int main(int argc, char * argv[]) {
 			}
 			current_residue += m.nthreads;
 
-		
+
 			for (i=0; i<m.nthreads; ++i) {
 				rc = pthread_join(threads[i], NULL);
 			}
 		}
 	}
-	
+
 	free(RRA);
 	free(threads);
-	
+
 	int k;
-	
-	
+
+
 	printf("Outputting Files...\n");
 	long double c = -1;
 	char file[300];
 	for (l = 0; l < m.n_residues; l++) {
 		if (m.error_mode == 1) {
 			for (k = 0; k < params; k++) {
-				calc_statistics(m.residues[l].error_params[k], m.n_error_iter, &(m.residues[l].errors_mean[k]), &(m.residues[l].errors_std[k])); 
+				calc_statistics(m.residues[l].error_params[k], m.n_error_iter, &(m.residues[l].errors_mean[k]), &(m.residues[l].errors_std[k]));
 			}
 		}
 		if (m.residues[l].min_val == MIN_VAL) {
@@ -322,7 +323,7 @@ int main(int argc, char * argv[]) {
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
 			 * The error_means are generally not minimal. */
 		}
-		
+
 		fprintf(fp, "\n");
 		if (m.error_mode == 1) {
 			fprintf(ep, "\n");
@@ -330,8 +331,8 @@ int main(int argc, char * argv[]) {
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, file);
 	}
-	
-	
+
+
 	fclose(fp);
 	if (m.error_mode == 1)
 		fclose(ep);
