@@ -2,11 +2,11 @@
 #include <math.h>
 #include <complex.h>
 
-#define J0_SMF(omega, tau, S2) ((((1 - (double) S2) * (long double) tau)) / (1 + ((double) omega * (long double) tau * (double) omega * (long double) tau)))
-#define J0_EMF(omega, taus, S2s, tauf, S2f) (((((1 - (double) S2f)) * (long double) tauf)) / (1 + ((double) omega * (long double) tauf * (double) omega * (long double) tauf))) + ((((double) S2f) * (1 - (double) S2s) * (long double) taus) / (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus)))
+#define J0_SMF(omega, tau, S2) ((long double) ((((1 - (double) S2) * (long double) tau)) / (1 + ((double) omega * (long double) tau * (double) omega * (long double) tau))))
+#define J0_EMF(omega, taus, S2s, tauf, S2f) ((long double) (((((1 - (double) S2f)) * (long double) tauf)) / (1 + ((double) omega * (long double) tauf * (double) omega * (long double) tauf))) + ((((double) S2f) * (1 - (double) S2s) * (long double) taus) / (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))))
 
-#define sq_i(x) (int) x * (int) x
-#define sq(x) (double) x * (double) x
+#define sq_i(x) ((int) x * (int) x)
+#define sq(x) ((double) x * (double) x)
 /*long double J0_SMF(double omega, long double * tau, long double * S2) {
 	return (((1 - (*S2)) * (*tau)) / (1 + powl((omega) * (*tau), 2)));
 }
@@ -220,7 +220,7 @@ double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode
 #define MODE_COMP		2*/
 
 	int l, m, mp, k, kp;
-	double complex Amp;
+	double complex Amp = 0;
 	double complex temp;
 
 	int ksqsum;
@@ -276,7 +276,10 @@ double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode
 	return -1;
 }
 
-/* This has not been directly tested against the MATLAB model as I don't really have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest but I don't have the setup around it for the Legendre polynomials) */
+/* This has not been directly tested against the MATLAB model as I don't really
+ * have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest
+ * but I don't have the setup around it for the Legendre polynomials) */
+ /* WARNING: NCSAxy IS OMITTED */
 double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
@@ -330,24 +333,23 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 
 	// X
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxs, tauf, S2NCSAxf);
-	R1CSAx = (2/15.) * d2x * J1;
-
+	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
+	
 	// Y
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2NCSAyf);
-	R1CSAy = (2/15.) * d2y * J1;
+	R1CSAy = (1/15.) * d2y * J1;
 
 	// XY
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
-
-	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
+	/* CSA xy is the major contributor?! */
+	R1CSA = R1CSAx + R1CSAy; //- R1CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 
 	long double J0HC, J2HC;
 
 	// NH
-
 	J0HC = J0_EMF(omega_1H - omega_15N, taus, S2NHs, tauf, S2NHf);
 	J1   = J0_EMF(omega_15N, taus, S2NHs, tauf, S2NHf);
 	J2HC = J0_EMF(omega_1H + omega_15N, taus, S2NHs, tauf, S2NHf);
@@ -456,7 +458,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
 	R2CSAxy = (1/45.) * d2xy * (J0sum + 3 * J1);
 
-	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy;// - R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 

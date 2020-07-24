@@ -46,10 +46,15 @@ double EMF_R1_f(struct Residue *res, struct Relaxation* relax, long double taus,
 	Jcomp += 3 * J0_EMF(omega_L, taus, S2s, tauf, S2f);
 	Jcomp += 6 * J0_EMF(omega_1H + omega_L, taus, S2s, tauf, S2f);
 	R1D = 0.1 * d * d * Jcomp;
-	R1CSA = (2/15.) * d2tot * J0_EMF(omega_L, taus, S2s, tauf, S2f);
+
+    long double J1 = 0;
+    J1 = J0_EMF(omega_L, taus, S2s, tauf, S2f);
+
+    printf("\t\tEMF\td2tot: \t%Lf\n\t\t\tJ1: \t%0.36Lf\n", d2tot, J1);
+	R1CSA = (2/15.) * d2tot * J1;
 
 
-	return R1D + R1CSA;
+	return R1CSA + R1CSA;
 }
 
 double EMF_R2_f(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, long double S2f, int mode) {
@@ -101,7 +106,7 @@ double EMF_R2_f(struct Residue *res, struct Relaxation* relax, long double taus,
 
 	R2D = (1/20.) * d * d * JNH;
 	R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0_EMF(omega_L, taus, S2s, tauf, S2f));
-	return R2D + R2CSA;
+	return R2CSA + R2D;
 }
 
 int main(int argc, char * argv[]) {
@@ -154,16 +159,17 @@ int main(int argc, char * argv[]) {
                             for (sigf[1] = 0; sigf[1] <= 0.1; sigf[1] += 0.05) {
                                 for (sigf[2] = 0; sigf[2] <= 0.1; sigf[2] += 0.05) {
                                     S2s_eff = GAF_S2(sigs, &(m.residues[residue].orients[OR_NH]), &(m.residues[residue].orients[OR_NH]), MODE_REAL);
-                                    S2f_eff = GAF_S2(sigs, &(m.residues[residue].orients[OR_NH]), &(m.residues[residue].orients[OR_NH]), MODE_REAL);
+                                    S2f_eff = GAF_S2(sigf, &(m.residues[residue].orients[OR_NH]), &(m.residues[residue].orients[OR_NH]), MODE_REAL);
+                                    printf("Tauf: %Le; Taus: %Le\n", tauf, taus);
+                                    printf("Slow [%Lf, %Lf, %Lf] -> %f\n", sigs[0], sigs[1], sigs[2], S2s_eff);
+                                    printf("Fast [%Lf, %Lf, %Lf] -> %f\n", sigf[0], sigf[1], sigf[2], S2f_eff);
                                     R1EMF = EMF_R1_f(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, tauf, S2f_eff, MODE_15N);
                                     R2EMF = EMF_R2_f(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, tauf, S2f_eff, MODE_15N);
 
                                     R1GAF = GAF_15NR1(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
                                     R2GAF = GAF_15NR2(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
 
-                                    printf("Tauf: %Lf; Taus: %Lf\n", tauf, taus);
-                                    printf("Slow [%Lf, %Lf, %Lf] -> %f\n", sigs[0], sigs[1], sigs[2], S2s_eff);
-                                    printf("Fast [%Lf, %Lf, %Lf] -> %f\n", sigf[0], sigf[1], sigf[2], S2f_eff);
+
                                     printf("R1\t\tEMF: %f\n\t\tGAF: %f\n", R1EMF, R1GAF);
                                     printf("R2\t\tEMF: %f\n\t\tGAF: %f\n", R2EMF, R2GAF);
                                 }
