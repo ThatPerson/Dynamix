@@ -23,8 +23,8 @@
 #define OR_NCSAxx		3
 #define OR_NCSAyy 		4
 #define OR_NCSAzz		5
-#define OR_NCCAp		6
-#define OR_NCCAc		7
+#define OR_CCAp		6
+#define OR_CCAc		7
 #define OR_CN			8
 #define OR_CNH			9
 #define OR_CH			10

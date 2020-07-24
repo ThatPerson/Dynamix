@@ -22,11 +22,11 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 		k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
 		resid = resid - 1; // 0 indexed in C
 		switch (dt) {
-			case DATA_S2: 
-				m->residues[resid].S2_dipolar = val; 
+			case DATA_S2:
+				m->residues[resid].S2_dipolar = val;
 				if (val == -1) m->residues[resid].ignore = 1;
 				break;
-			case DATA_CSISON: 
+			case DATA_CSISON:
 				m->residues[resid].csisoN = val;
 				/* 15N CSA parametrization according to isotropic chemical shift
 				 * Wylie, B. J. et al.; Rienstra, C. M. Proc. Natl. Acad. Sci. U. S. A. 2011, 108, 16974.%from Rienstra, PNAS 2011.:
@@ -35,8 +35,8 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 				m->residues[resid].csaN[1] = 1.0086 * val - 42.475;
 				m->residues[resid].csaN[2] = 0.8631 * val - 51.295;
 				break;
-			case DATA_CSISOC: 
-				m->residues[resid].csisoC = val; 
+			case DATA_CSISOC:
+				m->residues[resid].csisoC = val;
 				/* 13C' CSA parametrization according to isotropic chemical shift from
 				 * Wylie, B. J. et al.; Rienstra, C. M. J. Am. Chem. Soc. 2007, 129, 5318.*/
 				m->residues[resid].csaC[0] = 0.24 * val + 200;
@@ -123,7 +123,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 					printf("Note: type = 0 in %s\n", filename);
 				if (T == -1)
 					printf("Note: T = 0 in %s\n", filename);
-				
+
 				m->residues[i].relaxation[rel].field = field;
 				m->residues[i].relaxation[rel].wr = wr;
 				m->residues[i].relaxation[rel].w1 = w1;
@@ -174,10 +174,10 @@ int read_system_file(char *filename, struct Model * m) {
 	 * It reads in parameters to the struct m, and then calls
 	 * read_relaxation and relevant other functions to import
 	 * additional data.
-	 * 
+	 *
 	 * Function returns 1 if successful, -1 if failure.
 	 */
-	
+
 	FILE * fp;
 	char line[255];
 	size_t len = 255;
@@ -203,7 +203,7 @@ int read_system_file(char *filename, struct Model * m) {
 	m->n_iter = 1;
 	int to_ignore[50];
 	int ig = 0;
-	
+
 	/* Initialise */
 	m->max_func_evals = 20000;
 	m->max_iter = 20000;
@@ -211,9 +211,9 @@ int read_system_file(char *filename, struct Model * m) {
 	m->n_error_iter = -1;
 	m->model = -1;
 	m->n_residues = -1;
-	m->nthreads = 1; 
-	
-	
+	m->nthreads = 1;
+
+
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -222,7 +222,7 @@ int read_system_file(char *filename, struct Model * m) {
 				printf("Error: Number of residues must be defined\n");
 				return -1;
 			}
-			
+
 			m->residues = (struct Residue *) malloc(sizeof(struct Residue) * n_resid);
 			int i;
 			for (i = 0; i < n_resid; i++) {
@@ -231,11 +231,11 @@ int read_system_file(char *filename, struct Model * m) {
 				m->residues[i].n_relaxation = 0;
 				m->residues[i].ignore = 0;
 			}
-			
+
 			for (i = 0; i < ig; i++) {
 				m->residues[to_ignore[i] - 1].ignore = 1;
 			}
-				
+
 			int t=0;
 			if (strcmp(s2d, "") != 0)
 				t += read_resid_data(m, s2d, DATA_S2);
@@ -249,7 +249,7 @@ int read_system_file(char *filename, struct Model * m) {
 				t += read_resid_data(m, csisoC, DATA_CSISOC);
 			else
 				t++;
-			
+
 			if (t != 3) {
 				printf("Error: Error in reading one of S2, csisoN, csisoC\n");
 				return -1;
@@ -299,7 +299,7 @@ int read_system_file(char *filename, struct Model * m) {
 				m->max_func_evals = atoi(val);
 			} else if (strcmp(key, "MAXITER") == 0) {
 				m->max_iter = atoi(val);
-			} else if (strcmp(key, "N_RESIDUES") == 0){ 
+			} else if (strcmp(key, "N_RESIDUES") == 0){
 				m->n_residues = atoi(val);
 				n_resid = atoi(val);
 			} else if (strcmp(key, "N_ITER") == 0) {
@@ -309,7 +309,7 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "IGNORE") == 0) {
 				to_ignore[ig] = atoi(val);
 				ig++;
-			} else if (strcmp(key, "N_ERROR_ITER") == 0){ 
+			} else if (strcmp(key, "N_ERROR_ITER") == 0){
 				m->n_error_iter = atoi(val);
 			} else if (strcmp(key, "OR_NH") == 0) {
 				strcpy(pp_orient[OR_NH], val);
@@ -323,10 +323,10 @@ int read_system_file(char *filename, struct Model * m) {
 				strcpy(pp_orient[OR_NCSAyy], val);
 			} else if (strcmp(key, "OR_NCSAzz") == 0) {
 				strcpy(pp_orient[OR_NCSAzz], val);
-			} else if (strcmp(key, "OR_NCCAp") == 0) {
-				strcpy(pp_orient[OR_NCCAp], val);
-			} else if (strcmp(key, "OR_NCCAc") == 0) {
-				strcpy(pp_orient[OR_NCCAc], val);
+			} else if (strcmp(key, "OR_CCAp") == 0) {
+				strcpy(pp_orient[OR_CCAp], val);
+			} else if (strcmp(key, "OR_CCAc") == 0) {
+				strcpy(pp_orient[OR_CCAc], val);
 			} else if (strcmp(key, "OR_CN") == 0) {
 				strcpy(pp_orient[OR_CN], val);
 			} else if (strcmp(key, "OR_CNH") == 0) {
@@ -367,19 +367,19 @@ int read_system_file(char *filename, struct Model * m) {
 		printf("Please provide MODEL\n");
 		return -1;
 	}
-	if (m->n_residues < 0){ 
+	if (m->n_residues < 0){
 		printf("Please provide residue count\n");
 		return -1;
 	}
-	
+
 	return 1;
-	
-	
+
+
 	/*	int max_func_evals, max_iter;
 	int model;
 	struct Residue * residues;
 	int n_residues;*/
-	
+
 }
 
 int print_system(struct Model *m, char *filename) {
@@ -397,10 +397,10 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "=== Residue %d ===\n", i+1);
 		if (m->residues[i].ignore == 1)
 			fprintf(fp, "--- IGNORING ---\n");
-		
+
 		fprintf(fp, "\tS2 = %f\n\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].S2_dipolar, m->residues[i].csisoN, m->residues[i].csisoC);
-		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);  
-		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]); 
+		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
+		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
 		fprintf(fp, "\tOrients;\n");
 		for (j = 0; j < 14; j++) {
 			//if (m->residues[i].orients[j] != NULL)
@@ -416,4 +416,3 @@ int print_system(struct Model *m, char *filename) {
 	return 1;
 
 }
-
