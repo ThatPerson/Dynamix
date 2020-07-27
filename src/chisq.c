@@ -325,7 +325,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		int i;
 
 		for (i = 0; i < resid->n_relaxation; i++) {
-			if (model == MOD_EMFT) {
+			if (model == MOD_GAFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
 				printf("%Le, %Le\n", taus_eff, tauf_eff);
