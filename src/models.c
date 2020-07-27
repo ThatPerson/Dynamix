@@ -199,13 +199,14 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
  *  Order parameter of slow motion
  * @param tauf
  *  Correlation time of fast motion
+ * @param S2f
+ *  Order parameter of fast motion
  * @param mode
  *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
  * @return R1
  *  Returns R1 as double
  */
-double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, int mode) {
-	long double S2f = res->S2_dipolar / S2s;
+double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, long double S2f, int mode) {
 	long double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
@@ -256,13 +257,16 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
  *  Order parameter of slow motion
  * @param tauf
  *  Correlation time of fast motion
+ * @param S2f
+ *  Order parameter of fast motion.
  * @param mode
  *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
  * @return R2
  *  Returns R2 as double
  */
-double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, int mode) {
-	long double S2f = res->S2_dipolar / S2s;
+double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, long double S2f, int mode) {
+	//if (d_mode == DIPOLAR) 
+	//	S2f = res->S2_dipolar / S2s;
 	long double field = relax->field * 1000000; // conversion to Hz
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
 	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
@@ -622,22 +626,6 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
 	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
 	
-	
-	/*S2CHs    = GAF_S2(sigs, &(res->orients[OR_CH]), &(res->orients[OR_CH]), MODE_REAL);
-	S2CSAxs = GAF_S2(sigs, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAxx]), MODE_REAL);
-	S2CSAys = GAF_S2(sigs, &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CSAxys= GAF_S2(sigs, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CNs    = GAF_S2(sigs, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CCs   = GAF_S2(sigs, &(res->orients[OR_CCAc]), &(res->orients[OR_CCAc]), MODE_REAL);
-	// CCAc or CCAp?
-
-	S2CHf    = GAF_S2(sigf, &(res->orients[OR_CH]), &(res->orients[OR_CH]), MODE_REAL);
-	S2CSAxf = GAF_S2(sigf, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAxx]), MODE_REAL);
-	S2CSAyf = GAF_S2(sigf, &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CSAxyf= GAF_S2(sigf, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CNf    = GAF_S2(sigf, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CCf   = GAF_S2(sigf, &(res->orients[OR_CCAc]), &(res->orients[OR_CCAp]), MODE_REAL);*/
-
 	/* N CSA relaxation contribution */
 	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
 	long double J1 = 0;

@@ -30,8 +30,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		/* Simple Model Free Analysis */
 		long double tau = opts[0];
 		long double S2 = opts[1];
-		long double tau_eff;
-		long double Ea;
+		long double tau_eff=0;
+		long double Ea=0;
 		if (model == MOD_SMFT)
 			Ea = opts[2];
 		else
@@ -67,24 +67,30 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
 		}
 		return chisq;
-	} else if (model == MOD_EMF || model == MOD_EMFT) {
+	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
 		/* Extended Model Free Analysis */
 		long double taus = opts[0];
 		long double S2s = opts[1];
 		long double tauf = opts[2];
-		long double taus_eff, tauf_eff, Eas, Eaf;
+		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f = resid->S2_dipolar / S2s;
 		if (model == MOD_EMFT) {
 			Eas = opts[3];
 			Eaf = opts[4];
+		} else if (model == MOD_DEMFT) {
+			Eas = opts[4];
+			Eaf = opts[5];
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
 		}
+		if (model == MOD_DEMF || model == MOD_DEMFT) 
+			S2f = opts[3];
+		
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
 		if (taus < 0 || tauf < 0)
 			chisq += 100000000;
-		if (S2s < 0 || S2s > 1)
+		if (S2s < 0 || S2s > 1 || S2f < 0 || S2f > 1)
 			chisq += 100000000;
 		if (S2s < resid->S2_dipolar)
 			chisq += 100000000;
@@ -94,7 +100,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
-			if (model == MOD_EMFT) {
+			if (model == MOD_EMFT || model == MOD_DEMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
 			}
@@ -102,16 +108,16 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 				chisq += 100000000;
 			switch (resid->relaxation[i].type) {
 				case R_15NR1:
-					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_15N);
 					break;
 				case R_15NR1p:
-					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_15N);
 					break;
 				case R_13CR1:
-					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_13C);
 					break;
 				case R_13CR1p:
-					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_13C);
 					break;
 				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
@@ -127,7 +133,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		long double tauf = opts[1];
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
-		long double taus_eff, tauf_eff, Eas, Eaf;
+		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
 			Eaf = opts[9];
@@ -222,7 +228,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		/* Simple Model Free Analysis */
 		long double tau = opts[0];
 		long double S2 = opts[1];
-		long double tau_eff, Ea;
+		long double tau_eff=0, Ea=0;
 		if (model == MOD_SMFT)
 			Ea = opts[2];
 		else
@@ -258,41 +264,43 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		}
 		fclose(fp);
 		return 1;
-	} else if (model == MOD_EMF || model == MOD_EMFT) {
+	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
 		/* Extended Model Free Analysis */
 		long double taus = opts[0];
 		long double S2s = opts[1];
 		long double tauf = opts[2];
-		long double taus_eff, tauf_eff, Eas, Eaf;
+		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f = resid->S2_dipolar / S2s;
 		if (model == MOD_EMFT) {
 			Eas = opts[3];
 			Eaf = opts[4];
+		} else if (model == MOD_DEMFT) {
+			Eas = opts[4];
+			Eaf = opts[5];
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
 		}
-
-
-
+		if (model == MOD_DEMF || model == MOD_DEMFT)
+			S2f = opts[3];
 		int i;
 		//double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf)
 		for (i = 0; i < resid->n_relaxation; i++) {
-			if (model == MOD_EMFT) {
+			if (model == MOD_EMFT || model == MOD_DEMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
 			}
 			switch (resid->relaxation[i].type) {
 				case R_15NR1:
-					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_15N);
 					break;
 				case R_15NR1p:
-					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_15N);
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_15N);
 					break;
 				case R_13CR1:
-					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
+					calc_R = EMF_R1(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_13C);
 					break;
 				case R_13CR1p:
-					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, MODE_13C);
+					calc_R = EMF_R2(resid, &(resid->relaxation[i]), taus_eff, S2s, tauf_eff, S2f, MODE_13C);
 					break;
 				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
@@ -312,7 +320,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		long double tauf = opts[1];
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
-		long double taus_eff, tauf_eff, Eas, Eaf;
+		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
 			Eaf = opts[9];

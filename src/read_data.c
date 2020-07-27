@@ -369,6 +369,10 @@ int read_system_file(char *filename, struct Model * m) {
 					m->model = MOD_GAF;
 				else if (strcmp(val, "GAFT") == 0)
 					m->model = MOD_GAFT;
+				else if (strcmp(val, "DEMF") == 0)
+					m->model = MOD_DEMF;
+				else if (strcmp(val, "DEMFT") == 0)
+					m->model = MOD_DEMFT;
 				else {
 					printf("Model %s unknown.\n", val);
 					return -1;

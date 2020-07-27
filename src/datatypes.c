@@ -6,11 +6,13 @@
 #include <math.h>
 #include <complex.h>
 #define MOD_SMF 		0						///< Simple Model Free
-#define MOD_EMF 		1						///< Extended Model Free
-#define MOD_EMFT		2						///< Extended Model Free with Temperature Dependence
+#define MOD_EMF 		1						///< Extended Model Free using S2 dipolar
+#define MOD_EMFT		2						///< Extended Model Free with Temperature Dependence using S2 dipolar
 #define MOD_SMFT 		3						///< Simple Model Free with Temperature Dependence
-#define MOD_GAF 		4						///< Gaussian Axial Fluctuations model
-#define MOD_GAFT 		5						///< Gaussian Axial Fluctuations model with Temperature Dependence
+#define MOD_DEMF		4 						///< Extended Model Free 
+#define MOD_DEMFT		5						///< Extended Model Free  with Temperature Dependence
+#define MOD_GAF 		6						///< Gaussian Axial Fluctuations model
+#define MOD_GAFT 		7						///< Gaussian Axial Fluctuations model with Temperature Dependence
 
 #define DATA_S2			0
 #define DATA_CSISON		1
@@ -62,6 +64,9 @@
 #define MODE_REAL		0
 #define MODE_IMAG		1
 #define MODE_COMP		2
+
+#define DIPOLAR			1
+#define NODIP			0
 
 #define HALF_PI			M_PI / 2.
 
@@ -311,6 +316,10 @@ void free_all(struct Model *m) {
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT:params = 5; break;
 		case MOD_SMFT:params = 3; break;
+		case MOD_DEMF: params = 4; break;
+		case MOD_DEMFT: params= 6; break;
+		case MOD_GAF: params = 8; break;
+		case MOD_GAFT: params = 10; break;
 		default: params = 0; break;
 	}
 

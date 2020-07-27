@@ -83,6 +83,8 @@ void * calc_errors(void *input) {
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT: params= 5; break;
 		case MOD_SMFT: params= 3; break;
+		case MOD_DEMF: params = 4; break;
+		case MOD_DEMFT: params= 6; break;
 		case MOD_GAF: params = 8; break;
 		case MOD_GAFT:params = 10; break;
 		default: params = 0; break;

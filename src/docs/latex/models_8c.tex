@@ -33,7 +33,7 @@ double \mbox{\hyperlink{models_8c_a20cdb066e2edf9cd6f26e08a4b87c7fe}{E\+M\+F\+\_
 \item 
 double \mbox{\hyperlink{models_8c_a2569ecc4f3474961467e59ddd9a410c8}{E\+M\+F\+\_\+\+R2}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double S2s, long double tauf, int mode)
 \item 
-double \mbox{\hyperlink{models_8c_abf1ea9a8f9871b3cf1e2bbd5f81a0f28}{G\+A\+F\+\_\+\+S2}} (long double sig\mbox{[}3\mbox{]}, struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$A, struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$B, int mode)
+int \mbox{\hyperlink{models_8c_adc1305d5c176e6b419bc12a238b99923}{G\+A\+F\+\_\+\+S2}} (long double sig\mbox{[}3\mbox{]}, struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$$\ast$A, struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$$\ast$B, double $\ast$S2\mbox{[}$\,$\mbox{]}, int length, int mode)
 \item 
 double \mbox{\hyperlink{models_8c_a95c2a2ce7993dd369b9a5915d0d1522f}{G\+A\+F\+\_\+15\+N\+R1}} (struct \mbox{\hyperlink{structResidue}{Residue}} $\ast$res, struct \mbox{\hyperlink{structRelaxation}{Relaxation}} $\ast$relax, long double taus, long double tauf, long double $\ast$sigs, long double $\ast$sigf)
 \item 
@@ -222,7 +222,7 @@ Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{
 
 Has not been tested on 13C data 
 
-Currently omits N\+C\+S\+Axy due to error in this calculation. 
+I\textquotesingle{}m unsure of the validity of C\+S\+Axy. 
 \end{DoxyWarning}
 
 \begin{DoxyParams}{Parameters}
@@ -253,7 +253,7 @@ Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{
 
 Has not been tested on 13C data 
 
-Currently omits N\+C\+S\+Axy due to error in this calculation. 
+I\textquotesingle{}m unsure of the validity of C\+S\+Axy. 
 \end{DoxyWarning}
 
 \begin{DoxyParams}{Parameters}
@@ -282,7 +282,7 @@ R2 Returns R2 as double
 Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations. \begin{DoxyWarning}{Warning}
 Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{}t really an equivalent to it that I have set up. 
 
-Currently omits N\+C\+S\+Axy due to error in this calculation. 
+I\textquotesingle{}m unsure of the validity of N\+C\+S\+Axy. 
 \end{DoxyWarning}
 
 \begin{DoxyParams}{Parameters}
@@ -311,7 +311,7 @@ R1 Returns R1 as double
 Calculates R2 relaxation rate for 15N nucleus under gaussian axial fluctuations. \begin{DoxyWarning}{Warning}
 Has not been verified against M\+A\+T\+L\+AB model as there isn\textquotesingle{}t really an equivalent to it that I have set up. 
 
-Currently omits N\+C\+S\+Axy due to error in this calculation. 
+I\textquotesingle{}m unsure of the validity of N\+C\+S\+Axy. 
 \end{DoxyWarning}
 
 \begin{DoxyParams}{Parameters}
@@ -331,25 +331,29 @@ Currently omits N\+C\+S\+Axy due to error in this calculation.
 \begin{DoxyReturn}{Returns}
 R2 Returns R2 as double 
 \end{DoxyReturn}
-\mbox{\Hypertarget{models_8c_abf1ea9a8f9871b3cf1e2bbd5f81a0f28}\label{models_8c_abf1ea9a8f9871b3cf1e2bbd5f81a0f28}} 
+\mbox{\Hypertarget{models_8c_adc1305d5c176e6b419bc12a238b99923}\label{models_8c_adc1305d5c176e6b419bc12a238b99923}} 
 \index{models.c@{models.c}!GAF\_S2@{GAF\_S2}}
 \index{GAF\_S2@{GAF\_S2}!models.c@{models.c}}
 \doxysubsubsection{\texorpdfstring{GAF\_S2()}{GAF\_S2()}}
-{\footnotesize\ttfamily double G\+A\+F\+\_\+\+S2 (\begin{DoxyParamCaption}\item[{long double}]{sig\mbox{[}3\mbox{]},  }\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$}]{A,  }\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$}]{B,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily int G\+A\+F\+\_\+\+S2 (\begin{DoxyParamCaption}\item[{long double}]{sig\mbox{[}3\mbox{]},  }\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$$\ast$}]{A,  }\item[{struct \mbox{\hyperlink{structOrient}{Orient}} $\ast$$\ast$}]{B,  }\item[{double $\ast$}]{S2\mbox{[}$\,$\mbox{]},  }\item[{int}]{length,  }\item[{int}]{mode }\end{DoxyParamCaption})}
 
-Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. 
+Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. This function parallelises the calculation such that the loop over l, m, mp, k, kp only needs to occur once per motion -\/ also meaning that the calculation of the exponential only needs to be done once. Checks for conjugation are made to reduce the need to calculate complex powers only to the cases where this is necessary. 
 \begin{DoxyParams}{Parameters}
 {\em sig} & Array containing \mbox{[}alpha, beta, gamma\mbox{]} deflection angles \\
 \hline
-{\em A} & Orientation vector A \\
+{\em A} & Array containing pointers to orientation vectors for \textquotesingle{}A\textquotesingle{} for each S2 being calculated. \\
 \hline
-{\em B} & Orientation vector B \\
+{\em B} & Array containing pointers to orientation vectors for \textquotesingle{}B\textquotesingle{} for each S2 being calculated. \\
+\hline
+{\em S2} & Array containing pointers to S2 values -\/ this is where output will be put. \\
+\hline
+{\em length} & Number of S2 values being calculated (eg length of S2) \\
 \hline
 {\em mode} & M\+O\+D\+E\+\_\+\+R\+E\+AL or M\+O\+D\+E\+\_\+\+I\+M\+AG depending on which result is being returned. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-S2 Returns order parameter as double 
+Returns 1 in all cases. 
 \end{DoxyReturn}
 \mbox{\Hypertarget{models_8c_a140a9318a12298b2837a0256e7f9d069}\label{models_8c_a140a9318a12298b2837a0256e7f9d069}} 
 \index{models.c@{models.c}!SMF\_R1@{SMF\_R1}}

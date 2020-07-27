@@ -108,8 +108,8 @@ Functions</h2></td></tr>
 <tr class="separator:a20cdb066e2edf9cd6f26e08a4b87c7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2569ecc4f3474961467e59ddd9a410c8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a2569ecc4f3474961467e59ddd9a410c8">EMF_R2</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double S2s, long double tauf, int mode)</td></tr>
 <tr class="separator:a2569ecc4f3474961467e59ddd9a410c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf1ea9a8f9871b3cf1e2bbd5f81a0f28"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#abf1ea9a8f9871b3cf1e2bbd5f81a0f28">GAF_S2</a> (long double sig[3], struct <a class="el" href="structOrient.html">Orient</a> *A, struct <a class="el" href="structOrient.html">Orient</a> *B, int mode)</td></tr>
-<tr class="separator:abf1ea9a8f9871b3cf1e2bbd5f81a0f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc1305d5c176e6b419bc12a238b99923"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#adc1305d5c176e6b419bc12a238b99923">GAF_S2</a> (long double sig[3], struct <a class="el" href="structOrient.html">Orient</a> **A, struct <a class="el" href="structOrient.html">Orient</a> **B, double *S2[], int length, int mode)</td></tr>
+<tr class="separator:adc1305d5c176e6b419bc12a238b99923"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95c2a2ce7993dd369b9a5915d0d1522f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a95c2a2ce7993dd369b9a5915d0d1522f">GAF_15NR1</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double tauf, long double *sigs, long double *sigf)</td></tr>
 <tr class="separator:a95c2a2ce7993dd369b9a5915d0d1522f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cb701e390613d63b3a1cff186ac0aba"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a8cb701e390613d63b3a1cff186ac0aba">GAF_15NR2</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double tauf, long double *sigs, long double *sigf)</td></tr>
@@ -634,7 +634,7 @@ Functions</h2></td></tr>
 <dd>
 Has not been tested on 13C data </dd>
 <dd>
-Currently omits NCSAxy due to error in this calculation. </dd></dl>
+I'm unsure of the validity of CSAxy. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
@@ -703,7 +703,7 @@ Currently omits NCSAxy due to error in this calculation. </dd></dl>
 <dd>
 Has not been tested on 13C data </dd>
 <dd>
-Currently omits NCSAxy due to error in this calculation. </dd></dl>
+I'm unsure of the validity of CSAxy. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
@@ -770,7 +770,7 @@ Currently omits NCSAxy due to error in this calculation. </dd></dl>
 </div><div class="memdoc">
 <p>Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations. </p><dl class="section warning"><dt>Warning</dt><dd>Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up. </dd>
 <dd>
-Currently omits NCSAxy due to error in this calculation. </dd></dl>
+I'm unsure of the validity of NCSAxy. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
@@ -837,7 +837,7 @@ Currently omits NCSAxy due to error in this calculation. </dd></dl>
 </div><div class="memdoc">
 <p>Calculates R2 relaxation rate for 15N nucleus under gaussian axial fluctuations. </p><dl class="section warning"><dt>Warning</dt><dd>Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up. </dd>
 <dd>
-Currently omits NCSAxy due to error in this calculation. </dd></dl>
+I'm unsure of the validity of NCSAxy. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
@@ -853,14 +853,14 @@ Currently omits NCSAxy due to error in this calculation. </dd></dl>
 
 </div>
 </div>
-<a id="abf1ea9a8f9871b3cf1e2bbd5f81a0f28"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf1ea9a8f9871b3cf1e2bbd5f81a0f28">&#9670;&nbsp;</a></span>GAF_S2()</h2>
+<a id="adc1305d5c176e6b419bc12a238b99923"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc1305d5c176e6b419bc12a238b99923">&#9670;&nbsp;</a></span>GAF_S2()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double GAF_S2 </td>
+          <td class="memname">int GAF_S2 </td>
           <td>(</td>
           <td class="paramtype">long double&#160;</td>
           <td class="paramname"><em>sig</em>[3], </td>
@@ -868,14 +868,26 @@ Currently omits NCSAxy due to error in this calculation. </dd></dl>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct <a class="el" href="structOrient.html">Orient</a> *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="structOrient.html">Orient</a> **&#160;</td>
           <td class="paramname"><em>A</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct <a class="el" href="structOrient.html">Orient</a> *&#160;</td>
+          <td class="paramtype">struct <a class="el" href="structOrient.html">Orient</a> **&#160;</td>
           <td class="paramname"><em>B</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>S2</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -890,16 +902,18 @@ Currently omits NCSAxy due to error in this calculation. </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. This function parallelises the calculation such that the loop over l, m, mp, k, kp only needs to occur once per motion - also meaning that the calculation of the exponential only needs to be done once. Checks for conjugation are made to reduce the need to calculate complex powers only to the cases where this is necessary. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sig</td><td>Array containing [alpha, beta, gamma] deflection angles </td></tr>
-    <tr><td class="paramname">A</td><td>Orientation vector A </td></tr>
-    <tr><td class="paramname">B</td><td>Orientation vector B </td></tr>
+    <tr><td class="paramname">A</td><td>Array containing pointers to orientation vectors for 'A' for each S2 being calculated. </td></tr>
+    <tr><td class="paramname">B</td><td>Array containing pointers to orientation vectors for 'B' for each S2 being calculated. </td></tr>
+    <tr><td class="paramname">S2</td><td>Array containing pointers to S2 values - this is where output will be put. </td></tr>
+    <tr><td class="paramname">length</td><td>Number of S2 values being calculated (eg length of S2) </td></tr>
     <tr><td class="paramname">mode</td><td>MODE_REAL or MODE_IMAG depending on which result is being returned. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>S2 Returns order parameter as double </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns 1 in all cases. </dd></dl>
 
 </div>
 </div>

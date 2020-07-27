@@ -44,6 +44,8 @@ void * run_residue(void *input) {
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT: params= 5; break;
 		case MOD_SMFT: params= 3; break;
+		case MOD_DEMF: params = 4; break;
+		case MOD_DEMFT: params= 6; break;
 		case MOD_GAF: params = 8; break;
 		case MOD_GAFT:params = 10; break;
 		default: params = 0; break;
@@ -82,6 +84,18 @@ void * run_residue(void *input) {
 		 *   [2] tau fast\n 
 		 *   [3] activation energy for slow motion\n 
 		 *   [4] activation energy for fast motion\n 
+		 * DEMF parameters\n
+		 *   [0] tau slow\n
+		 *   [1] S2 slow\n
+		 *   [2] tau fast\n
+		 *   [3] S2 fast\n
+		 * DEMFT parameters\n
+		 *   [0] tau slow\n
+		 *   [1] S2 slow\n
+		 *   [2] tau fast\n
+		 *   [3] S2 fast\n
+		 *   [4] activation energy for slow motion\n
+		 *   [5] activation energy for fast motion\n
 		 * GAF parameters\n 
 		 *   [0] tau slow\n 
 		 *   [1] tau fast\n 
@@ -100,16 +114,28 @@ void * run_residue(void *input) {
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 		} else if (model == MOD_EMF) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
-			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from 0.5 to 1
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -11);
 			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_EMFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
-			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from 0.5 to 1
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -20);
 			opts[3] = (rand()%60000)/1.;
 			opts[4] = (rand()%60000)/1.;
 			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
+		} else if (model == MOD_DEMF) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8);
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
+			opts[2] = ((rand() % 100)/100.) * powl(10, -11);
+			opts[3] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.);
+		} else if (model == MOD_DEMFT) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
+			opts[2] = ((rand() % 100)/100.) * powl(10, -20);
+			opts[3] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.);
+			opts[4] = (rand()%60000)/1.;
+			opts[5] = (rand()%60000)/1.;
 		} else if (model == MOD_SMFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
@@ -295,6 +321,8 @@ int main(int argc, char * argv[]) {
 		case MOD_EMF: params = 3; break;
 		case MOD_EMFT:params = 5; break;
 		case MOD_SMFT:params = 3; break;
+		case MOD_DEMF: params = 4; break;
+		case MOD_DEMFT: params= 6; break;
 		case MOD_GAF: params = 8; break;
 		case MOD_GAFT:params = 10; break;
 		default: params = 0; break;
@@ -341,7 +369,15 @@ int main(int argc, char * argv[]) {
 	free(threads);
 
 	int k;
-
+	FILE * gaf;
+	if (m.model == MOD_GAF || m.model == MOD_GAFT) {
+		sprintf(filename, "%s/gaf.dat", m.outputdir);
+		gaf = fopen(filename, "w");
+		if (gaf == NULL) {
+			printf("%s not found.\n", filename);
+			return -1;
+		}
+	}
 
 	printf("Outputting Files...\n");
 	long double c = -1;
@@ -358,9 +394,9 @@ int main(int argc, char * argv[]) {
 				m.residues[l].parameters[i] = -1.;
 			}
 		}
-		fprintf(fp, "%d\t%f\t%f", l, m.residues[l].S2_dipolar, m.residues[l].min_val);
+		fprintf(fp, "%d\t%f\t%f", l+1, m.residues[l].S2_dipolar, m.residues[l].min_val);
 		if (m.error_mode == 1) {
-			fprintf(ep, "%d, %f, %f", l, m.residues[l].S2_dipolar, m.residues[l].min_val);
+			fprintf(ep, "%d, %f, %f", l+1, m.residues[l].S2_dipolar, m.residues[l].min_val);
 		}
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);
@@ -377,12 +413,28 @@ int main(int argc, char * argv[]) {
 		}
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, file);
+		
+		if (m.model == MOD_GAF || m.model == MOD_GAFT) {
+			// Print out 'effective S2' values.
+			double S2slow, S2fast;
+			double *S2[] = {&S2slow};
+			/* Approximate as just the S2NHs and S2NHf */
+			struct Orient *As[] = {&(m.residues[l].orients[OR_NH])};
+			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
+			long double sigf[3] = {m.residues[l].parameters[5], m.residues[l].parameters[6], m.residues[l].parameters[7]};
+			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
+			S2[0] = &S2fast;
+			GAF_S2(sigf, As, As, S2, 1, MODE_REAL);
+			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, m.residues[l].parameters[0], S2slow, m.residues[l].parameters[1], S2fast);
+		}
 	}
 
 
 	fclose(fp);
 	if (m.error_mode == 1)
 		fclose(ep);
+	if (m.model == MOD_GAF || m.model == MOD_GAFT)
+		fclose(gaf);
 	free_all(&m);
 	return 1;
 }
