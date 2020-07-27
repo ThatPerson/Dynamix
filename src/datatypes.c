@@ -72,6 +72,7 @@
 
 #define VERBOSE			0
 
+
 long double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
 
 
@@ -161,6 +162,8 @@ struct Orient {
  *  Pointer to array containing standard deviations for each error parameter
  * @var Residue::errors_mean
  *  Pointer to array containing means for each error parameter
+ * @var Residue::error_calcs
+ *  Actual number of points used in error calculation
  */
 struct Residue {
 	float S2_dipolar;
@@ -181,6 +184,7 @@ struct Residue {
 	long double * parameters;
 	long double * errors_std;
 	long double * errors_mean;
+	int error_calcs;
 };
 
 /**

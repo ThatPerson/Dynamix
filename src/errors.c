@@ -73,6 +73,7 @@ void * calc_errors(void *input) {
 	struct Residue * resid = ((struct rrargs*)input)->resid;
 	int model = ((struct rrargs*)input)->model;
 	int n_iter = ((struct rrargs*)input)->n_iter;
+	double optim = resid->min_val;
 	//char outputdir[255];
 	//strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 
@@ -100,6 +101,7 @@ void * calc_errors(void *input) {
 	}
 	//resid->min_val = MIN_VAL;*/
 	double val = 0;
+	int p = 0;
 	for (l = 0; l < n_iter; l++) {
 		if (resid->ignore == 1) {
 			return NULL;
@@ -132,8 +134,9 @@ void * calc_errors(void *input) {
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
 		for (k = 0; k < params; k++) {
-			resid->error_params[k][l] = opts[k];
+			resid->error_params[k][p] = opts[p];
 		}
+		p++;
 
 
 		/* Return our pointers to how they were before... */
@@ -142,6 +145,7 @@ void * calc_errors(void *input) {
 		resid->relaxation = resid->temp_relaxation;
 		resid->temp_relaxation = NULL;
 	}
+	resid->error_calcs = p;
 	free(opts);
 	return NULL;
 }

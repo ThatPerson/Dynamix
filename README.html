@@ -1,0 +1,354 @@
+<p>Dynamix is a program developed to fit dynamics models (see <em>Models</em>) to solid state NMR Relaxation data. This guide will go into what features are available, how to use them, how to format data, and also go into any caveats or issues with the model.</p>
+<h2 id="features">Features</h2>
+<p>As of writing, Dynamix can fit the following models;</p>
+<ul>
+<li><p>Simple Model Free (SMF) Fits two parameters, S<span class="math inline">\(^{2}\)</span> and <span class="math inline">\(\tau\)</span>, with spectral density given as;</p>
+<p><span class="math display">\[ J(\omega) = \frac{(1 - S^2) \tau}{1 + (\omega \tau)^2} \]</span></p></li>
+<li><p>Simple Model Free with Temperature Dependence (SMFT) Fits three parameters, S<span class="math inline">\(^2\)</span>, <span class="math inline">\(\tau_0\)</span> and <span class="math inline">\(Ea\)</span>, where the time constant is temperature dependent;</p>
+<p><span class="math display">\[ \tau(t) = \tau_0 \exp(\frac{Ea}{R T}) \]</span></p>
+<p>This is then fit as in SMF.</p></li>
+<li><p>Extended Model Free (EMF) Fits three parameters, S<span class="math inline">\(^{2}_{\text{slow}}\)</span>, <span class="math inline">\(\tau_{\text{slow}}\)</span>, <span class="math inline">\(\tau_{\text{fast}}\)</span>. The fast order parameter, S<span class="math inline">\(^{2}_{\text{fast}}\)</span>, is calculated as <span class="math inline">\(S^{2}_{\text{dipolar}}/S^{2}_{\text{slow}}\)</span>. The spectral density is given as;</p>
+<p><span class="math display">\[ J(\omega) = \frac{(1 - S^{2}_{f}) \tau_f}{1 + (\omega \tau_f)^{2}} + \frac{S^{2}_{f} (1 - S^{2}_s) \tau_s}{1 + (\omega \tau_s)^{2}} \]</span></p></li>
+<li><p>Extended Model Free with Temperature Dependence (EMFT) Five parameter model, fitting S<span class="math inline">\(^{2}_{\text{slow}}\)</span>, <span class="math inline">\(\tau_{0,\text{slow}}\)</span>, <span class="math inline">\(\tau_{0,\text{fast}}\)</span>, <span class="math inline">\(Ea_{\text{slow}}\)</span>, <span class="math inline">\(Ea_{\text{fast}}\)</span>. S<span class="math inline">\(^{2}_{\text{fast}}\)</span> is calculated as in EMF, and the time constants are temperature dependent as in SMFT. The spectral density is as in EMF.</p></li>
+<li><p>Extended Model Free without Dipolar Approximation (DEMF)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Four parameter model, S<span class="math inline">\(^{2}_{\text{slow}}\)</span>, S<span class="math inline">\(^{2}_{\text{fast}}\)</span>, <span class="math inline">\(\tau_{\text{slow}}\)</span>, <span class="math inline">\(\tau_{\text{fast}}\)</span>. Spectral density as in EMF.</p></li>
+<li><p>Extended Model Free without Dipolar Approximation, with Temperature Dependence (DEMFT) Six parameter model, fitting S<span class="math inline">\(^{2}_{\text{slow}}\)</span>, S<span class="math inline">\(^{2}_{\text{fast}}\)</span>, <span class="math inline">\(\tau_{0,\text{slow}}\)</span>, <span class="math inline">\(\tau_{0,\text{fast}}\)</span>, <span class="math inline">\(Ea_{\text{slow}}\)</span>, <span class="math inline">\(Ea_{\text{fast}}\)</span>. Spectral density as in EMF.</p></li>
+<li><p>Gaussian Axial Fluctuations (GAF)<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Eight parameter model: <span class="math inline">\(\tau_{\text{slow}}\)</span>, <span class="math inline">\(\tau_{\text{fast}}\)</span>, <span class="math inline">\(\sigma^{\alpha}_{\text{slow}}\)</span>, <span class="math inline">\(\sigma^{\beta}_{\text{slow}}\)</span>, <span class="math inline">\(\sigma^{\gamma}_{\text{slow}}\)</span>, <span class="math inline">\(\sigma^{\alpha}_{\text{fast}}\)</span>, <span class="math inline">\(\sigma^{\beta}_{\text{fast}}\)</span>, <span class="math inline">\(\sigma^{\gamma}_{\text{fast}}\)</span>. These axial fluctuations are then used to derive order parameters as in Bremi 1997, and then fit to the EMF spectral density function. The relaxation rates take into account dipolar contributions between multiple atom pairs, and anisotropic chemical shift.</p></li>
+<li><p>Gaussian Axial Fluctuations with Temperature Dependence (GAFT) Ten parameter model. All of those in GAF, plus fast and slow activation energies. Temperature dependent time constants calculated as in SMFT, EMFT and DEMFT, angles used to calculate S<span class="math inline">\(^2\)</span>, then fit to EMF spectral density.</p></li>
+</ul>
+<p>These models can be fit to <span class="math inline">\(^{15}\)</span>N and <span class="math inline">\(^{13}\)</span>C R<span class="math inline">\(_1\)</span> and R<span class="math inline">\(_{1\rho}\)</span> values. The models have by and large been tested and verified against MATLAB models for <span class="math inline">\(^{15}\)</span>N, but not for <span class="math inline">\(^{13}\)</span>C.</p>
+<p>For each of these models, Dynamix will perform a user specified number of optimizations with random starting points using the Nelder-Mead simplex method to find an optimum. Each optimum is output into a <code>residue_N.dat</code> file. Once complete, it will perform back calculations for each relaxation data point, outputting these into <code>backcalc_N.dat</code> files. If one of the GAF modes is used, it will calculate effective S<span class="math inline">\(^{2}_{\text{NH}}\)</span> order parameters and output these into <code>gaf.dat</code>.</p>
+<p>If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. The relaxation rates are then varied within their experimental error, and optimization performed. The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<h2 id="compilation">Compilation</h2>
+<p>To compile the program from source on Karplus, navigate to the directory above src/ and run</p>
+<pre><code>gcc src/main.c -lm -pthread -o dynamix -O3</code></pre>
+<p>This will pull in all other required C files in the src/ directory, load the math(s) and pthread libraries, using optimization level 3, and output the program into <em>dynamix</em>. Also contained in the src/ directory is documentation (build using <code>doxygen Doxyfile</code> if not up to date) and test programs to verify the model against the MATLAB scripts.</p>
+<h2 id="data-formats">Data Formats</h2>
+<p>There are four data formats used to provide data to Dynamix. In all of these, beginning a line with ‘%’ marks it as a comment.</p>
+<p><strong>System File</strong></p>
+<p>The system file contains information about the model being fit, and how to fit it. It also tells Dynamix where to find all other data. Generally I use the file extension <code>.dx</code> for these, though it is not necessary.</p>
+<p>The first portion of the system file consists of key value pairs laid out as</p>
+<pre><code>KEY = VALUE</code></pre>
+<p>The keys are all upper case, and there must be spaces on either side of the equals.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MODEL</td>
+<td>Model being fit - see Features</td>
+</tr>
+<tr class="even">
+<td>S2DIP</td>
+<td>File containing dipolar order parameters as defined below</td>
+</tr>
+<tr class="odd">
+<td>CSISON</td>
+<td>File containing isotropic chemical shifts for <span class="math inline">\(^{15}\)</span>N</td>
+</tr>
+<tr class="even">
+<td>CSISOC</td>
+<td>File containing isotropic chemical shifts for <span class="math inline">\(^{13}\)</span>C</td>
+</tr>
+<tr class="odd">
+<td>N_RESIDUES</td>
+<td>Number of residues - <strong>must</strong> be the same as the number of lines in each input file (or bad things may happen)</td>
+</tr>
+<tr class="even">
+<td>OUTPUT</td>
+<td>Directory (eg <code>output/</code>) to place output files into</td>
+</tr>
+<tr class="odd">
+<td>N_ITER</td>
+<td>Number of iterations for optimization</td>
+</tr>
+<tr class="even">
+<td>N_ERROR_ITER</td>
+<td>Number of iterations to perform for error calculation</td>
+</tr>
+<tr class="odd">
+<td>IGNORE</td>
+<td>Residue to ignore; each residue to ignore should have its own line</td>
+</tr>
+<tr class="even">
+<td>OR_NH</td>
+<td>N-H orientations</td>
+</tr>
+<tr class="odd">
+<td>OR_NC</td>
+<td>N-C orientations</td>
+</tr>
+<tr class="even">
+<td>OR_NCA</td>
+<td>N-C<span class="math inline">\(\alpha\)</span> orientations</td>
+</tr>
+<tr class="odd">
+<td>OR_NCSAxx/yy/zz</td>
+<td>Nitrogen chemical shift anisotropy orientations</td>
+</tr>
+<tr class="even">
+<td>OR_CCAp</td>
+<td><span class="math inline">\(^{13}\)</span>C’-<span class="math inline">\(^{13}\)</span>C<span class="math inline">\(^{\alpha}_{i-1}\)</span> orientation</td>
+</tr>
+<tr class="odd">
+<td>OR_CCAc</td>
+<td><span class="math inline">\(^{13}\)</span>C’-<span class="math inline">\(^{13}\)</span>C<span class="math inline">\(^{\alpha}_{i}\)</span> orientation</td>
+</tr>
+<tr class="even">
+<td>OR_CN</td>
+<td>C-N orientation</td>
+</tr>
+<tr class="odd">
+<td>OR_CNH</td>
+<td>C-amide proton orientation</td>
+</tr>
+<tr class="even">
+<td>OR_CCSAxx/yy/zz</td>
+<td>Carbon chemical shift anisotropy orientations</td>
+</tr>
+<tr class="odd">
+<td>NTHREADS</td>
+<td>Number of threads to run; generally, set to the number of processors you want to run it on</td>
+</tr>
+</tbody>
+</table>
+<p>For example</p>
+<pre><code>MODEL  =  EMF 
+S2DIP  =  system/s2_dipolar.csv
+CSISON  =  system/csisoN.csv
+CSISOC  =  system/csisoC.csv
+N_RESIDUES  =  56
+OUTPUT = output/
+N_ITER = 200
+IGNORE = 42
+N_ERROR_ITER = 200 
+% Orientations taken from Lienin 1998
+OR_NH = system/or_NH.csv
+OR_NC = system/or_NC.csv
+OR_NCA = system/or_NCA.csv
+OR_NCSAxx = system/or_NCSAxx.csv
+OR_NCSAyy = system/or_NCSAyy.csv
+OR_NCSAzz = system/or_NCSAzz.csv
+OR_CCAp = system/or_CCAp.csv
+OR_CCAc = system/or_CCAc.csv
+OR_CN = system/or_CN.csv
+OR_CNH = system/or_CNH.csv
+OR_CCSAxx = system/or_CCSAxx.csv
+OR_CCSAyy = system/or_CCSAyy.csv
+OR_CCSAzz = system/or_CCSAzz.csv
+NTHREADS = 4</code></pre>
+<p>This key value header should be followed by <code>#RELAXATION</code>, and then each file containing Relaxation Data should be listed below.</p>
+<pre><code>#RELAXATION
+system/15N_R1_600_50_0_271.csv
+system/15N_R1_600_50_0_282.csv
+...</code></pre>
+<p><strong>Relaxation Data</strong></p>
+<p>Each piece of relaxation data (eg a <span class="math inline">\(^{15}\)</span>N R<span class="math inline">\(_1\)</span> measurement made at 300 K in 600 MHz at 50 kHz) should be placed into an individual file. This file should begin with a header.</p>
+<p><em>Note that there must be a space on either side of the equals sign</em></p>
+<pre><code>FIELD = {field in MHz}
+WR    = {spinning frequency in Hz}
+W1    = {spin lock frequency in Hz}
+TEMP  = {temperature in kelvin}
+TYPE  = {15NR1, 15NR1p, 13CR1, 13CR1p}</code></pre>
+<p>This defines the ‘global’ parameters for this relaxation data. Then, a line <code>#DATA</code> denotes the start of the actual relaxation data, and should be followed by the relaxation data.</p>
+<pre><code>#DATA
+1 {relaxation rate in s^-1} {error in s^-1 (2 standard deviations)}
+2 {relaxation rate in s^-1} {error in s^-1 (2 standard deviations)}
+...</code></pre>
+<p>The program requires a line for each residue; if you have no relaxation data for one residue, denote the relaxation rate and error with <code>-1</code> instead of leaving it blank. This will tell Dynamix that the data does not exist, as opposed to it just being omitted by mistake. The program may run without this, however it will not necessarily inform you that there is insufficient data for fitting which may lead to incorrect fitting and data response.</p>
+<p><strong>Orientation Data Formats</strong></p>
+<p>For the GAF models the orientation of each interaction vector related to the <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\gamma\)</span> motional axis is required. In the form of Lienin 1998, this is taken as <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\phi\)</span> angles. For each orientation vector there should be a file containing this data as;</p>
+<pre><code>1 {theta} {phi}
+2 {theta} {phi}
+...</code></pre>
+<p>This data is only needed for GAF fits, but all of it is needed. The orientations required are described below.</p>
+<p><strong>Residue Data Formats</strong></p>
+<p>Data such as isotropic chemical shifts and dipolar order parameters should be kept in files laid out as;</p>
+<pre><code>1 {value} {error}
+2 {value} {error}
+...</code></pre>
+<h2 id="running-the-model">Running The Model</h2>
+<p>Once the file is setup, the model may be run as;</p>
+<pre><code>./dynamix {path to .dx file}</code></pre>
+<p>This will output the various threads being spawned as the program operates. Passing the <code>-e</code> option;</p>
+<pre><code>./dynamix {path to .dx file} -e</code></pre>
+<p>Will enable error calculation.</p>
+<h2 id="visualising-results">Visualising Results</h2>
+<p><strong>Back Calculations</strong></p>
+<p>Using <code>gnuplot</code> the output of Dynamix can be quickly visualised. To view residue specific back calculated data, simply run (after entering the output directory)</p>
+<pre><code>&gt; gnuplot
+...
+gnuplot&gt; plot &#39;backcalc_N.dat&#39; u 2:3 w points pt 7, x lw 3</code></pre>
+<p>This will produce a graph showing the calculated values (x) against experimental values (y), with a line of <span class="math inline">\(y = x\)</span>. In order to view all back calculated points for all residues, run;</p>
+<pre><code>&gt; cat backcalc_* &gt; backcalc.dat
+&gt; gnuplot
+...
+gnuplot&gt; plot &#39;backcalc.dat&#39; u 2:3 w points pt 7, x lw 3</code></pre>
+<p>If the ‘VERBOSE’ key is enabled in <code>datatypes.c</code>, the back calculated files will also contain experimental information. Though beyond the scope of this brief introduction, these can be plot onto the graphs too to show where variation in relaxation rate arises (for example, I find that 700 and 850 MHz data tends to much better fit the <span class="math inline">\(y = x\)</span> line than 600 MHz data. I don’t know if this is some systematic experimental difference, or just the model validity breaking down).</p>
+<p><strong>Visualising Parameters</strong></p>
+<p>In the <code>utils/</code> directory there are <code>gnuplot</code> scripts to plot data. These are set up assuming that the output directories are named as the model type (eg, an EMF model is in <code>emf/</code>). At the moment there are scripts to plot each model, with and without errors, except for the GAF models for which no scripts exist to plot errors as of yet. For non error plots, the colour of each point is related to the chisq value - darker points represent better fits.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Script Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pp_smf.m</code></td>
+<td>Plots SMF</td>
+</tr>
+<tr class="even">
+<td><code>pp_smf_e.m</code></td>
+<td>Plots SMF with errorbars</td>
+</tr>
+<tr class="odd">
+<td><code>pp_emf.m</code></td>
+<td>Plots EMF</td>
+</tr>
+<tr class="even">
+<td><code>pp_emf_e.m</code></td>
+<td>Plots EMF with errorbars</td>
+</tr>
+<tr class="odd">
+<td><code>pp_smft.m</code></td>
+<td>Plots SMFT</td>
+</tr>
+<tr class="even">
+<td><code>pp_smft_e.m</code></td>
+<td>Plots SMFT with errorbars</td>
+</tr>
+<tr class="odd">
+<td><code>pp_emft.m</code></td>
+<td>Plots EMFT</td>
+</tr>
+<tr class="even">
+<td><code>pp_emft_e.m</code></td>
+<td>Plots EMFT with errorbars</td>
+</tr>
+<tr class="odd">
+<td><code>pp_demf.m</code></td>
+<td>Plots DEMF</td>
+</tr>
+<tr class="even">
+<td><code>pp_demf_e.m</code></td>
+<td>Plots DEMF with errorbars</td>
+</tr>
+<tr class="odd">
+<td><code>pp_demft.m</code></td>
+<td>Plots DEMFT</td>
+</tr>
+<tr class="even">
+<td><code>pp_demft_e.m</code></td>
+<td>Plots DEMFT with errorbars</td>
+</tr>
+<tr class="odd">
+<td><code>pp_gaf.m</code></td>
+<td>Plots GAF</td>
+</tr>
+<tr class="even">
+<td><code>pp_gaft.m</code></td>
+<td>Plots GAFT</td>
+</tr>
+</tbody>
+</table>
+<p>These may be run as;</p>
+<pre><code>&gt; ls
+emf/   utils/
+&gt; gnuplot utils/pp_emf.m
+&gt; ls
+emf/   utils/   emf.eps</code></pre>
+<p>The output is as a <code>.eps</code> file. This may be viewed using eg Okular (<code>okular file.eps</code>) or converted into a PDF using <code>epstopdf file.eps</code>.</p>
+<h2 id="fitting-speed-in-dynamix">Fitting Speed in Dynamix</h2>
+<p>The amount of time this model will take to run depends on the amount of data being passed to it, the complexity of the modelling, and how “nice” the relaxation data is (some will converge far faster than others). As rough guides, for GB1 <span class="math inline">\(^{15}\)</span>N data the following times were recorded for the model free models (in seconds)</p>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>2000 iterations, 56 threads</th>
+<th>50 iterations, 4 threads</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SMF</td>
+<td>1.38</td>
+<td>0.58</td>
+</tr>
+<tr class="even">
+<td>SMF + e</td>
+<td>2.97</td>
+<td>1.17</td>
+</tr>
+<tr class="odd">
+<td>EMF</td>
+<td>3.69</td>
+<td>1.83</td>
+</tr>
+<tr class="even">
+<td>EMF + e</td>
+<td>6.72</td>
+<td>3.23</td>
+</tr>
+<tr class="odd">
+<td>SMFT</td>
+<td>4.64</td>
+<td>1.89</td>
+</tr>
+<tr class="even">
+<td>SMFT + e</td>
+<td>11.53</td>
+<td>4.33</td>
+</tr>
+<tr class="odd">
+<td>EMFT</td>
+<td>16.51</td>
+<td>6.81</td>
+</tr>
+<tr class="even">
+<td>EMFT + e</td>
+<td>35.04</td>
+<td>12.64</td>
+</tr>
+<tr class="odd">
+<td>DEMF</td>
+<td>5.21</td>
+<td>2.51</td>
+</tr>
+<tr class="even">
+<td>DEMF + e</td>
+<td>11.64</td>
+<td>4.93</td>
+</tr>
+<tr class="odd">
+<td>DEMFT</td>
+<td>18.37</td>
+<td>7.46</td>
+</tr>
+<tr class="even">
+<td>DEMFT + e</td>
+<td>38.48</td>
+<td>15.11</td>
+</tr>
+</tbody>
+</table>
+<p>In lieu of the more complicated calculations required, GAF models take significantly longer than these model free models; still, it should be possible to perform upwards of 500 iterations in a few hours.</p>
+<p>In order to verify that the new model was faster than the old model, 15246 S<span class="math inline">\(^{2}\)</span> parameters were calculated using GAF (this was done by repeating the calculation for each of the 6 order parameters calculated for <span class="math inline">\(^{15}\)</span>N for <span class="math inline">\(\sigma_{\alpha}\)</span> in the range 0 to 0.1 radians, <span class="math inline">\(\sigma_{\beta}\)</span> from 0 to 0.1 radians, <span class="math inline">\(\sigma_{\gamma}\)</span> from 0 to 0.2 radians using steps of 0.01 rad). Using the MATLAB scripts running single threaded this took 8.20 seconds. With Dynamix single threaded this took 0.33 seconds, representing a possible 25<span class="math inline">\(\times\)</span> increase in calculation speed.</p>
+<p>To compare the performance of EMF calculations, 10,000,000 R1 and R2 values for random parameters were calculated. In MATLAB (single threaded, Karplus), this took 29.87 seconds. In Dynamix (single threaded, my laptop), this took 2.65 seconds. In MATLAB, R1 and R2 calculation is combined in one and so for each data point both R1 and R2 are calculated regardless of if only R1 is measured. As Dynamix separates these, for calculation of 10,000,000 R1 values MATLAB still takes 29.87 seconds; Dynamix takes 0.99 seconds.</p>
+<p>This data suggests that there is a potential 20<span class="math inline">\(\times\)</span> speed improvement just on the basis of calculation efficiency from moving from MATLAB to Dynamix, prior to any additional increases in efficiency. For example, an EMFT optimization in MATLAB performed on Karplus prior to the creation of Dynamix took approximately <span class="math inline">\(\approx\)</span> 6000 seconds to complete 10,000 iterations. The equivalent in Dynamix should only take 82.55 seconds on the same hardware, a 72-fold increase in speed. Similarly, a run of SMF using MATLAB on Karplus took approximately 1800 seconds to complete 10,000 iterations; in Dynamix, this would be expected to take 6.9 seconds, representing an extraordinary 260-fold increase in speed.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>Generally the DEMF models fit very poorly as the additional overall motional constraint from the dipolar order parameter is used.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>The GAF models have not been fully tested as I do not currently have sufficient data to fit them fully.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>Note that the output will have the minimum optimized points and two standard deviations for the errors; it will not output the mean of the error calculations (unless you explicitly change the code to do so - at the moment this is line 408 of main.c, in which you should change <code>m.residues[l].parameters[i]</code> to <code>m.residues[l].errors_mean[i]</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>

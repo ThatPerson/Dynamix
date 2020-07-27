@@ -311,6 +311,7 @@ int main(int argc, char * argv[]) {
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
+		free_all(&m);
 		return -1;
 	}
 	int params;
@@ -333,6 +334,7 @@ int main(int argc, char * argv[]) {
 		ep = fopen(filename, "w");
 		if (ep == NULL) {
 			printf("%s not found.\n", filename);
+			free_all(&m);
 			return -1;
 		}
 
@@ -353,6 +355,7 @@ int main(int argc, char * argv[]) {
 				rc = pthread_create(&threads[i], &threadattr, calc_errors, (void *) &RRA[i]);
 				if (rc != 0) {
 					printf("Failed to spawn thread %d. Crashing gracefully...\n", current_residue + i);
+					free_all(&m);
 					exit(-1);
 				}
 			}
@@ -375,6 +378,7 @@ int main(int argc, char * argv[]) {
 		gaf = fopen(filename, "w");
 		if (gaf == NULL) {
 			printf("%s not found.\n", filename);
+			free_all(&m);
 			return -1;
 		}
 	}
@@ -385,7 +389,7 @@ int main(int argc, char * argv[]) {
 	for (l = 0; l < m.n_residues; l++) {
 		if (m.error_mode == 1) {
 			for (k = 0; k < params; k++) {
-				calc_statistics(m.residues[l].error_params[k], m.n_error_iter, &(m.residues[l].errors_mean[k]), &(m.residues[l].errors_std[k]));
+				calc_statistics(m.residues[l].error_params[k], m.residues[l].error_calcs, &(m.residues[l].errors_mean[k]), &(m.residues[l].errors_std[k]));
 			}
 		}
 		if (m.residues[l].min_val == MIN_VAL) {
@@ -407,7 +411,7 @@ int main(int argc, char * argv[]) {
 			 * The error_means are generally not minimal. */
 		}
 
-		fprintf(fp, "\n");
+		fprintf(fp, "\t%d\n", m.residues[l].error_calcs);
 		if (m.error_mode == 1) {
 			fprintf(ep, "\n");
 		}
