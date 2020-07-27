@@ -251,7 +251,10 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			if (VERBOSE)
+				fprintf(fp, "\t%f\t%f\t%f\t%f", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T); 
+			fprintf(fp, "\n");
 		}
 		fclose(fp);
 		return 1;
@@ -296,7 +299,10 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			if (VERBOSE)
+				fprintf(fp, "\t%f\t%f\t%f\t%f", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T); 
+			fprintf(fp, "\n");
 		}
 		fclose(fp);
 		return 1;
@@ -342,7 +348,10 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 					exit(0);
 					break;
 			}
-			fprintf(fp, "%d\t%f\t%f\t%f\n", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			if (VERBOSE)
+				fprintf(fp, "\t%f\t%f\t%f\t%f", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T); 
+			fprintf(fp, "\n");
 		}
 		fclose(fp);
 		return 1;

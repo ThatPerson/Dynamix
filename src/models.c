@@ -310,22 +310,31 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 
 /**
  * Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig.
+ * This function parallelises the calculation such that the loop over l, m, mp, k, kp only needs to occur once per motion - also
+ * meaning that the calculation of the exponential only needs to be done once. Checks for conjugation are made to reduce the need
+ * to calculate complex powers only to the cases where this is necessary.
  * @param sig
  *  Array containing [alpha, beta, gamma] deflection angles
  * @param A
- *  Orientation vector A
+ *  Array containing pointers to orientation vectors for 'A' for each S2 being calculated.
  * @param B
- *  Orientation vector B
+ *  Array containing pointers to orientation vectors for 'B' for each S2 being calculated.
+ * @param S2
+ *  Array containing pointers to S2 values - this is where output will be put.
+ * @param length
+ *  Number of S2 values being calculated (eg length of S2)
  * @param mode
  *  MODE_REAL or MODE_IMAG depending on which result is being returned.
- * @return S2
- *  Returns order parameter as double
+ * @return Returns 1 in all cases.
  */
-double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode) {
-	int l, m, mp, k, kp;
-	double complex Amp = 0;
-	double complex temp;
-
+int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * S2[], int length,  int mode) {
+	int l, m, mp, k, kp, i;
+	double complex * Amp = (double complex *) malloc(sizeof(double complex) * length);
+	double complex temp, ttemp;
+	for (i = 0; i < length; i++) {
+		Amp[i] = 0;
+	}
+	
 	int ksqsum;
 	int lsqsum;
 	int msqsum;
@@ -342,40 +351,54 @@ double GAF_S2(long double sig[3], struct Orient * A, struct Orient * B, int mode
 						ksqsum = sq_i(k) + sq_i(kp);
 						kexp = -(sq(sig[0]) * ksqsum / 2.);
 						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
-						if (cimag(A->Y2[m+2]) < 0.00001 && cimag(B->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
-							/* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
-							 * If mode is MODE_REAL, then, we may safely ignore any case in which
-							 *  cpowl(-1*I, k-kp)
-							 * is imaginary (as this will give only an imaginary component to the Amp).
-							 * This is the case for any (k-kp)%2 != 0.
-							 * In this case, if (k-kp)%4 == 0 the cpowl function gives 1, else -1.
-							 */
-							if ((k-kp)%2 != 0)
-								continue;
-							if ((k - kp) % 4 == 0)
-								temp = 1;
-							else
-								temp = -1;
-						} else {
-							/* Other wise we have to go the long route... */
-							temp = cpow(-1 * I, k - kp);
-						}
+						temp = 1;
+						
 						temp *= exp(lexp + kexp + mexp);
 						temp *= Dwig[k+2][l+2] * Dwig[kp+2][l+2] * Dwig[m+2][k+2] * Dwig[mp+2][kp+2];
-						temp *= A->Y2[m+2] * B->Y2c[mp+2];
-						Amp += temp;
+						for (i = 0; i < length; i++) {
+							ttemp = temp;
+							if (cimag(A[i]->Y2[m+2]) < 0.00001 && cimag(B[i]->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
+								/* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
+								* If mode is MODE_REAL, then, we may safely ignore any case in which
+								*  cpowl(-1*I, k-kp)
+								* is imaginary (as this will give only an imaginary component to the Amp).
+								* This is the case for any (k-kp)%2 != 0.
+								* In this case, if (k-kp)%4 == 0 the cpowl function gives 1, else -1.
+								*/
+								if ((k-kp)%2 != 0)
+									continue;
+								if ((k - kp) % 4 == 0)
+									ttemp *= 1;
+								else
+									ttemp *= -1.;
+							} else {
+								/* Other wise we have to go the long route... */
+								ttemp *= cpow(-1 * I, k - kp);
+							}
+							
+							
+							
+							ttemp *= A[i]->Y2[m+2] * B[i]->Y2c[mp+2];
+							Amp[i] += ttemp;
+						}
+						//temp *= A->Y2[m+2] * B->Y2c[mp+2];
+						//Amp += temp;
 					}
 				}
 			}
 		}
 	}
-	Amp *= (4 * M_PI / 5.);
-	switch (mode) {
-		case MODE_REAL: return creal(Amp); break;
-		case MODE_IMAG: return cimag(Amp); break;
-		default: break;
+	//Amp *= (4 * M_PI / 5.);
+	for (i = 0;i < length; i++) {
+		Amp[i] = Amp[i] * (4 * M_PI / 5.);
+		switch (mode) {
+			case MODE_REAL: *S2[i] = creal(Amp[i]); break;
+			case MODE_IMAG: *S2[i] = creal(Amp[i]); break;
+			default: break;
+		}
 	}
-	return -1;
+	free(Amp);
+	return 1;
 }
 
 
@@ -431,19 +454,16 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	/* Calculate all order parameters */
 	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
 	double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
-	S2NHs    = GAF_S2(sigs, &(res->orients[OR_NH]), &(res->orients[OR_NH]), MODE_REAL);
-	S2NCSAxs = GAF_S2(sigs, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAxx]), MODE_REAL);
-	S2NCSAys = GAF_S2(sigs, &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2NCSAxys= GAF_S2(sigs, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2CNs    = GAF_S2(sigs, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CaNs   = GAF_S2(sigs, &(res->orients[OR_NCA]), &(res->orients[OR_NCA]), MODE_REAL);
-
-	S2NHf    = GAF_S2(sigf, &(res->orients[OR_NH]), &(res->orients[OR_NH]), MODE_REAL);
-	S2NCSAxf = GAF_S2(sigf, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAxx]), MODE_REAL);
-	S2NCSAyf = GAF_S2(sigf, &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2NCSAxyf= GAF_S2(sigf, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2CNf    = GAF_S2(sigf, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CaNf   = GAF_S2(sigf, &(res->orients[OR_NCA]), &(res->orients[OR_NCA]), MODE_REAL);
+	
+	double *S2s[] = {&S2NHs, &S2NCSAxs, &S2NCSAys, &S2NCSAxys, &S2CNs, &S2CaNs};
+	double *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
+	
+	struct Orient * As[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
+	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
+	
+	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
+	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	
 
 	/* N CSA relaxation contribution */
 	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
@@ -451,10 +471,15 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxs, tauf, S2NCSAxf);
 	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
+	printf("\tR1CSAx: (1/15.) * %f * %0.30Lf\n", d2x, J1);
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2NCSAyf);
 	R1CSAy = (1/15.) * d2y * J1;
+	printf("\tR1CSAy: (1/15.) * %f * %0.30Lf\n", d2y, J1);
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
+	printf("\tR1CSAxy:(2/15.) * %f * %0.30Lf\n", d2xy, J1);
+	printf("\t\t%Le, %f, %Le, %f\n", taus, S2NCSAxys, tauf, S2NCSAxyf);
+	printf("\t\t%f, %f, %f\n", R1CSAx, R1CSAy, R1CSAxy);
 	R1CSA = R1CSAx + R1CSAy; //- R1CSAxy;
 
 	/* N Dipolar Interactions Contributions */
@@ -511,19 +536,15 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	/* Calculate all order parameters */
 	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
 	double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
-	S2NHs    = GAF_S2(sigs, &(res->orients[OR_NH]), &(res->orients[OR_NH]), MODE_REAL);
-	S2NCSAxs = GAF_S2(sigs, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAxx]), MODE_REAL);
-	S2NCSAys = GAF_S2(sigs, &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2NCSAxys= GAF_S2(sigs, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2CNs    = GAF_S2(sigs, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CaNs   = GAF_S2(sigs, &(res->orients[OR_NCA]), &(res->orients[OR_NCA]), MODE_REAL);
-
-	S2NHf    = GAF_S2(sigf, &(res->orients[OR_NH]), &(res->orients[OR_NH]), MODE_REAL);
-	S2NCSAxf = GAF_S2(sigf, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAxx]), MODE_REAL);
-	S2NCSAyf = GAF_S2(sigf, &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2NCSAxyf= GAF_S2(sigf, &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), MODE_REAL);
-	S2CNf    = GAF_S2(sigf, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CaNf   = GAF_S2(sigf, &(res->orients[OR_NCA]), &(res->orients[OR_NCA]), MODE_REAL);
+	
+	double *S2s[] = {&S2NHs, &S2NCSAxs, &S2NCSAys, &S2NCSAxys, &S2CNs, &S2CaNs};
+	double *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
+	
+	struct Orient * As[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
+	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
+	
+	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
+	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
 
 	/* N CSA relaxation contribution */
 	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
@@ -596,7 +617,18 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	/* Calculate all order parameters */
 	double S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
 	double S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
-	S2CHs    = GAF_S2(sigs, &(res->orients[OR_CH]), &(res->orients[OR_CH]), MODE_REAL);
+	
+	double *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
+	double *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
+	
+	struct Orient * As[] = {&(res->orients[OR_CH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
+	struct Orient * Bs[] = {&(res->orients[OR_CH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
+	
+	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
+	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	
+	
+	/*S2CHs    = GAF_S2(sigs, &(res->orients[OR_CH]), &(res->orients[OR_CH]), MODE_REAL);
 	S2CSAxs = GAF_S2(sigs, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAxx]), MODE_REAL);
 	S2CSAys = GAF_S2(sigs, &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), MODE_REAL);
 	S2CSAxys= GAF_S2(sigs, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), MODE_REAL);
@@ -609,7 +641,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	S2CSAyf = GAF_S2(sigf, &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), MODE_REAL);
 	S2CSAxyf= GAF_S2(sigf, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), MODE_REAL);
 	S2CNf    = GAF_S2(sigf, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CCf   = GAF_S2(sigf, &(res->orients[OR_CCAc]), &(res->orients[OR_CCAp]), MODE_REAL);
+	S2CCf   = GAF_S2(sigf, &(res->orients[OR_CCAc]), &(res->orients[OR_CCAp]), MODE_REAL);*/
 
 	/* N CSA relaxation contribution */
 	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
@@ -680,20 +712,16 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	/* Calculate all order parameters */
 	double S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
 	double S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
-	S2CHs    = GAF_S2(sigs, &(res->orients[OR_CH]), &(res->orients[OR_CH]), MODE_REAL);
-	S2CSAxs = GAF_S2(sigs, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAxx]), MODE_REAL);
-	S2CSAys = GAF_S2(sigs, &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CSAxys= GAF_S2(sigs, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CNs    = GAF_S2(sigs, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CCs   = GAF_S2(sigs, &(res->orients[OR_CCAc]), &(res->orients[OR_CCAc]), MODE_REAL);
-	// CCAc or CCAp?
 
-	S2CHf    = GAF_S2(sigf, &(res->orients[OR_CH]), &(res->orients[OR_CH]), MODE_REAL);
-	S2CSAxf = GAF_S2(sigf, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAxx]), MODE_REAL);
-	S2CSAyf = GAF_S2(sigf, &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CSAxyf= GAF_S2(sigf, &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), MODE_REAL);
-	S2CNf    = GAF_S2(sigf, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
-	S2CCf   = GAF_S2(sigf, &(res->orients[OR_CCAc]), &(res->orients[OR_CCAp]), MODE_REAL);
+	double *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
+	double *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
+	
+	struct Orient * As[] = {&(res->orients[OR_CH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
+	struct Orient * Bs[] = {&(res->orients[OR_CH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
+	
+	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
+	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	
 
 	/* CSA relaxation contribution */
 	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;

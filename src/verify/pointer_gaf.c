@@ -2,6 +2,7 @@
 #include "datatypes.c"
 #include "read_data.c"
 #include "models.c"
+#include "models_old.c"
 //#include "chisq.c"
 //#include "crosen.c" // implementation of Nelder-Mead simplex algorithm
 //#include "errors.c"
@@ -180,7 +181,7 @@ int main(int argc, char * argv[]) {
     float s, f;
 	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
 	double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
-	/*double *S2[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
+	double *S2[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
 	struct Orient * As[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	double Sums = 0, Sumf = 0;
@@ -196,11 +197,11 @@ int main(int argc, char * argv[]) {
 				S2CNs    = GAF_S2_current(sigs, &(res->orients[OR_CN]), &(res->orients[OR_CN]), MODE_REAL);
 				S2CaNs   = GAF_S2_current(sigs, &(res->orients[OR_NCA]), &(res->orients[OR_NCA]), MODE_REAL);*/
 				
-				//GAF_S2_new(sigs, As, Bs, S2, 6, MODE_REAL);
+				GAF_S2_new(sigs, As, Bs, S2, 6, MODE_REAL);
 				//int GAF_S2_new(long double sig[3], struct Orient ** A, struct Orient ** B, double * S2[], int length,  int mode) {
-				//count += 6;
-				//Sums += S2NHs;
-				//Sumf += S2NHf;
+				count += 6;
+				Sums += S2NHs;
+				Sumf += S2NHf;
 				
 				
 				
@@ -220,12 +221,12 @@ int main(int argc, char * argv[]) {
 				printf("\t[%f, %f, %f, %f]\n\t\t%f\n", res->orients[OR_NCA].phi, res->orients[OR_NCA].theta, res->orients[OR_NCA].phi, res->orients[OR_NCA].theta, S2CaNs);
 				printf("\n\n");*/
 
-		/*	}
+			}
 		}
 	}
 	printf("Count: %d\nSums: %f\nSumf: %f\n", count, Sums, Sumf);
-	*/
-    for (s = 0.1; s <= 0.3; s += 0.1) {
+	
+    /*for (s = 0.1; s <= 0.3; s += 0.1) {
         for (f = 0.1; f <= 0.3; f += 0.1) {
             taus = s * powl(10, -8);
             tauf = f * powl(10, -11);
@@ -243,26 +244,27 @@ int main(int argc, char * argv[]) {
                                     R1EMF = EMF_R1_f(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, tauf, S2f_eff, MODE_15N);
                                     R2EMF = EMF_R2_f(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, tauf, S2f_eff, MODE_15N);
                                     */
-                                    R1GAF = GAF_15NR1(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
+                                    //R2GAF = GAF_15NR2(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
                                     //R2GAF_old = GAF_15NR2_old(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
 
                                     //if (R2GAF != R2GAF_old)
                                     //    printf("Oops\n");
                                     //R2GAF = GAF_15NR2(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
-								
 
 
-                                    printf("R1\t\tnew: %f\n", R1GAF);
+
+                                    //printf("R1\t\tnew: %f\n\t\told: %f\n", R1GAF, R1GAF_old);
                                 //    printf("R2\t\tnew: %f\n\t\told: %f\n", R2GAF, R2GAF_old);
 
-                                }
+
+                               /* }
                             }
                         }
                     }
                 }
             }
         }
-    }
+    }*/
 
 
 
