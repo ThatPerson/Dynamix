@@ -413,7 +413,7 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 /**
  * Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
- * @warning Currently omits NCSAxy due to error in this calculation.
+ * @warning I'm unsure of the validity of NCSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -462,7 +462,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
-	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 	
 
 	/* N CSA relaxation contribution */
@@ -471,16 +471,11 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxs, tauf, S2NCSAxf);
 	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
-	printf("\tR1CSAx: (1/15.) * %f * %0.30Lf\n", d2x, J1);
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2NCSAyf);
 	R1CSAy = (1/15.) * d2y * J1;
-	printf("\tR1CSAy: (1/15.) * %f * %0.30Lf\n", d2y, J1);
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
-	printf("\tR1CSAxy:(2/15.) * %f * %0.30Lf\n", d2xy, J1);
-	printf("\t\t%Le, %f, %Le, %f\n", taus, S2NCSAxys, tauf, S2NCSAxyf);
-	printf("\t\t%f, %f, %f\n", R1CSAx, R1CSAy, R1CSAxy);
-	R1CSA = R1CSAx + R1CSAy; //- R1CSAxy;
+	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R1NH = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -494,7 +489,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 /**
  * Calculates R2 relaxation rate for 15N nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
- * @warning Currently omits NCSAxy due to error in this calculation.
+ * @warning I'm unsure of the validity of NCSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -553,7 +548,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	R2CSAx = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxs, tauf, S2NCSAxf, d2x);
 	R2CSAy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAys, tauf, S2NCSAyf, d2y);
 	R2CSAxy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxys, tauf, S2NCSAxyf, d2xy);
-	R2CSA = R2CSAx + R2CSAy;// - R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2NH = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -574,7 +569,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
  * Calculates R1 relaxation rate for 13C nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
  * @warning Has not been tested on 13C data
- * @warning Currently omits NCSAxy due to error in this calculation.
+ * @warning I'm unsure of the validity of CSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -653,7 +648,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
-	R1CSA = R1CSAx + R1CSAy; //- R1CSAxy;
+	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R1CH = GAF_Dipolar_R1(omega_13C, omega_1H, taus, S2CHs, tauf, S2CHf, D_CH);
@@ -668,7 +663,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
  * Calculates R2 relaxation rate for 13C nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
  * @warning Has not been tested on 13C data
- * @warning Currently omits NCSAxy due to error in this calculation.
+ * @warning I'm unsure of the validity of CSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -730,7 +725,7 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x);
 	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y);
 	R2CSAxy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxys, tauf, S2CSAxyf, d2xy);
-	R2CSA = R2CSAx + R2CSAy;// - R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2CH = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CHs, tauf, S2CHf, D_CH);
