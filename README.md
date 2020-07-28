@@ -19,7 +19,7 @@ As of writing, Dynamix can fit the following models;
   $$ J(\omega) = \frac{(1 - S^2) \tau}{1 + (\omega \tau)^2} $$
 
 * Simple Model Free with Temperature Dependence (SMFT)
-  Fits three parameters, S$^2$, $\tau_0$ and $Ea$, where the time constant is temperature dependent;
+  Fits three parameters, S$^2$, $\tau_0$ and $Ea$, where the correlation time is temperature dependent;
   
   $$ \tau(t) = \tau_0 \exp(\frac{Ea}{R T}) $$
   
@@ -31,7 +31,7 @@ As of writing, Dynamix can fit the following models;
   $$ J(\omega) = \frac{(1 - S^{2}_{f}) \tau_f}{1 + (\omega \tau_f)^{2}} + \frac{S^{2}_{f} (1 - S^{2}_s) \tau_s}{1 + (\omega \tau_s)^{2}} $$
 
 * Extended Model Free with Temperature Dependence (EMFT)
-  Five parameter model, fitting S$^{2}_{\text{slow}}$, $\tau_{0,\text{slow}}$, $\tau_{0,\text{fast}}$, $Ea_{\text{slow}}$, $Ea_{\text{fast}}$. S$^{2}_{\text{fast}}$ is calculated as in EMF, and the time constants are temperature dependent as in SMFT. The spectral density is as in EMF.
+  Five parameter model, fitting S$^{2}_{\text{slow}}$, $\tau_{0,\text{slow}}$, $\tau_{0,\text{fast}}$, $Ea_{\text{slow}}$, $Ea_{\text{fast}}$. S$^{2}_{\text{fast}}$ is calculated as in EMF, and the correlation times are temperature dependent as in SMFT. The spectral density is as in EMF.
   
 * Extended Model Free without Dipolar Approximation (DEMF)[^1]
   Four parameter model, S$^{2}_{\text{slow}}$, S$^{2}_{\text{fast}}$, $\tau_{\text{slow}}$, $\tau_{\text{fast}}$. Spectral density as in EMF.
@@ -239,6 +239,55 @@ These may be run as;
     emf/   utils/   emf.eps
     
 The output is as a `.eps` file. This may be viewed using eg Okular (`okular file.eps`) or converted into a PDF using `epstopdf file.eps`.
+
+Output File Formats
+-------------------
+
+**residues_N.dat**
+
+These residue files are generated during the optimization process. Each line refers to a separate optimization process. The first column is the residue number, the second is the minimum value of the chisq function. Plotting the second column generates a nice plot showing how well the optimization went.
+
+The remaining columns depend on which model is in use. In particular;
+
+* SMF: tau, S2
+* SMFT: tau, S2, Ea
+* EMF: taus, S2s, tauf
+* EMFT: taus, S2s, tauf, Eas, Eaf
+* DEMF: taus, S2s, tauf, S2f
+* DEMFT: taus, S2s, tauf, S2f, Eas, Eaf
+* GAF: taus, tauf, sAs, sBs, sGs, sAf, sBf, sGf
+* GAFT: taus, tauf, sAs, sBs, sGs, sAf, sBf, sGf, Eas, Eaf
+
+This may be useful for plotting to see how varied the individual responses are, eg how responsive the model is to one parameter.
+
+**final.dat**
+
+This contains the final fit parameters. The first column is the residue number, the second is the S2 dipolar value, then the minimum chisq value, followed by the model specific columns as above. The final column is a count of how many repeats went into error calculation (or 0 if this was not done).
+
+**errors.dat**
+
+This file is only output if error mode is enabled. It is the same as `final.dat`, only after each parameter there is the error (2 standard deviations). eg;
+
+    {residue number}, {S2dipolar}, {chisq minimum}, {tau}, {tau error}, {S2}, {S2 error}
+    
+**gaf.dat**
+
+This file is only produced for GAF models. This is laid out as;
+
+    {residue number}, {tau s}, {S2 slow}, {tau f}, {S2 fast}
+    
+Where S$^{2}_{\text{slow}}$ and S$^{2}_{\text{fast}}$ are the order parameters for the N-H dipolar interaction.
+
+**backcalc_N.dat**
+
+These files contain back calculations. They are set out;
+
+    {relaxation number} {calculated R} {measured R} {error in measured R}
+    
+Plotting `{calculated R}` against `{measured R}` can give a useful indication of goodness of fit. To gain more insight into how different experimental parameters affect the fit, enable the `VERBOSE` flag in `datatypes.c` (eg set it to 1). This will then output a further few columns;
+
+    {field in MHz} {spinning frequency Hz} {spin lock frequency Hz} {temperature K}
+    
 
 Fitting Speed in Dynamix
 ------------------------

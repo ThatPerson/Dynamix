@@ -134,7 +134,7 @@ void * calc_errors(void *input) {
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
 		for (k = 0; k < params; k++) {
-			resid->error_params[k][p] = opts[p];
+			resid->error_params[k][p] = opts[k];
 		}
 		p++;
 
