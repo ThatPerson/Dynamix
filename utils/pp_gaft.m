@@ -16,7 +16,7 @@ set grid xtics
 set ytics
 set xrange [0:56]
 set logscale y
-plot 'gaft/final.dat' u 1:($4 > 0 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'gaft/final.dat' u 1:($4 > 0 ? $4 * 1e-9 : NaN):($3>0?$3 * 1e-9:NaN) w points palette pt 7 notitle
 
 set ylabel "{/Symbol t}_{fast} (s)"
 set ytics ("-12" 1e-12, "-10" 1e-10, "-8" 1e-8, "-6" 1e-6)
@@ -27,7 +27,7 @@ set logscale y
 set grid xtics
 set ytics
 set xrange [0:56]
-plot 'gaft/final.dat' u 1:($5 > 0 ? $5 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'gaft/final.dat' u 1:($5 > 0 ? $5 *1e-9: NaN):($3>0?$3*1e-9:NaN) w points palette pt 7 notitle
 
 unset logscale y
 

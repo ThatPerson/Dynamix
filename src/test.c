@@ -225,7 +225,7 @@ int main(int argc, char * argv[]) {
 	}
 	printf("Count: %d\nSums: %f\nSumf: %f\n", count, Sums, Sumf);
 	*/
-    for (s = 0.1; s <= 0.3; s += 0.1) {
+    /*for (s = 0.1; s <= 0.3; s += 0.1) {
         for (f = 0.1; f <= 0.3; f += 0.1) {
             taus = s * powl(10, -8);
             tauf = f * powl(10, -11);
@@ -243,7 +243,7 @@ int main(int argc, char * argv[]) {
                                     R1EMF = EMF_R1_f(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, tauf, S2f_eff, MODE_15N);
                                     R2EMF = EMF_R2_f(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, tauf, S2f_eff, MODE_15N);
                                     */
-                                    R1GAF = GAF_15NR1(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
+                                   // R1GAF = GAF_15NR1(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
                                     //R2GAF_old = GAF_15NR2_old(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, tauf, sigs, sigf);
 
                                     //if (R2GAF != R2GAF_old)
@@ -252,19 +252,30 @@ int main(int argc, char * argv[]) {
 								
 
 
-                                    printf("R1\t\tnew: %f\n", R1GAF);
+                                  //  printf("R1\t\tnew: %f\n", R1GAF);
                                 //    printf("R2\t\tnew: %f\n\t\told: %f\n", R2GAF, R2GAF_old);
 
-                                }
+                               /* }
                             }
                         }
                     }
                 }
             }
         }
-    }
-
-
+    }*/
+									
+	double R1SMF;
+	for (s = 0.1; s <= 0.3; s+=0.1) {
+		//for (f = 0.1; f <= 0.3; f+=0.1) {
+			taus = s * powl(10, -8. + T_S);
+			//tauf = f * powl(10, -11.);
+			for (S2s_eff = 0.5; S2s_eff < 1; S2s_eff += 0.1) {
+				//double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
+				R1SMF = SMF_R2(&(m.residues[residue]), &(m.residues[residue].relaxation[rel]), taus, S2s_eff, MODE_15N);
+				printf("R2 SMF: %f\n", R1SMF);				
+				printf("[R1, R2] = NH_MFTK(%f, %Le, %f, 1, %f, %f)\n\n\n", m.residues[residue].relaxation[rel].field, taus * T_DOWN, S2s_eff, 1, m.residues[residue].relaxation[rel].wr, m.residues[residue].relaxation[rel].w1);
+			}
+	}
 
 
 

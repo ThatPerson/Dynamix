@@ -29,5 +29,5 @@ set grid xtics
 set xrange [0:56]
 set yrange [1:1e2]
 set xlabel "Peptide plane number (^{15}N_{i})"
-plot 'smf/final.dat' u 1:($4 > 1e-13 ? $4 * 1e9 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'smf/final.dat' u 1:($4 > 1e-4 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 

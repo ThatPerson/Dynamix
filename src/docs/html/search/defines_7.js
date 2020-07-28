@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ryd_201',['RYD',['../datatypes_8c.html#a8651fcb7d3b1f0582aa4fbd404e23498',1,'datatypes.c']]]
+  ['thread_5fstack_208',['THREAD_STACK',['../datatypes_8c.html#af9a5d6addf893be0502ae41f52e794b2',1,'datatypes.c']]]
 ];

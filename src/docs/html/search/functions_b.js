@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['uniform_5frand_136',['uniform_rand',['../errors_8c.html#aa653b04467c9335a89c96f4dc6c19270',1,'errors.c']]]
+  ['simplex_140',['simplex',['../crosen_8c.html#a5bde0114bc9d8c2c6a216c5e8b4c9837',1,'crosen.c']]],
+  ['smf_5fr1_141',['SMF_R1',['../models_8c.html#a140a9318a12298b2837a0256e7f9d069',1,'models.c']]],
+  ['smf_5fr2_142',['SMF_R2',['../models_8c.html#ae60e2bbf2ddc985fae27178fdbeed620',1,'models.c']]]
 ];

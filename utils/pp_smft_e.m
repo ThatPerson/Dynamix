@@ -30,7 +30,7 @@ set ytics
 set autoscale
 set xrange [0:56]
 
-plot 'smft/errors.dat' u 1:($4 > 0 ? $4 : NaN):($5>0?$5:NaN) w yerrorbars notitle
+plot 'smft/errors.dat' u 1:($4 > 0 ? $4 * 1e-9 : NaN):($5>0?$5 * 1e-9:NaN) w yerrorbars notitle
 
 
 set ylabel "Ea / kJ/mol"

@@ -34,7 +34,7 @@ set xrange [0:56]
 #set yrange [1:1e5]
 set ytics ("-16" 1e-16, "-12" 1e-12, "-8" 1e-8)
 
-plot 'emft/errors.dat' u 1:($4 > 0 ? $4 : NaN):($5>0?$5:NaN) w yerrorbars notitle
+plot 'emft/errors.dat' u 1:($4 > 0 ? $4 * 1e-9 : NaN):($5>0?$5*1e-9:NaN) w yerrorbars notitle
 
 
 set ylabel "S^{2}_{fast}"
@@ -59,7 +59,7 @@ set autoscale
 
 set xrange [0:56]
 #set yrange [0.1:1e3]
-plot 'emft/errors.dat' u 1:($8 > 0 ? $8 : NaN):($9>0?$9:NaN) w yerrorbars notitle
+plot 'emft/errors.dat' u 1:($8 > 0 ? $8 *1e-9 : NaN):($9>0?$9*1e-9:NaN) w yerrorbars notitle
 
 unset logscale y
 set ylabel "Ea_{slow} / kJ/mol"

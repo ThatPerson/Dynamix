@@ -24,18 +24,24 @@ struct \mbox{\hyperlink{structrrargs}{rrargs}}
 \begin{DoxyCompactList}\small\item\em Simple \mbox{\hyperlink{structModel}{Model}} Free. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{datatypes_8c_a1e1c9ea931da20af9857ec98962c8376}\label{datatypes_8c_a1e1c9ea931da20af9857ec98962c8376}} 
 \#define \mbox{\hyperlink{datatypes_8c_a1e1c9ea931da20af9857ec98962c8376}{M\+O\+D\+\_\+\+E\+MF}}~1
-\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free using S2 dipolar. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{datatypes_8c_ac1331db6ccdcfb9655b8e1bc5af61c55}\label{datatypes_8c_ac1331db6ccdcfb9655b8e1bc5af61c55}} 
 \#define \mbox{\hyperlink{datatypes_8c_ac1331db6ccdcfb9655b8e1bc5af61c55}{M\+O\+D\+\_\+\+E\+M\+FT}}~2
-\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free with Temperature Dependence. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free with Temperature Dependence using S2 dipolar. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{datatypes_8c_aec919bd24c35427360f949fa687c3789}\label{datatypes_8c_aec919bd24c35427360f949fa687c3789}} 
 \#define \mbox{\hyperlink{datatypes_8c_aec919bd24c35427360f949fa687c3789}{M\+O\+D\+\_\+\+S\+M\+FT}}~3
 \begin{DoxyCompactList}\small\item\em Simple \mbox{\hyperlink{structModel}{Model}} Free with Temperature Dependence. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_aaa56bcd32be18e68e378850a07bb61ba}\label{datatypes_8c_aaa56bcd32be18e68e378850a07bb61ba}} 
+\#define \mbox{\hyperlink{datatypes_8c_aaa56bcd32be18e68e378850a07bb61ba}{M\+O\+D\+\_\+\+D\+E\+MF}}~4
+\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{datatypes_8c_a53581f387110798352ce92f49b8332ff}\label{datatypes_8c_a53581f387110798352ce92f49b8332ff}} 
+\#define \mbox{\hyperlink{datatypes_8c_a53581f387110798352ce92f49b8332ff}{M\+O\+D\+\_\+\+D\+E\+M\+FT}}~5
+\begin{DoxyCompactList}\small\item\em Extended \mbox{\hyperlink{structModel}{Model}} Free with Temperature Dependence. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}\label{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}} 
-\#define \mbox{\hyperlink{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}{M\+O\+D\+\_\+\+G\+AF}}~4
+\#define \mbox{\hyperlink{datatypes_8c_ae4d49cf1e12b9d92aafa497e750eb260}{M\+O\+D\+\_\+\+G\+AF}}~6
 \begin{DoxyCompactList}\small\item\em Gaussian Axial Fluctuations model. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}\label{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}} 
-\#define \mbox{\hyperlink{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}{M\+O\+D\+\_\+\+G\+A\+FT}}~5
+\#define \mbox{\hyperlink{datatypes_8c_a2a6e6c37533da6ffee8fd1fcc4675ae7}{M\+O\+D\+\_\+\+G\+A\+FT}}~7
 \begin{DoxyCompactList}\small\item\em Gaussian Axial Fluctuations model with Temperature Dependence. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{datatypes_8c_a354378a0743b5aaad90b7113e89abccb}\label{datatypes_8c_a354378a0743b5aaad90b7113e89abccb}} 
 \#define {\bfseries D\+A\+T\+A\+\_\+\+S2}~0
@@ -151,11 +157,26 @@ struct \mbox{\hyperlink{structrrargs}{rrargs}}
 \mbox{\Hypertarget{datatypes_8c_a3a225059bd6f6cbace814ec73de8cd3e}\label{datatypes_8c_a3a225059bd6f6cbace814ec73de8cd3e}} 
 \#define {\bfseries M\+O\+D\+E\+\_\+\+C\+O\+MP}~2
 \item 
+\mbox{\Hypertarget{datatypes_8c_a1fbe1c5a11326485de43a74c7e1ec3c6}\label{datatypes_8c_a1fbe1c5a11326485de43a74c7e1ec3c6}} 
+\#define {\bfseries D\+I\+P\+O\+L\+AR}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_a9256133f0e603a813c3c8520bde94800}\label{datatypes_8c_a9256133f0e603a813c3c8520bde94800}} 
+\#define {\bfseries N\+O\+D\+IP}~0
+\item 
 \mbox{\Hypertarget{datatypes_8c_ae3ec3219e4eee3b0992bfd59c2e2bc42}\label{datatypes_8c_ae3ec3219e4eee3b0992bfd59c2e2bc42}} 
 \#define {\bfseries H\+A\+L\+F\+\_\+\+PI}~M\+\_\+\+PI / 2.
 \item 
 \mbox{\Hypertarget{datatypes_8c_a42f8c497a1968074f38bf5055c650dca}\label{datatypes_8c_a42f8c497a1968074f38bf5055c650dca}} 
-\#define {\bfseries V\+E\+R\+B\+O\+SE}~0
+\#define {\bfseries V\+E\+R\+B\+O\+SE}~1
+\item 
+\mbox{\Hypertarget{datatypes_8c_aa8a24a2d86bc6cc88f3a37d033a7dc7e}\label{datatypes_8c_aa8a24a2d86bc6cc88f3a37d033a7dc7e}} 
+\#define {\bfseries T\+\_\+\+D\+O\+WN}~0.\+0000000010000
+\item 
+\mbox{\Hypertarget{datatypes_8c_a273124b39e18fab87cd46cce37279f8a}\label{datatypes_8c_a273124b39e18fab87cd46cce37279f8a}} 
+\#define {\bfseries T\+\_\+\+UP}~1000000000
+\item 
+\mbox{\Hypertarget{datatypes_8c_af1e46400d1d04c6236ebfb586583b305}\label{datatypes_8c_af1e46400d1d04c6236ebfb586583b305}} 
+\#define {\bfseries T\+\_\+S}~9
 \end{DoxyCompactItemize}
 \doxysubsection*{Functions}
 \begin{DoxyCompactItemize}

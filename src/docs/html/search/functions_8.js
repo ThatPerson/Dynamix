@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['optimize_5fchisq_127',['optimize_chisq',['../chisq_8c.html#a684bc59d2fd157bed96d2cb036b80c8d',1,'chisq.c']]]
+  ['norm_5frand_133',['norm_rand',['../errors_8c.html#af6082bca8619e41ce7af1c39f7050e6e',1,'errors.c']]]
 ];

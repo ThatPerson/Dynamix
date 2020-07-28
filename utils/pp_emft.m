@@ -34,7 +34,7 @@ set xrange [0:56]
 #set yrange [1:1e5]
 set ytics ("-16" 1e-16, "-12" 1e-12, "-8" 1e-8)
 
-plot 'emft/final.dat' u 1:($4 > 0 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($4 > 0 ? $4 *1e-9: NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
 set ylabel "S^{2}_{fast}"
@@ -59,7 +59,7 @@ set autoscale
 
 set xrange [0:56]
 #set yrange [0.1:1e3]
-plot 'emft/final.dat' u 1:($6 > 0 ? $6 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'emft/final.dat' u 1:($6 > 0 ? $6 * 1e-9 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 unset logscale y
 set ylabel "Ea_{slow} / kJ/mol"

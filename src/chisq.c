@@ -23,8 +23,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 	 */
 	double calc_R = 0;
 	double chisq = 0;
-	long double upper_lim_tf = (long double) 1 * pow(10, -8);
-	long double upper_lim_ts = (long double) 1 * pow(10, -5);
+	long double upper_lim_tf = (long double) 1 * pow(10, -8 + T_S);
+	long double upper_lim_ts = (long double) 1 * pow(10, -5 + T_S);
 	//printf("%d %d: %d\n", model, MOD_SMFT, model == MOD_SMFT);
 	if (model == MOD_SMF || model == MOD_SMFT) {
 		/* Simple Model Free Analysis */

@@ -17,7 +17,7 @@ set grid xtics
 
 set xrange [0:56]
 set logscale y
-plot 'gaf/final.dat' u 1:($4 > 1e-10 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'gaf/final.dat' u 1:($4 > 1e-1 ? $4 * 1e-9 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 set ylabel "{/Symbol t}_{fast} (ps)"
 set xtics (10, 20, 30, 40, 50)
@@ -29,7 +29,7 @@ set grid xtics
 
 set xrange [0:56]
 set xlabel "Peptide plane number (^{15}N_{i})"
-plot 'gaf/final.dat' u 1:($5 > 1e-13 ? $5 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'gaf/final.dat' u 1:($5 > 1e-4 ? $5 * 1e-9 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 unset multiplot
 set terminal postscript eps enhanced solid "Helvetica" 14

@@ -63,7 +63,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">models.c File Reference</div>  </div>
@@ -73,41 +72,32 @@ $(function() {
 <code>#include &lt;math.h&gt;</code><br />
 <code>#include &lt;complex.h&gt;</code><br />
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a517dd5da2af5eed1a959bb59ff22e299"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a517dd5da2af5eed1a959bb59ff22e299">J0_SMF</a>(omega,  tau,  S2)</td></tr>
-<tr class="memdesc:a517dd5da2af5eed1a959bb59ff22e299"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates spectral density function for given frequency (omega) according to simple model free analysis.  <a href="models_8c.html#a517dd5da2af5eed1a959bb59ff22e299">More...</a><br /></td></tr>
-<tr class="separator:a517dd5da2af5eed1a959bb59ff22e299"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c2c2f6d8f03c4e7025edd130a501744"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega,  taus,  S2s,  tauf,  S2f)</td></tr>
-<tr class="memdesc:a7c2c2f6d8f03c4e7025edd130a501744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates spectral density function for given frequency according to extended model free analysis.  <a href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">More...</a><br /></td></tr>
-<tr class="separator:a7c2c2f6d8f03c4e7025edd130a501744"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04b78333b07479a6466e2f09c37fa53a"><td class="memItemLeft" align="right" valign="top"><a id="a04b78333b07479a6466e2f09c37fa53a"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a04b78333b07479a6466e2f09c37fa53a">sq_i</a>(x)&#160;&#160;&#160;((int) x * (int) x)</td></tr>
-<tr class="memdesc:a04b78333b07479a6466e2f09c37fa53a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Squares integer x. <br /></td></tr>
-<tr class="separator:a04b78333b07479a6466e2f09c37fa53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7616788b30810a219d9cdee95904ba4"><td class="memItemLeft" align="right" valign="top"><a id="ae7616788b30810a219d9cdee95904ba4"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#ae7616788b30810a219d9cdee95904ba4">sq</a>(x)&#160;&#160;&#160;((double) x * (double) x)</td></tr>
-<tr class="memdesc:ae7616788b30810a219d9cdee95904ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Squares double x. <br /></td></tr>
-<tr class="separator:ae7616788b30810a219d9cdee95904ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59e37444fd506199d5bef00f410a5edf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>GAF_Dipolar_R1</b>(omega_obs,  omega_neigh,  taus,  S2s,  tauf,  S2f,  D)</td></tr>
-<tr class="separator:a59e37444fd506199d5bef00f410a5edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a027bfa60881c53ea28bb91600a44cc19"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a027bfa60881c53ea28bb91600a44cc19">GAF_CSA_R2</a>(omega,  w1,  wr,  taus,  S2s,  tauf,  S2f,  D2)</td></tr>
-<tr class="separator:a027bfa60881c53ea28bb91600a44cc19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47b1ad74ad786d6e1227ba2ee4d057cb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a47b1ad74ad786d6e1227ba2ee4d057cb">GAF_Dipolar_R2</a>(omega_obs,  omega_neigh,  w1,  wr,  taus,  S2s,  tauf,  S2f,  D)</td></tr>
-<tr class="memdesc:a47b1ad74ad786d6e1227ba2ee4d057cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">!&lt; D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)  <a href="models_8c.html#a47b1ad74ad786d6e1227ba2ee4d057cb">More...</a><br /></td></tr>
-<tr class="separator:a47b1ad74ad786d6e1227ba2ee4d057cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a25d3b047fa522735366de391f9d8cb65"><td class="memItemLeft" align="right" valign="top">long double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a25d3b047fa522735366de391f9d8cb65">J0_SMF</a> (long double omega, long double tau, long double S2)</td></tr>
+<tr class="separator:a25d3b047fa522735366de391f9d8cb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed70329919bae5660015bce26fcfb1b3"><td class="memItemLeft" align="right" valign="top">long double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#aed70329919bae5660015bce26fcfb1b3">J0_EMF</a> (long double omega, long double taus, long double S2s, long double tauf, long double S2f)</td></tr>
+<tr class="separator:aed70329919bae5660015bce26fcfb1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70db552b895bd6522106e829d2245c4a"><td class="memItemLeft" align="right" valign="top"><a id="a70db552b895bd6522106e829d2245c4a"></a>
+long double&#160;</td><td class="memItemRight" valign="bottom"><b>sq</b> (long double x)</td></tr>
+<tr class="separator:a70db552b895bd6522106e829d2245c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c455e6ab3e7770ddf80f17024e7c014"><td class="memItemLeft" align="right" valign="top"><a id="a1c455e6ab3e7770ddf80f17024e7c014"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sq_i</b> (int x)</td></tr>
+<tr class="separator:a1c455e6ab3e7770ddf80f17024e7c014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76040d0169d429b628d4acdc771f6630"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a76040d0169d429b628d4acdc771f6630">GAF_Dipolar_R1</a> (long double omega_obs, long double omega_neigh, long double taus, long double S2s, long double tauf, long double S2f, long double D)</td></tr>
+<tr class="separator:a76040d0169d429b628d4acdc771f6630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c850d32216efda27044c2a06c5af727"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a2c850d32216efda27044c2a06c5af727">GAF_CSA_R2</a> (long double omega, float w1, float wr, long double taus, long double S2s, long double tauf, long double S2f, double D2)</td></tr>
+<tr class="separator:a2c850d32216efda27044c2a06c5af727"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae21cd3cbbcd444eb5f7b7a7dc29056c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#ae21cd3cbbcd444eb5f7b7a7dc29056c5">GAF_Dipolar_R2</a> (long double omega_obs, long double omega_neigh, float w1, float wr, long double taus, long double S2s, long double tauf, long double S2f, double D)</td></tr>
+<tr class="separator:ae21cd3cbbcd444eb5f7b7a7dc29056c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a140a9318a12298b2837a0256e7f9d069"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a140a9318a12298b2837a0256e7f9d069">SMF_R1</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double tau, long double S2, int mode)</td></tr>
-<tr class="memdesc:a140a9318a12298b2837a0256e7f9d069"><td class="mdescLeft">&#160;</td><td class="mdescRight">!&lt; Calculates R2 contribution of dipolar interaction between two atoms as in GAF_Dipolar_R1  <a href="models_8c.html#a140a9318a12298b2837a0256e7f9d069">More...</a><br /></td></tr>
 <tr class="separator:a140a9318a12298b2837a0256e7f9d069"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae60e2bbf2ddc985fae27178fdbeed620"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#ae60e2bbf2ddc985fae27178fdbeed620">SMF_R2</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double tau, long double S2, int mode)</td></tr>
 <tr class="separator:ae60e2bbf2ddc985fae27178fdbeed620"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20cdb066e2edf9cd6f26e08a4b87c7fe"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a20cdb066e2edf9cd6f26e08a4b87c7fe">EMF_R1</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double S2s, long double tauf, int mode)</td></tr>
-<tr class="separator:a20cdb066e2edf9cd6f26e08a4b87c7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2569ecc4f3474961467e59ddd9a410c8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a2569ecc4f3474961467e59ddd9a410c8">EMF_R2</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double S2s, long double tauf, int mode)</td></tr>
-<tr class="separator:a2569ecc4f3474961467e59ddd9a410c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd27e8e28e50c4a1e0b7c3d1b650a290"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#abd27e8e28e50c4a1e0b7c3d1b650a290">EMF_R1</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double S2s, long double tauf, long double S2f, int mode)</td></tr>
+<tr class="separator:abd27e8e28e50c4a1e0b7c3d1b650a290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac968321cf6031a1813e90a47b8fb8b70"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#ac968321cf6031a1813e90a47b8fb8b70">EMF_R2</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double S2s, long double tauf, long double S2f, int mode)</td></tr>
+<tr class="separator:ac968321cf6031a1813e90a47b8fb8b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc1305d5c176e6b419bc12a238b99923"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#adc1305d5c176e6b419bc12a238b99923">GAF_S2</a> (long double sig[3], struct <a class="el" href="structOrient.html">Orient</a> **A, struct <a class="el" href="structOrient.html">Orient</a> **B, double *S2[], int length, int mode)</td></tr>
 <tr class="separator:adc1305d5c176e6b419bc12a238b99923"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95c2a2ce7993dd369b9a5915d0d1522f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#a95c2a2ce7993dd369b9a5915d0d1522f">GAF_15NR1</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double tauf, long double *sigs, long double *sigf)</td></tr>
@@ -119,342 +109,9 @@ Functions</h2></td></tr>
 <tr class="memitem:affe2193e2deb27960f4398bfda1e07a7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="models_8c.html#affe2193e2deb27960f4398bfda1e07a7">GAF_13CR2</a> (struct <a class="el" href="structResidue.html">Residue</a> *res, struct <a class="el" href="structRelaxation.html">Relaxation</a> *relax, long double taus, long double tauf, long double *sigs, long double *sigf)</td></tr>
 <tr class="separator:affe2193e2deb27960f4398bfda1e07a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a027bfa60881c53ea28bb91600a44cc19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a027bfa60881c53ea28bb91600a44cc19">&#9670;&nbsp;</a></span>GAF_CSA_R2</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define GAF_CSA_R2</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">w1, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">wr, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">taus, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2s, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">tauf, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2f, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">D2&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    (double) { \</div>
-<div class="line">    ( \</div>
-<div class="line">        (1/45.) * (double) D2 * ( \</div>
-<div class="line">            (2/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (2/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (4/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (4/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f) + \</div>
-<div class="line">            (3.)   * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega, taus, S2s, tauf, S2f)\</div>
-<div class="line">        )\</div>
-<div class="line">    )\</div>
-<div class="line">  }</div>
-</div><!-- fragment --><p>!&lt; Calculates R1 contribution under GAF model for Dipolar interaction between two atoms. !&lt; omega_obs is the frequency of the observed nucleus, omega_neigh is the frequency of the other atoms.<br  />
- &lt; D is the dipolar coupling in rad/s. </p>
-
-</div>
-</div>
-<a id="a59e37444fd506199d5bef00f410a5edf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59e37444fd506199d5bef00f410a5edf">&#9670;&nbsp;</a></span>GAF_Dipolar_R1</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define GAF_Dipolar_R1</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega_obs, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega_neigh, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">taus, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2s, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">tauf, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2f, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">D&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    (double) {\</div>
-<div class="line">    (0.1) * <a class="code" href="models_8c.html#ae7616788b30810a219d9cdee95904ba4">sq</a>(D) * ( \</div>
-<div class="line">        (<a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_neigh - omega_obs, taus, S2s, tauf, S2f)) \</div>
-<div class="line">         + 3 * (<a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_obs, taus, S2s, tauf, S2f)) \</div>
-<div class="line">          + 6 * (<a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_neigh + omega_obs, taus, S2s, tauf, S2f)) \</div>
-<div class="line">      ) \</div>
-<div class="line">  }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a47b1ad74ad786d6e1227ba2ee4d057cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a47b1ad74ad786d6e1227ba2ee4d057cb">&#9670;&nbsp;</a></span>GAF_Dipolar_R2</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define GAF_Dipolar_R2</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega_obs, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega_neigh, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">w1, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">wr, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">taus, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2s, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">tauf, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2f, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">D&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    (double) {\</div>
-<div class="line">    (\</div>
-<div class="line">        (1/20.) * <a class="code" href="models_8c.html#ae7616788b30810a219d9cdee95904ba4">sq</a>(D) * (\</div>
-<div class="line">            (2/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (2/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (4/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (4/3.) * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (3.)   * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_obs, taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (1.)   * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_neigh - omega_obs, taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (6.)   * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_neigh, taus, S2s, tauf, S2f) +\</div>
-<div class="line">            (6.)   * <a class="code" href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a>(omega_neigh + omega_obs, taus, S2s, tauf, S2f)\</div>
-<div class="line">        )\</div>
-<div class="line">    )\</div>
-<div class="line">  }</div>
-</div><!-- fragment -->
-<p>!&lt; D2 is the squared D22x/D22y/D22xy variable (dependent on CSA) </p>
-<p>!&lt; Calculates the R2 contribution of CSA of nuclei with frequency omega. </p>
-
-</div>
-</div>
-<a id="a7c2c2f6d8f03c4e7025edd130a501744"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c2c2f6d8f03c4e7025edd130a501744">&#9670;&nbsp;</a></span>J0_EMF</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define J0_EMF</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">taus, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2s, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">tauf, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2f&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">     (<span class="keywordtype">long</span> double) {\</div>
-<div class="line">     ( \</div>
-<div class="line">        ( \</div>
-<div class="line">            ((((1 - (double) S2f)) * (<span class="keywordtype">long</span> <span class="keywordtype">double</span>) tauf)) \</div>
-<div class="line">            / (1 + ((double) omega * (<span class="keywordtype">long</span> <span class="keywordtype">double</span>) tauf * (double) omega * (<span class="keywordtype">long</span> <span class="keywordtype">double</span>) tauf)) \</div>
-<div class="line">        )\</div>
-<div class="line">        +\</div>
-<div class="line">        (\</div>
-<div class="line">            (((<span class="keywordtype">double</span>) S2f) * (1 - (<span class="keywordtype">double</span>) S2s) * (<span class="keywordtype">long</span> <span class="keywordtype">double</span>) taus)\</div>
-<div class="line">            / (1 + ((<span class="keywordtype">double</span>) omega * (<span class="keywordtype">long</span> double) taus * (<span class="keywordtype">double</span>) omega * (<span class="keywordtype">long</span> double) taus))\</div>
-<div class="line">        )\</div>
-<div class="line">    )\</div>
-<div class="line">}</div>
-</div><!-- fragment -->
-<p>Calculates spectral density function for given frequency according to extended model free analysis. </p>
-
-</div>
-</div>
-<a id="a517dd5da2af5eed1a959bb59ff22e299"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a517dd5da2af5eed1a959bb59ff22e299">&#9670;&nbsp;</a></span>J0_SMF</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define J0_SMF</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">omega, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">tau, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">S2&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    (<span class="keywordtype">long</span> double) { \</div>
-<div class="line">    ( \</div>
-<div class="line">        (((1 - (double) S2) * (<span class="keywordtype">long</span> double) tau)) \</div>
-<div class="line">        / (1 + ((<span class="keywordtype">double</span>) omega * (<span class="keywordtype">long</span> double) tau * (<span class="keywordtype">double</span>) omega * (<span class="keywordtype">long</span> double) tau)) \</div>
-<div class="line">    ) \</div>
-<div class="line">}</div>
-</div><!-- fragment -->
-<p>Calculates spectral density function for given frequency (omega) according to simple model free analysis. </p>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a20cdb066e2edf9cd6f26e08a4b87c7fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20cdb066e2edf9cd6f26e08a4b87c7fe">&#9670;&nbsp;</a></span>EMF_R1()</h2>
+<a id="abd27e8e28e50c4a1e0b7c3d1b650a290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd27e8e28e50c4a1e0b7c3d1b650a290">&#9670;&nbsp;</a></span>EMF_R1()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -492,6 +149,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>mode</em>&#160;</td>
         </tr>
@@ -502,13 +165,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculates R1 relaxation rate using extended model free analysis </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Calculates R1 relaxation rate using extended model free analysis Kurbanov2011, 8-10 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
     <tr><td class="paramname">relax</td><td>Pointer to relaxation measurement being modelled </td></tr>
     <tr><td class="paramname">taus</td><td>Correlation time of slow motion </td></tr>
     <tr><td class="paramname">S2s</td><td>Order parameter of slow motion </td></tr>
     <tr><td class="paramname">tauf</td><td>Correlation time of fast motion </td></tr>
+    <tr><td class="paramname">S2f</td><td>Order parameter of fast motion </td></tr>
     <tr><td class="paramname">mode</td><td>One of MODE_15N or MODE_13C depending on relaxation data type considered. </td></tr>
   </table>
   </dd>
@@ -517,8 +181,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2569ecc4f3474961467e59ddd9a410c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2569ecc4f3474961467e59ddd9a410c8">&#9670;&nbsp;</a></span>EMF_R2()</h2>
+<a id="ac968321cf6031a1813e90a47b8fb8b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac968321cf6031a1813e90a47b8fb8b70">&#9670;&nbsp;</a></span>EMF_R2()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -556,6 +220,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>mode</em>&#160;</td>
         </tr>
@@ -566,13 +236,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculates R2 relaxation rate using extended model free analysis </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Calculates R2 relaxation rate using extended model free analysis Kurbanov2011, 8-10 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
     <tr><td class="paramname">relax</td><td>Pointer to relaxation measurement being modelled </td></tr>
     <tr><td class="paramname">taus</td><td>Correlation time of slow motion </td></tr>
     <tr><td class="paramname">S2s</td><td>Order parameter of slow motion </td></tr>
     <tr><td class="paramname">tauf</td><td>Correlation time of fast motion </td></tr>
+    <tr><td class="paramname">S2f</td><td>Order parameter of fast motion. </td></tr>
     <tr><td class="paramname">mode</td><td>One of MODE_15N or MODE_13C depending on relaxation data type considered. </td></tr>
   </table>
   </dd>
@@ -783,6 +454,7 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>R1 Returns R1 as double </dd></dl>
+<p>Eq A30, Bremi1997</p>
 
 </div>
 </div>
@@ -850,6 +522,227 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>R2 Returns R2 as double </dd></dl>
+<p>I'm unsure if this should be R2CSAx + R2CSAy + R2CSAxy or - R2CSAxy. In the original MATLAB scripts, it is - R2CSAxy; in NHCO_3GAFSquaredEa, the form of R2CSAxy is really odd. In NH3DEglobalGAF it is also - R2CSAxy but the form is the same. In Lienin1998's SI, eq 5 and 6 it is +R2CSAxy - same for Bremi1997 eq A30</p>
+
+</div>
+</div>
+<a id="a2c850d32216efda27044c2a06c5af727"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c850d32216efda27044c2a06c5af727">&#9670;&nbsp;</a></span>GAF_CSA_R2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GAF_CSA_R2 </td>
+          <td>(</td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>taus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>tauf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>D2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates the R2 contribution of CSA of nuclei with frequency omega. D2 is the squared D22x/D22y/D22xy variable (dependent on CSA) Kurbanov2011, eqs 18-20. </p>
+
+</div>
+</div>
+<a id="a76040d0169d429b628d4acdc771f6630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76040d0169d429b628d4acdc771f6630">&#9670;&nbsp;</a></span>GAF_Dipolar_R1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GAF_Dipolar_R1 </td>
+          <td>(</td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega_obs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega_neigh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>taus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>tauf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>D</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates R1 contribution under GAF model for Dipolar interaction between two atoms. omega_obs is the frequency of the observed nucleus, omega_neigh is the frequency of the other atoms.<br  />
+D is the dipolar coupling in rad/s. Equation as 3.28, McConnell1986, only for solid state spins. Kurbanov2011, eq 9 (factor of 1/10 arising from (2/5.) in spectral density and 1/4. in dipolar. </p>
+
+</div>
+</div>
+<a id="ae21cd3cbbcd444eb5f7b7a7dc29056c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae21cd3cbbcd444eb5f7b7a7dc29056c5">&#9670;&nbsp;</a></span>GAF_Dipolar_R2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GAF_Dipolar_R2 </td>
+          <td>(</td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega_obs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega_neigh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>taus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>tauf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>D</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates R2 contribution of dipolar interaction between two atoms as in GAF_Dipolar_R1 Kurbanov2011, for the case where theta_p = 90 such that sin(theta_p) = 1 and so R1p = 0.5*R1 + R1delta </p>
 
 </div>
 </div>
@@ -902,7 +795,8 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. This function parallelises the calculation such that the loop over l, m, mp, k, kp only needs to occur once per motion - also meaning that the calculation of the exponential only needs to be done once. Checks for conjugation are made to reduce the need to calculate complex powers only to the cases where this is necessary. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig. This function parallelises the calculation such that the loop over l, m, mp, k, kp only needs to occur once per motion - also meaning that the calculation of the exponential only needs to be done once. Checks for conjugation are made to reduce the need to calculate complex powers only to the cases where this is necessary.<br  />
+Lienin1998, eq 6 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sig</td><td>Array containing [alpha, beta, gamma] deflection angles </td></tr>
     <tr><td class="paramname">A</td><td>Array containing pointers to orientation vectors for 'A' for each S2 being calculated. </td></tr>
@@ -914,6 +808,104 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Returns 1 in all cases. </dd></dl>
+
+</div>
+</div>
+<a id="aed70329919bae5660015bce26fcfb1b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed70329919bae5660015bce26fcfb1b3">&#9670;&nbsp;</a></span>J0_EMF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long double J0_EMF </td>
+          <td>(</td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>taus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>tauf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates spectral density function for given frequency according to extended model free analysis. Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2), as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling). </p>
+
+</div>
+</div>
+<a id="a25d3b047fa522735366de391f9d8cb65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25d3b047fa522735366de391f9d8cb65">&#9670;&nbsp;</a></span>J0_SMF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long double J0_SMF </td>
+          <td>(</td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>omega</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long double&#160;</td>
+          <td class="paramname"><em>S2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates spectral density function for given frequency (omega) according to simple model free analysis. Implements J(w) = (1 - S2) tau / (1 + (w tau)^2) as from Lipari1982 eq 35 (assuming no overall tumbling) and the factor of 2/5 has been taken into the summation (see below). </p>
 
 </div>
 </div>
@@ -960,9 +952,7 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>!&lt; Calculates R2 contribution of dipolar interaction between two atoms as in GAF_Dipolar_R1 </p>
-<p>Calculates R1 relaxation rate using simple model free analysis </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Calculates R1 relaxation rate using simple model free analysis. Kurbanov2011, eqs 8-10 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
     <tr><td class="paramname">relax</td><td>Pointer to relaxation measurement being modelled </td></tr>
@@ -1019,7 +1009,7 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculates R2 relaxation rate using simple model free analysis </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Calculates R2 relaxation rate using simple model free analysis Kurbanov2011, eqs 8-10 </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">res</td><td>Pointer to residue being considered </td></tr>
     <tr><td class="paramname">relax</td><td>Pointer to relaxation measurement being modelled </td></tr>
@@ -1034,8 +1024,6 @@ I'm unsure of the validity of NCSAxy. </dd></dl>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="amodels_8c_html_a7c2c2f6d8f03c4e7025edd130a501744"><div class="ttname"><a href="models_8c.html#a7c2c2f6d8f03c4e7025edd130a501744">J0_EMF</a></div><div class="ttdeci">#define J0_EMF(omega, taus, S2s, tauf, S2f)</div><div class="ttdoc">Calculates spectral density function for given frequency according to extended model free analysis.</div><div class="ttdef"><b>Definition:</b> models.c:21</div></div>
-<div class="ttc" id="amodels_8c_html_ae7616788b30810a219d9cdee95904ba4"><div class="ttname"><a href="models_8c.html#ae7616788b30810a219d9cdee95904ba4">sq</a></div><div class="ttdeci">#define sq(x)</div><div class="ttdoc">Squares double x.</div><div class="ttdef"><b>Definition:</b> models.c:48</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

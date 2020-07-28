@@ -29,7 +29,7 @@ set logscale y
 set xrange [0:56]
 set yrange [1:1e5]
 
-plot 'emf/errors.dat' u 1:($4 > 0 ? $4 * 1e9 : NaN):($5>0?$5*1e9:NaN) w yerrorbars  notitle
+plot 'emf/errors.dat' u 1:($4 > 0 ? $4 : NaN):($5>0?$5:NaN) w yerrorbars  notitle
 
 
 set ylabel "S^{2}_{fast}"
@@ -53,5 +53,5 @@ set grid xtics
 set xrange [0:56]
 set yrange [0.1:1e3]
 set xlabel "Peptide plane number (^{15}N_{i})"
-plot 'emf/errors.dat' u 1:($8 > 1e-13 ? $8 * 1e12 : NaN):($9>0?$9*1e12:NaN) w yerrorbars  notitle
+plot 'emf/errors.dat' u 1:($8 > 1e-4 ? $8 * 1e3 : NaN):($9>0?$9*1e3:NaN) w yerrorbars  notitle
 

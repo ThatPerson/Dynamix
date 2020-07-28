@@ -29,5 +29,5 @@ set grid xtics
 set xrange [0:56]
 set yrange [1:1e2]
 set xlabel "Peptide plane number (^{15}N_{i})"
-plot 'smf/errors.dat' u 1:($4 > 1e-13 ? $4 * 1e9 : NaN):($5>0?$5*1e9:NaN) w yerrorbars notitle
+plot 'smf/errors.dat' u 1:($4 > 1e-4 ? $4 : NaN):($5>0?$5:NaN) w yerrorbars notitle
 

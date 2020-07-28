@@ -72,6 +72,10 @@
 
 #define VERBOSE			1
 
+#define T_DOWN			0.0000000010000
+#define T_UP			1000000000
+#define T_S				9
+
 
 long double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
 

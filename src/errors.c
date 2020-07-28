@@ -128,7 +128,6 @@ void * calc_errors(void *input) {
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
-
 		simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
 
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'

@@ -30,7 +30,7 @@ set ytics
 set autoscale
 set xrange [0:56]
 
-plot 'smft/final.dat' u 1:($4 > 0 ? $4 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+plot 'smft/final.dat' u 1:($4 > 0 ? $4 *1e-9 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
 
 
 set ylabel "Ea / kJ/mol"
