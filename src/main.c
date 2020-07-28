@@ -402,7 +402,7 @@ int main(int argc, char * argv[]) {
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);
 			if (m.error_mode == 1) {
-				printf("%Le\n", m.residues[l].errors_std[i]);
+				//printf("%Le\n", m.residues[l].errors_std[i]);
 				fprintf(ep, ", %Le, %Le", m.residues[l].parameters[i], 2 * m.residues[l].errors_std[i]);
 			}
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
