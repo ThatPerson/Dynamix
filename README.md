@@ -243,20 +243,22 @@ The output is as a `.eps` file. This may be viewed using eg Okular (`okular file
 Output File Formats
 -------------------
 
+*_Note: All taus and tauf values are output in nanoseconds ($10^{-9}$ seconds), not seconds._* This is done to improve precision.
+
 **residues_N.dat**
 
 These residue files are generated during the optimization process. Each line refers to a separate optimization process. The first column is the residue number, the second is the minimum value of the chisq function. Plotting the second column generates a nice plot showing how well the optimization went.
 
 The remaining columns depend on which model is in use. In particular;
 
-* SMF: tau, S2
-* SMFT: tau, S2, Ea
-* EMF: taus, S2s, tauf
-* EMFT: taus, S2s, tauf, Eas, Eaf
-* DEMF: taus, S2s, tauf, S2f
-* DEMFT: taus, S2s, tauf, S2f, Eas, Eaf
-* GAF: taus, tauf, sAs, sBs, sGs, sAf, sBf, sGf
-* GAFT: taus, tauf, sAs, sBs, sGs, sAf, sBf, sGf, Eas, Eaf
+* SMF: tau (ns), S2
+* SMFT: tau (ns), S2, Ea
+* EMF: taus (ns), S2s, tauf (ns)
+* EMFT: taus (ns), S2s, tauf (ns), Eas, Eaf
+* DEMF: taus (ns), S2s, tauf (ns), S2f
+* DEMFT: taus (ns), S2s, tauf (ns), S2f, Eas, Eaf
+* GAF: taus (ns), tauf (ns), sAs, sBs, sGs, sAf, sBf, sGf
+* GAFT: taus (ns), tauf (ns), sAs, sBs, sGs, sAf, sBf, sGf, Eas, Eaf
 
 This may be useful for plotting to see how varied the individual responses are, eg how responsive the model is to one parameter.
 
