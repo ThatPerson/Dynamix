@@ -11,7 +11,9 @@
 		(((1 - (double) S2) * (long double) tau)) \
 		/ (1 + ((double) omega * (long double) tau * (double) omega * (long double) tau)) \
 	) \
-} ///< Calculates spectral density function for given frequency (omega) according to simple model free analysis.
+} ///!< Calculates spectral density function for given frequency (omega) according to simple model free analysis.
+  ///!< Implements J(w) = (1 - S2) tau / (1 + (w tau)^2) as from Lipari1982 eq 35 (assuming no overall tumbling)
+  ///!< and the factor of 2/5 has been taken into the summation (see below).
 
 #define J0_EMF(omega, taus, S2s, tauf, S2f) (long double) {\
 	 ( \
@@ -25,7 +27,9 @@
 			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
 		)\
 	)\
-} ///< Calculates spectral density function for given frequency according to extended model free analysis.
+} ///!< Calculates spectral density function for given frequency according to extended model free analysis.
+  ///!< Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2), 
+  ///!< as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
 
 #define sq_i(x) ((int) x * (int) x) ///< Squares integer x
 #define sq(x) ((double) x * (double) x) ///< Squares double x
@@ -39,6 +43,8 @@
   } ///!< Calculates R1 contribution under GAF model for Dipolar interaction between two atoms.
     ///!< omega_obs is the frequency of the observed nucleus, omega_neigh is the frequency of the other atoms.\n
     ///!< D is the dipolar coupling in rad/s.
+    ///!< Equation as 3.28, McConnell1986, only for solid state spins.
+    ///!< Kurbanov2011, eq 9 (factor of 1/10 arising from (2/5.) in spectral density and 1/4. in dipolar.
 
 #define GAF_CSA_R2(omega, w1, wr, taus, S2s, tauf, S2f, D2) (double) { \
   	( \
@@ -52,6 +58,7 @@
   	)\
   } ///!< Calculates the R2 contribution of CSA of nuclei with frequency omega.
     ///!< D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)
+    ///!< Kurbanov2011, eqs 18-20.
 
   #define GAF_Dipolar_R2(omega_obs, omega_neigh, w1, wr, taus, S2s, tauf, S2f, D) (double) {\
   	(\
@@ -67,9 +74,12 @@
   		)\
   	)\
   } ///!< Calculates R2 contribution of dipolar interaction between two atoms as in GAF_Dipolar_R1
+    ///!< Kurbanov2011, for the case where theta_p = 90 such that sin(theta_p) = 1 and so
+    ///!< R1p = 0.5*R1 + R1delta
 
 /**
- * Calculates R1 relaxation rate using simple model free analysis
+ * Calculates R1 relaxation rate using simple model free analysis.
+ * Kurbanov2011, eqs 8-10
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -94,7 +104,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_L;
-	long double d, d2tot;
+	long double d = 0, d2tot;
 	float *csa;
 
 	if (mode == MODE_15N) {
@@ -105,6 +115,9 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
 		d = -D_CH;
+	} else {
+		printf("Incorrect mode.\n");
+		return -1;
 	}
 
 	d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
@@ -125,6 +138,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 
 /**
  * Calculates R2 relaxation rate using simple model free analysis
+ * Kurbanov2011, eqs 8-10
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -160,6 +174,9 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
 		d = -D_CH;
+	} else {
+		printf("Incorrect mode.\n");
+		return -1;
 	}
 
 	d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
@@ -189,6 +206,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 
 /**
  * Calculates R1 relaxation rate using extended model free analysis
+ * Kurbanov2011, 8-10
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -226,6 +244,9 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
 		d = -D_CH;
+	} else {
+		printf("Incorrect mode.\n");
+		return -1;
 	}
 
 	d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
@@ -247,6 +268,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 
 /**
  * Calculates R2 relaxation rate using extended model free analysis
+ * Kurbanov2011, 8-10
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -285,6 +307,9 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
 		d = -D_CH;
+	} else {
+		printf("Incorrect mode.\n");
+		return -1;
 	}
 
 	d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
@@ -316,7 +341,8 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
  * Calculates the order parameter relating to two orientations A and B undergoing anisotropic axial fluctuations of magnitude sig.
  * This function parallelises the calculation such that the loop over l, m, mp, k, kp only needs to occur once per motion - also
  * meaning that the calculation of the exponential only needs to be done once. Checks for conjugation are made to reduce the need
- * to calculate complex powers only to the cases where this is necessary.
+ * to calculate complex powers only to the cases where this is necessary.\n
+ * Lienin1998, eq 6
  * @param sig
  *  Array containing [alpha, beta, gamma] deflection angles
  * @param A
@@ -442,7 +468,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
-	double omega_13C, omega_15N, wCOCa;
+	double omega_13C, omega_15N;
 	double d2x, d2y, d2xy;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
@@ -479,7 +505,8 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
-	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
+	/** Eq A30, Bremi1997 */
+	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R1NH = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -518,7 +545,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
-	double omega_13C, omega_15N, wCOCa;
+	double omega_13C, omega_15N;
 	double d2x, d2y, d2xy;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
@@ -547,12 +574,17 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 
 	/* N CSA relaxation contribution */
 	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
-	long double J1 = 0, J0sum;
 
 	R2CSAx = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxs, tauf, S2NCSAxf, d2x);
 	R2CSAy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAys, tauf, S2NCSAyf, d2y);
 	R2CSAxy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxys, tauf, S2NCSAxyf, d2xy);
-	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
+	/**
+	 * I'm unsure if this should be R2CSAx + R2CSAy + R2CSAxy or - R2CSAxy. 
+	 * In the original MATLAB scripts, it is - R2CSAxy; in NHCO_3GAFSquaredEa, the form of R2CSAxy
+	 * is really odd. In NH3DEglobalGAF it is also - R2CSAxy but the form is the same.
+	 * In Lienin1998's SI, eq 5 and 6 it is +R2CSAxy - same for Bremi1997 eq A30
+	 */
+	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2NH = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -636,7 +668,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
-	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
+	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R1CH = GAF_Dipolar_R1(omega_13C, omega_1H, taus, S2CHs, tauf, S2CHf, D_CH);
@@ -708,17 +740,17 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 
 	/* CSA relaxation contribution */
 	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
-	long double J1 = 0, J0sum;
+	
 
 	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x);
 	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y);
 	R2CSAxy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxys, tauf, S2CSAxyf, d2xy);
-	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2CH = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CHs, tauf, S2CHf, D_CH);
 	R2CHr = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = GAF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
-	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
+	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C + wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
 	return R2CSA + R2CH + R2CHr + R2CN + R2CC;
 }

@@ -26,8 +26,6 @@ void * run_residue(void *input) {
 	char outputdir[255];
 	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 	FILE *fp;
-	char line[255];
-	size_t len=255;
 	char filename[300];
 	sprintf(filename, "%s/residue_%d.dat", outputdir, i+1);
 	fp = fopen(filename, "w");
@@ -384,7 +382,6 @@ int main(int argc, char * argv[]) {
 	}
 
 	printf("Outputting Files...\n");
-	long double c = -1;
 	char file[300];
 	for (l = 0; l < m.n_residues; l++) {
 		if (m.error_mode == 1) {
@@ -405,6 +402,7 @@ int main(int argc, char * argv[]) {
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);
 			if (m.error_mode == 1) {
+				printf("%Le\n", m.residues[l].errors_std[i]);
 				fprintf(ep, ", %Le, %Le", m.residues[l].parameters[i], 2 * m.residues[l].errors_std[i]);
 			}
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
@@ -418,7 +416,7 @@ int main(int argc, char * argv[]) {
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, file);
 		
-		if (m.model == MOD_GAF || m.model == MOD_GAFT) {
+		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL) {
 			// Print out 'effective S2' values.
 			double S2slow, S2fast;
 			double *S2[] = {&S2slow};

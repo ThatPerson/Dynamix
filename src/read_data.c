@@ -33,11 +33,13 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 	int resid;
 	float val;
 	float err;
-	int k;
+	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
+		int k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
+		if (k != 3)
+			printf("Error reading '%s'\n", line);
 		resid = resid - 1; // 0 indexed in C
 		switch (dt) {
 			case DATA_S2:
@@ -94,11 +96,12 @@ int read_pp(struct Model *m, char *filename, int orient) {
 	int resid;
 	float theta;
 	float phi;
-	int k;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
+		int k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
+		if (k != 3)
+			printf("Error reading line '%s'\n", line);
 		resid = resid -1; // index from 0
 		m->residues[resid].orients[orient].theta = theta;
 		m->residues[resid].orients[orient].phi = phi;

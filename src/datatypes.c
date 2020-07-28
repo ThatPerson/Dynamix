@@ -70,7 +70,7 @@
 
 #define HALF_PI			M_PI / 2.
 
-#define VERBOSE			0
+#define VERBOSE			1
 
 
 long double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2

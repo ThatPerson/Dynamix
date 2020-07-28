@@ -73,7 +73,7 @@ void * calc_errors(void *input) {
 	struct Residue * resid = ((struct rrargs*)input)->resid;
 	int model = ((struct rrargs*)input)->model;
 	int n_iter = ((struct rrargs*)input)->n_iter;
-	double optim = resid->min_val;
+	//double optim = resid->min_val;
 	//char outputdir[255];
 	//strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 
@@ -100,7 +100,7 @@ void * calc_errors(void *input) {
 		resid->error_params[k] = (long double *) malloc (sizeof(long double) * n_iter);
 	}
 	//resid->min_val = MIN_VAL;*/
-	double val = 0;
+	//double val = 0;
 	int p = 0;
 	for (l = 0; l < n_iter; l++) {
 		if (resid->ignore == 1) {
@@ -129,7 +129,7 @@ void * calc_errors(void *input) {
 			opts[k] = resid->parameters[k];
 		}
 
-		val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
+		simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
 
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
