@@ -21,7 +21,7 @@ As of writing, Dynamix can fit the following models;
 * Simple Model Free with Temperature Dependence (SMFT)
   Fits three parameters, S$^2$, $\tau_0$ and $Ea$, where the correlation time is temperature dependent;
   
-  $$ \tau(t) = \tau_0 \exp(\frac{Ea}{R T}) $$
+  $$ \tau(T) = \tau_0 \exp(\frac{Ea}{R T}) $$
   
   This is then fit as in SMF.
 

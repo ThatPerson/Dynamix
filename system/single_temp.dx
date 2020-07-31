@@ -1,4 +1,4 @@
-MODEL  =   EMF
+MODEL  =   EMF 
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
@@ -13,9 +13,9 @@ CSISOC  =  system/csisoC.csv
 
 N_RESIDUES  =  56
 OUTPUT = emf/
-N_ITER = 50
+N_ITER = 2000
 IGNORE = 42
-N_ERROR_ITER = 50 
+N_ERROR_ITER = 2000
 
 
 % Orientations taken from Lienin 1998
@@ -33,28 +33,28 @@ OR_CCSAxx = system/or_CCSAxx.csv
 OR_CCSAyy = system/or_CCSAyy.csv
 OR_CCSAzz = system/or_CCSAzz.csv
 
-NTHREADS = 4
+NTHREADS = 56
 
 #RELAXATION
-system/15N_R1_600_50_0_271.csv
-system/15N_R1_600_50_0_282.csv
-system/15N_R1_600_50_0_292.csv
+%system/15N_R1_600_50_0_271.csv
+%system/15N_R1_600_50_0_282.csv
+%system/15N_R1_600_50_0_292.csv
 system/15N_R1_600_50_0_301.csv
-system/15N_R1_600_50_0_308.csv
+%system/15N_R1_600_50_0_308.csv
 system/15N_R1_700_50_0_299.csv
 system/15N_R1_850_50_0_298.csv
-system/15N_R1p_600_50_8_268.csv
-system/15N_R1p_600_50_8_270.csv
-system/15N_R1p_600_50_8_281.csv
-system/15N_R1p_600_50_8_285.csv
-system/15N_R1p_600_50_8_290.csv
-system/15N_R1p_600_50_8_294.csv
+%system/15N_R1p_600_50_8_268.csv
+%system/15N_R1p_600_50_8_270.csv
+%system/15N_R1p_600_50_8_281.csv
+%system/15N_R1p_600_50_8_285.csv
+%system/15N_R1p_600_50_8_290.csv
+%system/15N_R1p_600_50_8_294.csv
 system/15N_R1p_600_50_8_301.csv
-system/15N_R1p_700_50_10_278.csv
-system/15N_R1p_700_50_10_290.csv
-system/15N_R1p_700_50_10_294.csv
+%system/15N_R1p_700_50_10_278.csv
+%system/15N_R1p_700_50_10_290.csv
+%system/15N_R1p_700_50_10_294.csv
 system/15N_R1p_700_50_10_299.csv
-system/15N_R1p_700_50_10_309.csv
-system/15N_R1p_850_50_10_278.csv
-system/15N_R1p_850_50_10_291.csv
+%system/15N_R1p_700_50_10_309.csv
+%system/15N_R1p_850_50_10_278.csv
+%system/15N_R1p_850_50_10_291.csv
 system/15N_R1p_850_50_10_299.csv

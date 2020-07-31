@@ -25,6 +25,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 	double chisq = 0;
 	long double upper_lim_tf = (long double) 1 * pow(10, -8 + T_S);
 	long double upper_lim_ts = (long double) 1 * pow(10, -5 + T_S);
+	long double lower_lim_tf = (long double) 1 * pow(10, -13 + T_S);
 	//printf("%d %d: %d\n", model, MOD_SMFT, model == MOD_SMFT);
 	if (model == MOD_SMF || model == MOD_SMFT) {
 		/* Simple Model Free Analysis */
@@ -96,7 +97,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		if (tauf > taus)
 			chisq += 100000000;
-		if (tauf > upper_lim_tf || taus > upper_lim_ts)
+		if (tauf > upper_lim_tf || taus > upper_lim_ts || tauf < lower_lim_tf)
 			chisq += 100000000;
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {

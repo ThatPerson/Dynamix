@@ -40,23 +40,24 @@
 \contentsline {subsubsection}{\numberline {3.4.2.2}csaN}{10}{subsubsection.3.4.2.2}% 
 \contentsline {subsubsection}{\numberline {3.4.2.3}csisoC}{10}{subsubsection.3.4.2.3}% 
 \contentsline {subsubsection}{\numberline {3.4.2.4}csisoN}{10}{subsubsection.3.4.2.4}% 
-\contentsline {subsubsection}{\numberline {3.4.2.5}error\_params}{10}{subsubsection.3.4.2.5}% 
-\contentsline {subsubsection}{\numberline {3.4.2.6}errors\_mean}{10}{subsubsection.3.4.2.6}% 
-\contentsline {subsubsection}{\numberline {3.4.2.7}errors\_std}{11}{subsubsection.3.4.2.7}% 
-\contentsline {subsubsection}{\numberline {3.4.2.8}ignore}{11}{subsubsection.3.4.2.8}% 
-\contentsline {subsubsection}{\numberline {3.4.2.9}lim\_relaxation}{11}{subsubsection.3.4.2.9}% 
-\contentsline {subsubsection}{\numberline {3.4.2.10}min\_val}{11}{subsubsection.3.4.2.10}% 
-\contentsline {subsubsection}{\numberline {3.4.2.11}n\_relaxation}{11}{subsubsection.3.4.2.11}% 
-\contentsline {subsubsection}{\numberline {3.4.2.12}orients}{11}{subsubsection.3.4.2.12}% 
-\contentsline {subsubsection}{\numberline {3.4.2.13}parameters}{11}{subsubsection.3.4.2.13}% 
-\contentsline {subsubsection}{\numberline {3.4.2.14}relaxation}{11}{subsubsection.3.4.2.14}% 
-\contentsline {subsubsection}{\numberline {3.4.2.15}S2\_dipolar}{12}{subsubsection.3.4.2.15}% 
-\contentsline {subsubsection}{\numberline {3.4.2.16}temp\_relaxation}{12}{subsubsection.3.4.2.16}% 
+\contentsline {subsubsection}{\numberline {3.4.2.5}error\_calcs}{10}{subsubsection.3.4.2.5}% 
+\contentsline {subsubsection}{\numberline {3.4.2.6}error\_params}{10}{subsubsection.3.4.2.6}% 
+\contentsline {subsubsection}{\numberline {3.4.2.7}errors\_mean}{11}{subsubsection.3.4.2.7}% 
+\contentsline {subsubsection}{\numberline {3.4.2.8}errors\_std}{11}{subsubsection.3.4.2.8}% 
+\contentsline {subsubsection}{\numberline {3.4.2.9}ignore}{11}{subsubsection.3.4.2.9}% 
+\contentsline {subsubsection}{\numberline {3.4.2.10}lim\_relaxation}{11}{subsubsection.3.4.2.10}% 
+\contentsline {subsubsection}{\numberline {3.4.2.11}min\_val}{11}{subsubsection.3.4.2.11}% 
+\contentsline {subsubsection}{\numberline {3.4.2.12}n\_relaxation}{11}{subsubsection.3.4.2.12}% 
+\contentsline {subsubsection}{\numberline {3.4.2.13}orients}{11}{subsubsection.3.4.2.13}% 
+\contentsline {subsubsection}{\numberline {3.4.2.14}parameters}{11}{subsubsection.3.4.2.14}% 
+\contentsline {subsubsection}{\numberline {3.4.2.15}relaxation}{12}{subsubsection.3.4.2.15}% 
+\contentsline {subsubsection}{\numberline {3.4.2.16}S2\_dipolar}{12}{subsubsection.3.4.2.16}% 
+\contentsline {subsubsection}{\numberline {3.4.2.17}temp\_relaxation}{12}{subsubsection.3.4.2.17}% 
 \contentsline {section}{\numberline {3.5}rrargs Struct Reference}{12}{section.3.5}% 
 \contentsline {subsection}{\numberline {3.5.1}Detailed Description}{12}{subsection.3.5.1}% 
 \contentsline {subsection}{\numberline {3.5.2}Member Data Documentation}{12}{subsection.3.5.2}% 
 \contentsline {subsubsection}{\numberline {3.5.2.1}i}{12}{subsubsection.3.5.2.1}% 
-\contentsline {subsubsection}{\numberline {3.5.2.2}model}{12}{subsubsection.3.5.2.2}% 
+\contentsline {subsubsection}{\numberline {3.5.2.2}model}{13}{subsubsection.3.5.2.2}% 
 \contentsline {subsubsection}{\numberline {3.5.2.3}n\_iter}{13}{subsubsection.3.5.2.3}% 
 \contentsline {subsubsection}{\numberline {3.5.2.4}outputdir}{13}{subsubsection.3.5.2.4}% 
 \contentsline {subsubsection}{\numberline {3.5.2.5}resid}{13}{subsubsection.3.5.2.5}% 
@@ -84,25 +85,24 @@
 \contentsline {subsubsection}{\numberline {4.5.1.1}main()}{22}{subsubsection.4.5.1.1}% 
 \contentsline {subsubsection}{\numberline {4.5.1.2}run\_residue()}{22}{subsubsection.4.5.1.2}% 
 \contentsline {section}{\numberline {4.6}models.\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}c File Reference}{23}{section.4.6}% 
-\contentsline {subsection}{\numberline {4.6.1}Macro Definition Documentation}{24}{subsection.4.6.1}% 
-\contentsline {subsubsection}{\numberline {4.6.1.1}GAF\_CSA\_R2}{24}{subsubsection.4.6.1.1}% 
-\contentsline {subsubsection}{\numberline {4.6.1.2}GAF\_Dipolar\_R1}{25}{subsubsection.4.6.1.2}% 
-\contentsline {subsubsection}{\numberline {4.6.1.3}GAF\_Dipolar\_R2}{25}{subsubsection.4.6.1.3}% 
-\contentsline {subsubsection}{\numberline {4.6.1.4}J0\_EMF}{26}{subsubsection.4.6.1.4}% 
-\contentsline {subsubsection}{\numberline {4.6.1.5}J0\_SMF}{26}{subsubsection.4.6.1.5}% 
-\contentsline {subsection}{\numberline {4.6.2}Function Documentation}{26}{subsection.4.6.2}% 
-\contentsline {subsubsection}{\numberline {4.6.2.1}EMF\_R1()}{26}{subsubsection.4.6.2.1}% 
-\contentsline {subsubsection}{\numberline {4.6.2.2}EMF\_R2()}{27}{subsubsection.4.6.2.2}% 
-\contentsline {subsubsection}{\numberline {4.6.2.3}GAF\_13CR1()}{27}{subsubsection.4.6.2.3}% 
-\contentsline {subsubsection}{\numberline {4.6.2.4}GAF\_13CR2()}{28}{subsubsection.4.6.2.4}% 
-\contentsline {subsubsection}{\numberline {4.6.2.5}GAF\_15NR1()}{29}{subsubsection.4.6.2.5}% 
-\contentsline {subsubsection}{\numberline {4.6.2.6}GAF\_15NR2()}{29}{subsubsection.4.6.2.6}% 
-\contentsline {subsubsection}{\numberline {4.6.2.7}GAF\_S2()}{31}{subsubsection.4.6.2.7}% 
-\contentsline {subsubsection}{\numberline {4.6.2.8}SMF\_R1()}{31}{subsubsection.4.6.2.8}% 
-\contentsline {subsubsection}{\numberline {4.6.2.9}SMF\_R2()}{32}{subsubsection.4.6.2.9}% 
-\contentsline {section}{\numberline {4.7}read\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}data.\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}c File Reference}{32}{section.4.7}% 
-\contentsline {subsection}{\numberline {4.7.1}Function Documentation}{33}{subsection.4.7.1}% 
-\contentsline {subsubsection}{\numberline {4.7.1.1}read\_pp()}{33}{subsubsection.4.7.1.1}% 
-\contentsline {subsubsection}{\numberline {4.7.1.2}read\_relaxation\_data()}{33}{subsubsection.4.7.1.2}% 
-\contentsline {subsubsection}{\numberline {4.7.1.3}read\_resid\_data()}{34}{subsubsection.4.7.1.3}% 
-\contentsline {subsubsection}{\numberline {4.7.1.4}read\_system\_file()}{35}{subsubsection.4.7.1.4}% 
+\contentsline {subsection}{\numberline {4.6.1}Function Documentation}{24}{subsection.4.6.1}% 
+\contentsline {subsubsection}{\numberline {4.6.1.1}EMF\_R1()}{24}{subsubsection.4.6.1.1}% 
+\contentsline {subsubsection}{\numberline {4.6.1.2}EMF\_R2()}{25}{subsubsection.4.6.1.2}% 
+\contentsline {subsubsection}{\numberline {4.6.1.3}GAF\_13CR1()}{25}{subsubsection.4.6.1.3}% 
+\contentsline {subsubsection}{\numberline {4.6.1.4}GAF\_13CR2()}{26}{subsubsection.4.6.1.4}% 
+\contentsline {subsubsection}{\numberline {4.6.1.5}GAF\_15NR1()}{27}{subsubsection.4.6.1.5}% 
+\contentsline {subsubsection}{\numberline {4.6.1.6}GAF\_15NR2()}{27}{subsubsection.4.6.1.6}% 
+\contentsline {subsubsection}{\numberline {4.6.1.7}GAF\_CSA\_R2()}{28}{subsubsection.4.6.1.7}% 
+\contentsline {subsubsection}{\numberline {4.6.1.8}GAF\_Dipolar\_R1()}{28}{subsubsection.4.6.1.8}% 
+\contentsline {subsubsection}{\numberline {4.6.1.9}GAF\_Dipolar\_R2()}{29}{subsubsection.4.6.1.9}% 
+\contentsline {subsubsection}{\numberline {4.6.1.10}GAF\_S2()}{29}{subsubsection.4.6.1.10}% 
+\contentsline {subsubsection}{\numberline {4.6.1.11}J0\_EMF()}{29}{subsubsection.4.6.1.11}% 
+\contentsline {subsubsection}{\numberline {4.6.1.12}J0\_SMF()}{30}{subsubsection.4.6.1.12}% 
+\contentsline {subsubsection}{\numberline {4.6.1.13}SMF\_R1()}{30}{subsubsection.4.6.1.13}% 
+\contentsline {subsubsection}{\numberline {4.6.1.14}SMF\_R2()}{30}{subsubsection.4.6.1.14}% 
+\contentsline {section}{\numberline {4.7}read\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}data.\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}c File Reference}{31}{section.4.7}% 
+\contentsline {subsection}{\numberline {4.7.1}Function Documentation}{31}{subsection.4.7.1}% 
+\contentsline {subsubsection}{\numberline {4.7.1.1}read\_pp()}{31}{subsubsection.4.7.1.1}% 
+\contentsline {subsubsection}{\numberline {4.7.1.2}read\_relaxation\_data()}{32}{subsubsection.4.7.1.2}% 
+\contentsline {subsubsection}{\numberline {4.7.1.3}read\_resid\_data()}{33}{subsubsection.4.7.1.3}% 
+\contentsline {subsubsection}{\numberline {4.7.1.4}read\_system\_file()}{33}{subsubsection.4.7.1.4}% 

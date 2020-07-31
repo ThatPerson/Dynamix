@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.6.15)  24 JUL 2020 16:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.6.15)  31 JUL 2020 10:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**refman
+**refman.tex
 (./refman.tex
 LaTeX2e <2018-12-01>
 (/usr/share/texlive/texmf-dist/tex/latex/base/book.cls
@@ -817,7 +817,7 @@ Enter file name:
 l.146 \etocsettocstyle
                       {\doxytocparskip}{\doxynormalparskip}
 ? 
-No file refman.aux.
+(./refman.aux)
 \openout1 = `refman.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 150.
@@ -839,7 +839,7 @@ LaTeX Font Info:    ... okay on input line 150.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 150.
 LaTeX Font Info:    ... okay on input line 150.
 LaTeX Font Info:    Try loading font information for T1+phv on input line 150.
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
@@ -923,6 +923,8 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 150.
 LaTeX Info: Redefining \pageref on input line 150.
 LaTeX Info: Redefining \nameref on input line 150.
+
+(./refman.out) (./refman.out)
 \@outlinefile=\write5
 \openout5 = `refman.out'.
 
@@ -940,8 +942,7 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <7> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 158.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 6.29996pt on input line 158.
-
-[1{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}
+ [1{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}
 
 ] [2
 
@@ -950,8 +951,7 @@ LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 (Font)              scaled to size 12.9599pt on input line 161.
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 (Font)              scaled to size 10.79993pt on input line 163.
-
-[1] [2
+ [1] [2
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
@@ -962,14 +962,16 @@ LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 22.39185pt on input line 168.
 LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
 (Font)              scaled to size 22.39185pt on input line 168.
+ (./refman.toc [1
+
+]
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 6.29996pt on input line 65.
+ [2] [3])
 \tf@toc=\write6
 \openout6 = `refman.toc'.
 
- [1
-
-] [2
-
-]
+ [4]
 Package hyperref Info: Option `pageanchor' set `true' on input line 171.
 
 Chapter 1.
@@ -986,54 +988,14 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 1.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 12.9599pt on input line 1.
-LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 6.29996pt on input line 2.
-
-
-LaTeX Warning: Reference `structModel' on page 1 undefined on input line 3.
-
-
-LaTeX Warning: Reference `structOrient' on page 1 undefined on input line 4.
-
-
-LaTeX Warning: Reference `structRelaxation' on page 1 undefined on input line 5
-.
-
-
-LaTeX Warning: Reference `structResidue' on page 1 undefined on input line 6.
-
-
-LaTeX Warning: Reference `structrrargs' on page 1 undefined on input line 7.
-
 ) [1
+
 
 ] [2
 
 ]
 Chapter 2.
-(./files.tex
-
-LaTeX Warning: Reference `chisq_8c' on page 3 undefined on input line 3.
-
-
-LaTeX Warning: Reference `crosen_8c' on page 3 undefined on input line 4.
-
-
-LaTeX Warning: Reference `datatypes_8c' on page 3 undefined on input line 5.
-
-
-LaTeX Warning: Reference `errors_8c' on page 3 undefined on input line 6.
-
-
-LaTeX Warning: Reference `main_8c' on page 3 undefined on input line 7.
-
-
-LaTeX Warning: Reference `models_8c' on page 3 undefined on input line 8.
-
-
-LaTeX Warning: Reference `read__data_8c' on page 3 undefined on input line 9.
-
-) [3] [4
+(./files.tex) [3] [4
 
 ]
 Chapter 3.
@@ -1073,10 +1035,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 21--23
  []
 
 
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.1 on input line 33.
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [15]
@@ -1088,10 +1046,6 @@ Underfull \hbox (badness 10000) detected at line 34
 Underfull \hbox (badness 10000) in paragraph at lines 43--45
 
  []
-
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.2 on input line 53.
 
 
 Underfull \hbox (badness 10000) detected at line 54
@@ -1118,10 +1072,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 36--38
  []
 
 
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.3 on input line 55.
-
-
 Underfull \hbox (badness 10000) detected at line 56
 [][][]
  []
@@ -1132,39 +1082,25 @@ Underfull \hbox (badness 10000) in paragraph at lines 3--6
  []
 
 [17] [18]
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.4 on input line 185.
+Overfull \vbox (7.0328pt too high) has occurred while \output is active []
 
 
-Underfull \hbox (badness 10000) detected at line 186
+[19]
+Underfull \hbox (badness 10000) detected at line 210
 [][][]
  []
 
-[19]) (./errors_8c.tex
+) (./errors_8c.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--5
 
  []
 
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.5 on input line 29.
-
 [20]
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.6 on input line 46.
-
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.7 on input line 59.
-
-
 Underfull \hbox (badness 10000) detected at line 60
 [][][]
  []
 
-
+[21]
 Underfull \hbox (badness 10000) detected at line 69
 [][][]
  []
@@ -1174,1042 +1110,73 @@ Underfull \hbox (badness 10000) in paragraph at lines 3--12
 
  []
 
-[21]
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.8 on input line 38.
-
 ) (./models_8c.tex [22]
 Underfull \hbox (badness 10000) in paragraph at lines 3--6
 
  []
 
-[23]
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.57 \DoxyCodeLine{    (double) \{ \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.57 \DoxyCodeLine{    (double) \{ \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.57 \DoxyCodeLine{    (double) \{ \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.58 \DoxyCodeLine{    ( \(\backslash\)}
-                                        
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.58 \DoxyCodeLine{    ( \(\backslash\)}
-                                        
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.58 \DoxyCodeLine{    ( \(\backslash\)}
-                                        
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.59 ... (1/45.) * (double) D2 * ( \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.59 ... (1/45.) * (double) D2 * ( \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.59 ... (1/45.) * (double) D2 * ( \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.60 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.60 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.60 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.61 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.61 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.61 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.62 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.62 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.62 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.63 ...), taus, S2s, tauf, S2f) + \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.63 ...), taus, S2s, tauf, S2f) + \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.63 ...), taus, S2s, tauf, S2f) + \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.64 ...mega, taus, S2s, tauf, S2f)\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.64 ...mega, taus, S2s, tauf, S2f)\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.64 ...mega, taus, S2s, tauf, S2f)\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.65 \DoxyCodeLine{        )\(\backslash\)}
-                                           
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.65 \DoxyCodeLine{        )\(\backslash\)}
-                                           
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.65 \DoxyCodeLine{        )\(\backslash\)}
-                                           
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.66 \DoxyCodeLine{    )\(\backslash\)}
-                                       
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.66 \DoxyCodeLine{    )\(\backslash\)}
-                                       
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.66 \DoxyCodeLine{    )\(\backslash\)}
-                                       
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.67 \DoxyCodeLine{  \}}
-                        
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.67 \DoxyCodeLine{  \}}
-                        
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.67 \DoxyCodeLine{  \}}
-                        
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.79 \DoxyCodeLine{    (double) \{\(\backslash\)}
-                                                 
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.79 \DoxyCodeLine{    (double) \{\(\backslash\)}
-                                                 
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.79 \DoxyCodeLine{    (double) \{\(\backslash\)}
-                                                 
-? 
-[24]
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.80 ...9cdee95904ba4}{sq}}(D) * ( \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.80 ...9cdee95904ba4}{sq}}(D) * ( \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.80 ...9cdee95904ba4}{sq}}(D) * ( \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.81 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.81 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.81 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.82 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.82 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.82 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.83 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.83 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.83 ...bs, taus, S2s, tauf, S2f)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.84 \DoxyCodeLine{      ) \(\backslash\)}
-                                          
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.84 \DoxyCodeLine{      ) \(\backslash\)}
-                                          
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.84 \DoxyCodeLine{      ) \(\backslash\)}
-                                          
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.85 \DoxyCodeLine{  \}}
-                        
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.85 \DoxyCodeLine{  \}}
-                        
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.85 \DoxyCodeLine{  \}}
-                        
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.96 \DoxyCodeLine{    (double) \{\(\backslash\)}
-                                                 
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.96 \DoxyCodeLine{    (double) \{\(\backslash\)}
-                                                 
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.96 \DoxyCodeLine{    (double) \{\(\backslash\)}
-                                                 
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.97 \DoxyCodeLine{    (\(\backslash\)}
-                                       
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.97 \DoxyCodeLine{    (\(\backslash\)}
-                                       
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.97 \DoxyCodeLine{    (\(\backslash\)}
-                                       
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.98 ...d9cdee95904ba4}{sq}}(D) * (\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.98 ...d9cdee95904ba4}{sq}}(D) * (\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.98 ...d9cdee95904ba4}{sq}}(D) * (\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.99 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.99 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.99 ...r), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.100 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.100 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.100 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.101 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.101 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.101 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.102 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.102 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.102 ...), taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.103 ...s, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.103 ...s, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.103 ...s, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.104 ...s, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.104 ...s, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.104 ...s, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.105 ...h, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.105 ...h, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.105 ...h, taus, S2s, tauf, S2f) +\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.106 ...obs, taus, S2s, tauf, S2f)\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.106 ...obs, taus, S2s, tauf, S2f)\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.106 ...obs, taus, S2s, tauf, S2f)\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.107 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.107 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.107 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.108 \DoxyCodeLine{    )\(\backslash\)}
-                                        
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.108 \DoxyCodeLine{    )\(\backslash\)}
-                                        
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.108 \DoxyCodeLine{    )\(\backslash\)}
-                                        
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.109 \DoxyCodeLine{  \}}
-                         
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.109 \DoxyCodeLine{  \}}
-                         
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.109 \DoxyCodeLine{  \}}
-                         
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.124 ...wordtype}{long} double) \{\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.124 ...wordtype}{long} double) \{\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.124 ...wordtype}{long} double) \{\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.125 \DoxyCodeLine{     ( \(\backslash\)}
-                                          
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.125 \DoxyCodeLine{     ( \(\backslash\)}
-                                          
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.125 \DoxyCodeLine{     ( \(\backslash\)}
-                                          
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.126 \DoxyCodeLine{        ( \(\backslash\)}
-                                             
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.126 \DoxyCodeLine{        ( \(\backslash\)}
-                                             
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.126 \DoxyCodeLine{        ( \(\backslash\)}
-                                             
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.127 ...wordtype}{double}) tauf)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.127 ...wordtype}{double}) tauf)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.127 ...wordtype}{double}) tauf)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.128 ...wordtype}{double}) tauf)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.128 ...wordtype}{double}) tauf)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.128 ...wordtype}{double}) tauf)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.129 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.129 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.129 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.130 \DoxyCodeLine{        +\(\backslash\)}
-                                            
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.130 \DoxyCodeLine{        +\(\backslash\)}
-                                            
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.130 \DoxyCodeLine{        +\(\backslash\)}
-                                            
-? 
-[25]
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.131 \DoxyCodeLine{        (\(\backslash\)}
-                                            
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.131 \DoxyCodeLine{        (\(\backslash\)}
-                                            
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.131 \DoxyCodeLine{        (\(\backslash\)}
-                                            
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.132 ...eywordtype}{double}) taus)\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.132 ...eywordtype}{double}) taus)\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.132 ...eywordtype}{double}) taus)\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.133 ...type}{long} double) taus))\(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.133 ...type}{long} double) taus))\(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.133 ...type}{long} double) taus))\(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.134 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.134 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.134 \DoxyCodeLine{        )\(\backslash\)}
-                                            
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.135 \DoxyCodeLine{    )\(\backslash\)}
-                                        
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.135 \DoxyCodeLine{    )\(\backslash\)}
-                                        
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.135 \DoxyCodeLine{    )\(\backslash\)}
-                                        
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.136 \DoxyCodeLine{\}}
-                       
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.136 \DoxyCodeLine{\}}
-                       
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.136 \DoxyCodeLine{\}}
-                       
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.151 ...ordtype}{long} double) \{ \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.151 ...ordtype}{long} double) \{ \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.151 ...ordtype}{long} double) \{ \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.152 \DoxyCodeLine{    ( \(\backslash\)}
-                                         
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.152 \DoxyCodeLine{    ( \(\backslash\)}
-                                         
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.152 \DoxyCodeLine{    ( \(\backslash\)}
-                                         
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.153 ...type}{long} double) tau)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.153 ...type}{long} double) tau)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.153 ...type}{long} double) tau)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.154 ...type}{long} double) tau)) \(\backslash\)}
-                                                  
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.154 ...type}{long} double) tau)) \(\backslash\)}
-                                                  
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.154 ...type}{long} double) tau)) \(\backslash\)}
-                                                  
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.155 \DoxyCodeLine{    ) \(\backslash\)}
-                                         
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.155 \DoxyCodeLine{    ) \(\backslash\)}
-                                         
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.155 \DoxyCodeLine{    ) \(\backslash\)}
-                                         
-? 
-! Undefined control sequence.
-\DoxyCodeLine #1->\hangpara 
-                            {\DoxyCodeWidth }{1}{#1}\par 
-l.156 \DoxyCodeLine{\}}
-                       
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.156 \DoxyCodeLine{\}}
-                       
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.156 \DoxyCodeLine{\}}
-                       
-? 
-[26]
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.9 on input line 186.
-
-
-Underfull \hbox (badness 10000) detected at line 187
+[23] [24]
+Underfull \hbox (badness 10000) detected at line 69
 [][][]
  []
 
 
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.10 on input line 210.
+Underfull \hbox (badness 10000) detected at line 95
+[][][]
+ []
 
 
-Underfull \hbox (badness 10000) detected at line 211
+Underfull \hbox (badness 10000) detected at line 104
+[][][]
+ []
+
+[25]
+Underfull \hbox (badness 10000) detected at line 126
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 135
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 157
+[][][]
+ []
+
+[26]
+Underfull \hbox (badness 10000) detected at line 166
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 186
+[][][]
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 195
 [][][]
  []
 
 [27]
-Underfull \hbox (badness 10000) detected at line 220
+Underfull \hbox (badness 10000) detected at line 215
 [][][]
  []
-
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.11 on input line 241.
-
-
-Underfull \hbox (badness 10000) detected at line 242
-[][][]
- []
-
-
-Underfull \hbox (badness 10000) detected at line 251
-[][][]
- []
-
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.12 on input line 272.
-
-
-Overfull \vbox (49.87498pt too high) has occurred while \output is active []
-
 
 [28]
-Underfull \hbox (badness 10000) detected at line 273
+Underfull \hbox (badness 10000) detected at line 259
 [][][]
  []
 
-
-Underfull \hbox (badness 10000) detected at line 282
+[29]
+Underfull \hbox (badness 10000) detected at line 293
 [][][]
  []
 
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.13 on input line 301.
-
-
-Underfull \hbox (badness 10000) detected at line 302
-[][][]
- []
-
-
-Underfull \hbox (badness 10000) detected at line 311
-[][][]
- []
-
-[29] [30]
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.14 on input line 330.
-
-
-Underfull \hbox (badness 10000) detected at line 331
-[][][]
- []
-
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.15 on input line 350.
-
-
-Underfull \hbox (badness 10000) detected at line 351
-[][][]
- []
-
-[31]
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.16 on input line 376.
-
-
-Underfull \hbox (badness 10000) detected at line 377
-[][][]
- []
-
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.17 on input line 398.
-
-
-Underfull \hbox (badness 10000) detected at line 399
+[30]
+Underfull \hbox (badness 10000) detected at line 315
 [][][]
  []
 
@@ -2218,7 +1185,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3--6
 
  []
 
-[32]
+
 Underfull \hbox (badness 10000) in paragraph at lines 29--33
 
  []
@@ -2233,11 +1200,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 34--35
 
  []
 
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.18 on input line 45.
-
-
+[31]
 Underfull \hbox (badness 10000) detected at line 46
 [][][]
  []
@@ -2257,7 +1220,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 65--71
 
  []
 
-[33]
+
 Underfull \hbox (badness 10000) detected at line 73
 [][][]
  []
@@ -2267,11 +1230,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 74--75
 
  []
 
-
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.19 on input line 83.
-
-
+[32]
 Underfull \hbox (badness 10000) detected at line 84
 [][][]
  []
@@ -2292,15 +1251,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 99--100
  []
 
 
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.20 on input line 110.
-
-[34]
 Underfull \hbox (badness 10000) detected at line 111
 [][][]
  []
 
-
+[33]
 Underfull \hbox (badness 10000) detected at line 136
 [][][]
  []
@@ -2316,55 +1271,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 140--141
  []
 
 
-Package longtable Warning: Column widths have changed
-(longtable)                in table 4.21 on input line 149.
-
-
 Underfull \hbox (badness 10000) detected at line 150
 [][][]
  []
 
-) [35] [36
-
-]
+) [34]
 No file refman.ind.
-
-Package longtable Warning: Table widths have changed. Rerun LaTeX.
-
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 202.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 202.
 (./refman.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 202.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 202.
-
-
-Package rerunfilecheck Warning: File `refman.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `refman.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  B5C5B57D2C5E816E43D9FF7549D8C0FB;18921.
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
+Package rerunfilecheck Info: File `refman.out' has not changed.
+(rerunfilecheck)             Checksum: 22188E6D9E560591C61EE5DFA6B8E627;18959.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 202.
  ) 
 Here is how much of TeX's memory you used:
- 15517 strings out of 494553
- 230222 string characters out of 6177318
- 324103 words of memory out of 5000000
- 18601 multiletter control sequences out of 15000+600000
- 63319 words of font info for 91 fonts, out of 8000000 for 9000
+ 15636 strings out of 494553
+ 233252 string characters out of 6177318
+ 332107 words of memory out of 5000000
+ 18712 multiletter control sequences out of 15000+600000
+ 61261 words of font info for 83 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 53i,16n,92p,600b,634s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 53i,16n,92p,609b,633s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/share/texliv
 e/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/
+/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
@@ -2375,10 +1308,10 @@ e/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/urw/helvetic/uhvb8ac.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvet
 ic/uhvro8a.pfb>
-Output written on refman.pdf (42 pages, 188141 bytes).
+Output written on refman.pdf (42 pages, 200571 bytes).
 PDF statistics:
- 812 PDF objects out of 1000 (max. 8388607)
- 741 compressed objects within 8 object streams
- 321 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1255 PDF objects out of 1440 (max. 8388607)
+ 1180 compressed objects within 12 object streams
+ 327 named destinations out of 1000 (max. 500000)
+ 865 words of extra memory for PDF output out of 10000 (max. 10000000)
 
