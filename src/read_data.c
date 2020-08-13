@@ -221,9 +221,10 @@ int read_relaxation_data(struct Model *m, char *filename) {
 			sscanf(line, "%d %f %f\n", &resid, &R, &Re);
 			//printf("%d, %d, %f, %f\n", rel, resid, R, Re);
 			// index from 0
-			m->residues[resid-1].relaxation[rel].R = R;
 			if (R == -1)
-				m->residues[resid-1].ignore = 1;
+				continue;
+			m->residues[resid-1].relaxation[rel].R = R;
+			
 			m->residues[resid-1].relaxation[rel].Rerror = Re; // note indexing from 0
 		}
 	}
