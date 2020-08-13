@@ -1,0 +1,123 @@
+MODEL  =   EMFT
+
+
+% Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
+S2DIP  =  system/s2_dipolar_jozef.csv
+%S2DIP = system/s2_dipolar_trent.csv
+
+% Zhou, Donghua; Shea, John; Nieuwkoop, Andrew; Franks, W. Trent; Wylie, Benjamin; Mullen, Charles; Sandoz, Dennis; Rienstra, Chad. "Solid-State Protein Structure Determination with Proton-Detected Triple Resonance 3D Magic-Angle Spinning NMR Spectroscopy"  Angew. Chem. Int. Ed. ., .-..
+% http://www.bmrb.wisc.edu/data_library/summary/?bmrbId=15156
+CSISON  =  system/csisoN.csv
+CSISOC  =  system/csisoC.csv
+
+
+N_RESIDUES  =  56
+OUTPUT = output/
+N_ITER = 500
+IGNORE = 42
+N_ERROR_ITER = 200 
+
+
+% Orientations taken from Lienin 1998
+OR_NH = system/or_NH.csv
+OR_NC = system/or_NC.csv
+OR_NCA = system/or_NCA.csv
+OR_NCSAxx = system/or_NCSAxx.csv
+OR_NCSAyy = system/or_NCSAyy.csv
+OR_NCSAzz = system/or_NCSAzz.csv
+OR_NCCAp = system/or_CCAp.csv
+OR_NCCAc = system/or_CCAc.csv
+OR_CN = system/or_CN.csv
+OR_CNH = system/or_CNH.csv
+OR_CCSAxx = system/or_CCSAxx.csv
+OR_CCSAyy = system/or_CCSAyy.csv
+OR_CCSAzz = system/or_CCSAzz.csv
+
+NTHREADS = 4
+
+#RELAXATION
+2016system/1000_R1_287_60_0.csv
+2016system/1000_R1p_286_60_14.csv
+2016system/1000_R1p_286_60_18.csv
+2016system/1000_R1p_286_60_23.csv
+2016system/500_R1_300.15_60_0.csv
+2016system/500_R1p_279.65_50_17.csv
+2016system/500_R1p_284.65_50_17.csv
+2016system/500_R1p_300.15_60_10.csv
+2016system/600_R1_270.95_50_0.csv
+2016system/600_R1_282.4_50_0.csv
+2016system/600_R1_291.75_50_0.csv
+2016system/600_R1_300.15_33_10.csv
+2016system/600_R1_300.15_39_10.csv
+2016system/600_R1_300.15_50_10.csv
+2016system/600_R1_300.15_56_10.csv
+2016system/600_R1_300_60_0.csv
+2016system/600_R1_300.7_50_0.csv
+2016system/600_R1_307.55_50_0.csv
+2016system/600_R1p_268_50_8.csv
+2016system/600_R1p_270.45_50_8.csv
+2016system/600_R1p_280.6_50_8.csv
+2016system/600_R1p_284.7_50_8.csv
+2016system/600_R1p_290.15_50_8.csv
+2016system/600_R1p_294.3_50_8.csv
+2016system/600_R1p_300.15_50_15.csv
+2016system/600_R1p_300_60_17.csv
+2016system/600_R1p_301_50_8.csv
+2016system/600_R1p_305.7_50_8.csv
+2016system/700_R1_277.95_50_0.csv
+2016system/700_R1_298.95_50_0.csv
+2016system/700_R1p_209.05_50_10.17.csv
+2016system/700_R1p_278.25_50_10.1.csv
+2016system/700_R1p_290.35_50_10.18.csv
+2016system/700_R1p_294.35_50_10.13.csv
+2016system/700_R1p_298.95_50_10.25.csv
+2016system/800_R1_282_60_0.csv
+2016system/800_R1p_293_60_15.csv
+2016system/850_R1_277.8_50_0.csv
+2016system/850_R1_289.1_50_0.csv
+2016system/850_R1_298.3_50_0.csv
+2016system/850_R1_300.15_60_0.csv
+2016system/850_R1p_300.15_60_17.csv
+2016system/900_R1_290_17_0.csv
+2016system/C_1000_R1_286_60_0.csv
+2016system/C_1000_R1p_286_60_10.csv
+2016system/C_1000_R1p_286_60_18.csv
+2016system/C_1000_R1p_286_60_33.csv
+2016system/C_600_R1_273.2_50_0.csv
+2016system/C_600_R1_278.9_50_0.csv
+2016system/C_600_R1_282.85_50_0.csv
+2016system/C_600_R1_288.05_50_0.csv
+2016system/C_600_R1_293_50_0.csv
+2016system/C_600_R1_297.45_50_0.csv
+2016system/C_600_R1_300_60_0.csv
+2016system/C_600_R1_302.3_50_0.csv
+2016system/C_600_R1_307.8_50_0.csv
+2016system/C_600_R1p_273.15_50_8.csv
+2016system/C_600_R1p_278.4_50_8.csv
+2016system/C_600_R1p_283.55_50_8.csv
+2016system/C_600_R1p_290.3_50_8.csv
+2016system/C_600_R1p_292.95_50_8.csv
+2016system/C_600_R1p_297.5_50_8.csv
+2016system/C_600_R1p_300.15_60_17.csv
+2016system/C_600_R1p_300_60_17.csv
+2016system/C_600_R1p_302.5_50_8.csv
+2016system/C_600_R1p_307.8_50_8.csv
+2016system/C_700_R1_277.95_50_0.csv
+2016system/C_700_R1_289_50_0.csv
+2016system/C_700_R1_299.55_50_0.csv
+2016system/C_700_R1_306_50_0.csv
+2016system/C_700_R1p_279.55_50_10.69.csv
+2016system/C_700_R1p_288_50_10.csv
+2016system/C_700_R1p_292.95_50_10.96.csv
+2016system/C_700_R1p_296_50_10.csv
+2016system/C_700_R1p_298.85_50_11.15.csv
+2016system/C_700_R1p_305_50_10.csv
+2016system/C_800_R1_293_60_0.csv
+2016system/C_850_R1_278.15_50_0.csv
+2016system/C_850_R1_289.75_50_0.csv
+2016system/C_850_R1_300.15_60_0.csv
+2016system/C_850_R1p_277.8_50_10.39.csv
+2016system/C_850_R1p_286.05_60_10.13.csv
+2016system/C_850_R1p_289.6_50_10.235.csv
+2016system/C_850_R1p_298.3_50_9.89.csv
+2016system/C_850_R1p_300.15_60_17.csv
