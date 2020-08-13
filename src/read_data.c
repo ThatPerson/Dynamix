@@ -221,11 +221,16 @@ int read_relaxation_data(struct Model *m, char *filename) {
 			sscanf(line, "%d %f %f\n", &resid, &R, &Re);
 			//printf("%d, %d, %f, %f\n", rel, resid, R, Re);
 			// index from 0
-			if (R == -1)
+			if (R == -1) {
+				//printf("%s %d\n", line, m->residues[resid-1].n_relaxation);
+				m->residues[resid-1].n_relaxation = m->residues[resid-1].n_relaxation - 1;
+				if (m->residues[resid-1].n_relaxation < 0)
+					m->residues[resid-1].n_relaxation = 0;
 				continue;
+			}
 			m->residues[resid-1].relaxation[rel].R = R;
-			
 			m->residues[resid-1].relaxation[rel].Rerror = Re; // note indexing from 0
+			
 		}
 	}
 	fclose(fp);
@@ -447,6 +452,11 @@ int read_system_file(char *filename, struct Model * m) {
 
 			read_relaxation_data(m, key);
 		}
+	}
+	
+	for (i = 0; i < m->n_residues; i++) {
+		if (m->residues[i].n_relaxation < 20)
+			m->residues[i].ignore = 1;
 	}
 	fclose(fp);
 

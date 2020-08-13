@@ -39,7 +39,7 @@
 #define OR_CCSAzz		13
 
 
-#define N_RELAXATION	50						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
+#define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
 #define NTHREADS		40						///< Unused
 #define THREAD_STACK	32768*2 				///< Bytes per thread. Raise if stack overflows, lower if insufficient stack for number of workers
 
@@ -179,6 +179,7 @@ struct Residue {
 	//float orients[14][2]; // theta,phi
 	struct Relaxation * relaxation;
 	struct Relaxation * temp_relaxation;
+
 	long double ** error_params;
 
 	int n_relaxation;

@@ -219,6 +219,9 @@ int main(int argc, char * argv[]) {
 
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
+	
+	
+	
 	m.error_mode = err_mod;
 	if (m.error_mode == 1 && m.n_error_iter < 0) {
 		printf("Please provide number of error iterations\n");
@@ -233,7 +236,7 @@ int main(int argc, char * argv[]) {
 	printf("%d\n", ret);
 	char filename[300];
 	sprintf(filename, "%s/model.txt", m.outputdir);
-	//print_system(&m, filename);
+	print_system(&m, filename);
 
 	/*int AS;
 	long double sA, sB, sG;

@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "../datatypes.c"
-#include "../read_data.c"
-#include "../models.c"
+#include "datatypes.c"
+#include "read_data.c"
+#include "models.c"
 //#include "chisq.c"
 //#include "crosen.c" // implementation of Nelder-Mead simplex algorithm
 //#include "errors.c"
