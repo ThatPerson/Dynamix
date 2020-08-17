@@ -193,6 +193,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		printf("Model not implemented yet\n");
 		exit(-1);
 	}
+	if (resid->n_relaxation == 0)
+		return -1;
 	return chisq / resid->n_relaxation; 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
