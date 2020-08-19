@@ -1,19 +1,19 @@
-MODEL  =  EMFT 
+MODEL  =  GAFT 
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
-S2DIP  =  system/s2_dipolar_jozef.csv
+S2DIP  =  2016system/s2_dipolar_jozef.csv
 %S2DIP = system/s2_dipolar_trent.csv
 
 % Zhou, Donghua; Shea, John; Nieuwkoop, Andrew; Franks, W. Trent; Wylie, Benjamin; Mullen, Charles; Sandoz, Dennis; Rienstra, Chad. "Solid-State Protein Structure Determination with Proton-Detected Triple Resonance 3D Magic-Angle Spinning NMR Spectroscopy"  Angew. Chem. Int. Ed. ., .-..
 % http://www.bmrb.wisc.edu/data_library/summary/?bmrbId=15156
-CSISON  =  system/csisoN.csv
-CSISOC  =  system/csisoC.csv
+CSISON  =  2016system/csisoN.csv
+CSISOC  =  2016system/csisoC.csv
 
 
 N_RESIDUES  =  56
-OUTPUT = output/
-N_ITER = 20000
+OUTPUT = 2016smft/
+N_ITER = 1000 
 IGNORE = 42
 N_ERROR_ITER = 3000 
 
