@@ -67,7 +67,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			}
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
 		}
-		//return chisq;
+		return chisq;
 	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
 		/* Extended Model Free Analysis */
 		long double taus = opts[0];
@@ -127,7 +127,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			}
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
 		}
-		//return chisq;
+		return chisq;
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
 		/* Extended Model Free Analysis */
 		long double taus = opts[0];
@@ -188,14 +188,12 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
 		}
-		//return chisq;
+		return chisq;
 	} else {
 		printf("Model not implemented yet\n");
 		exit(-1);
 	}
-	if (resid->n_relaxation == 0)
-		return -1;
-	return chisq / resid->n_relaxation; 
+	return chisq; 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
