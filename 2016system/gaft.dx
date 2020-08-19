@@ -13,7 +13,7 @@ CSISOC  =  2016system/csisoC.csv
 
 N_RESIDUES  =  56
 OUTPUT = 2016gaft/
-N_ITER = 4000
+N_ITER = 4
 IGNORE = 42
 N_ERROR_ITER = 3000 
 

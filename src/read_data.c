@@ -218,18 +218,24 @@ int read_relaxation_data(struct Model *m, char *filename) {
 				return -1;
 			}
 		} else if (mode == 1) {
-			sscanf(line, "%d %f %f\n", &resid, &R, &Re);
+			int k = sscanf(line, "%d %f %f\n", &resid, &R, &Re);
+			if (k != 3) {
+				printf("Read error.\n");
+			}/* else {
+				printf("%s : %d, %f %f\n", line, resid, R, Re);
+			}*/
 			//printf("%d, %d, %f, %f\n", rel, resid, R, Re);
 			// index from 0
-			if (R == -1) {
+			/*if (R == -1) {
 				//printf("%s %d\n", line, m->residues[resid-1].n_relaxation);
 				m->residues[resid-1].n_relaxation = m->residues[resid-1].n_relaxation - 1;
 				if (m->residues[resid-1].n_relaxation < 0)
 					m->residues[resid-1].n_relaxation = 0;
 				continue;
-			}
+			} else {*/
 			m->residues[resid-1].relaxation[rel].R = R;
 			m->residues[resid-1].relaxation[rel].Rerror = Re; // note indexing from 0
+			//}
 			
 		}
 	}

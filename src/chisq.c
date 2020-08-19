@@ -44,6 +44,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+                                continue;
+
 			if (model == MOD_SMFT)
 				tau_eff = tau * expl(Ea / (RYD * resid->relaxation[i].T));
 			//printf("%Le\n", tau_eff);
@@ -101,6 +104,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+				continue;
+
 			if (model == MOD_EMFT || model == MOD_DEMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
@@ -160,7 +166,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 
 		for (i = 0; i < resid->n_relaxation; i++) {
-			if (model == MOD_EMFT) {
+			if (resid->relaxation[i].R <= 0)
+				continue;
+			if (model == MOD_GAFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
 			}
@@ -239,6 +247,9 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 
 		int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+                                continue;
+
 			if (model == MOD_SMFT)
 				tau_eff = tau * expl(Ea / (RYD * resid->relaxation[i].T));
 			switch (resid->relaxation[i].type) {
@@ -287,6 +298,9 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		int i;
 		//double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf)
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+                                continue;
+
 			if (model == MOD_EMFT || model == MOD_DEMFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
@@ -335,10 +349,12 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		int i;
 
 		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+				continue;
 			if (model == MOD_GAFT) {
 				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
 				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
-				printf("%Le, %Le\n", taus_eff, tauf_eff);
+				//printf("%Le, %Le\n", taus_eff, tauf_eff);
 			}
 
 			switch (resid->relaxation[i].type) {
