@@ -154,9 +154,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		if (taus < 0 || tauf < 0)
 			chisq += 100000000;
 		for (i = 0; i < 3; i++) {
-			if (sigs[i] < 0 || sigs[i] > 30)
+			if (sigs[i] < 0 || sigs[i] > 0.52360)
 				chisq += 100000000;
-			if (sigf[i] < 0 || sigf[i] > 30)
+			if (sigf[i] < 0 || sigf[i] > 0.52360)
 				chisq += 100000000;
 		}
 
