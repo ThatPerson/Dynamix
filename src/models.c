@@ -554,8 +554,14 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
+	
 	/** Eq A30, Bremi1997 */
-	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
+	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
+
+	printf("ts: %Le, S2xys: %f, tf: %Le, S2xyf: %f\n\tR1CSAxy = %f\n", taus*T_DOWN, S2NCSAxys, tauf*T_DOWN, S2NCSAxyf, R1CSAxy*T_DOWN);
+	printf("\n\tR1CSA (%f) = R1CSAx (%f) + R1CSAy (%f) - R1CSAxy (%f)\n", R1CSA*T_DOWN, R1CSAx*T_DOWN, R1CSAy*T_DOWN, R1CSAxy*T_DOWN);
+
+
 
 	/* N Dipolar Interactions Contributions */
 	R1NH = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -639,7 +645,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	 * is really odd. In NH3DEglobalGAF it is also - R2CSAxy but the form is the same.
 	 * In Lienin1998's SI, eq 5 and 6 it is +R2CSAxy - same for Bremi1997 eq A30
 	 */
-	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2NH = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -728,7 +734,9 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
 	R1CSAxy = (2/15.) * d2xy * J1;
-	R1CSA = R1CSAx + R1CSAy - R1CSAxy;
+	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
+	
+	
 
 	/* N Dipolar Interactions Contributions */
 	R1CH = GAF_Dipolar_R1(omega_13C, omega_1H, taus, S2CHs, tauf, S2CHf, D_CH);
@@ -810,7 +818,7 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x);
 	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y);
 	R2CSAxy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxys, tauf, S2CSAxyf, d2xy);
-	R2CSA = R2CSAx + R2CSAy - R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2CH = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CHs, tauf, S2CHf, D_CH);

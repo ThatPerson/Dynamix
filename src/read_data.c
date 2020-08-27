@@ -461,7 +461,7 @@ int read_system_file(char *filename, struct Model * m) {
 	}
 	
 	for (i = 0; i < m->n_residues; i++) {
-		if (m->residues[i].n_relaxation < 20)
+		if (m->residues[i].n_relaxation < 5)
 			m->residues[i].ignore = 1;
 	}
 	fclose(fp);
