@@ -558,8 +558,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	/** Eq A30, Bremi1997 */
 	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
 
-	printf("ts: %Le, S2xys: %f, tf: %Le, S2xyf: %f\n\tR1CSAxy = %f\n", taus*T_DOWN, S2NCSAxys, tauf*T_DOWN, S2NCSAxyf, R1CSAxy*T_DOWN);
-	printf("\n\tR1CSA (%f) = R1CSAx (%f) + R1CSAy (%f) - R1CSAxy (%f)\n", R1CSA*T_DOWN, R1CSAx*T_DOWN, R1CSAy*T_DOWN, R1CSAxy*T_DOWN);
+	
 
 
 
