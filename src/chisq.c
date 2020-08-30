@@ -75,6 +75,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		/* Extended Model Free Analysis */
 		long double taus = opts[0];
 		long double S2s = opts[1];
+		long double S2NHd;
 		long double tauf = opts[2];
 		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f = resid->S2_dipolar / S2s;
 		if (model == MOD_EMFT) {
@@ -132,6 +133,10 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 					break;
 			}
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
+		}
+		if (model == MOD_DEMF || model == MOD_DEMFT ) { 
+			S2NHd = S2s * S2f;
+			chisq += ((pow(resid->S2_dipolar - S2NHd, 2)) / pow(0.01, 2));
 		}
 		return chisq;
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
@@ -196,6 +201,17 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 
 			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
 		}
+
+		double S2NHs, S2NHf, S2NHd;
+		struct Orient *Os[] = {&(resid->orients[OR_NH])};
+		double *S2s[] = {&S2NHs};
+		double *S2f[] = {&S2NHf};
+		GAF_S2(sigs, Os, Os, S2s, 1, MODE_REAL);
+		GAF_S2(sigf, Os, Os, S2f, 1, MODE_REAL);
+		
+		S2NHd = S2NHs * S2NHf;
+		chisq += ((pow(resid->S2_dipolar - S2NHd, 2)) / pow(0.01, 2));
+
 		return chisq;
 	} else {
 		printf("Model not implemented yet\n");
