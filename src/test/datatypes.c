@@ -14,12 +14,9 @@
 #define MOD_GAF 		6						///< Gaussian Axial Fluctuations model
 #define MOD_GAFT 		7						///< Gaussian Axial Fluctuations model with Temperature Dependence
 
-#define DATA_S2NH		0
-#define DATA_S2CH		1
-#define DATA_S2CC		2
-#define DATA_S2CN		3
-#define DATA_CSISON		4
-#define DATA_CSISOC		5
+#define DATA_S2			0
+#define DATA_CSISON		1
+#define DATA_CSISOC		2
 
 #define R_15NR1 		0
 #define R_15NR1p		1
@@ -173,8 +170,7 @@ struct Orient {
  *  Actual number of points used in error calculation
  */
 struct Residue {
-	float S2NH, S2CC, S2CH, S2CN;
-	float S2NHe,S2CCe,S2CHe,S2CNe;
+	float S2_dipolar;
 	float csisoN;
 	float csisoC;
 	float csaN[3];

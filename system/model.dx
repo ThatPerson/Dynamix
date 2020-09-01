@@ -1,9 +1,13 @@
-MODEL  =   EMF
+MODEL  =  EMF 
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
-S2DIP  =  system/s2_dipolar_jozef.csv
+%S2DIP  =  system/s2_dipolar_jozef.csv
 %S2DIP = system/s2_dipolar_trent.csv
+S2NH = system/s2_NH_dipolar_jozef_DOPxlsx.csv
+S2CH = system/s2_CH_dipolar_jozef_DOPxlsx.csv
+S2CC = system/s2_CC_dipolar_jozef_DOPxlsx.csv
+S2CN = system/s2_CN_dipolar_jozef_DOPxlsx.csv
 
 % Zhou, Donghua; Shea, John; Nieuwkoop, Andrew; Franks, W. Trent; Wylie, Benjamin; Mullen, Charles; Sandoz, Dennis; Rienstra, Chad. "Solid-State Protein Structure Determination with Proton-Detected Triple Resonance 3D Magic-Angle Spinning NMR Spectroscopy"  Angew. Chem. Int. Ed. ., .-..
 % http://www.bmrb.wisc.edu/data_library/summary/?bmrbId=15156
@@ -15,6 +19,7 @@ N_RESIDUES  =  56
 OUTPUT = emf/
 N_ITER = 50
 IGNORE = 42
+IGNORE = 25
 N_ERROR_ITER = 50 
 
 

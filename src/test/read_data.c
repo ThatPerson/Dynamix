@@ -42,29 +42,9 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 			printf("Error reading '%s'\n", line);
 		resid = resid - 1; // 0 indexed in C
 		switch (dt) {
-			case DATA_S2NH:
-				m->residues[resid].S2NH = val;
-				m->residues[resid].S2NHe = err;
+			case DATA_S2:
+				m->residues[resid].S2_dipolar = val;
 				if (val == -1) m->residues[resid].ignore = 1;
-				if (err <= 0) m->residues[resid].S2NHe = 0.01; 
-				break;
-			case DATA_S2CH:
-				m->residues[resid].S2CH = val;
-				m->residues[resid].S2CHe = err;
-				if (val == -1 && (m->model == MOD_GAF || m->model == MOD_GAFT)) m->residues[resid].ignore = 1;
-				if (err <= 0) m->residues[resid].S2CHe = 0.01; 
-				break;
-			case DATA_S2CC:
-				m->residues[resid].S2CC = val;
-				m->residues[resid].S2CCe = err;
-				if (val == -1 && (m->model == MOD_GAF || m->model == MOD_GAFT)) m->residues[resid].ignore = 1;
-				if (err <= 0) m->residues[resid].S2CCe = 0.01; 
-				break;
-			case DATA_S2CN:
-				m->residues[resid].S2CN = val;
-				m->residues[resid].S2CNe = err;
-				if (val == -1 && (m->model == MOD_GAF || m->model == MOD_GAFT)) m->residues[resid].ignore = 1;
-				if (err <= 0) m->residues[resid].S2CNe = 0.01; 
 				break;
 			case DATA_CSISON:
 				m->residues[resid].csisoN = val;
@@ -309,7 +289,7 @@ int read_system_file(char *filename, struct Model * m) {
 	int mode = 0;
 	char key[255];
 	char val[255];
-	char s2nh[255] = "", s2ch[255] = "", s2cc[255] = "", s2cn[255] = "";
+	char s2d[255] = "";
 	char csisoN[255] = "";
 	char csisoC[255] = "";
 	int n_resid = -1;
@@ -355,29 +335,11 @@ int read_system_file(char *filename, struct Model * m) {
 				m->residues[to_ignore[i] - 1].ignore = 1;
 			}
 
-			int t=0, q=0; // t is general counter, q is for GAF models only
-			if (strcmp(s2nh, "") != 0)
-				t += read_resid_data(m, s2nh, DATA_S2NH);
+			int t=0;
+			if (strcmp(s2d, "") != 0)
+				t += read_resid_data(m, s2d, DATA_S2);
 			else
 				t++;
-			
-			if (strcmp(s2cc, "") != 0)
-				q += read_resid_data(m, s2cc, DATA_S2CC);
-			else
-				q++;
-			
-			if (strcmp(s2ch, "") != 0)
-				q += read_resid_data(m, s2ch, DATA_S2CH);
-			else
-				q++;
-			
-			if (strcmp(s2cn, "") != 0)
-				q += read_resid_data(m, s2cn, DATA_S2CN);
-			else
-				q++;
-			
-			
-			
 			if (strcmp(csisoN, "") != 0)
 				t += read_resid_data(m, csisoN, DATA_CSISON);
 			else
@@ -391,11 +353,6 @@ int read_system_file(char *filename, struct Model * m) {
 				printf("Error: Error in reading one of S2, csisoN, csisoC\n");
 				return -1;
 			}
-			if (q != 3 && (m->model == MOD_GAF || m->model == MOD_GAFT)) {
-				printf("Error: Error reading one of S2CH, S2CN, S2CC\n");
-				return -1;
-			}
-			
 			t = 0;
 			for (i = 0; i < 14; i++) {
 				if (strcmp(pp_orient[i], "") != 0)
@@ -435,14 +392,8 @@ int read_system_file(char *filename, struct Model * m) {
 					printf("Model %s unknown.\n", val);
 					return -1;
 				}
-			} else if (strcmp(key, "S2NH") == 0) {
-				strcpy(s2nh, val);
-			} else if (strcmp(key, "S2CH") == 0) {
-				strcpy(s2ch, val);
-			} else if (strcmp(key, "S2CC") == 0) {
-				strcpy(s2cc, val);
-			} else if (strcmp(key, "S2CN") == 0) {
-				strcpy(s2cn, val);
+			} else if (strcmp(key, "S2DIP") == 0) {
+				strcpy(s2d, val);
 			} else if (strcmp(key, "CSISON") == 0) {
 				strcpy(csisoN, val);
 			} else if (strcmp(key, "CSISOC") == 0) {
@@ -510,7 +461,7 @@ int read_system_file(char *filename, struct Model * m) {
 	}
 	
 	for (i = 0; i < m->n_residues; i++) {
-		if (m->residues[i].n_relaxation < 5)
+		if (m->residues[i].n_relaxation < 20)
 			m->residues[i].ignore = 1;
 	}
 	fclose(fp);
@@ -555,8 +506,7 @@ int print_system(struct Model *m, char *filename) {
 		if (m->residues[i].ignore == 1)
 			fprintf(fp, "--- IGNORING ---\n");
 
-		fprintf(fp, "\tS2NH = %f\n\tS2CH = %f\n\tS2CC = %f\n\tS2CN = %f\n", m->residues[i].S2NH, m->residues[i].S2CH, m->residues[i].S2CC, m->residues[i].S2CN);
-		fprintf(fp, "\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].csisoN, m->residues[i].csisoC);
+		fprintf(fp, "\tS2 = %f\n\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].S2_dipolar, m->residues[i].csisoN, m->residues[i].csisoC);
 		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
 		fprintf(fp, "\tOrients;\n");

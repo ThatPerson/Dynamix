@@ -75,7 +75,7 @@ void * run_residue(void *input) {
 		 *   [0] tau slow\n 
 		 *   [1] S2 slow\n 
 		 *   [2] tau fast\n 
-		 *   NOTE: The fast order parameter is calculated as S2NH/S2s\n 
+		 *   NOTE: The fast order parameter is calculated as S2_dipolar/S2s\n 
 		 * EMFT parameters\n 
 		 *   [0] tau slow\n 
 		 *   [1] S2 slow\n 
@@ -112,26 +112,26 @@ void * run_residue(void *input) {
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 		} else if (model == MOD_EMF) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
-			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2NH, opts[0], opts[1], opts[2]);
+			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_EMFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
-			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
 			opts[3] = (rand()%60000)/1.;
 			opts[4] = (rand()%60000)/1.;
-			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2NH, opts[0], opts[1], opts[2]);
+			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2_dipolar, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_DEMF) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
-			opts[3] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
+			opts[3] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.);
 		} else if (model == MOD_DEMFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
-			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
+			opts[1] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
-			opts[3] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
+			opts[3] = resid->S2_dipolar + (1 - resid->S2_dipolar)*((rand() % 100) / 100.);
 			opts[4] = (rand()%60000)/1.;
 			opts[5] = (rand()%60000)/1.;
 		} else if (model == MOD_SMFT) {
@@ -398,9 +398,9 @@ int main(int argc, char * argv[]) {
 				m.residues[l].parameters[i] = -1.;
 			}
 		}
-		fprintf(fp, "%d\t%f\t%f", l+1, m.residues[l].S2NH, m.residues[l].min_val);
+		fprintf(fp, "%d\t%f\t%f", l+1, m.residues[l].S2_dipolar, m.residues[l].min_val);
 		if (m.error_mode == 1) {
-			fprintf(ep, "%d, %f, %f", l+1, m.residues[l].S2NH, m.residues[l].min_val);
+			fprintf(ep, "%d, %f, %f", l+1, m.residues[l].S2_dipolar, m.residues[l].min_val);
 		}
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);

@@ -13,8 +13,9 @@ CSISOC  =  system/csisoC.csv
 
 N_RESIDUES  =  56
 OUTPUT = smf/
-N_ITER = 2000
+N_ITER = 2000 
 IGNORE = 42
+IGNORE = 25
 N_ERROR_ITER = 2000
 
 
@@ -33,7 +34,7 @@ OR_CCSAxx = system/or_CCSAxx.csv
 OR_CCSAyy = system/or_CCSAyy.csv
 OR_CCSAzz = system/or_CCSAzz.csv
 
-NTHREADS = 56
+NTHREADS = 4
 
 #RELAXATION
 system/15N_R1_600_50_0_271.csv
