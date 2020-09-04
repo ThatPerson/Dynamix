@@ -1,0 +1,21 @@
+To draw motions on actual protein;
+
+* Run 'extract_sigmas.py' on output file. eg, if my GAF data is in /gaf/, then I would run
+
+```python extract_sigmas.py /gaf/final.dat slow slow.csv```
+
+```python extract_sigmas.py /gaf/final.dat fast fast.csv```
+
+This will extract the sigma deflectiosn into slow and fast.csv
+
+* Check what the filename is on line 121 of chimeraalt.py. Change to fast, and open PyMOL
+* Run 'run chimeraalt.py', then 'fast' in PyMOL.
+* Change line 121 to say 'slow', and reopen PyMOL. Run 'run chimeraalt.py' and then 'slow'.
+* This should produce a chimera_fast.bild and chimera_slow.bild file. Open ChimeraX
+* Run 'open PROTEIN', then cd to the directory with the .bild files in and run
+
+```open chimera_slow.bild```
+
+```open chimera_fast.bild```
+
+* Enjoy!
