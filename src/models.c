@@ -624,7 +624,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
-	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 
 	/* N CSA relaxation contribution */
 	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
@@ -716,7 +716,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	struct Orient * Bs[] = {&(res->orients[OR_CH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
 	
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
-	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 	
 	/* N CSA relaxation contribution */
 	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
@@ -802,7 +802,7 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	struct Orient * Bs[] = {&(res->orients[OR_CH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
 	
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
-	GAF_S2(sigs, As, Bs, S2f, 6, MODE_REAL);
+	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 	
 
 	/* CSA relaxation contribution */
