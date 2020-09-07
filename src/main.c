@@ -3,14 +3,17 @@
  */
 
 #include <stdio.h>
-#include "datatypes.c"
-#include "read_data.c"
-#include "models.c"
-#include "chisq.c"
-#include "crosen.c" // implementation of Nelder-Mead simplex algorithm
-#include "errors.c"
+#include "datatypes.h"
+#include "read_data.h"
+#include "models.h"
+#include "chisq.h"
+#include "crosen.h" // implementation of Nelder-Mead simplex algorithm
+#include "errors.h"
+
 #include <time.h>
 #include <pthread.h>
+
+void * run_residue(void *input);
 
 /**
  * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.
@@ -18,11 +21,11 @@
  *  Pointer to rrarg containing thread information
  */
 void * run_residue(void *input) {
-	int i = ((struct rrargs*)input)->i;
+	unsigned int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i + 1);
 	struct Residue * resid = ((struct rrargs*)input)->resid;
-	int model = ((struct rrargs*)input)->model;
-	int n_iter = ((struct rrargs*)input)->n_iter;
+	unsigned int model = ((struct rrargs*)input)->model;
+	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	char outputdir[255];
 	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 	FILE *fp;
@@ -36,7 +39,8 @@ void * run_residue(void *input) {
 
 	//printf("RESIDUE %d\n", i+1);
 	//printf("Number of relaxations: %d\n", resid->n_relaxation);
-	int l, k, params = 0;
+	unsigned int l, k;
+	unsigned int params = 0;
 	switch (model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
@@ -196,13 +200,13 @@ void * run_residue(void *input) {
 int main(int argc, char * argv[]) {
 
 	/* Initialisation */
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	initialise_dwig();
 
 	char system_file[255] = "";
-	int i;
+	unsigned int i;
 	int err_mod = 0;
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < (unsigned int) argc; i++) {
 		//printf("%s\n", argv[i]);
 		if (strcmp(argv[i], "-e") == 0)
 			err_mod = 1;
@@ -223,8 +227,13 @@ int main(int argc, char * argv[]) {
 	
 	
 	m.error_mode = err_mod;
-	if (m.error_mode == 1 && m.n_error_iter < 0) {
+	if (m.error_mode == 1 && m.n_error_iter == 0) {
 		printf("Please provide number of error iterations\n");
+		ret = -1;
+	}
+
+	if (m.model == MOD_UNDEFINED) {
+		printf("Please provide model\n");
 		ret = -1;
 	}
 
@@ -266,8 +275,8 @@ int main(int argc, char * argv[]) {
 	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
 	int rc;
 
-	int current_residue = 0;
-	int n_spawns = 0;
+	unsigned int current_residue = 0;
+	unsigned int n_spawns = 0;
 	/* if we have 56 residues and 4 threads then we need
 	 * 56 / 4 spawn events (= 14). Add 1 in case (eg for 57).
 	 * Then loop over threads, increment current_residue and assign pointers.
@@ -279,7 +288,7 @@ int main(int argc, char * argv[]) {
 	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m.nthreads);
 	printf("Optimizing...\n");
 	/* spawn the threads */
-	int l = 0;
+	unsigned int l = 0;
 	for (l = 0; l < n_spawns; l++) {
 		for (i=0; i<m.nthreads; ++i) {
 			RRA[i].i = current_residue + i;
@@ -315,7 +324,7 @@ int main(int argc, char * argv[]) {
 		free_all(&m);
 		return -1;
 	}
-	int params;
+	unsigned int params;
 	FILE * ep = NULL;
 	
 	switch (m.model) {
@@ -372,7 +381,7 @@ int main(int argc, char * argv[]) {
 	free(RRA);
 	free(threads);
 
-	int k;
+	unsigned int k;
 	FILE * gaf;
 	if (m.model == MOD_GAF || m.model == MOD_GAFT) {
 		sprintf(filename, "%s/gaf.dat", m.outputdir);

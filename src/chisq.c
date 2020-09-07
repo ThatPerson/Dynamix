@@ -16,7 +16,7 @@
  *  MOD_SMF etc.
  * @return Returns chisq value.
  */
-double optimize_chisq(long double * opts, struct Residue * resid, int model) {
+double optimize_chisq(long double * opts, struct Residue * resid, unsigned int model) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -42,7 +42,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		if (S2 < 0 || S2 > 1)
 			chisq += 100000000;
-		int i;
+		unsigned int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)
                                 continue;
@@ -103,7 +103,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 			chisq += 100000000;
 		if (tauf > upper_lim_tf || taus > upper_lim_ts || tauf < lower_lim_tf)
 			chisq += 100000000;
-		int i;
+		unsigned int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)
 				continue;
@@ -136,7 +136,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		}
 		if (model == MOD_DEMF || model == MOD_DEMFT ) { 
 			S2NHd = S2s * S2f;
-			chisq += ((pow(resid->S2NH - S2NHd, 2)) / pow(0.01, 2));
+			chisq += ((pow(resid->S2NH - (double) S2NHd, 2)) / pow(0.01, 2));
 		}
 		return chisq;
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
@@ -155,7 +155,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
 		}
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
-		int i;
+		unsigned int i;
 		if (taus < 0 || tauf < 0)
 			chisq += 100000000;
 		for (i = 0; i < 3; i++) {
@@ -236,7 +236,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, int model) {
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(long double * opts, struct Residue * resid, int model, char *filename) {
+int back_calculate(long double * opts, struct Residue * resid, unsigned int model, char *filename) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -263,7 +263,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 			tau_eff = tau;
 
 
-		int i;
+		unsigned int i;
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)
                                 continue;
@@ -313,7 +313,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		}
 		if (model == MOD_DEMF || model == MOD_DEMFT)
 			S2f = opts[3];
-		int i;
+		unsigned int i;
 		//double EMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf)
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)
@@ -364,7 +364,7 @@ int back_calculate(long double * opts, struct Residue * resid, int model, char *
 		}
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
-		int i;
+		unsigned int i;
 
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)

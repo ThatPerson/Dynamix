@@ -23,12 +23,12 @@ long double uniform_rand(void) {
  * @return float
  *  Returns normally distributed random number
  */
-float norm_rand(float mean, float std) {
+double norm_rand(double mean, double std) {
 	// Box-Muller method
-	float rnd1, rnd2;
-	rnd1 = (float) uniform_rand();
-	rnd2 = (float) uniform_rand();
-	float unadj = sqrt(-2 * log(rnd1)) * cos(2 * M_PI * rnd2);
+	double rnd1, rnd2;
+	rnd1 = (double) uniform_rand();
+	rnd2 = (double) uniform_rand();
+	double unadj = sqrt(-2 * log(rnd1)) * cos(2 * M_PI * rnd2);
 
 	//printf("%f, %f, %f\n", rnd1, rnd2, mean + std*unadj);
 	return mean + std * unadj;
@@ -68,17 +68,17 @@ void calc_statistics(long double * vals, int length, long double * mean, long do
  *  rrarg struct containing the residue under consideration.
  */
 void * calc_errors(void *input) {
-	int i = ((struct rrargs*)input)->i;
+	unsigned int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i+1);
 	struct Residue * resid = ((struct rrargs*)input)->resid;
-	int model = ((struct rrargs*)input)->model;
-	int n_iter = ((struct rrargs*)input)->n_iter;
+	unsigned int model = ((struct rrargs*)input)->model;
+	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	//double optim = resid->min_val;
 	//char outputdir[255];
 	//strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 
 
-	int l, k, params = 0;
+	unsigned int l, k, params = 0;
 	switch (model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;

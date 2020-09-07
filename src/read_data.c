@@ -164,15 +164,15 @@ int read_relaxation_data(struct Model *m, char *filename) {
 	}
 	int mode = 0;
 	char key[255], val[255];
-	int i;
-	float field = -1; // in MHz
-	float wr = -1; // in Hz
-	float w1 = -1; // in Hz
+	unsigned int i;
+	double field = -1; // in MHz
+	double wr = -1; // in Hz
+	double w1 = -1; // in Hz
 	int type = -1;
-	float T = -1; // in Kelvin
+	double T = -1; // in Kelvin
 	int resid;
 	int rel = -1;
-	float R, Re;
+	double R, Re;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -238,7 +238,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 				return -1;
 			}
 		} else if (mode == 1) {
-			int k = sscanf(line, "%d %f %f\n", &resid, &R, &Re);
+			int k = sscanf(line, "%d %lf %lf\n", &resid, &R, &Re);
 			if (k != 3) {
 				printf("Read error.\n");
 			}/* else {
@@ -314,7 +314,7 @@ int read_system_file(char *filename, struct Model * m) {
 	char csisoC[255] = "";
 	int n_resid = -1;
 	char pp_orient[14][255];
-	int i;
+	unsigned int i;
 	for (i = 0; i < 14; i++) {
 		strcpy(pp_orient[i], "");
 	}
@@ -326,10 +326,10 @@ int read_system_file(char *filename, struct Model * m) {
 	/* Initialise */
 	m->max_func_evals = 20000;
 	m->max_iter = 20000;
-	m->n_iter = -1;
-	m->n_error_iter = -1;
-	m->model = -1;
-	m->n_residues = -1;
+	m->n_iter = 0;
+	m->n_error_iter = 0;
+	m->model = MOD_UNDEFINED;
+	m->n_residues = 0;
 	m->nthreads = 1;
 
 
@@ -516,15 +516,15 @@ int read_system_file(char *filename, struct Model * m) {
 	fclose(fp);
 
 	/*Check requirements */
-	if (m->n_iter < 0) {
+	if (m->n_iter == 0) {
 		printf("Please provide N_ITER\n");
 		return -1;
 	}
-	if (m->model < 0) {
+	if (m->model == MOD_UNDEFINED) {
 		printf("Please provide MODEL\n");
 		return -1;
 	}
-	if (m->n_residues < 0){
+	if (m->n_residues == 0){
 		printf("Please provide residue count\n");
 		return -1;
 	}
@@ -548,7 +548,7 @@ int print_system(struct Model *m, char *filename) {
 	}
 	//fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
 	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
-	int i, j;
+	unsigned int i, j;
 	struct Relaxation *r;
 	for (i = 0; i < m->n_residues; i++) {
 		fprintf(fp, "=== Residue %d ===\n", i+1);

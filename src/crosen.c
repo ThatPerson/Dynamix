@@ -69,7 +69,7 @@
  *  Model type (MOD_SMF etc)
  * @return Returns minimum of (*func).
  */
-double simplex(double (*func)(long double[], struct Residue*, int), long double start[],int n, long double EPSILON, long double scale, struct Residue * resid, int model)
+double simplex(double (*func)(long double[], struct Residue*, unsigned int), long double start[],unsigned int n, long double EPSILON, long double scale, struct Residue * resid, unsigned int model)
 {
   //printf("SIMPLEX %Le\n", start[2]);
   int vs;        	/* vertex with smallest value */

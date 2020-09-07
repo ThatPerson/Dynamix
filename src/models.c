@@ -33,6 +33,27 @@ inline long double J0_EMF(long double omega, long double taus, long double S2s, 
 			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
 		);
 }
+
+/** Calculates cross correlated spectral density function for given frequency according to extended 
+ *  model free analysis. Form derived from equation 4 in Lienin 1998, with the P2(cos(theta_uv)) being
+ *  placed in all (1-S^2) terms, and this value being taken as -1/2. 
+ *  Similar in form to code in the MATLAB model which has been commented out and replaced by similar
+ *  (only with a random factor of -2 that I'm not sure about.
+ *  @warning Check where the factor of -2 comes from.
+ *  Implements J(w) = (-1/2. - S2f) tauf / (1 + (w tauf)^2) + S2f (-1/2. - S2s) taus / (1 + (w taus)^2), 
+ *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
+ */
+inline long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
+	return ( \
+			((((-0.5 - (double) S2f)) * (long double) tauf)) \
+			/ (1 + ((double) omega * (long double) tauf * (double) omega * (long double) tauf)) \
+		)\
+		+\
+		(\
+			(((double) S2f) * (-0.5 - (double) S2s) * (long double) taus)\
+			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
+		);
+}
   
 
 long double sq(long double x) {
@@ -66,14 +87,30 @@ inline double GAF_Dipolar_R1(long double omega_obs, long double omega_neigh, lon
  * D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)
  * Kurbanov2011, eqs 18-20.
  */
-inline double GAF_CSA_R2(long double omega, float w1, float wr, long double taus, long double S2s, long double tauf, long double S2f, double D2) {
+ //inline long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
+ 
+inline double GAF_CSA_R2(long double omega, \
+						 double w1, \
+						 double wr, \
+						 long double taus, \
+						 long double S2s, \
+						 long double tauf, \
+						 long double S2f, \
+						 double D2, \
+						 long double  (*J_SD)(\
+						 	long double,\
+						 	long double, \
+						 	long double, \
+						 	long double, \
+						 	long double)\
+						) {
 	return ( \
   		(1/45.) * (double) D2 * ( \
-  			(2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
-  			(2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
-  			(4/3.) * J0_EMF(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\
-  			(4/3.) * J0_EMF(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f) + \
-  			(3.)   * J0_EMF(omega, taus, S2s, tauf, S2f)\
+  			(2/3.) * J_SD(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
+  			(2/3.) * J_SD(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
+  			(4/3.) * J_SD(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\
+  			(4/3.) * J_SD(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f) + \
+  			(3.)   * J_SD(omega, taus, S2s, tauf, S2f)\
   		)\
   	);
 }
@@ -83,7 +120,7 @@ inline double GAF_CSA_R2(long double omega, float w1, float wr, long double taus
  * Kurbanov2011, for the case where theta_p = 90 such that sin(theta_p) = 1 and so
  * R1p = 0.5*R1 + R1delta
  */
-inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, float w1, float wr, long double taus, long double S2s, long double tauf, long double S2f, double D) {
+inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, double w1, double wr, long double taus, long double S2s, long double tauf, long double S2f, double D) {
 	return (\
   		(1/20.) * sq(D) * (\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
@@ -114,7 +151,7 @@ inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, flo
  * @return R1
  *  Returns R1 as double
  */
-double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
+double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, unsigned int mode) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 
 	long double field = relax->field * 1000000; // conversion to Hz
@@ -126,7 +163,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_L;
 	long double d = 0, d2tot;
-	float *csa;
+	double *csa;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -176,7 +213,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
  * @return R2
  *  Returns R2 as double
  */
-double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, int mode) {
+double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, long double S2, unsigned int mode) {
 
 	long double field = relax->field * 1000000; // conversion to Hz
 
@@ -190,7 +227,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 
 	long double omega_L;
 	long double d, d2tot;
-	float *csa;
+	double *csa;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -267,7 +304,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_L;
 	long double d, d2tot;
-	float *csa;
+	double *csa;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -334,7 +371,7 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	long double omega_1H = 2 * M_PI * field;
 	long double omega_L;
 	long double d, d2tot;
-	float *csa;
+	double *csa;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -478,15 +515,10 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 
 
 
-/* This has not been directly tested against the MATLAB model as I don't really
- * have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest
- * but I don't have the setup around it for the Legendre polynomials) */
- /* WARNING: NCSAxy IS OMITTED */
- 
 /**
  * Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
- * @warning I'm unsure of the validity of NCSAxy.
+ * @warning I am unsure of the form of the spectral density for cross correlated (eg Jxy) motions.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -517,12 +549,12 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 
-	float *csa;
+	double *csa;
 	csa = res->csaN;
 
-	d2x = sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
-	d2y = sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
-	d2xy= sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
+	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
+	d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
 	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
@@ -549,11 +581,11 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	
 
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxs, tauf, S2NCSAxf);
-	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
+	R1CSAx = (double) (1/15.) * d2x * J1; // from Bremi1997
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2NCSAyf);
-	R1CSAy = (1/15.) * d2y * J1;
-	J1 = J0_EMF(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
-	R1CSAxy = (2/15.) * d2xy * J1;
+	R1CSAy = (double) (1/15.) * d2y * J1;
+	J1 = J0_EMF_CC(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
+	R1CSAxy = (double) (2/15.) * d2xy * J1;
 	
 	/** Eq A30, Bremi1997 */
 	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
@@ -593,7 +625,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
-	float w1 = relax->w1, wr = relax->wr;
+	double w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
 	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
@@ -605,12 +637,12 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 
-	float *csa;
+	double *csa;
 	csa = res->csaN;
 
-	d2x = sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
-	d2y = sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
-	d2xy= sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
+	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
+	d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 
 	/* Calculate all order parameters */
@@ -635,9 +667,9 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_13C *= T_DOWN;
 	omega_15N *= T_DOWN;
 	
-	R2CSAx = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxs, tauf, S2NCSAxf, d2x);
-	R2CSAy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAys, tauf, S2NCSAyf, d2y);
-	R2CSAxy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxys, tauf, S2NCSAxyf, d2xy);
+	R2CSAx = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxs, tauf, S2NCSAxf, d2x, J0_EMF);
+	R2CSAy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAys, tauf, S2NCSAyf, d2y, J0_EMF);
+	R2CSAxy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxys, tauf, S2NCSAxyf, d2xy, J0_EMF_CC);
 	/**
 	 * I'm unsure if this should be R2CSAx + R2CSAy + R2CSAxy or - R2CSAxy. 
 	 * In the original MATLAB scripts, it is - R2CSAxy; in NHCO_3GAFSquaredEa, the form of R2CSAxy
@@ -698,12 +730,12 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 	wCOCa = 120 * omega_13C * 0.000001;
 
-	float *csa;
+	double *csa;
 	csa = res->csaC;
 
-	d2x = sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
-	d2y = sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-	d2xy= sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
+	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
+	d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
 	double S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
@@ -728,11 +760,11 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_15N *= T_DOWN;
 	
 	J1 = J0_EMF(omega_13C, taus, S2CSAxs, tauf, S2CSAxf);
-	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
+	R1CSAx = (double) (1/15.) * d2x * J1; // from Bremi1997
 	J1 = J0_EMF(omega_13C, taus, S2CSAys, tauf, S2CSAyf);
-	R1CSAy = (1/15.) * d2y * J1;
-	J1 = J0_EMF(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
-	R1CSAxy = (2/15.) * d2xy * J1;
+	R1CSAy = (double) (1/15.) * d2y * J1;
+	J1 = J0_EMF_CC(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
+	R1CSAxy = (double) (2/15.) * d2xy * J1;
 	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
 	
 	
@@ -770,7 +802,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
-	float w1 = relax->w1, wr = relax->wr;
+	double w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
 	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
@@ -783,12 +815,12 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 	wCOCa = 120 * omega_13C * 0.000001;
 
-	float *csa;
+	double *csa;
 	csa = res->csaC;
 
-	d2x = sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
-	d2y = sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-	d2xy= sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
+	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
+	d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 
 	/* Calculate all order parameters */
@@ -814,9 +846,9 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_13C *= T_DOWN;
 	omega_15N *= T_DOWN;
 	
-	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x);
-	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y);
-	R2CSAxy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxys, tauf, S2CSAxyf, d2xy);
+	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x, J0_EMF);
+	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y, J0_EMF);
+	R2CSAxy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxys, tauf, S2CSAxyf, d2xy, J0_EMF_CC);
 	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
@@ -824,5 +856,5 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	R2CHr = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = GAF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
 	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C + wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
-	return (R2CSA + R2CH + R2CHr + R2CN + R2CC)*T_DOWN;
+	return (double) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(long double)T_DOWN);
 }

@@ -5,14 +5,15 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
-#define MOD_SMF 		0						///< Simple Model Free
-#define MOD_EMF 		1						///< Extended Model Free using S2 dipolar
-#define MOD_EMFT		2						///< Extended Model Free with Temperature Dependence using S2 dipolar
-#define MOD_SMFT 		3						///< Simple Model Free with Temperature Dependence
-#define MOD_DEMF		4 						///< Extended Model Free 
-#define MOD_DEMFT		5						///< Extended Model Free  with Temperature Dependence
-#define MOD_GAF 		6						///< Gaussian Axial Fluctuations model
-#define MOD_GAFT 		7						///< Gaussian Axial Fluctuations model with Temperature Dependence
+#define MOD_UNDEFINED	0
+#define MOD_SMF 		1						///< Simple Model Free
+#define MOD_EMF 		2						///< Extended Model Free using S2 dipolar
+#define MOD_EMFT		3						///< Extended Model Free with Temperature Dependence using S2 dipolar
+#define MOD_SMFT 		4						///< Simple Model Free with Temperature Dependence
+#define MOD_DEMF		5 						///< Extended Model Free 
+#define MOD_DEMFT		6						///< Extended Model Free  with Temperature Dependence
+#define MOD_GAF 		7						///< Gaussian Axial Fluctuations model
+#define MOD_GAFT 		8						///< Gaussian Axial Fluctuations model with Temperature Dependence
 
 #define DATA_S2NH		0
 #define DATA_S2CH		1
@@ -108,12 +109,12 @@ long double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi
    *    1 indicates that errors should be calculated, 0 indicates not.
    */
 struct Model {
-	int max_func_evals, max_iter, n_iter, n_error_iter;
+	unsigned int max_func_evals, max_iter, n_iter, n_error_iter;
 	char outputdir[255];
-	int model;
+	unsigned int model;
 	struct Residue * residues;
-	int n_residues;
-	int nthreads;
+	unsigned int n_residues;
+	unsigned int nthreads;
 	int error_mode;
 };
 
@@ -173,12 +174,12 @@ struct Orient {
  *  Actual number of points used in error calculation
  */
 struct Residue {
-	float S2NH, S2CC, S2CH, S2CN;
-	float S2NHe,S2CCe,S2CHe,S2CNe;
-	float csisoN;
-	float csisoC;
-	float csaN[3];
-	float csaC[3];
+	double S2NH, S2CC, S2CH, S2CN;
+	double S2NHe,S2CCe,S2CHe,S2CNe;
+	double csisoN;
+	double csisoC;
+	double csaN[3];
+	double csaC[3];
 	struct Orient orients[14];
 	//float orients[14][2]; // theta,phi
 	struct Relaxation * relaxation;
@@ -186,8 +187,8 @@ struct Residue {
 
 	long double ** error_params;
 
-	int n_relaxation;
-	int lim_relaxation;
+	unsigned int n_relaxation;
+	unsigned int lim_relaxation;
 	int ignore;
 	double min_val;
 	long double * parameters;
@@ -215,13 +216,13 @@ struct Residue {
  *  Temperature of measurement (Kelvin)
  */
 struct Relaxation {
-	float field; // in MHz
-	float wr; // in Hz
-	float w1; // in Hz
+	double field; // in MHz
+	double wr; // in Hz
+	double w1; // in Hz
 	int type;
-	float R;
-	float Rerror;
-	float T; // in Kelvin
+	double R;
+	double Rerror;
+	double T; // in Kelvin
 };
 
 /**
@@ -239,10 +240,10 @@ struct Relaxation {
  *  Output directory
  */
 struct rrargs {
-	int i;
+	unsigned int i;
 	struct Residue * resid;
-	int model;
-	int n_iter;
+	unsigned int model;
+	unsigned int n_iter;
 	char outputdir[255];
 };
 
@@ -322,8 +323,8 @@ void initialise_dwig(void) {
  *  Pointer to Model to be freed.
  */
 void free_all(struct Model *m) {
-	int res, k;
-	int params;
+	unsigned int res, k;
+	unsigned int params;
 	switch (m->model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
