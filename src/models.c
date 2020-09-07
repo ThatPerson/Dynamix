@@ -34,22 +34,17 @@ inline long double J0_EMF(long double omega, long double taus, long double S2s, 
 		);
 }
 
-/** Calculates cross correlated spectral density function for given frequency according to extended 
- *  model free analysis. Form derived from equation 4 in Lienin 1998, with the P2(cos(theta_uv)) being
- *  placed in all (1-S^2) terms, and this value being taken as -1/2. 
- *  Similar in form to code in the MATLAB model which has been commented out and replaced by similar
- *  (only with a random factor of -2 that I'm not sure about.
- *  @warning Check where the factor of -2 comes from.
- *  Implements J(w) = (-1/2. - S2f) tauf / (1 + (w tauf)^2) + S2f (-1/2. - S2s) taus / (1 + (w taus)^2), 
- *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
+/** Cross correlated spectral density. Taken from Manuscript, 
+ * Juv(w) = (1-S2f) tf / (1 + (wtf)^2) + (1/P2) S2f (P2 - S2s) (ts / 1+(wts)^2)
+ * eq 2
  */
 inline long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
 	return ( \
-			((((-0.5 - (double) S2f)) * (long double) tauf)) \
+			((((1 - (double) S2f)) * (long double) tauf)) \
 			/ (1 + ((double) omega * (long double) tauf * (double) omega * (long double) tauf)) \
 		)\
-		+\
-		(\
+		-\
+		2. * (\
 			(((double) S2f) * (-0.5 - (double) S2s) * (long double) taus)\
 			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
 		);
@@ -585,10 +580,10 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2NCSAyf);
 	R1CSAy = (double) (1/15.) * d2y * J1;
 	J1 = J0_EMF_CC(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
-	R1CSAxy = (double) (2/15.) * d2xy * J1;
+	R1CSAxy = (double) (1/15.) * d2xy * J1;
 	
 	/** Eq A30, Bremi1997 */
-	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
+	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
 
 	
 
@@ -606,7 +601,6 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 /**
  * Calculates R2 relaxation rate for 15N nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
- * @warning I'm unsure of the validity of NCSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -671,12 +665,9 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 	R2CSAy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAys, tauf, S2NCSAyf, d2y, J0_EMF);
 	R2CSAxy = GAF_CSA_R2(omega_15N, w1, wr, taus, S2NCSAxys, tauf, S2NCSAxyf, d2xy, J0_EMF_CC);
 	/**
-	 * I'm unsure if this should be R2CSAx + R2CSAy + R2CSAxy or - R2CSAxy. 
-	 * In the original MATLAB scripts, it is - R2CSAxy; in NHCO_3GAFSquaredEa, the form of R2CSAxy
-	 * is really odd. In NH3DEglobalGAF it is also - R2CSAxy but the form is the same.
-	 * In Lienin1998's SI, eq 5 and 6 it is +R2CSAxy - same for Bremi1997 eq A30
-	 */
-	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
+	 * Equation for spectral density for xy taken from Manuscript
+	 */ 
+	R2CSA = R2CSAx + R2CSAy + 2.* R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2NH = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2NHs, tauf, S2NHf, D_NH);
@@ -688,16 +679,10 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus
 
 
 
-/* This has not been directly tested against the MATLAB model as I don't really
- * have an equivalent to it set up (NHCO_3GAFSquaredEa is likely the closest
- * but I don't have the setup around it for the Legendre polynomials) */
- /* WARNING: CSAxy IS OMITTED */
  
  /**
  * Calculates R1 relaxation rate for 13C nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
- * @warning Has not been tested on 13C data
- * @warning I'm unsure of the validity of CSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -764,8 +749,8 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	J1 = J0_EMF(omega_13C, taus, S2CSAys, tauf, S2CSAyf);
 	R1CSAy = (double) (1/15.) * d2y * J1;
 	J1 = J0_EMF_CC(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
-	R1CSAxy = (double) (2/15.) * d2xy * J1;
-	R1CSA = R1CSAx + R1CSAy + R1CSAxy;
+	R1CSAxy = (double) (1/15.) * d2xy * J1;
+	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
 	
 	
 
@@ -781,8 +766,6 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 /**
  * Calculates R2 relaxation rate for 13C nucleus under gaussian axial fluctuations.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
- * @warning Has not been tested on 13C data
- * @warning I'm unsure of the validity of CSAxy.
  * @param res
  *  Pointer to residue being considered
  * @param relax
@@ -849,7 +832,7 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus
 	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x, J0_EMF);
 	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y, J0_EMF);
 	R2CSAxy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxys, tauf, S2CSAxyf, d2xy, J0_EMF_CC);
-	R2CSA = R2CSAx + R2CSAy + R2CSAxy;
+	R2CSA = R2CSAx + R2CSAy + 2.*R2CSAxy;
 
 	/* N Dipolar Interactions Contributions */
 	R2CH = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CHs, tauf, S2CHf, D_CH);
