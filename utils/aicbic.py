@@ -1,5 +1,7 @@
 ## https://en.wikipedia.org/wiki/Maximum_likelihood_estimation - equation under "Continuous distribution, continuous parameter space" - normal distribution PDF.
 
+# https://www-cdf.fnal.gov/physics/statistics/recommendations/modeling.html
+
 import sys
 import numpy as np
 # arguments are python aicbic.py FOLDER N_PARAMS
