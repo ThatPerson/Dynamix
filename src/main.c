@@ -9,7 +9,7 @@
 #include "models/smf.h"
 #include "models/emf.h"
 #include "models/gaf.h"
-//#include "models/egaf.h"
+#include "models/egaf.h"
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
@@ -54,6 +54,8 @@ void * run_residue(void *input) {
 		case MOD_DEMFT: params= 6; break;
 		case MOD_GAF: params = 8; break;
 		case MOD_GAFT:params = 10; break;
+		case MOD_EGAF: params = 6; break;
+		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
 	//printf("%d\n", params);
@@ -114,6 +116,18 @@ void * run_residue(void *input) {
 		 *   [5-7] alpha, beta, gamma deflections for fast motions\n 
 		 *   [8] activation energy for slow motion\n 
 		 *   [9] activation energy for fast motion\n 
+		 * EGAF parameters\n 
+		 *   [0] tau slow\n 
+		 *   [1] tau fast\n 
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
+		 *   [5] fast motion order parameter\n
+		 * EGAFT parameters\n 
+		 *   [0] tau slow\n 
+		 *   [1] tau fast\n 
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
+		 *   [5] order parameter for fast motions\n 
+		 *   [6] activation energy for slow motion\n 
+		 *   [7] activation energy for fast motion\n 
 		 */
 		if (model == MOD_SMF) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
@@ -163,6 +177,27 @@ void * run_residue(void *input) {
 			}
 			opts[8] = (rand()%60000)/1.;
 			opts[9] = (rand()%60000)/1.;
+		} else if (model == MOD_EGAF) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			for (k = 2; k <= 4; k++) {
+				// 15 degrees = 0.26180 radians
+				opts[k] = ((rand () % 250)/1000.);
+				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			}
+			opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
+			
+		} else if (model == MOD_EGAFT) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			for (k = 2; k <= 4; k++) {
+				// 15 degrees = 0.26180 radians
+				opts[k] = ((rand () % 250)/1000.);
+				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			}
+			opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
+			opts[6] = (rand()%60000)/1.;
+			opts[7] = (rand()%60000)/1.;
 		}
 
 		//printf("%Le, %Le\n", opts[0], opts[1]);
@@ -341,6 +376,8 @@ int main(int argc, char * argv[]) {
 		case MOD_DEMFT: params= 6; break;
 		case MOD_GAF: params = 8; break;
 		case MOD_GAFT:params = 10; break;
+		case MOD_EGAF: params = 6; break;
+		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
 
@@ -388,7 +425,7 @@ int main(int argc, char * argv[]) {
 
 	unsigned int k;
 	FILE * gaf;
-	if (m.model == MOD_GAF || m.model == MOD_GAFT) {
+	if (m.model == MOD_GAF || m.model == MOD_GAFT || m.model == MOD_EGAF || m.model == MOD_EGAFT) {
 		sprintf(filename, "%s/gaf.dat", m.outputdir);
 		gaf = fopen(filename, "w");
 		if (gaf == NULL) {
@@ -445,6 +482,14 @@ int main(int argc, char * argv[]) {
 			S2[0] = &S2fast;
 			GAF_S2(sigf, As, As, S2, 1, MODE_REAL);
 			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, m.residues[l].parameters[0], S2slow, m.residues[l].parameters[1], S2fast);
+		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL) {
+			double S2slow;
+			double *S2[] = {&S2slow};
+			/* Approximate as just the S2NHs and S2NHf */
+			struct Orient *As[] = {&(m.residues[l].orients[OR_NH])};
+			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
+			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
+			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, m.residues[l].parameters[0], S2slow, m.residues[l].parameters[1], (double) m.residues[l].parameters[5]);
 		}
 	}
 

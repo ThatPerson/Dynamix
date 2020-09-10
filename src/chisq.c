@@ -215,6 +215,80 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
 		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 		return chisq;
+	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
+		/* Extended Model Free Analysis */
+		long double taus = opts[0];
+		long double tauf = opts[1];
+		long double sigs[3] = {opts[2], opts[3], opts[4]};
+		long double S2f = opts[5];
+		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
+		if (model == MOD_EGAFT) {
+			Eas = opts[6];
+			Eaf = opts[7];
+		} else {
+			taus_eff = taus;
+			tauf_eff = tauf;
+		}
+		//if (!isnan(opts[2]))
+		//	printf("\t\t%Le\n", opts[2]);
+		unsigned int i;
+		if (taus < 0 || tauf < 0)
+			chisq += 100000000;
+		for (i = 0; i < 3; i++) {
+			if (sigs[i] < 0 || sigs[i] > 0.52360)
+				chisq += 100000000;
+		}
+		
+		if (S2f > 1 || S2f < resid->S2NH)
+			chisq += 100000000;
+
+		if (tauf > taus)
+			chisq += 100000000;
+		if (tauf > upper_lim_tf || taus > upper_lim_ts)
+			chisq += 100000000;
+
+		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+				continue;
+			if (model == MOD_EGAFT) {
+				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
+				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
+			}
+			if (tauf_eff > taus_eff)
+				chisq += 100000000;
+			switch (resid->relaxation[i].type) {
+				case R_15NR1:
+					calc_R = EGAF_15NR1(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				case R_15NR1p:
+					calc_R = EGAF_15NR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				case R_13CR1:
+					calc_R = EGAF_13CR1(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				case R_13CR1p:
+					calc_R = EGAF_13CR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				default:
+					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
+					exit(0);
+					break;
+			}
+			//printf("%f\n", calc_R);
+
+			chisq += ((pow(resid->relaxation[i].R - calc_R, 2)) / pow(resid->relaxation[i].Rerror, 2));
+		}
+
+		double S2NHs, S2CHs, S2CCs, S2CNs;
+		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
+		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
+		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
+		/* 1000 weighting for order parameters */
+		chisq += ((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
+		chisq += ((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
+		chisq += ((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
+		return chisq;
 	} else {
 		printf("Model not implemented yet\n");
 		exit(-1);
@@ -387,6 +461,58 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 					break;
 				case R_13CR1p:
 					calc_R = GAF_13CR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, sigf);
+					break;
+				default:
+					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);
+					exit(0);
+					break;
+			}
+			fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+			if (VERBOSE)
+				fprintf(fp, "\t%f\t%f\t%f\t%f", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T); 
+			fprintf(fp, "\n");
+		}
+		fclose(fp);
+		return 1;
+	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
+		/* Extended Model Free Analysis */
+		long double taus = opts[0];
+		long double tauf = opts[1];
+		long double sigs[3] = {opts[2], opts[3], opts[4]};
+		long double S2f = opts[5];
+		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
+		if (model == MOD_EGAFT) {
+			Eas = opts[6];
+			Eaf = opts[7];
+		} else {
+			taus_eff = taus;
+			tauf_eff = tauf;
+		}
+		//if (!isnan(opts[2]))
+		//	printf("\t\t%Le\n", opts[2]);
+		unsigned int i;
+
+		for (i = 0; i < resid->n_relaxation; i++) {
+			if (resid->relaxation[i].R <= 0)
+				continue;
+			if (model == MOD_EGAFT) {
+				taus_eff = taus * expl(Eas / (RYD * resid->relaxation[i].T));
+				tauf_eff = tauf * expl(Eaf / (RYD * resid->relaxation[i].T));
+				//printf("%Le, %Le\n", taus_eff, tauf_eff);
+			}
+
+			switch (resid->relaxation[i].type) {
+				case R_15NR1:
+					calc_R = EGAF_15NR1(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				case R_15NR1p:
+					calc_R = EGAF_15NR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				case R_13CR1:
+					calc_R = EGAF_13CR1(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
+					break;
+				case R_13CR1p:
+					calc_R = EGAF_13CR2(resid, &(resid->relaxation[i]), taus_eff, tauf_eff, sigs, S2f);
 					break;
 				default:
 					printf("Unknown relaxation type: %d\n", resid->relaxation[i].type);

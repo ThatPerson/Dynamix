@@ -6,16 +6,16 @@
 #include <math.h>
 #include <complex.h>
 #define MOD_UNDEFINED	0
-#define MOD_SMF 		MOD_UNDEFINED						///< Simple Model Free
-#define MOD_EMF 		MOD_UNDEFINED						///< Extended Model Free using S2 dipolar
-#define MOD_EMFT		MOD_UNDEFINED						///< Extended Model Free with Temperature Dependence using S2 dipolar
-#define MOD_SMFT 		MOD_UNDEFINED						///< Simple Model Free with Temperature Dependence
-#define MOD_DEMF		MOD_UNDEFINED 						///< Extended Model Free 
-#define MOD_DEMFT		MOD_UNDEFINED						///< Extended Model Free  with Temperature Dependence
-#define MOD_GAF 		MOD_UNDEFINED						///< Gaussian Axial Fluctuations model
-#define MOD_GAFT 		MOD_UNDEFINED						///< Gaussian Axial Fluctuations model with Temperature Dependence
-#define MOD_EGAF		MOD_UNDEFINED						///< 3D GAF for slow motions, EMF for fast motions
-#define MOD_EGAFT		MOD_UNDEFINED						///< 3D GAF for slow motions, EMF for fast motions, temperature dependence.
+#define MOD_SMF 		1						///< Simple Model Free
+#define MOD_EMF 		2						///< Extended Model Free using S2 dipolar
+#define MOD_EMFT		3						///< Extended Model Free with Temperature Dependence using S2 dipolar
+#define MOD_SMFT 		4						///< Simple Model Free with Temperature Dependence
+#define MOD_DEMF		5 						///< Extended Model Free 
+#define MOD_DEMFT		6						///< Extended Model Free  with Temperature Dependence
+#define MOD_GAF 		7						///< Gaussian Axial Fluctuations model
+#define MOD_GAFT 		8						///< Gaussian Axial Fluctuations model with Temperature Dependence
+#define MOD_EGAF		9						///< 3D GAF for slow motions, EMF for fast motions
+#define MOD_EGAFT		10						///< 3D GAF for slow motions, EMF for fast motions, temperature dependence.
 
 #define DATA_S2NH		0
 #define DATA_S2CH		1
