@@ -584,7 +584,6 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	
 	/** Eq A30, Bremi1997 */
 	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
-
 	
 
 

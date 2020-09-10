@@ -14,6 +14,8 @@
 #define MOD_DEMFT		6						///< Extended Model Free  with Temperature Dependence
 #define MOD_GAF 		7						///< Gaussian Axial Fluctuations model
 #define MOD_GAFT 		8						///< Gaussian Axial Fluctuations model with Temperature Dependence
+#define MOD_EGAF		9						///< 3D GAF for slow motions, EMF for fast motions
+#define MOD_EGAFT		10						///< 3D GAF for slow motions, EMF for fast motions, temperature dependence.
 
 #define DATA_S2NH		0
 #define DATA_S2CH		1
