@@ -88,6 +88,8 @@ void * calc_errors(void *input) {
 		case MOD_DEMFT: params= 6; break;
 		case MOD_GAF: params = 8; break;
 		case MOD_GAFT:params = 10; break;
+		case MOD_EGAF: params = 6; break;
+		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
 	//printf("%d\n", params);
