@@ -137,7 +137,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		if (model == MOD_DEMF || model == MOD_DEMFT ) { 
 			S2NHd = S2s * S2f;
 			// large weighting for S2 parameters
-			chisq += 1000.*((pow(resid->S2NH - (double) S2NHd, 2)) / pow(0.01, 2));
+			chisq += ((pow(resid->S2NH - (double) S2NHd, 2)) / pow(0.01, 2));
 		}
 		return chisq;
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
@@ -211,9 +211,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 		GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
 		/* 1000 weighting for order parameters */
-		chisq += 1000* ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
-		chisq += 1000*((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
-		chisq += 1000* ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
+		chisq += ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
+		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
+		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 		return chisq;
 	} else {
 		printf("Model not implemented yet\n");
