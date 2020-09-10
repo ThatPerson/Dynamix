@@ -5,7 +5,11 @@
 #include <stdio.h>
 #include "datatypes.h"
 #include "read_data.h"
-#include "models.h"
+
+#include "models/smf.h"
+#include "models/emf.h"
+#include "models/gaf.h"
+//#include "models/egaf.h"
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
@@ -233,7 +237,7 @@ int main(int argc, char * argv[]) {
 	}
 
 	if (m.model == MOD_UNDEFINED) {
-		printf("Please provide model\n");
+		printf("Model undefined\n");
 		ret = -1;
 	}
 
@@ -241,6 +245,7 @@ int main(int argc, char * argv[]) {
 		printf("Error found, crashing peacefully...\n");
 		exit(-1);
 	}
+
 
 	printf("%d\n", ret);
 	char filename[300];
