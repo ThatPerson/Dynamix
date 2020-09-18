@@ -16,7 +16,7 @@
  *  MOD_SMF etc.
  * @return Returns chisq value.
  */
-double optimize_chisq(long double * opts, struct Residue * resid, unsigned int model) {
+double optimize_chisq(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -141,22 +141,42 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		}
 		return chisq;
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		/* Extended Model Free Analysis */
+		/* Gaussian Axial Fluctuation Analysis */
 		long double taus = opts[0];
 		long double tauf = opts[1];
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
 		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
+		double theta = 0, phi = 0;
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
 			Eaf = opts[9];
+			if (or_variations == VARIANT_A) {
+				theta = opts[10];
+				phi = opts[11];
+			}
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
+			if (or_variations == VARIANT_A) {
+				theta = opts[8];
+				phi = opts[9];
+			}
 		}
+		unsigned int i;
+
+		if (or_variations == VARIANT_A) {
+			// void calculate_Y2(struct Orient * or, double theta, double phi) {
+			// 	struct Orient orients[14];
+			if (theta < OR_LIMIT || theta > OR_LIMIT || phi < OR_LIMIT || phi > OR_LIMIT)
+				chisq += 100000000;
+			for (i = 0; i < N_OR; i++) {
+				calculate_Y2(&(resid->orients[i]), theta, phi);
+			}
+		}
+		
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
-		unsigned int i;
 		if (taus < 0 || tauf < 0)
 			chisq += 100000000;
 		for (i = 0; i < 3; i++) {
@@ -222,16 +242,39 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double S2f = opts[5];
 		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
+		double theta = 0, phi = 0;
 		if (model == MOD_EGAFT) {
 			Eas = opts[6];
 			Eaf = opts[7];
+			if (or_variations == VARIANT_A) {
+				theta = opts[8];
+				phi = opts[9];
+			}
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
+			if (or_variations == VARIANT_A) {
+				theta = opts[6];
+				phi = opts[7];
+			}
 		}
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
 		unsigned int i;
+		
+		if (or_variations == VARIANT_A) {
+			// void calculate_Y2(struct Orient * or, double theta, double phi) {
+			// 	struct Orient orients[14];
+			//printf("%f, %f\n", theta, phi);
+			/*if (theta < OR_LIMIT || theta > OR_LIMIT || phi < OR_LIMIT || phi > OR_LIMIT) {
+				printf("Triggered\n");
+				chisq += 100000000;
+			}*/
+			for (i = 0; i < N_OR; i++) {
+				calculate_Y2(&(resid->orients[i]), theta, phi);
+			}
+		}
+		
 		if (taus < 0 || tauf < 0)
 			chisq += 100000000;
 		for (i = 0; i < 3; i++) {
@@ -310,7 +353,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(long double * opts, struct Residue * resid, unsigned int model, char *filename) {
+int back_calculate(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -429,17 +472,32 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
 		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
+		double theta = 0, phi = 0;
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
 			Eaf = opts[9];
+			if (or_variations == VARIANT_A) {
+				theta = opts[10];
+				phi = opts[11];
+			}
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
+			if (or_variations == VARIANT_A) {
+				theta = opts[8];
+				phi = opts[9];
+			}
 		}
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
 		unsigned int i;
-
+		if (or_variations == VARIANT_A) {
+			// void calculate_Y2(struct Orient * or, double theta, double phi) {
+			// 	struct Orient orients[14];
+			for (i = 0; i < N_OR; i++) {
+				calculate_Y2(&(resid->orients[i]), theta, phi);
+			}
+		}
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)
 				continue;
@@ -481,17 +539,33 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double S2f = opts[5];
 		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0;
+		double theta = 0, phi = 0;
 		if (model == MOD_EGAFT) {
 			Eas = opts[6];
 			Eaf = opts[7];
+			if (or_variations == VARIANT_A) {
+				theta = opts[8];
+				phi = opts[9];
+			}
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
+			if (or_variations == VARIANT_A) {
+				theta = opts[6];
+				phi = opts[7];
+			}
 		}
 		//if (!isnan(opts[2]))
 		//	printf("\t\t%Le\n", opts[2]);
 		unsigned int i;
-
+		if (or_variations == VARIANT_A) {
+			// void calculate_Y2(struct Orient * or, double theta, double phi) {
+			// 	struct Orient orients[14];
+			for (i = 0; i < N_OR; i++) {
+				calculate_Y2(&(resid->orients[i]), theta, phi);
+			}
+		}
+		
 		for (i = 0; i < resid->n_relaxation; i++) {
 			if (resid->relaxation[i].R <= 0)
 				continue;

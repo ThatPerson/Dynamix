@@ -125,7 +125,7 @@ int read_pp(struct Model *m, char *filename, int orient) {
 		resid = resid -1; // index from 0
 		m->residues[resid].orients[orient].theta = theta;
 		m->residues[resid].orients[orient].phi = phi;
-		calculate_Y2(&(m->residues[resid].orients[orient]));
+		calculate_Y2(&(m->residues[resid].orients[orient]), 0, 0);
 	}
 	return 1;
 }
@@ -313,9 +313,9 @@ int read_system_file(char *filename, struct Model * m) {
 	char csisoN[255] = "";
 	char csisoC[255] = "";
 	int n_resid = -1;
-	char pp_orient[14][255];
+	char pp_orient[N_OR][255];
 	unsigned int i;
-	for (i = 0; i < 14; i++) {
+	for (i = 0; i < N_OR; i++) {
 		strcpy(pp_orient[i], "");
 	}
 	strcpy(m->outputdir, "./");
@@ -329,6 +329,7 @@ int read_system_file(char *filename, struct Model * m) {
 	m->n_iter = 0;
 	m->n_error_iter = 0;
 	m->model = MOD_UNDEFINED;
+	m->or_variation = INVARIANT_A;
 	m->n_residues = 0;
 	m->nthreads = 1;
 
@@ -397,13 +398,13 @@ int read_system_file(char *filename, struct Model * m) {
 			}
 			
 			t = 0;
-			for (i = 0; i < 14; i++) {
+			for (i = 0; i < N_OR; i++) {
 				if (strcmp(pp_orient[i], "") != 0)
 					t += read_pp(m, pp_orient[i], i);
 				else
 					t++;
 			}
-			if (t != 14) {
+			if (t != N_OR) {
 				printf("Error: Error in reading orientations\n");
 				return -1;
 			}
@@ -447,6 +448,8 @@ int read_system_file(char *filename, struct Model * m) {
 				strcpy(s2cc, val);
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
+			} else if (strcmp(key, "OR_VARY") == 0) {
+				m->or_variation = VARIANT_A;
 			} else if (strcmp(key, "CSISON") == 0) {
 				strcpy(csisoN, val);
 			} else if (strcmp(key, "CSISOC") == 0) {
@@ -564,7 +567,7 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
 		fprintf(fp, "\tOrients;\n");
-		for (j = 0; j < 14; j++) {
+		for (j = 0; j < N_OR; j++) {
 			//if (m->residues[i].orients[j] != NULL)
 			fprintf(fp, "\t\t%d: %f, %f\n", j, m->residues[i].orients[j].theta, m->residues[i].orients[j].phi);
 		}

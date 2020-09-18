@@ -69,7 +69,7 @@
  *  Model type (MOD_SMF etc)
  * @return Returns minimum of (*func).
  */
-double simplex(double (*func)(long double[], struct Residue*, unsigned int), long double start[],unsigned int n, long double EPSILON, long double scale, struct Residue * resid, unsigned int model)
+double simplex(double (*func)(long double[], struct Residue*, unsigned int, unsigned int), long double start[],unsigned int n, long double EPSILON, long double scale, struct Residue * resid, unsigned int model, unsigned int or_variation)
 {
   //printf("SIMPLEX %Le\n", start[2]);
   int vs;        	/* vertex with smallest value */
@@ -133,7 +133,7 @@ double simplex(double (*func)(long double[], struct Residue*, unsigned int), lon
 
   /* find the initial function values */
   for (j=0;j<=n;j++) {
-    f[j] = func(v[j], resid, model);
+    f[j] = func(v[j], resid, model, or_variation);
   }
 
   k = n+1;
@@ -187,7 +187,7 @@ double simplex(double (*func)(long double[], struct Residue*, unsigned int), lon
     for (j=0;j<=n-1;j++) {
       vr[j] = (1+ALPHA)*vm[j] - ALPHA*v[vg][j];
     }
-    fr = func(vr, resid, model);
+    fr = func(vr, resid, model, or_variation);
     k++;
 
     /* added <= */
@@ -204,7 +204,7 @@ double simplex(double (*func)(long double[], struct Residue*, unsigned int), lon
       for (j=0;j<=n-1;j++) {
 	ve[j] = GAMMA*vr[j] + (1-GAMMA)*vm[j];
       }
-      fe = func(ve, resid, model);
+      fe = func(ve, resid, model, or_variation);
       k++;
 
       /* by making fe < fr as opposed to fe < f[vs],
@@ -230,7 +230,7 @@ double simplex(double (*func)(long double[], struct Residue*, unsigned int), lon
       for (j=0;j<=n-1;j++) {
 	vc[j] = BETA*v[vg][j] + (1-BETA)*vm[j];
       }
-      fc = func(vc, resid, model);
+      fc = func(vc, resid, model, or_variation);
       k++;
       if (fc < f[vg]) {
 	for (j=0;j<=n-1;j++) {
@@ -251,9 +251,9 @@ double simplex(double (*func)(long double[], struct Residue*, unsigned int), lon
 	    }
 	  }
 	}
-	f[vg] = func(v[vg], resid, model);
+	f[vg] = func(v[vg], resid, model, or_variation);
 	k++;
-	f[vh] = func(v[vh], resid, model);
+	f[vh] = func(v[vh], resid, model, or_variation);
 	k++;
 
 
@@ -295,7 +295,7 @@ double simplex(double (*func)(long double[], struct Residue*, unsigned int), lon
     start[j] = v[vs][j];
 
   }
-  min=func(v[vs], resid, model);
+  min=func(v[vs], resid, model, or_variation);
   k++;
   //printf("%d Function Evaluations\n",k);
   //printf("%d Iterations through program\n",itr);
