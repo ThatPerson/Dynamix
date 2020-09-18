@@ -54,5 +54,10 @@ with open(sys.argv[3], "w") as q:
 		
 		AIC = 2 * params - 2 * logv
 		BIC = params * np.log(n_data) - 2 * logv
+
+                #adjusted AIC
+                corr_f = (2 * params * (params + 1)) / (n_data - params - 1)
+                AICc = AIC + corr_f
+
 		#print("%d, %f, %f\n"% (i, AIC, BIC))
-		q.write("%d, %f, %f\n"% (i, AIC, BIC))
+		q.write("%d, %f, %f, %f\n"% (i, AIC, BIC, AICc))
