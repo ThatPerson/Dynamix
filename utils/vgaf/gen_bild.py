@@ -1,5 +1,6 @@
 import pytraj as pt
 import numpy as np
+import sys
 
 min_v = 1
 max_v = 56
@@ -105,8 +106,16 @@ for peptide_plane in range(2, 57):
 	
 variant = 1
 ty = "slow"
-with open("../../egaf/final.dat", "r") as inp:
-	with open("chimera.bild", "w") as out:
+
+# args are
+# final.dat outputfile variant type
+fn = sys.argv[1]
+of = sys.argv[2]
+variant = int(sys.argv[3])
+ty = sys.argv[4]
+
+with open(fn, "r") as inp:
+	with open(of, "w") as out:
 		for l in inp:
 			k = l.split()
 			residue = int(k[0])
