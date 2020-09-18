@@ -1,3 +1,6 @@
+# I'm not entirely sure I have the sense of the rotations right - Lienin 1998 is a bit unclear on this point.
+# I think that the axis main line is taken from Ci-1 to Ci and all rotations are anticlockwise.
+
 import pytraj as pt
 import numpy as np
 import sys
@@ -133,14 +136,19 @@ with open(fn, "r") as inp:
 				sG = 0
 				continue
 			if (variant == 1):
-				theta = float(k[len(k) - 2])
-				phi = float(k[len(k) - 1])
+				theta = -float(k[len(k) - 2])
+				phi = -float(k[len(k) - 1])
+				#theta = 0 * (np.pi / 180.)
+				#phi = np.pi
 				vectors_bs = np.matmul(basis_set[residue], vectors[residue])
 				vectors_theta = rotate_z(vectors_bs, theta) # rotation about beta axis
 				vectors_phi = rotate_y(vectors_theta, phi) # rotation about gamma axis
 				ibs = np.linalg.inv(basis_set[residue])
 				vectors[residue] = np.matmul(ibs, vectors_phi) # return.
 			
+			#sA = 0.1
+			#sB = 0.1
+			#sG = 0.3
 			alpha = [9.0]
 			beta = [9.0]
 			gamma = [9.0]
