@@ -93,6 +93,9 @@ void * calc_errors(void *input) {
 		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
+	if (or_variation == VARIANT_A)
+                params += 2; // theta, phi
+
 	//printf("%d\n", params);
 	long double *opts;
 	opts = (long double *) malloc (sizeof(long double) * params);
