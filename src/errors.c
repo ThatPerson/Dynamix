@@ -108,6 +108,7 @@ void * calc_errors(void *input) {
 	//resid->min_val = MIN_VAL;*/
 	//double val = 0;
 	int p = 0;
+	int ignore = -1;
 	double temp_R = 0;
 	for (l = 0; l < n_iter; l++) {
 		if (resid->ignore == 1) {
@@ -127,7 +128,7 @@ void * calc_errors(void *input) {
 			resid->relaxation[k].w1 = resid->temp_relaxation[k].w1;
 			resid->relaxation[k].type = resid->temp_relaxation[k].type;
 			resid->relaxation[k].T = resid->temp_relaxation[k].T;
-			temp_R = back_calc(opts, resid, &(resid->temp_relaxation[k]), model, NULL);
+			temp_R = back_calc(opts, resid, &(resid->temp_relaxation[k]), model, &ignore);
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
 			//resid->relaxation[k].R = norm_rand(resid->temp_relaxation[k].R, (resid->temp_relaxation[k].Rerror)/2.);
 			//printf("%f, %f -> %f \n", resid->temp_relaxation[k].R, resid->temp_relaxation[k].Rerror, resid->relaxation[k].R);
