@@ -62,7 +62,7 @@ double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
 
 	/* N CSA relaxation contribution */
-	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
+	long double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
 	long double J1 = 0;
 	
 
@@ -72,11 +72,11 @@ double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 	
 
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxs, tauf, S2f);
-	R1CSAx = (double) (1/15.) * d2x * J1; // from Bremi1997
+	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2f);
-	R1CSAy = (double) (1/15.) * d2y * J1;
+	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF_CC(omega_15N, taus, S2NCSAxys, tauf, S2f);
-	R1CSAxy = (double) (1/15.) * d2xy * J1;
+	R1CSAxy = (1/15.) * d2xy * J1;
 	
 	/** Eq A30, Bremi1997 */
 	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
@@ -90,7 +90,7 @@ double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 	R1CN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CNs, tauf, S2f, D_CN);
 	R1CaN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2f, D_CaN);
 
-	return (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
+	return (double) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
 /**
@@ -225,7 +225,7 @@ double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
 	
 	/* N CSA relaxation contribution */
-	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	long double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
 	long double J1 = 0;
 
 
@@ -234,11 +234,11 @@ double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 	omega_15N *= T_DOWN;
 	
 	J1 = J0_EMF(omega_13C, taus, S2CSAxs, tauf, S2f);
-	R1CSAx = (double) (1/15.) * d2x * J1; // from Bremi1997
+	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
 	J1 = J0_EMF(omega_13C, taus, S2CSAys, tauf, S2f);
-	R1CSAy = (double) (1/15.) * d2y * J1;
+	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF_CC(omega_13C, taus, S2CSAxys, tauf, S2f);
-	R1CSAxy = (double) (1/15.) * d2xy * J1;
+	R1CSAxy = (1/15.) * d2xy * J1;
 	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
 	
 	
@@ -249,7 +249,7 @@ double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 	R1CN = GAF_Dipolar_R1(omega_13C, omega_15N, taus, S2CNs, tauf, S2f, D_CN);
 	R1CC = GAF_Dipolar_R1(omega_13C, omega_13C + wCOCa, taus, S2CCs, tauf, S2f, D_CC);
 
-	return (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
+	return (double) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
 }
 
 /**

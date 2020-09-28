@@ -17,13 +17,11 @@
  *  Pointer to relaxation rate
  * @params model
  *  Model definition
- * @params or_variations
- *  Ignored. Variations in orientation must be done in preceding code.
  * @params *violations
  *  Int returning number of violations of constraints (for chisq)
  * @return calculated R value
  */
-double back_calc(long double * opts, struct Residue * resid, struct Relaxation * relax, unsigned int model, unsigned int or_variations, int *violations) {
+double back_calc(long double * opts, struct Residue * resid, struct Relaxation * relax, unsigned int model, int *violations) {
 	double calc_R = 0;
 	unsigned int i;
 	if (relax->R <= 0)
@@ -39,9 +37,9 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 		long double tau_eff = 0, Ea = 0;
 		
 		if (tau < 0)
-			*violations++;
+			(*violations)++;
 		if (S2 < 0 || S2 > 1)
-			*violations++;
+			(*violations)++;
 		
 		if (model == MOD_SMFT) {
 			Ea = opts[2];
@@ -91,13 +89,13 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 			S2f = opts[3];
 		
 		if (taus < 0 || tauf < 0)
-			*violations++;
+			(*violations)++;
 		if (S2s < resid->S2NH || S2f < 0 || S2s > 1 || S2f > 1)
-			*violations++;
+			(*violations)++;
 		if (tauf_eff > taus_eff)
-			*violations++;
+			(*violations)++;
 		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			*violations++;
+			(*violations)++;
 		
 		switch (relax->type) {
 			case R_15NR1:
@@ -132,16 +130,16 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 		}
 		
 		if (taus < 0 || tauf < 0)
-			*violations++;
+			(*violations)++;
 		if (tauf_eff > taus_eff)
-			*violations++;
+			(*violations)++;
 		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			*violations++;
+			(*violations)++;
 		for (i = 0; i < 3; i++) {
 			if (sigs[i] < 0 || sigs[i] > 0.52360)
-				*violations++;
+				(*violations)++;
 			if (sigf[i] < 0 || sigf[i] > 0.52360)
-				*violations++;
+				(*violations)++;
 		}
 		
 		switch (relax->type) {
@@ -176,17 +174,17 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 		}
 		
 		if (taus < 0 || tauf < 0)
-			*violations++;
+			(*violations)++;
 		if (tauf_eff > taus_eff)
-			*violations++;
+			(*violations)++;
 		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			*violations++;
+			(*violations)++;
 		for (i = 0; i < 3; i++) {
 			if (sigs[i] < 0 || sigs[i] > 0.52360)
-				*violations++;
+				(*violations)++;
 		}
 		if (S2f < 0 || S2f > 0)
-			*violations++;
+			(*violations)++;
 		
 		switch (relax->type) {
 			case R_15NR1:
@@ -224,7 +222,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
  *  MOD_SMF etc.
  * @return Returns chisq value.
  */
-double optimize_chisq(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations) {
+double optimize_chisq(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -235,10 +233,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	unsigned int i;
 	double theta, phi;
 	if (or_variations == VARIANT_A) {
-		int n = sizeof(opts) / sizeof(opts[0]);
-		theta = opts[n-1];
-		phi = opts[n];
-		if (abs(theta) > OR_LIMIT || abs(phi) > OR_LIMIT)
+		theta = (double) opts[params-2];
+		phi = (double) opts[params-1];
+		if (fabs(theta) > OR_LIMIT || fabs(phi) > OR_LIMIT)
 			violations++;
 		for (i = 0; i < N_OR; i++) {
 			calculate_Y2(&(resid->orients[i]), theta, phi);
@@ -247,7 +244,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	
 	
 	for (i = 0; i < resid->n_relaxation; i++) {
-		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, or_variations, &violations);
+		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, &violations);
 		chisq += ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
 	}
 	
@@ -263,7 +260,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
 		
-		double S2NHs, S2NHf, S2CHs, S2CHf, S2CCs, S2CCf, S2CNs, S2CNf;
+		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; // S2CCs, S2CCf
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
 		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
 		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
@@ -276,9 +273,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
-		long double S2f = opts[5];
+		double S2f = (double) opts[5];
 		
-		double S2NHs, S2CHs, S2CCs, S2CNs;
+		double S2NHs, S2CHs, S2CNs; // S2CCs
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
 		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
 		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
@@ -305,7 +302,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename) {
+int back_calculate(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -323,10 +320,9 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 	unsigned int i;
 	double theta, phi;
 	if (or_variations == VARIANT_A) {
-		int n = sizeof(opts) / sizeof(opts[0]);
-		theta = opts[n-1];
-		phi = opts[n];
-		if (abs(theta) > OR_LIMIT || abs(phi) > OR_LIMIT)
+		theta = (double) opts[params-2];
+		phi = (double) opts[params-1];
+		if (fabs(theta) > OR_LIMIT || fabs(phi) > OR_LIMIT)
 			violations++;
 		for (i = 0; i < N_OR; i++) {
 			calculate_Y2(&(resid->orients[i]), theta, phi);
@@ -334,7 +330,7 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 	}
 	
 	for (i = 0; i < resid->n_relaxation; i++) {
-		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, or_variations, &violations);
+		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, &violations);
 
 		fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 

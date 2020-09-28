@@ -24,7 +24,7 @@
 int read_resid_data(struct Model *m, char *filename, int dt) {
 	FILE *fp;
 	char line[255];
-	size_t len=255;
+	int len=255;
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
@@ -104,10 +104,10 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
  *  One of OR_* denoting which orientations are being read.
  * @return 1 if successful, else -1.
  */
-int read_pp(struct Model *m, char *filename, int orient) {
+int read_pp(struct Model *m, char *filename, unsigned int orient) {
 	FILE *fp;
 	char line[255];
-	size_t len=255;
+	int len=255;
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
@@ -156,7 +156,7 @@ int read_pp(struct Model *m, char *filename, int orient) {
 int read_relaxation_data(struct Model *m, char *filename) {
 	FILE *fp;
 	char line[255];
-	size_t len=255;
+	int len=255;
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
@@ -189,7 +189,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 						exit(-1);
 					}
 				}
-				rel = m->residues[i].n_relaxation;
+				rel = (int) m->residues[i].n_relaxation;
 				m->residues[i].n_relaxation++;
 				if (field == -1)
 					printf("Note: Field = 0 in %s\n", filename);
@@ -299,7 +299,7 @@ int read_system_file(char *filename, struct Model * m) {
 
 	FILE * fp;
 	char line[255];
-	size_t len = 255;
+	int len = 255;
 
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
@@ -320,7 +320,7 @@ int read_system_file(char *filename, struct Model * m) {
 	}
 	strcpy(m->outputdir, "./");
 	m->n_iter = 1;
-	int to_ignore[50];
+	unsigned int to_ignore[50];
 	int ig = 0;
 
 	/* Initialise */
@@ -343,16 +343,15 @@ int read_system_file(char *filename, struct Model * m) {
 				return -1;
 			}
 
-			m->residues = (struct Residue *) malloc(sizeof(struct Residue) * n_resid);
-			int i;
-			for (i = 0; i < n_resid; i++) {
+			m->residues = (struct Residue *) malloc(sizeof(struct Residue) * (long unsigned int) n_resid);
+			for (i = 0; i < (unsigned int) n_resid; i++) {
 				m->residues[i].relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * N_RELAXATION);
 				m->residues[i].lim_relaxation = N_RELAXATION;
 				m->residues[i].n_relaxation = 0;
 				m->residues[i].ignore = 0;
 			}
 
-			for (i = 0; i < ig; i++) {
+			for (i = 0; i < (unsigned int) ig; i++) {
 				m->residues[to_ignore[i] - 1].ignore = 1;
 			}
 
@@ -455,21 +454,21 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "CSISOC") == 0) {
 				strcpy(csisoC, val);
 			} else if (strcmp(key, "MAXFUNCEVALS") == 0) {
-				m->max_func_evals = atoi(val);
+				m->max_func_evals = (unsigned int) atoi(val);
 			} else if (strcmp(key, "MAXITER") == 0) {
-				m->max_iter = atoi(val);
+				m->max_iter = (unsigned int) atoi(val);
 			} else if (strcmp(key, "N_RESIDUES") == 0){
-				m->n_residues = atoi(val);
+				m->n_residues = (unsigned int) atoi(val);
 				n_resid = atoi(val);
 			} else if (strcmp(key, "N_ITER") == 0) {
-				m->n_iter = atoi(val);
+				m->n_iter = (unsigned int) atoi(val);
 			} else if (strcmp(key, "OUTPUT") == 0) {
 				strcpy(m->outputdir, val);
 			} else if (strcmp(key, "IGNORE") == 0) {
-				to_ignore[ig] = atoi(val);
+				to_ignore[ig] = (unsigned int) atoi(val);
 				ig++;
 			} else if (strcmp(key, "N_ERROR_ITER") == 0){
-				m->n_error_iter = atoi(val);
+				m->n_error_iter = (unsigned int) atoi(val);
 			} else if (strcmp(key, "OR_NH") == 0) {
 				strcpy(pp_orient[OR_NH], val);
 			} else if (strcmp(key, "OR_NC") == 0) {
@@ -499,7 +498,7 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "OR_CCSAzz") == 0) {
 				strcpy(pp_orient[OR_CCSAzz], val);
 			} else if (strcmp(key, "NTHREADS") == 0) {
-				m->nthreads = atoi(val);
+				m->nthreads = (unsigned int) atoi(val);
 				if (m->nthreads <= 0) {
 					printf("Number of threads must be greater than 0.\n");
 					exit(-1);

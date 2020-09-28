@@ -483,7 +483,7 @@ int main(int argc, char * argv[]) {
 			fprintf(ep, "\n");
 		}
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
-		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, m.or_variation, file);
+		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, m.or_variation, file, params);
 		
 		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL) {
 			// Print out 'effective S2' values.
@@ -505,6 +505,7 @@ int main(int argc, char * argv[]) {
 			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
 			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
 			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, m.residues[l].parameters[0], S2slow, m.residues[l].parameters[1], (double) m.residues[l].parameters[5]);
+			/* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */
 		}
 	}
 

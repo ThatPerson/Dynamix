@@ -59,7 +59,7 @@ double EMF_Dipolar_R1(long double omega_X, long double omega_Y, long double d, l
 	Jcomp += J0_EMF(omega_Y - omega_X, taus, S2s, tauf, S2f);
 	Jcomp += 3. * J0_EMF(omega_X, taus, S2s, tauf, S2f);
 	Jcomp += 6. * J0_EMF(omega_Y + omega_X, taus, S2s, tauf, S2f);
-	return 0.1 * d * d * Jcomp;
+	return (double) (0.1 * d * d * Jcomp);
 }
 
 
@@ -84,7 +84,7 @@ double EMF_Dipolar_R2(long double omega_X, long double omega_Y, long double d, l
 	JD += J0_EMF(omega_Y - omega_X, taus, S2s, tauf, S2f);
 	JD += 6 * J0_EMF(omega_Y, taus, S2s, tauf, S2f);
 	JD += 6 * J0_EMF(omega_Y + omega_X, taus, S2s, tauf, S2f);
-	return (1/20.) * d * d * JD;
+	return (double) ((1/20.) * d * d * JD);
 }
   
   
@@ -120,14 +120,14 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 	long double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
 	long double wCOCa = 120 * omega_13C * 0.000001;
 	long double omega_L;
-	long double d, d2tot;
+	long double d2tot;
 	double *csa;
-	double R1D = 0, R1CSA = 0;
+	long double R1D = 0, R1CSA = 0;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;
-		d = -D_NH;
+		//d = -D_NH;
 		R1D += EMF_Dipolar_R1(omega_15N, omega_1H, -D_NH, taus, S2s, tauf, S2f); // N-H
 		R1D += EMF_Dipolar_R1(omega_15N, omega_1H, -D_HNr, taus, S2s, tauf, S2f); // N-Hr
 		R1D += EMF_Dipolar_R1(omega_15N, omega_13C, -D_CN, taus, S2s, tauf, S2f); // N-C
@@ -135,7 +135,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 	} else if (mode == MODE_13C) {
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
-		d = -D_CH;
+		//d = -D_CH;
 		R1D += EMF_Dipolar_R1(omega_13C, omega_1H, -D_CH, taus, S2s, tauf, S2f); // C-H
 		R1D += EMF_Dipolar_R1(omega_13C, omega_1H, -D_CHr, taus, S2s, tauf, S2f); // C-Hr
 		R1D += EMF_Dipolar_R1(omega_13C, omega_15N, -D_CN, taus, S2s, tauf, S2f); // C-N
@@ -156,7 +156,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 
 	R1D *= T_DOWN;
 	R1CSA *= T_DOWN;
-	return R1D + R1CSA;
+	return (double) R1D + (double) R1CSA;
 }
 
 /**
@@ -191,7 +191,7 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	long double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
 	long double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
 	long double omega_L;
-	long double d, d2tot;
+	long double d2tot;
 	double *csa;
 	long double wCOCa = 120 * omega_13C * 0.000001;
 	
@@ -210,7 +210,7 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;
-		d = -D_NH;
+		//d = -D_NH;
 		R2D += EMF_Dipolar_R2(omega_15N, omega_1H, -D_NH, taus, S2s, tauf, S2f, J0sum); // N-H
 		R2D += EMF_Dipolar_R2(omega_15N, omega_1H, -D_HNr, taus, S2s, tauf, S2f, J0sum); // N-Hr
 		R2D += EMF_Dipolar_R2(omega_15N, omega_13C, -D_CN, taus, S2s, tauf, S2f, J0sum); // N-C
@@ -218,7 +218,7 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	} else if (mode == MODE_13C) {
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
-		d = -D_CH;
+		//d = -D_CH;
 		R2D += EMF_Dipolar_R2(omega_13C, omega_1H, -D_CH, taus, S2s, tauf, S2f, J0sum); // C-H
 		R2D += EMF_Dipolar_R2(omega_13C, omega_1H, -D_CHr, taus, S2s, tauf, S2f, J0sum); // C-Hr
 		R2D += EMF_Dipolar_R2(omega_13C, omega_15N, -D_CN, taus, S2s, tauf, S2f, J0sum); // C-N
@@ -237,6 +237,6 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 	R2D *= T_DOWN;
 	R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0_EMF(omega_L, taus, S2s, tauf, S2f)) * T_DOWN;
 
-	return R2D + R2CSA;
+	return (double) R2D + (double) R2CSA;
 }
 

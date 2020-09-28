@@ -17,11 +17,12 @@
  * Kurbanov2011, eq 9 (factor of 1/10 arising from (2/5.) in spectral density and 1/4. in dipolar.
  */
 inline double GAF_Dipolar_R1(long double omega_obs, long double omega_neigh, long double taus, long double S2s, long double tauf, long double S2f, long double D) {
-	return (0.1) * sq(D) * ( \
+	long double q = (0.1) * sq(D) * ( \
 		(J0_EMF(omega_neigh - omega_obs, taus, S2s, tauf, S2f)) \
 		 + 3 * (J0_EMF(omega_obs, taus, S2s, tauf, S2f)) \
 		  + 6 * (J0_EMF(omega_neigh + omega_obs, taus, S2s, tauf, S2f)) \
 	  );
+	return (double) q;
 }
     
 
@@ -47,7 +48,7 @@ inline double GAF_CSA_R2(long double omega, \
 						 	long double, \
 						 	long double)\
 						) {
-	return ( \
+	return (double) ( \
   		(1/45.) * (double) D2 * ( \
   			(2/3.) * J_SD(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
   			(2/3.) * J_SD(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
@@ -64,7 +65,7 @@ inline double GAF_CSA_R2(long double omega, \
  * R1p = 0.5*R1 + R1delta
  */
 inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, double w1, double wr, long double taus, long double S2s, long double tauf, long double S2f, double D) {
-	return (\
+	return (double) (\
   		(1/20.) * sq(D) * (\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
@@ -101,8 +102,8 @@ inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, dou
  */
 int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * S2[], int length,  int mode) {
 	int l, m, mp, k, kp, i;
-	double complex * Amp = (double complex *) malloc(sizeof(double complex) * length);
-	double complex temp, ttemp;
+	long double complex * Amp = (long double complex *) malloc(sizeof(double complex) * (long unsigned int) length);
+	long double complex temp, ttemp;
 	for (i = 0; i < length; i++) {
 		Amp[i] = 0;
 	}
@@ -113,15 +114,15 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 	double lexp, kexp, mexp;
 	for (l = -2; l <= 2; l++) {
 		lsqsum = sq_i(l);
-		lexp = -(sq(sig[1]) * lsqsum);
+		lexp = (double) -(sq(sig[1]) * lsqsum);
 		for (m = -2; m <= 2; m++) {
 			for (mp = -2; mp <= 2; mp++) {
 				msqsum = sq_i(m) + sq_i(mp);
-				mexp = -(sq(sig[2]) * msqsum/2.);
+				mexp = (double) -(sq(sig[2]) * msqsum/2.);
 				for (k = -2; k <= 2; k++) {
 					for (kp = -2; kp <= 2; kp++) {
 						ksqsum = sq_i(k) + sq_i(kp);
-						kexp = -(sq(sig[0]) * ksqsum / 2.);
+						kexp = (double) -(sq(sig[0]) * ksqsum / 2.);
 						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
 						temp = 1;
 						
@@ -166,8 +167,8 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 	for (i = 0;i < length; i++) {
 		Amp[i] = Amp[i] * (4 * M_PI / 5.);
 		switch (mode) {
-			case MODE_REAL: *S2[i] = creal(Amp[i]); break;
-			case MODE_IMAG: *S2[i] = cimag(Amp[i]); break;
+			case MODE_REAL: *S2[i] = creal((complex double) Amp[i]); break;
+			case MODE_IMAG: *S2[i] = cimag((complex double) Amp[i]); break;
 			default: break;
 		}
 	}
@@ -235,7 +236,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	
 
 	/* N CSA relaxation contribution */
-	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
+	long double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
 	long double J1 = 0;
 	
 
@@ -245,11 +246,11 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	
 
 	J1 = J0_EMF(omega_15N, taus, S2NCSAxs, tauf, S2NCSAxf);
-	R1CSAx = (double) (1/15.) * d2x * J1; // from Bremi1997
+	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
 	J1 = J0_EMF(omega_15N, taus, S2NCSAys, tauf, S2NCSAyf);
-	R1CSAy = (double) (1/15.) * d2y * J1;
+	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF_CC(omega_15N, taus, S2NCSAxys, tauf, S2NCSAxyf);
-	R1CSAxy = (double) (1/15.) * d2xy * J1;
+	R1CSAxy = (1/15.) * d2xy * J1;
 	
 	/** Eq A30, Bremi1997 */
 	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
@@ -263,7 +264,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CNs, tauf, S2CNf, D_CN);
 	R1CaN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_CaN);
 
-	return (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
+	return (double) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
 /**
@@ -404,7 +405,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 	
 	/* N CSA relaxation contribution */
-	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	long double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
 	long double J1 = 0;
 
 
@@ -413,11 +414,11 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	omega_15N *= T_DOWN;
 	
 	J1 = J0_EMF(omega_13C, taus, S2CSAxs, tauf, S2CSAxf);
-	R1CSAx = (double) (1/15.) * d2x * J1; // from Bremi1997
+	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
 	J1 = J0_EMF(omega_13C, taus, S2CSAys, tauf, S2CSAyf);
-	R1CSAy = (double) (1/15.) * d2y * J1;
+	R1CSAy = (1/15.) * d2y * J1;
 	J1 = J0_EMF_CC(omega_13C, taus, S2CSAxys, tauf, S2CSAxyf);
-	R1CSAxy = (double) (1/15.) * d2xy * J1;
+	R1CSAxy = (1/15.) * d2xy * J1;
 	R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
 	
 	
@@ -428,7 +429,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus
 	R1CN = GAF_Dipolar_R1(omega_13C, omega_15N, taus, S2CNs, tauf, S2CNf, D_CN);
 	R1CC = GAF_Dipolar_R1(omega_13C, omega_13C + wCOCa, taus, S2CCs, tauf, S2CCf, D_CC);
 
-	return (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
+	return (double) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
 }
 
 /**

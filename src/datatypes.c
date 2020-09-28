@@ -281,17 +281,17 @@ int sq_i(int x) {
 void calculate_Y2(struct Orient * or, double theta, double phi) {
 	theta += or->theta;
 	phi += or->phi;
-	or->Y2[0] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(theta), 2.)) * cexpl(2 * I * phi);
-	or->Y2[1] = (-1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(theta) * cosl(theta) * cexpl(I * phi);
-	or->Y2[2] = (1/4.) * (sqrtl(5. / M_PI)) * (3 * powl(cosl(theta), 2) - 1);
-	or->Y2[3] = (1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(theta) * cosl(theta) * cexpl(-I * phi);
-	or->Y2[4] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(theta), 2.)) * cexpl(-2 * I * phi);
+	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(2 * I * phi);
+	or->Y2[1] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(I * phi);
+	or->Y2[2] = (1/4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(theta), 2) - 1);
+	or->Y2[3] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(-I * phi);
+	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(-2 * I * phi);
 
-	or->Y2c[0] = conjl(or->Y2[0]);
-	or->Y2c[1] = conjl(or->Y2[1]);
-	or->Y2c[2] = conjl(or->Y2[2]);
-	or->Y2c[3] = conjl(or->Y2[3]);
-	or->Y2c[4] = conjl(or->Y2[4]);
+	or->Y2c[0] = conj(or->Y2[0]);
+	or->Y2c[1] = conj(or->Y2[1]);
+	or->Y2c[2] = conj(or->Y2[2]);
+	or->Y2c[3] = conj(or->Y2[3]);
+	or->Y2c[4] = conj(or->Y2[4]);
 	return;
 
 }

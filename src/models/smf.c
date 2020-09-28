@@ -36,7 +36,7 @@ double SMF_Dipolar_R1(long double omega_X, long double omega_Y, long double d, l
 	Jcomp += J0_SMF(omega_Y - omega_X, tau, S2);
 	Jcomp += 3. * J0_SMF(omega_X, tau, S2);
 	Jcomp += 6. * J0_SMF(omega_Y + omega_X, tau, S2);
-	return 0.1 * d * d * Jcomp;
+	return (double) (0.1 * d * d * Jcomp);
 }
 
 
@@ -61,7 +61,7 @@ double SMF_Dipolar_R2(long double omega_X, long double omega_Y, long double d, l
 	JD += J0_SMF(omega_Y - omega_X, tau, S2);
 	JD += 6 * J0_SMF(omega_Y, tau, S2);
 	JD += 6 * J0_SMF(omega_Y + omega_X, tau, S2);
-	return (1/20.) * d * d * JD;
+	return (double) ((1/20.) * d * d * JD);
 }
 
 
@@ -94,14 +94,14 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	long double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
 	long double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
 	long double omega_L;
-	long double d = 0, d2tot;
+	long double d2tot;
 	long double wCOCa = 120 * omega_13C * 0.000001;
 	double *csa;
-	double R1D = 0, R1CSA = 0;
+	long double R1D = 0, R1CSA = 0;
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;
-		d = -D_NH;
+		//d = -D_NH;
 		// double SMF_Dipolar_R1(long double omega_X, long double omega_Y, long double d, long double tau, long double S2) {
 		R1D += SMF_Dipolar_R1(omega_15N, omega_1H, -D_NH, tau, S2); // N-H
 		R1D += SMF_Dipolar_R1(omega_15N, omega_1H, -D_HNr, tau, S2); // N-Hr
@@ -114,7 +114,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		R1D += SMF_Dipolar_R1(omega_13C, omega_1H, -D_CHr, tau, S2); // C-Hr
 		R1D += SMF_Dipolar_R1(omega_13C, omega_15N, -D_CN, tau, S2); // C-N
 		R1D += SMF_Dipolar_R1(omega_13C, omega_13C + wCOCa, -D_CC, tau, S2); // C-C
-		d = -D_CH;
+		//d = -D_CH;
 	} else {
 		printf("Incorrect mode.\n");
 		return -1;
@@ -130,7 +130,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	
 	R1D = R1D * T_DOWN;
 	R1CSA = R1CSA * T_DOWN;
-	return R1D + R1CSA;
+	return (double) R1D + (double) R1CSA;
 }
 
 
@@ -165,7 +165,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	long double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
 	long double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
 	long double omega_L;
-	long double d, d2tot;
+	long double d2tot;
 	double *csa;
 	long double R2D = 0, R2CSA = 0;
 	long double wCOCa = 120 * omega_13C * 0.000001;
@@ -183,7 +183,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;
-		d = -D_NH;
+		//d = -D_NH;
 		R2D += SMF_Dipolar_R2(omega_15N, omega_1H, -D_NH, tau, S2, J0sum); // N-H
 		R2D += SMF_Dipolar_R2(omega_15N, omega_1H, -D_HNr, tau, S2, J0sum); // N-Hr
 		R2D += SMF_Dipolar_R2(omega_15N, omega_13C, -D_CN, tau, S2, J0sum); // N-C
@@ -195,7 +195,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		R2D += SMF_Dipolar_R2(omega_13C, omega_1H, -D_CHr, tau, S2, J0sum); // C-Hr
 		R2D += SMF_Dipolar_R2(omega_13C, omega_15N, -D_CN, tau, S2, J0sum); // C-N
 		R2D += SMF_Dipolar_R2(omega_13C, omega_13C + wCOCa, -D_CC, tau, S2, J0sum); // C-C
-		d = -D_CH;
+		//d = -D_CH;
 	} else {
 		printf("Incorrect mode.\n");
 		return -1;
@@ -211,5 +211,5 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 	R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0_SMF(omega_L, tau, S2));
 	R2D *= T_DOWN;
 	R2CSA *= T_DOWN;
-	return R2D + R2CSA;
+	return (double) R2D + (double) R2CSA;
 }
