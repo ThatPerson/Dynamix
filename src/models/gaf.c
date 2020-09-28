@@ -102,7 +102,7 @@ inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, dou
  */
 int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * S2[], int length,  int mode) {
 	int l, m, mp, k, kp, i;
-	long double complex * Amp = (long double complex *) malloc(sizeof(double complex) * (long unsigned int) length);
+	long double complex * Amp = (long double complex *) malloc(sizeof(long double complex) * (long unsigned int) length);
 	long double complex temp, ttemp;
 	for (i = 0; i < length; i++) {
 		Amp[i] = 0;
