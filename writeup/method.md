@@ -44,7 +44,7 @@ Where $\nu$ and $\nu$ refer to the dipolar vector of pricipal axis of the CSA te
 
 The order parameters under gaussian axial fluctuations were given by the following expression from Lienin 1998[@Lienin1998].
 
-$$ S^{2}_{\mu\nu} = \frac{4\pi}{5} \sum_{l,k,k',m,m' = -2}^{2} (-i)^{k-k'} \exp(-\frac{\sigma_{\alpha}^{2} (k^2 + k'^2)}{2} - \sigma_{\beta}^{2} l^2 - \frac{\sigma_{\gamma}^{2} (m^{2} + m'^{2})}{2}) \times d_{kl}^{(2)}(\pi/2) d_{k'l}^{(2)}(\pi/2) d_{mk}^{(2)}(\pi/2) d_{m'k'}^{(2)}(\pi/2) Y_{2m}(e^{pp}_{\mu}) Y^*_{2m')(e^{pp}_{\nu}) $$
+$$ S^{2}_{\mu\nu} = \frac{4\pi}{5} \sum_{l,k,k',m,m' = -2}^{2} (-i)^{k-k'} \exp(-\frac{\sigma_{\alpha}^{2} (k^2 + k'^2)}{2} - \sigma_{\beta}^{2} l^2 - \frac{\sigma_{\gamma}^{2} (m^{2} + m'^{2})}{2}) \times d_{kl}^{(2)}(\pi/2) d_{k'l}^{(2)}(\pi/2) d_{mk}^{(2)}(\pi/2) d_{m'k'}^{(2)}(\pi/2) Y_{2m}(e^{pp}_{\mu}) Y^*_{2m'}(e^{pp}_{\nu})  $$
 
 In this work we have taken the angle pairs $e^{pp}_{\mu}$ as in Lienin et al.[@Lienin1998]. In order to validate this approach we have also utilised the model allowing the axes attached to the peptide plane to rotate (not shown), however this was found to have no significant effect.
 
