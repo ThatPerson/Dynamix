@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
+
+
 #define MOD_UNDEFINED	0
 #define MOD_SMF 		1						///< Simple Model Free
 #define MOD_EMF 		2						///< Extended Model Free using S2 dipolar
@@ -16,6 +18,14 @@
 #define MOD_GAFT 		8						///< Gaussian Axial Fluctuations model with Temperature Dependence
 #define MOD_EGAF		9						///< 3D GAF for slow motions, EMF for fast motions
 #define MOD_EGAFT		10						///< 3D GAF for slow motions, EMF for fast motions, temperature dependence.
+
+/*
+ * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
+ * are allowed to vary.
+ */
+#define VARIANT_A		0
+#define INVARIANT_A		1			
+
 
 #define DATA_S2NH		0
 #define DATA_S2CH		1
@@ -43,6 +53,8 @@
 #define OR_CCSAxx		11
 #define OR_CCSAyy		12
 #define OR_CCSAzz		13
+#define N_OR			14
+#define OR_LIMIT		0.01
 
 
 #define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
@@ -117,6 +129,7 @@ struct Model {
 	struct Residue * residues;
 	unsigned int n_residues;
 	unsigned int nthreads;
+	unsigned int or_variation; // VARIANT_A or INVARIANT_A.
 	int error_mode;
 };
 
@@ -246,6 +259,7 @@ struct rrargs {
 	struct Residue * resid;
 	unsigned int model;
 	unsigned int n_iter;
+	unsigned int or_variation;
 	char outputdir[255];
 };
 
@@ -264,19 +278,20 @@ int sq_i(int x) {
  *  Orientation vector
  * @return NULL
  */
-void calculate_Y2(struct Orient * or) {
-	or->Y2[0] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(or->theta), 2.)) * cexpl(2 * I * or->phi);
-	or->Y2[1] = (-1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(or->theta) * cosl(or->theta) * cexpl(I * or->phi);
-	or->Y2[2] = (1/4.) * (sqrtl(5. / M_PI)) * (3 * powl(cosl(or->theta), 2) - 1);
-	or->Y2[3] = (1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(or->theta) * cosl(or->theta) * cexpl(-I * or->phi);
-	or->Y2[4] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(or->theta), 2.)) * cexpl(-2 * I * or->phi);
+void calculate_Y2(struct Orient * or, double theta, double phi) {
+	theta += or->theta;
+	phi += or->phi;
+	or->Y2[0] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(theta), 2.)) * cexpl(2 * I * phi);
+	or->Y2[1] = (-1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(theta) * cosl(theta) * cexpl(I * phi);
+	or->Y2[2] = (1/4.) * (sqrtl(5. / M_PI)) * (3 * powl(cosl(theta), 2) - 1);
+	or->Y2[3] = (1/2.) * (sqrtl(15. / (2 * M_PI))) * sinl(theta) * cosl(theta) * cexpl(-I * phi);
+	or->Y2[4] = (1/4.) * (sqrtl(15. / (2 * M_PI))) * (powl(sinl(theta), 2.)) * cexpl(-2 * I * phi);
 
 	or->Y2c[0] = conjl(or->Y2[0]);
 	or->Y2c[1] = conjl(or->Y2[1]);
 	or->Y2c[2] = conjl(or->Y2[2]);
 	or->Y2c[3] = conjl(or->Y2[3]);
 	or->Y2c[4] = conjl(or->Y2[4]);
-
 	return;
 
 }

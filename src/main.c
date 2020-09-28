@@ -29,6 +29,7 @@ void * run_residue(void *input) {
 	printf("\tThread %d alive...\n", i + 1);
 	struct Residue * resid = ((struct rrargs*)input)->resid;
 	unsigned int model = ((struct rrargs*)input)->model;
+	unsigned int or_variation = ((struct rrargs*)input)->or_variation;
 	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	char outputdir[255];
 	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
@@ -58,6 +59,8 @@ void * run_residue(void *input) {
 		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
+	if (or_variation == VARIANT_A)
+		params += 2; // theta, phi
 	//printf("%d\n", params);
 	long double *opts;
 	opts = (long double *) malloc (sizeof(long double) * params);
@@ -200,8 +203,16 @@ void * run_residue(void *input) {
 			opts[7] = (rand()%60000)/1.;
 		}
 
+		if (or_variation == VARIANT_A) {
+			/* eg for MOD_GAF, params = 8 + 2. opts[7] is full, so we want to put
+			 * theta in opts[params-2] and phi in opts[params-1]; 
+			 */
+			opts[params - 2] = 0; // theta
+			opts[params - 1] = 0; // phi
+		}
+		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
-		double val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
+		double val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
 		if (val >= 1000000) {
 			val = -1;
 			for (k = 0; k < params; k++) {
@@ -336,6 +347,7 @@ int main(int argc, char * argv[]) {
 				continue;
 			RRA[i].resid = &(m.residues[current_residue + i]);
 			RRA[i].model = m.model;
+			RRA[i].or_variation = m.or_variation;
 			RRA[i].n_iter = m.n_iter;
 			strcpy(RRA[i].outputdir, m.outputdir);
 			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
@@ -380,7 +392,10 @@ int main(int argc, char * argv[]) {
 		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
-
+	if (m.or_variation == VARIANT_A)
+		params += 2;
+	
+	
 	if (m.error_mode == 1) {
 		sprintf(filename, "%s/errors.dat", m.outputdir);
 		ep = fopen(filename, "w");
@@ -468,7 +483,7 @@ int main(int argc, char * argv[]) {
 			fprintf(ep, "\n");
 		}
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
-		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, file);
+		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, m.or_variation, file);
 		
 		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL) {
 			// Print out 'effective S2' values.

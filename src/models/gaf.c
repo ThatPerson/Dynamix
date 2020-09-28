@@ -144,6 +144,7 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 								else
 									ttemp *= -1.;
 							} else {
+								//printf("Going long route...\n");
 								/* Other wise we have to go the long route... */
 								ttemp *= cpow(-1 * I, k - kp);
 							}
@@ -152,6 +153,7 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 							
 							ttemp *= A[i]->Y2[m+2] * B[i]->Y2c[mp+2];
 							Amp[i] += ttemp;
+							//printf("Amp %d %f\n", i, Amp[i]);
 						}
 						//temp *= A->Y2[m+2] * B->Y2c[mp+2];
 						//Amp += temp;
@@ -165,7 +167,7 @@ int GAF_S2(long double sig[3], struct Orient ** A, struct Orient ** B, double * 
 		Amp[i] = Amp[i] * (4 * M_PI / 5.);
 		switch (mode) {
 			case MODE_REAL: *S2[i] = creal(Amp[i]); break;
-			case MODE_IMAG: *S2[i] = creal(Amp[i]); break;
+			case MODE_IMAG: *S2[i] = cimag(Amp[i]); break;
 			default: break;
 		}
 	}

@@ -72,6 +72,7 @@ void * calc_errors(void *input) {
 	printf("\tThread %d alive...\n", i+1);
 	struct Residue * resid = ((struct rrargs*)input)->resid;
 	unsigned int model = ((struct rrargs*)input)->model;
+	unsigned int or_variation = ((struct rrargs*)input)->or_variation;
 	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	//double optim = resid->min_val;
 	//char outputdir[255];
@@ -92,6 +93,9 @@ void * calc_errors(void *input) {
 		case MOD_EGAFT: params = 8; break;
 		default: params = 0; break;
 	}
+	if (or_variation == VARIANT_A)
+                params += 2; // theta, phi
+
 	//printf("%d\n", params);
 	long double *opts;
 	opts = (long double *) malloc (sizeof(long double) * params);
@@ -130,7 +134,7 @@ void * calc_errors(void *input) {
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
-		simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model);
+		simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
 
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
