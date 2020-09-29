@@ -183,7 +183,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 			if (sigs[i] < 0 || sigs[i] > 0.52360)
 				(*violations)++;
 		}
-		if (S2f < 0 || S2f > 0)
+		if (S2f < 0 || S2f < 0)
 			(*violations)++;
 		
 		switch (relax->type) {
@@ -249,6 +249,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	}
 	
 	chisq += 10000000 * violations;
+
 	
 	if (model == MOD_DEMF || model == MOD_DEMFT) {
 		long double S2s = opts[1];
@@ -285,6 +286,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		chisq += ((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
 		chisq += ((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
 	}
+	
 	return chisq; 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
