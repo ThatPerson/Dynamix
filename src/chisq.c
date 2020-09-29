@@ -183,7 +183,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 			if (sigs[i] < 0 || sigs[i] > 0.52360)
 				(*violations)++;
 		}
-		if (S2f < 0 || S2f < 0)
+		if (S2f < 0 || S2f > 1)
 			(*violations)++;
 		
 		switch (relax->type) {
