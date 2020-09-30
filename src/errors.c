@@ -133,7 +133,7 @@ void * calc_errors(void *input) {
 			//resid->relaxation[k].R = norm_rand(resid->temp_relaxation[k].R, (resid->temp_relaxation[k].Rerror)/2.);
 			//printf("%f, %f -> %f \n", resid->temp_relaxation[k].R, resid->temp_relaxation[k].Rerror, resid->relaxation[k].R);
 			/* Rerror is Monte-Carlo calculated 2 standard deviations; norm_rand takes 1 std */
-			resid->relaxation[k].Rerror = -1.;
+			//resid->relaxation[k].Rerror = -1.;
 		}
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
