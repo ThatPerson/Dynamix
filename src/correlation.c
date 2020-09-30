@@ -14,11 +14,17 @@
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
-
 #include <time.h>
 
 
-
+/**
+ * Reads in output data file (eg final.dat) and repopulates m with the parameters
+ * @params *filename
+ *  Filename containing parameters
+ * @params *m
+ *  Pointer to model to be populated
+ * @return 1 on success, -1 on failure.
+ */
 int read_data_file(char *filename, struct Model * m) {
 	/* This function reads a *.dx file as laid out in the docs.
 	 * It reads in parameters to the struct m, and then calls
@@ -93,6 +99,21 @@ int read_data_file(char *filename, struct Model * m) {
 
 /** 
  * outputs correlation function. Note that T and dT are both in nanoseconds (as this is the internal representation).
+ * @params *fn
+ *  Filename to write to
+ * @params T
+ *  Time (in ns) to run to.
+ * @params dT
+ *  Timestep (in ns) between outputs
+ * @params taus
+ *  Slow timescale in nanoseconds
+ * @params S2s
+ *  Slow motion order parameter
+ * @params tauf
+ *  Fast motion timescale in ns
+ * @params S2f
+ *  Fast motion order parameter
+ * @return 1 on success, -1 on failure
  */
 int write_correlation_function_emf(char * fn, double T, double dT, long double taus, long double S2s, long double tauf, long double S2f) {
 	long double S2 = S2f * S2s;
@@ -121,6 +142,17 @@ int write_correlation_function_emf(char * fn, double T, double dT, long double t
 
 /** 
  * outputs correlation function. Note that T and dT are both in nanoseconds (as this is the internal representation).
+ * @params *fn
+ *  Filename to write to
+ * @params T
+ *  Time (in ns) to run to.
+ * @params dT
+ *  Timestep (in ns) between outputs
+ * @params tau
+ *  Timescale in nanoseconds
+ * @params S2
+ *  Motion order parameter
+ * @return 1 on success, -1 on failure
  */
 int write_correlation_function_smf(char * fn, double T, double dT, long double tau, long double S2) {
 	FILE * fp;
@@ -146,7 +178,13 @@ int write_correlation_function_smf(char * fn, double T, double dT, long double t
 }
 
 /**
- * 
+ * Runs correlation fitting. 
+ * @opts -sSYSTEMFILE.dx
+ *  Filename of system file (to obtain orientations, etc)
+ * @opts -oOUTPUTFOLDER
+ *  Folder to put all correlation plots into
+ * @opts -fFINAL.DAT
+ *  File containing final.dat filled params
  */
 int main(int argc, char * argv[]) {
 
