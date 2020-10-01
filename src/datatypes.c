@@ -54,7 +54,7 @@
 #define OR_CCSAyy		12
 #define OR_CCSAzz		13
 #define N_OR			14
-#define OR_LIMIT		0.01
+#define OR_LIMIT		0.3
 
 
 #define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.

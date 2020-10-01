@@ -236,7 +236,7 @@ int main(int argc, char * argv[]) {
 	long double S2s, S2f;
 	long double tau, taus, tauf;
 	long double temp = 300;
-	double T = 100; // 1000
+	double T = 200; // 1000
 	double dT = 0.01; // 0.01
 	double theta, phi;
 	char fn_NH[255];
