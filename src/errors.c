@@ -110,6 +110,12 @@ void * calc_errors(void *input) {
 	int p = 0;
 	int ignore = -1;
 	double temp_R = 0;
+
+	// make backups of order parameters.
+	resid->S2NHb = resid->S2NH;
+	resid->S2CHb = resid->S2CH;
+	resid->S2CNb = resid->S2CN;
+
 	for (l = 0; l < n_iter; l++) {
 		if (resid->ignore == 1) {
 			return NULL;
@@ -135,6 +141,11 @@ void * calc_errors(void *input) {
 			/* Rerror is Monte-Carlo calculated 2 standard deviations; norm_rand takes 1 std */
 			resid->relaxation[k].Rerror = resid->temp_relaxation[k].Rerror;
 		}
+
+		resid->S2NH = norm_rand(resid->S2NHb, (resid->S2NHe / 2.)); // divided by two to get 1 standard deviation
+		resid->S2CH = norm_rand(resid->S2CHb, (resid->S2CHe / 2.));
+		resid->S2CN = norm_rand(resid->S2CNb, (resid->S2CNe / 2.));
+
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
@@ -154,6 +165,12 @@ void * calc_errors(void *input) {
 		resid->relaxation = resid->temp_relaxation;
 		resid->temp_relaxation = NULL;
 	}
+
+	// restore of order parameters.
+	resid->S2NH = resid->S2NHb;
+	resid->S2CH = resid->S2CHb;
+	resid->S2CN = resid->S2CNb;
+
 	resid->error_calcs = p;
 	free(opts);
 	return NULL;

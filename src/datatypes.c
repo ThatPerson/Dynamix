@@ -153,8 +153,12 @@ struct Orient {
 
 /** @struct Residue
  * Struct defining a residue
- * @var Residue::S2_dipolar
- *  Dipolar order parameter; used in EMF analysis
+ * @var Residue::S2XY
+ *  Dipolar order parameter between X and Y
+ * @var Residue::S2XYe
+ *  Error in dipolar order parameter, twice standard deviation.
+ * @var Residue::S2XYb
+ *  Backup copy of order parameter for error calculation.
  * @var Residue::csisoN
  *  Isotropic chemical shift component for amide nitrogen.
  * @var Residue::csisoC
@@ -191,6 +195,7 @@ struct Orient {
 struct Residue {
 	double S2NH, S2CC, S2CH, S2CN;
 	double S2NHe,S2CCe,S2CHe,S2CNe;
+	double S2NHb, S2CCb, S2CHb, S2CNb; // order parameter backups for error calculation.
 	double csisoN;
 	double csisoC;
 	double csaN[3];
