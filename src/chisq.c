@@ -283,8 +283,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 		/* 100 weighting for order parameters */
 		chisq += 100*((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
-		chisq += 100*((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
-		chisq += 100*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
+	//	chisq += 100*((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
+	//	chisq += 100*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
 	}
 	
 	return chisq; 
