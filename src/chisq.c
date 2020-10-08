@@ -248,7 +248,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		chisq += ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
 	}
 	
-	chisq += 10000000 * violations;
+	chisq += 100000 * violations;
 
 	
 	if (model == MOD_DEMF || model == MOD_DEMFT) {
@@ -256,7 +256,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		long double S2f = opts[3];
 		long double S2NH = S2s * S2f;
 		
-		chisq += 100*((pow(resid->S2NH - (double) S2NH, 2.)) / pow(resid->S2NHe, 2.));
+		chisq += ((pow(resid->S2NH - (double) S2NH, 2.)) / pow(resid->S2NHe, 2.));
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
@@ -269,9 +269,9 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 		GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
 		/* 100 weighting for order parameters */
-		chisq += 100*((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
-		chisq += 100*((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
-		chisq += 100*((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
+		chisq += ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
+		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
+		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		double S2f = (double) opts[5];
@@ -281,10 +281,10 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
 		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
-		/* 100 weighting for order parameters */
-		chisq += 100*((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
-	//	chisq += 100*((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
-	//	chisq += 100*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
+		/* 100 weghting for order parameters */
+		chisq += ((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
+	//	chisq += 10*((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
+	//	chisq += 10*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
 	}
 	
 	return chisq; 
