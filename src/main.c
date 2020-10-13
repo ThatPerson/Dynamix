@@ -213,7 +213,7 @@ void * run_residue(void *input) {
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
 		double val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
-		if (val >= 1000000) {
+		if (val >= 1000000 || val < 0) {
 			val = -1;
 			for (k = 0; k < params; k++) {
 				opts[k] = -1;
