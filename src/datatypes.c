@@ -286,11 +286,18 @@ int sq_i(int x) {
 void calculate_Y2(struct Orient * or, double theta, double phi) {
 	theta += or->theta;
 	phi += or->phi;
-	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(2 * I * phi);
-	or->Y2[1] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(I * phi);
+
+	/* or->Y2[0] is Y2 -2
+	   or->Y2[1] is Y2 -1
+	   or->Y2[2] is Y2 0
+	   or->Y2[3] is Y2 1
+	   or->Y2[4] is Y2 2 */
+
+	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(2 * I * phi);
+	or->Y2[3] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(I * phi);
 	or->Y2[2] = (1/4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(theta), 2) - 1);
-	or->Y2[3] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(-I * phi);
-	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(-2 * I * phi);
+	or->Y2[1] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(-I * phi);
+	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(-2 * I * phi);
 
 	or->Y2c[0] = conj(or->Y2[0]);
 	or->Y2c[1] = conj(or->Y2[1]);
@@ -314,37 +321,40 @@ void initialise_dwig(void) {
 	// 2  0
 	// 3  1
 	// 4  2
+
+	// d[m' + 2][m + 2]
+
 	long double cosp = cosl(HALF_PI);
 	long double sinp = sinl(HALF_PI);
-	Dwig[0][0] = powl(cosl(HALF_PI/2.), 4);
-	Dwig[1][0] = (-1/2.) * (1 + cosp) * sinp;
-	Dwig[2][0] = sqrtl(3/8.) * powl(sinp, 2);
-	Dwig[3][0] = (1/2.) * sinp * (cosp - 1);
-	Dwig[4][0] = powl(sinl(HALF_PI/2.), 4);
+	Dwig[0][0] = powl(cosl(HALF_PI/2.), 4); // -2 -2 
+	Dwig[1][0] = (-1/2.) * (1 + cosp) * sinp; // -1 -2
+	Dwig[2][0] = sqrtl(3/8.) * powl(sinp, 2); // 0 -2
+	Dwig[3][0] = (1/2.) * sinp * (cosp - 1); // 1 -2
+	Dwig[4][0] = powl(sinl(HALF_PI/2.), 4); // 2 -2
 
-	Dwig[0][1] = (1/2.) * (1 + cosp) * sinp;
-	Dwig[1][1] = powl(cosp, 2.) - (1/2.) * (1 - cosp);
-	Dwig[2][1] = -sqrtl(3/8.) * sinl(HALF_PI * 2.);
-	Dwig[3][1] = (1/2.) * (1 + cosp) - powl(cosp, 2);
-	Dwig[4][1] = (1/2.) * (cosp - 1) * sinp;
+	Dwig[0][1] = (1/2.) * (1 + cosp) * sinp; // -2 -1
+	Dwig[1][1] = powl(cosp, 2.) - (1/2.) * (1 - cosp); // -1 -1
+	Dwig[2][1] = -sqrtl(3/8.) * sinl(HALF_PI * 2.); // 0 -1
+	Dwig[3][1] = (1/2.) * (1 + cosp) - powl(cosp, 2); // 1 -1
+	Dwig[4][1] = (1/2.) * (cosp - 1) * sinp; // 2 -1
 
-	Dwig[0][2] = sqrtl(3/8.) * powl(sinp, 2);
-	Dwig[1][2] = sqrtl(3/2.) * sinp * cosp;
-	Dwig[2][2] = (1/2.) * (3 * powl(cosp, 2) - 1);
-	Dwig[3][2] = -sqrtl(3/2.) * sinp * cosp;
-	Dwig[4][2] = sqrtl(3/8.) * powl(sinp, 2);
+	Dwig[0][2] = sqrtl(3/8.) * powl(sinp, 2); // -2 0
+	Dwig[1][2] = sqrtl(3/2.) * sinp * cosp; // -1 0
+	Dwig[2][2] = (1/2.) * (3 * powl(cosp, 2) - 1); // 0 0
+	Dwig[3][2] = -sqrtl(3/2.) * sinp * cosp; // 1 0
+	Dwig[4][2] = sqrtl(3/8.) * powl(sinp, 2);  // 2 0
 
-	Dwig[0][3] = -(1/2.) * (cosp - 1) * sinp;
-	Dwig[1][3] = (1/2.) * (1 + cosp) - powl(cosp, 2);
-	Dwig[2][3] = sqrtl(3/8.) * sinl(HALF_PI * 2.);
-	Dwig[3][3] = powl(cosp, 2) - (1/2.)*(1-cosp);
-	Dwig[4][3] = (-1/2.) * (1 + cosp) * sinp;
+	Dwig[0][3] = -(1/2.) * (cosp - 1) * sinp; // -2 1 
+	Dwig[1][3] = (1/2.) * (1 + cosp) - powl(cosp, 2); // -1 1
+	Dwig[2][3] = sqrtl(3/8.) * sinl(HALF_PI * 2.); // 0 1
+	Dwig[3][3] = powl(cosp, 2) - (1/2.)*(1-cosp); // 1 1
+	Dwig[4][3] = (-1/2.) * (1 + cosp) * sinp; // 2 1
 
-	Dwig[0][4] = powl(sinl(HALF_PI/2.), 4);
-	Dwig[1][4] = (-1/2.) * (cosp - 1) * sinp;
-	Dwig[2][4] = sqrtl(3/8.) * powl(sinp, 2);
-	Dwig[3][4] = (1/2.) * sinp * (cosp + 1);
-	Dwig[4][4] = powl(cosl(HALF_PI / 2.), 4);
+	Dwig[0][4] = powl(sinl(HALF_PI/2.), 4); // -2 2
+	Dwig[1][4] = (-1/2.) * (cosp - 1) * sinp; // -1 2
+	Dwig[2][4] = sqrtl(3/8.) * powl(sinp, 2); // 0 2
+	Dwig[3][4] = (1/2.) * sinp * (cosp + 1); // 1 2  m' = 1, m = 2
+	Dwig[4][4] = powl(cosl(HALF_PI / 2.), 4); // 2 2
 	return;
 }
 
