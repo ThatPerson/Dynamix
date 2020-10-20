@@ -60,7 +60,7 @@ void * run_residue(void *input) {
 		default: params = 0; break;
 	}
 	if (or_variation == VARIANT_A)
-		params += 2; // theta, phi
+		params += 3; // alpha, beta, gamma
 	//printf("%d\n", params);
 	long double *opts;
 	opts = (long double *) malloc (sizeof(long double) * params);
@@ -204,11 +204,12 @@ void * run_residue(void *input) {
 		}
 
 		if (or_variation == VARIANT_A) {
-			/* eg for MOD_GAF, params = 8 + 2. opts[7] is full, so we want to put
-			 * theta in opts[params-2] and phi in opts[params-1]; 
+			/* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
+			 * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
 			 */
-			opts[params - 2] = 0; // theta
-			opts[params - 1] = 0; // phi
+			opts[params - 3] = 0; // alpha
+			opts[params - 2] = 0; // beta
+			opts[params - 1] = 0; // gamma
 		}
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
@@ -251,7 +252,8 @@ int main(int argc, char * argv[]) {
 
 	/* Initialisation */
 	srand((unsigned int)time(NULL));
-	initialise_dwig();
+	initialise_dwig(HALF_PI, Dwig);
+
 
 	char system_file[255] = "";
 	unsigned int i;
@@ -393,7 +395,7 @@ int main(int argc, char * argv[]) {
 		default: params = 0; break;
 	}
 	if (m.or_variation == VARIANT_A)
-		params += 2;
+		params += 3;
 	
 	
 	if (m.error_mode == 1) {

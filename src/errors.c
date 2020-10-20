@@ -94,7 +94,7 @@ void * calc_errors(void *input) {
 		default: params = 0; break;
 	}
 	if (or_variation == VARIANT_A)
-                params += 2; // theta, phi
+                params += 3; // alpha, beta, gamma
 
 	//printf("%d\n", params);
 	long double *opts;

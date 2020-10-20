@@ -125,7 +125,7 @@ int read_pp(struct Model *m, char *filename, unsigned int orient) {
 		resid = resid -1; // index from 0
 		m->residues[resid].orients[orient].theta = theta;
 		m->residues[resid].orients[orient].phi = phi;
-		calculate_Y2(&(m->residues[resid].orients[orient]), 0, 0);
+		calculate_Y2(&(m->residues[resid].orients[orient]));
 	}
 	return 1;
 }

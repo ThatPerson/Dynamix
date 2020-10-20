@@ -54,7 +54,7 @@
 #define OR_CCSAyy		12
 #define OR_CCSAzz		13
 #define N_OR			14
-#define OR_LIMIT		0.3
+#define OR_LIMIT		3.14
 
 
 #define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
@@ -283,21 +283,18 @@ int sq_i(int x) {
  *  Orientation vector
  * @return NULL
  */
-void calculate_Y2(struct Orient * or, double theta, double phi) {
-	theta += or->theta;
-	phi += or->phi;
-
+void calculate_Y2(struct Orient * or) {
 	/* or->Y2[0] is Y2 -2
 	   or->Y2[1] is Y2 -1
 	   or->Y2[2] is Y2 0
 	   or->Y2[3] is Y2 1
 	   or->Y2[4] is Y2 2 */
 
-	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(2 * I * phi);
-	or->Y2[3] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(I * phi);
-	or->Y2[2] = (1/4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(theta), 2) - 1);
-	or->Y2[1] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(theta) * cos(theta) * cexp(-I * phi);
-	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(theta), 2.)) * cexp(-2 * I * phi);
+	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(2 * I * or->phi);
+	or->Y2[3] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(I * or->phi);
+	or->Y2[2] = (1/4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(or->theta), 2) - 1);
+	or->Y2[1] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(-I * or->phi);
+	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(-2 * I * or->phi);
 
 	or->Y2c[0] = conj(or->Y2[0]);
 	or->Y2c[1] = conj(or->Y2[1]);
@@ -311,7 +308,7 @@ void calculate_Y2(struct Orient * or, double theta, double phi) {
 /**
  * Initialises Wigner D matrix in global space. 
  */
-void initialise_dwig(void) {
+void initialise_dwig(double angle, long double Dw[5][5]) {
 	// beta taken as pi/2.
 	/* It could be taken as an argument but hopefully
 	 * doing it this way will mean the compiler will fill it out
@@ -324,37 +321,37 @@ void initialise_dwig(void) {
 
 	// d[m' + 2][m + 2]
 
-	long double cosp = cosl(HALF_PI);
-	long double sinp = sinl(HALF_PI);
-	Dwig[0][0] = powl(cosl(HALF_PI/2.), 4); // -2 -2 
-	Dwig[1][0] = (-1/2.) * (1 + cosp) * sinp; // -1 -2
-	Dwig[2][0] = sqrtl(3/8.) * powl(sinp, 2); // 0 -2
-	Dwig[3][0] = (1/2.) * sinp * (cosp - 1); // 1 -2
-	Dwig[4][0] = powl(sinl(HALF_PI/2.), 4); // 2 -2
+	long double cosp = cosl(angle);
+	long double sinp = sinl(angle);
+	Dw[0][0] = powl(cosl(angle/2.), 4); // -2 -2 
+	Dw[1][0] = (-1/2.) * (1 + cosp) * sinp; // -1 -2
+	Dw[2][0] = sqrtl(3/8.) * powl(sinp, 2); // 0 -2
+	Dw[3][0] = (1/2.) * sinp * (cosp - 1); // 1 -2
+	Dw[4][0] = powl(sinl(angle/2.), 4); // 2 -2
 
-	Dwig[0][1] = (1/2.) * (1 + cosp) * sinp; // -2 -1
-	Dwig[1][1] = powl(cosp, 2.) - (1/2.) * (1 - cosp); // -1 -1
-	Dwig[2][1] = -sqrtl(3/8.) * sinl(HALF_PI * 2.); // 0 -1
-	Dwig[3][1] = (1/2.) * (1 + cosp) - powl(cosp, 2); // 1 -1
-	Dwig[4][1] = (1/2.) * (cosp - 1) * sinp; // 2 -1
+	Dw[0][1] = (1/2.) * (1 + cosp) * sinp; // -2 -1
+	Dw[1][1] = powl(cosp, 2.) - (1/2.) * (1 - cosp); // -1 -1
+	Dw[2][1] = -sqrtl(3/8.) * sinl(angle * 2.); // 0 -1
+	Dw[3][1] = (1/2.) * (1 + cosp) - powl(cosp, 2); // 1 -1
+	Dw[4][1] = (1/2.) * (cosp - 1) * sinp; // 2 -1
 
-	Dwig[0][2] = sqrtl(3/8.) * powl(sinp, 2); // -2 0
-	Dwig[1][2] = sqrtl(3/2.) * sinp * cosp; // -1 0
-	Dwig[2][2] = (1/2.) * (3 * powl(cosp, 2) - 1); // 0 0
-	Dwig[3][2] = -sqrtl(3/2.) * sinp * cosp; // 1 0
-	Dwig[4][2] = sqrtl(3/8.) * powl(sinp, 2);  // 2 0
+	Dw[0][2] = sqrtl(3/8.) * powl(sinp, 2); // -2 0
+	Dw[1][2] = sqrtl(3/2.) * sinp * cosp; // -1 0
+	Dw[2][2] = (1/2.) * (3 * powl(cosp, 2) - 1); // 0 0
+	Dw[3][2] = -sqrtl(3/2.) * sinp * cosp; // 1 0
+	Dw[4][2] = sqrtl(3/8.) * powl(sinp, 2);  // 2 0
 
-	Dwig[0][3] = -(1/2.) * (cosp - 1) * sinp; // -2 1 
-	Dwig[1][3] = (1/2.) * (1 + cosp) - powl(cosp, 2); // -1 1
-	Dwig[2][3] = sqrtl(3/8.) * sinl(HALF_PI * 2.); // 0 1
-	Dwig[3][3] = powl(cosp, 2) - (1/2.)*(1-cosp); // 1 1
-	Dwig[4][3] = (-1/2.) * (1 + cosp) * sinp; // 2 1
+	Dw[0][3] = -(1/2.) * (cosp - 1) * sinp; // -2 1 
+	Dw[1][3] = (1/2.) * (1 + cosp) - powl(cosp, 2); // -1 1
+	Dw[2][3] = sqrtl(3/8.) * sinl(angle * 2.); // 0 1
+	Dw[3][3] = powl(cosp, 2) - (1/2.)*(1-cosp); // 1 1
+	Dw[4][3] = (-1/2.) * (1 + cosp) * sinp; // 2 1
 
-	Dwig[0][4] = powl(sinl(HALF_PI/2.), 4); // -2 2
-	Dwig[1][4] = (-1/2.) * (cosp - 1) * sinp; // -1 2
-	Dwig[2][4] = sqrtl(3/8.) * powl(sinp, 2); // 0 2
-	Dwig[3][4] = (1/2.) * sinp * (cosp + 1); // 1 2  m' = 1, m = 2
-	Dwig[4][4] = powl(cosl(HALF_PI / 2.), 4); // 2 2
+	Dw[0][4] = powl(sinl(angle/2.), 4); // -2 2
+	Dw[1][4] = (-1/2.) * (cosp - 1) * sinp; // -1 2
+	Dw[2][4] = sqrtl(3/8.) * powl(sinp, 2); // 0 2
+	Dw[3][4] = (1/2.) * sinp * (cosp + 1); // 1 2  m' = 1, m = 2
+	Dw[4][4] = powl(cosl(angle / 2.), 4); // 2 2
 	return;
 }
 
@@ -398,6 +395,63 @@ void free_all(struct Model *m) {
 		}
 	}
 	free(m->residues);
+
+	return;
+}
+
+/**
+ * Function to rotate spherical harmonics using Wigner D Matrices. I believe the
+ * angles alpha, beta, gamma are aligned with the alpha, beta and gamma axis for deflections
+ * (beta definitely is, I'm unsure about the others - but I'd assume so?)
+ * @params or
+ *  Pointer to Orient struct to modify.
+ * @params alpha
+ *  Alpha rotation
+ * @params beta
+ *  Beta rotation
+ * @params gamma
+ *  Gamma rotation
+ * @returns Nothing
+ *  Modifies orient inline.
+ */
+void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
+	// the idea should be to run calculate_Y2 _first_, and then this function.
+	// it will take the orient and overwrite it with the rotated vectors.
+
+	long double Dw[5][5];
+
+	initialise_dwig(beta, Dw); // we initialise Dw[][] with the reduced Wigner matrices.
+
+	int ml, mi;
+
+	
+	/* the Wigner D-matrix D^j_{m', m} is e^(-i m' alpha) d^j_{m', m} e^(-i m gamma) */
+
+	double complex Y2b[5]; // we store Y2.
+	int i;
+	double complex alpha_m[5]; // precalculation of the exp(-I * mp * alpha) and exp(-I * m * gamma) parts.
+	double complex gamma_m[5];
+	for (i = 0; i < 5; i++) {
+		Y2b[i] = or->Y2[i];
+		or->Y2[i] = 0;
+		or->Y2c[i] = 0;
+		alpha_m[i] = cexp(-I * (i - 2) * alpha);
+		gamma_m[i] = cexp(-I * (i - 2) * gamma);
+	}
+
+	int m, mp;
+	double complex Dcomp = 0;
+
+	for (mp = -2; mp <= 2; mp++) {
+		for (m = -2; m <= 2; m++) {
+			Dcomp = gamma_m[m+2];
+			Dcomp *= Dw[mp+2][m+2];
+			Dcomp *= alpha_m[mp+2]; 
+			// D^j_{mp, m} = exp(-I * mp * alpha) * d^j_{m'm} * exp(-I * m * gamma)
+			or->Y2[mp+2] += conj(Dcomp) * Y2b[m+2];
+		}
+		or->Y2c[mp+2] = conj(or->Y2[mp+2]); // and fill conjugate
+	}
 
 	return;
 }

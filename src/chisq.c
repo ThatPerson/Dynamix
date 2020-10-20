@@ -231,14 +231,16 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	double chisq = 0;
 	int violations = 0;
 	unsigned int i;
-	double theta, phi;
+	double alpha, beta, gamma;
 	if (or_variations == VARIANT_A) {
-		theta = (double) opts[params-2];
-		phi = (double) opts[params-1];
-		if (fabs(theta) > OR_LIMIT || fabs(phi) > OR_LIMIT)
+		alpha = (double) opts[params-3];
+		beta = (double) opts[params-2];
+		gamma = (double) opts[params-1];
+		if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
 			violations++;
 		for (i = 0; i < N_OR; i++) {
-			calculate_Y2(&(resid->orients[i]), theta, phi);
+			calculate_Y2(&(resid->orients[i]));
+			rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
 		}
 	}
 	
@@ -320,14 +322,16 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 	}
 	int violations = 0;
 	unsigned int i;
-	double theta, phi;
+	double alpha, beta, gamma;
 	if (or_variations == VARIANT_A) {
-		theta = (double) opts[params-2];
-		phi = (double) opts[params-1];
-		if (fabs(theta) > OR_LIMIT || fabs(phi) > OR_LIMIT)
+		alpha = (double) opts[params-3];
+		beta = (double) opts[params-2];
+		gamma = (double) opts[params-1];
+		if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
 			violations++;
 		for (i = 0; i < N_OR; i++) {
-			calculate_Y2(&(resid->orients[i]), theta, phi);
+			calculate_Y2(&(resid->orients[i]));
+			rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
 		}
 	}
 	
