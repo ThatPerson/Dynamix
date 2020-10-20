@@ -422,7 +422,6 @@ void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
 
 	initialise_dwig(beta, Dw); // we initialise Dw[][] with the reduced Wigner matrices.
 
-	int ml, mi;
 
 	
 	/* the Wigner D-matrix D^j_{m', m} is e^(-i m' alpha) d^j_{m', m} e^(-i m gamma) */
