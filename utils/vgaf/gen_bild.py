@@ -1,9 +1,7 @@
-# I'm not entirely sure I have the sense of the rotations right - Lienin 1998 is a bit unclear on this point.
-# I think that the axis main line is taken from Ci-1 to Ci and all rotations are anticlockwise.
-
 import pytraj as pt
 import numpy as np
 import sys
+import calc
 
 min_v = 1
 max_v = 56
@@ -29,82 +27,33 @@ pp[57, 3] = CA_coords[0, 55]
 vectors = np.zeros((57, 3, 3))
 basis_set = np.zeros((57, 3, 3)) 
 centers = np.zeros((57, 3))
-def rotate_x(V, deg):
-	rot_mat = np.zeros((3, 3))
-	rot_mat[0, 0] = 1 # y, x
-	rot_mat[1, 1] = np.cos(deg)
-	rot_mat[2, 1] = -np.sin(deg)
-	rot_mat[1, 2] = np.sin(deg)
-	rot_mat[2, 2] = np.cos(deg)
-	return np.matmul(rot_mat, V)
-
-def rotate_y(V, deg):
-	rot_mat = np.zeros((3, 3))
-	rot_mat[1, 1] = 1 # y, x
-	rot_mat[0, 0] = np.cos(deg)
-	rot_mat[2, 0] = np.sin(deg)
-	rot_mat[0, 2] = -np.sin(deg)
-	rot_mat[2, 2] = np.cos(deg)
-	return np.matmul(rot_mat, V)
-
-def rotate_z(V, deg):
-	rot_mat = np.zeros((3, 3))
-	rot_mat[2, 2] = 1 # y, x
-	rot_mat[0, 0] = np.cos(deg)
-	rot_mat[1, 0] = -np.sin(deg)
-	rot_mat[0, 1] = np.sin(deg)
-	rot_mat[1, 1] = np.cos(deg)
-	return np.matmul(rot_mat, V)
 
 
 
 for peptide_plane in range(2, 57):
-	A = pp[peptide_plane + 1, 3] - pp[peptide_plane, 3]
-	D = pp[peptide_plane, 1] - pp[peptide_plane, 2]
-	C = np.cross(A, D) # perpendicular to peptide plane
-	B = np.cross(A, C) # approximately aligned with CO axis
-	alpha = B / np.linalg.norm(B)
-	beta = C / np.linalg.norm(C)
-	gamma = A / np.linalg.norm(A)
-	vectors[peptide_plane, :, 0] = alpha
-	vectors[peptide_plane, :, 1] = gamma
-	vectors[peptide_plane, :, 2] = beta
-	
+	Z = pp[peptide_plane + 1, 3] - pp[peptide_plane, 3] # CA-CA, this is Z
+	D = pp[peptide_plane, 1] - pp[peptide_plane, 2] # C-O axis
+	Y = np.cross(Z, D) # perpendicular to peptide plane  
+	X = np.cross(Y, Z) # approximately aligned with CO axis
+	# I'm not sure if these have the correct sign... (eg up or down).
+
+	# In Lienin, the Gamma axis is shown aligned along Calpha_i, Calpha_i-1. I think this
+	# is taken as the z axis, hence Calpha_i+1 - Calpha_i (my numbers are one above). 
+	# Y is perpendicular to the plane, which is shown in rotation_tests.c. I think this is therefore the same as beta
+	# (as I'm using the same theta and phi). Unfortunately l=2 spherical harmonics are invariant under inversion
+	# so I can't think how to directly test this. X is then perpendicular and to maintain the
+	#       Z     axis, X must be aligned along alpha.
+	#       |     Which kind of makes sense that they would be aligned in the same sense,
+	#      / \    but I'm still skeptical.
+	#     X   Y
+
+	x = X / np.linalg.norm(X)
+	y = Y / np.linalg.norm(Y)
+	z = Z / np.linalg.norm(Z)
+	vectors[peptide_plane, :, 0] = x
+	vectors[peptide_plane, :, 1] = y
+	vectors[peptide_plane, :, 2] = z
 	centers[peptide_plane, :] = (pp[peptide_plane, 3] + pp[peptide_plane + 1, 3]) / 2.
-	
-	basis_set[peptide_plane, 0, :] = alpha
-	basis_set[peptide_plane, 1, :] = gamma
-	basis_set[peptide_plane, 2, :] = beta
-	
-	print(pp[peptide_plane + 1, 3])
-	print(pp[peptide_plane, 3])
-	print(A)
-	print(alpha)
-	
-	#exit()
-	print(alpha)
-	print(beta)
-	print(gamma)
-	print(basis_set[peptide_plane])
-	
-	print("Vectors out of new basis set")
-	print(vectors)
-	vectors_bs = np.matmul(basis_set[peptide_plane], vectors[peptide_plane])
-	vectors_ro = rotate_z(vectors_bs, np.pi/2)
-	vectors_ro2 = rotate_y(vectors_ro, np.pi/3)
-	print("Vectors before rotation;")
-	print(vectors_bs)
-	print("Vectors after rotation 90 about z")
-	print(vectors_ro)
-	#print("Vectors after rotation about 60 about y")
-	#print(vectors_ro2)
-	inv_basis_set = np.linalg.inv(basis_set[peptide_plane])
-	vectors_ret = np.matmul(inv_basis_set, vectors_ro)
-	print("Vectors back in peptide plane")
-	print(vectors_ret)
-	
-	
-	
 	print("\n\n\n")
 	
 variant = 1
@@ -136,16 +85,24 @@ with open(fn, "r") as inp:
 				sG = 0
 				continue
 			if (variant == 1):
-				theta = -float(k[len(k) - 2])
-				phi = -float(k[len(k) - 1])
-				#theta = 0 * (np.pi / 180.)
-				#phi = np.pi
-				vectors_bs = np.matmul(basis_set[residue], vectors[residue])
-				vectors_theta = rotate_z(vectors_bs, theta) # rotation about beta axis
-				vectors_phi = rotate_y(vectors_theta, phi) # rotation about gamma axis
-				ibs = np.linalg.inv(basis_set[residue])
-				vectors[residue] = np.matmul(ibs, vectors_phi) # return.
-			
+				alpha = float(k[len(k) - 3])
+				beta = float(k[len(k) - 2])
+				gamma = float(k[len(k) - 2])
+
+				#vectors[peptide_plane, :, 0] = x
+				#vectors[peptide_plane, :, 1] = y
+				#vectors[peptide_plane, :, 2] = z
+
+				X = vectors[peptide_plane, :, 0]
+				Y = vectors[peptide_plane, :, 1]
+				Z = vectors[peptide_plane, :, 2]
+
+				X, Y, Z = apply_wigner(X, Y, Z, alpha, beta, gamma)
+
+				vectors[peptide_plane, :, 0] = X
+				vectors[peptide_plane, :, 1] = Y
+				vectors[peptide_plane, :, 2] = Z
+
 			#sA = 0.1
 			#sB = 0.1
 			#sG = 0.3

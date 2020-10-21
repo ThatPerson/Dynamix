@@ -4,12 +4,49 @@
 
 import sys
 import numpy as np
-# arguments are python aicbic.py FOLDER N_PARAMS
+# arguments are python aicbic.py FOLDER modeltype OUTPUTFILE
 # then we read FOLDER/backcalc_N.dat from N=1-56
 # for each, 
 
 folder = sys.argv[1]
-params = int(sys.argv[2])
+model = sys.argv[2]
+
+adj = 0
+params = -10
+if (model[0] == "V"):
+	model = model[1:]
+	adj = 3
+
+if (model == "SMF"):
+	params = 2
+elif (model == "EMF"):
+	params = 3
+elif (model == "EMFT"):
+	params = 5
+elif (model == "SMFT"):
+	params = 3
+elif (model == "DEMF"):
+	params = 4
+elif (model == "DEMFT"):
+	params = 6
+elif (model == "GAF"):
+	params = 8
+elif (model == "GAFT"):
+	params = 10
+elif (model == "EGAF"):
+	params = 6
+elif (model == "EGAFT"):
+	params = 8
+
+params = params + adj
+print("Params: %d" % (params))
+if (params <= 0):
+	print("Incorrect model specifier")
+	exit()
+
+
+
+#params = int(sys.argv[2])
 with open(sys.argv[3], "w") as q:
 	for i in range(1, 57):
 		x = np.loadtxt("%s/backcalc_%d.dat" % (folder, i))
