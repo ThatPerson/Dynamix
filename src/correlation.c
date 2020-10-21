@@ -59,7 +59,7 @@ int read_data_file(char *filename, struct Model * m) {
 		default: params = 0; break;
 	}
 	if (m->or_variation == VARIANT_A)
-		params += 2; // theta, phi
+		params += 3; // theta, phi
 
 	float param;
 	int res;
@@ -243,7 +243,7 @@ int main(int argc, char * argv[]) {
 	long double temp = 300;
 	double T = 200; // 1000
 	double dT = 0.01; // 0.01
-	double theta, phi;
+	double alpha, beta, gamma;
 	char fn_NH[255];
 	char fn_CN[255];
 	char fn_CH[255];
@@ -264,7 +264,7 @@ int main(int argc, char * argv[]) {
 		default: params = 0; break;
 	}
 	if (m.or_variation == VARIANT_A)
-		params += 2; // theta, phi
+		params += 3; // theta, phi
 
 
 	struct Residue * resid;
@@ -278,10 +278,12 @@ int main(int argc, char * argv[]) {
 			sprintf(fn_CH, "%s/corr_%d_CH.dat", output_folder, i+1);
 
 			if (m.or_variation == VARIANT_A) {
-				theta = (double) opts[params-2];
-				phi = (double) opts[params-1];
+				theta = (double) opts[params-3];
+				phi = (double) opts[params-2];
+				gamma = (double) opts[params-1];
 				for (j = 0; j < N_OR; j++) {
-					calculate_Y2(&(m.residues[i].orients[j]), theta, phi);
+					calculate_Y2(&(m.residues[i].orients[j]));
+					rotate_Y2(&(m.residues[i].orients[j]), alpha, beta, gamma);
 				}
 			}
 
