@@ -117,3 +117,51 @@ set xlabel "Peptide plane number (^{15}N_{i})"
 
 
 plot 'vgaf/errors.dat' u 1:($18 > 0 ? $18 * (180./3.141593) : NaN):($19>0?$19* (180./3.141593):NaN) w yerrorbars notitle
+
+
+
+unset multiplot
+set terminal postscript eps enhanced solid "Helvetica" 14
+set output "vgaf_orientation.eps"
+set tmargin 0
+set bmargin 0
+set lmargin 1
+set rmargin 1
+
+set multiplot layout 3,1 margins 0.15,0.95,.1,.95 spacing 0,0.02
+#set ylabel "{/Symbol t}
+
+unset xlabel
+set ylabel "{/Symbol a}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vgaf/final.dat' u 1:($9 > 0 ? $20 * (180./3.141593) : NaN):($21>0?$21 * (180/3.141593):NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol b}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+unset logscale y
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vgaf/final.dat' u 1:($9 > 0 ? $22 * (180./3.141593) : NaN):($23>0?$23 * (180/3.141593):NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol g}"
+set grid xtics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+set xtics (10, 20, 30, 40, 50)
+set xlabel "Peptide plane number (^{15}N_{i})"
+plot 'vgaf/final.dat' u 1:($9 > 0 ? $24 * (180./3.141593) : NaN):($25>0?$25 * (180/3.141593):NaN) w points palette pt 7 notitle

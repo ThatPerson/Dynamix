@@ -38,8 +38,8 @@ int main(int argc, char * argv[]) {
 	CACA.phi = 0;
 	pp.theta = HALF_PI;
 	pp.phi = HALF_PI;
-	NHv.theta = HALF_PI;
-	NHv.phi = M_PI;
+	NHv.theta = HALF_PI ;
+	NHv.phi = 0;
 
 	calculate_Y2(&CACA);
 	calculate_Y2(&pp);
@@ -47,21 +47,21 @@ int main(int argc, char * argv[]) {
 	int i;
 	printf("CACA: \n");
 	for (i = 0; i < 5; i++) {
-		printf("\t%d:\t%lf + %lf I\n", i, creal(CACA.Y2[i]), cimag(CACA.Y2[i]));
+		printf("\t%d:\t%lf + %lf I\n", i-2, creal(CACA.Y2[i]), cimag(CACA.Y2[i]));
 	}
 	printf("pp : \n");
 	for (i = 0; i < 5; i++) {
-		printf("\t%d:\t%lf + %lf I\n", i, creal(pp.Y2[i]), cimag(pp.Y2[i]));
+		printf("\t%d:\t%lf + %lf I\n", i-2, creal(pp.Y2[i]), cimag(pp.Y2[i]));
 	}
 	printf("NHv: \n");
 	for (i = 0; i < 5; i++) {
-		printf("\t%d:\t%lf + %lf I\n", i, creal(NHv.Y2[i]), cimag(NHv.Y2[i]));
+		printf("\t%d:\t%lf + %lf I\n", i-2, creal(NHv.Y2[i]), cimag(NHv.Y2[i]));
 	}
 	//void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
 	printf("Rotating...\n");
-	rotate_Y2(&CACA, 0, 0, 0.3);
-	rotate_Y2(&pp, 0, 0, 0.3);
-	rotate_Y2(&NHv, 0, 0, 0.3);
+	rotate_Y2(&CACA, HALF_PI, M_PI, HALF_PI);
+	rotate_Y2(&pp, HALF_PI, M_PI, HALF_PI);
+	rotate_Y2(&NHv, HALF_PI, M_PI, HALF_PI);
 	printf("CACA: \n");
 	for (i = 0; i < 5; i++) {
 		printf("\t%d:\t%lf + %lf I\n", i-2, creal(CACA.Y2[i]), cimag(CACA.Y2[i]));

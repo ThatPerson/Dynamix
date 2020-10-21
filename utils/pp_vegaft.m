@@ -122,3 +122,51 @@ set xlabel "Peptide plane number (^{15}N_{i})"
 set ytics (0.6, 0.8, 1.0)
 
 plot 'vegaft/final.dat' u 1:($9 > 0 ? $9 : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+
+
+unset multiplot
+set terminal postscript eps enhanced solid "Helvetica" 14
+set output "vegaft_orientation.eps"
+set tmargin 0
+set bmargin 0
+set lmargin 1
+set rmargin 1
+
+set multiplot layout 3,1 margins 0.15,0.95,.1,.95 spacing 0,0.02
+#set ylabel "{/Symbol t}
+
+unset xlabel
+set ylabel "{/Symbol a}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vegaft/final.dat' u 1:($9 > 0 ? $12 * (180./3.141593) : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol b}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+unset logscale y
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vegaft/final.dat' u 1:($9 > 0 ? $13 * (180./3.141593) : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol g}"
+set grid xtics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+set xtics (10, 20, 30, 40, 50)
+set xlabel "Peptide plane number (^{15}N_{i})"
+plot 'vegaft/final.dat' u 1:($9 > 0 ? $14 * (180./3.141593) : NaN):($3>0?$3:NaN) w points palette pt 7 notitle
+

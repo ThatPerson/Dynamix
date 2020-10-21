@@ -98,3 +98,98 @@ set xlabel "Peptide plane number (^{15}N_{i})"
 set ytics (0.6, 0.8, 1.0)
 
 plot 'vegaf/errors.dat' u 1:($14 > 0 ? $14 : NaN):($15>0?$15:NaN) w yerrorbars notitle
+
+
+
+unset multiplot
+set terminal postscript eps enhanced solid "Helvetica" 14
+set output "vegaf_orientation.eps"
+set tmargin 0
+set bmargin 0
+set lmargin 1
+set rmargin 1
+
+set multiplot layout 3,1 margins 0.15,0.95,.1,.95 spacing 0,0.02
+#set ylabel "{/Symbol t}
+
+unset xlabel
+set ylabel "{/Symbol a}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vegaf/final.dat' u 1:($14 > 0 ? $14 * (180./3.141593) : NaN):($15>0?$15:NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol b}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+unset logscale y
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vegaf/final.dat' u 1:($16 > 0 ? $16 * (180./3.141593) : NaN):($17>0?$17:NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol g}"
+set grid xtics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+set xtics (10, 20, 30, 40, 50)
+set xlabel "Peptide plane number (^{15}N_{i})"
+plot 'vegaf/final.dat' u 1:($18 > 0 ? $18 * (180./3.141593) : NaN):($19>0?$19:NaN) w points palette pt 7 notitle
+
+
+unset multiplot
+set terminal postscript eps enhanced solid "Helvetica" 14
+set output "vegaf_orientation.eps"
+set tmargin 0
+set bmargin 0
+set lmargin 1
+set rmargin 1
+
+set multiplot layout 3,1 margins 0.15,0.95,.1,.95 spacing 0,0.02
+#set ylabel "{/Symbol t}
+
+unset xlabel
+set ylabel "{/Symbol a}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vegaf/final.dat' u 1:($10 > 0 ? $20 * (180./3.141593) : NaN):($21>0?$21 * (180/3.141593):NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol b}"
+set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
+set grid xtics
+set ytics
+unset logscale y
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+set xrange [0:56]
+set yrange [-180:180]
+unset xlabel
+plot 'vegaf/final.dat' u 1:($10 > 0 ? $22 * (180./3.141593) : NaN):($23>0?$23 * (180/3.141593):NaN) w points palette pt 7 notitle
+
+unset xlabel
+set ylabel "{/Symbol g}"
+set grid xtics
+set ytics (-180, -120, -60, 0, 60, 120, 180)
+unset logscale y
+set xrange [0:56]
+set yrange [-180:180]
+set xtics (10, 20, 30, 40, 50)
+set xlabel "Peptide plane number (^{15}N_{i})"
+plot 'vegaf/final.dat' u 1:($10 > 0 ? $24 * (180./3.141593) : NaN):($25>0?$25 * (180/3.141593):NaN) w points palette pt 7 notitle
