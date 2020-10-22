@@ -290,6 +290,9 @@ void calculate_Y2(struct Orient * or) {
 	   or->Y2[3] is Y2 1
 	   or->Y2[4] is Y2 2 */
 
+	/* as given https://mathworld.wolfram.com/SphericalHarmonic.html*/
+	/* Y2[0] is Y2 -2*/
+
 	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(2 * I * or->phi);
 	or->Y2[3] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(I * or->phi);
 	or->Y2[2] = (1/4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(or->theta), 2) - 1);
@@ -320,6 +323,8 @@ void initialise_dwig(double angle, long double Dw[5][5]) {
 	// 4  2
 
 	// d[m' + 2][m + 2]
+
+	/* verified against https://link.springer.com/content/pdf/bbm%3A978-1-4684-0208-7%2F1.pdf in rotation_tests.c*/
 
 	long double cosp = cosl(angle);
 	long double sinp = sinl(angle);

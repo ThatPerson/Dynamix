@@ -6,7 +6,7 @@ import calc
 min_v = 1
 max_v = 56
 
-traj = pt.load("2QMT.pdb")
+traj = pt.load("2GI9.pdb")
 N_coords = traj[:, ':%d-%d@N' % (min_v + 1, max_v)]
 O_coords = traj[:, ':%d-%d@O' % (min_v, max_v)]
 C_coords = traj[:, ':%d-%d@C' % (min_v, max_v)]
@@ -54,7 +54,7 @@ for peptide_plane in range(2, 57):
 	vectors[peptide_plane, :, 1] = y
 	vectors[peptide_plane, :, 2] = z
 	centers[peptide_plane, :] = (pp[peptide_plane, 3] + pp[peptide_plane + 1, 3]) / 2.
-	print("\n\n\n")
+	#print("\n\n\n")
 	
 variant = 1
 ty = "slow"
@@ -85,20 +85,20 @@ with open(fn, "r") as inp:
 				sG = 0
 				continue
 			if (variant == 1):
-				alpha = float(k[len(k) - 3])
-				beta = float(k[len(k) - 2])
+				alpha = float(k[len(k) - 4])
+				beta = float(k[len(k) - 3])
 				gamma = float(k[len(k) - 2])
 
 				#vectors[peptide_plane, :, 0] = x
 				#vectors[peptide_plane, :, 1] = y
 				#vectors[peptide_plane, :, 2] = z
-
+				print("%f, %f, %f\n" % (alpha, beta, gamma))
 				X = vectors[peptide_plane, :, 0]
 				Y = vectors[peptide_plane, :, 1]
 				Z = vectors[peptide_plane, :, 2]
-
-				X, Y, Z = apply_wigner(X, Y, Z, alpha, beta, gamma)
-
+				print(X)
+				X, Y, Z = calc.apply_wigner(X, Y, Z, alpha, beta, gamma)
+				print(X)
 				vectors[peptide_plane, :, 0] = X
 				vectors[peptide_plane, :, 1] = Y
 				vectors[peptide_plane, :, 2] = Z

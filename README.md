@@ -40,20 +40,31 @@ As of writing, Dynamix can fit the following models;
   Six parameter model, fitting S$^{2}_{\text{slow}}$, S$^{2}_{\text{fast}}$, $\tau_{0,\text{slow}}$, $\tau_{0,\text{fast}}$, $Ea_{\text{slow}}$, $Ea_{\text{fast}}$. Spectral density as in EMF.
 
 * Gaussian Axial Fluctuations (GAF)[^2]
-  Eight parameter model: $\tau_{\text{slow}}$, $\tau_{\text{fast}}$, $\sigma^{\alpha}_{\text{slow}}$, $\sigma^{\beta}_{\text{slow}}$, $\sigma^{\gamma}_{\text{slow}}$, $\sigma^{\alpha}_{\text{fast}}$, $\sigma^{\beta}_{\text{fast}}$, $\sigma^{\gamma}_{\text{fast}}$. These axial fluctuations are then used to derive order parameters as in Bremi 1997, and then fit to the EMF spectral density function. 
-  The relaxation rates take into account dipolar contributions between multiple atom pairs, and anisotropic chemical shift.
+  Eight parameter model: $\tau_{\text{slow}}$, $\tau_{\text{fast}}$, $\sigma^{\alpha}_{\text{slow}}$, $\sigma^{\beta}_{\text{slow}}$, $\sigma^{\gamma}_{\text{slow}}$, $\sigma^{\alpha}_{\text{fast}}$, $\sigma^{\beta}_{\text{fast}}$, $\sigma^{\gamma}_{\text{fast}}$. These axial fluctuations are then used to derive order parameters, which are then fit to the EMF spectral density function. 
+
+  $$ S^{2}_{\mu\nu} = \frac{4\pi}{5} \sum_{l,k,k',m,m' = -2}^{2} = (-i)^{k-k'} \exp\left( -\frac{\sigma^2_\alpha (k^2 + k'^2)}{2} - \sigma_\beta^2 l^2 - \frac{\sigma_\beta^2 (m^2 + m'^2)}{2} \right) \times \newline d_{kl}^{(2)}(\frac{\pi}{2}) d_{k'l}^{(2)}(\frac{\pi}{2}) d_{mk}^{(2)}(\frac{\pi}{2}) d_{m'k'}^{(2)}(\frac{\pi}{2}) Y_{2m}(e_{\mu}^{pp}) Y_{2m'}\*(e_{\nu}^{pp}) $$
+
+  Where parameters are defined as in Lienin 1998. The relaxation rates take into account dipolar contributions between N-H, N..H(rest), C-N, CA-N, C-H, C..H(rest), C-N, C-CA, as well as the anisotropic chemical shifts of nitrogen and carbon.
   
 * Gaussian Axial Fluctuations with Temperature Dependence (GAFT)
   Ten parameter model. All of those in GAF, plus fast and slow activation energies. Temperature dependent time constants calculated as in SMFT, EMFT and DEMFT, angles used to calculate S$^2$, then fit to EMF spectral density.
-  
-These models can be fit to $^{15}$N and $^{13}$C R$_1$ and R$_{1\rho}$ values. The models have by and large been tested and verified against MATLAB models for $^{15}$N, but not for $^{13}$C.
-  
-[^1]: Generally the DEMF models fit very poorly as the additional overall motional constraint from the dipolar order parameter is used.
-[^2]: The GAF models have not been fully tested as I do not currently have sufficient data to fit them fully. 
-  
+
+* Model Free with slow Gaussian Axial Fluctuations (EGAF)
+  Six parameter model. Implements MF order parameter on fast time scale and GAF order parameter for slow motion.
+
+* Model Free with slow Gaussian Axial Fluctuations with Temperature Dependence (EGAFT)
+ 
+These models can be fit to $^{15}$N and $^{13}$C R$_1$ and R$_{1\rho}$ values, as well as C-C, C-H, N-H and C-N dipolar order parameters. 
+
+Passing the 'OR_VARY = 1' parameter alongside a GAF model (EGAF, EGAFT, GAF, GAFT) will transform it into a variable orientation model, in which the orientation of the axes fit to the peptide plane are allowed to vary according to three rotations, $\alpha$, $\beta$, $\gamma$. This rotation is implemented as a rotation of the second order spherical harmonics in the GAF order parameter term via Wigner D matrices. In effect,
+
+$$ Y^{m'}_{l} (r') = \sum_{m=-l}{l} [D_{m'm}^{(l)}(R)]* Y_{l}^{m}(r) $$
+
+The initial orientation of the X, Y, Z axis has Z aligned along CA-CA, with the CA-N positive relative to CA-C. X is roughly parallel to the C-O bond (C->O positive) and Y is perpendicular to X and Z such that the standard X, Y, Z convention is retained (eg Y = Z \cross X). These variable models are generally termed `VGAF`, `VGAFT`, `VEGAF`, `VEGAFT`.
+
 For each of these models, Dynamix will perform a user specified number of optimizations with random starting points using the Nelder-Mead simplex method to find an optimum. Each optimum is output into a `residue_N.dat` file. Once complete, it will perform back calculations for each relaxation data point, outputting these into `backcalc_N.dat` files. If one of the GAF modes is used, it will calculate effective S$^{2}_{\text{NH}}$ order parameters and output these into `gaf.dat`.
 
-If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. The relaxation rates are then varied within their experimental error, and optimization performed. The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values[^3].
+If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. Back calculated relaxation rates are then varied within experimental error, and optimization performed. The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values[^3].
 
 [^3]: Note that the output will have the minimum optimized points and two standard deviations for the errors; it will not output the mean of the error calculations (unless you explicitly change the code to do so - at the moment this is line 408 of main.c, in which you should change `m.residues[l].parameters[i]` to `m.residues[l].errors_mean[i]`.
 
@@ -64,7 +75,7 @@ To compile the program from source on Karplus, navigate to the directory above s
 
     gcc src/main.c -lm -pthread -o dynamix -O3
 
-This will pull in all other required C files in the src/ directory, load the math(s) and pthread libraries, using optimization level 3, and output the program into *dynamix*. Also contained in the src/ directory is documentation (build using `doxygen Doxyfile` if not up to date) and test programs to verify the model against the MATLAB scripts. 
+This will pull in all other required C files in the src/ directory, load the math(s) and pthread libraries, using optimization level 3, and output the program into *dynamix*. Also contained in the src/ directory is documentation (build using `doxygen Doxyfile` if not up to date) and test programs to verify the model against the MATLAB scripts.
 
 Data Formats
 ------------
@@ -102,6 +113,7 @@ The keys are all upper case, and there must be spaces on either side of the equa
 |OR_CNH|C-amide proton orientation|
 |OR_CCSAxx/yy/zz|Carbon chemical shift anisotropy orientations|
 |NTHREADS|Number of threads to run; generally, set to the number of processors you want to run it on|
+|OR_VARY|Whether or not the orientation of the GAF axes relative to the peptide plane should be allowed to vary.|
 
 For example
 
@@ -227,8 +239,14 @@ In the `utils/` directory there are `gnuplot` scripts to plot data. These are se
 |`pp_demf_e.m`|Plots DEMF with errorbars|
 |`pp_demft.m`|Plots DEMFT|
 |`pp_demft_e.m`|Plots DEMFT with errorbars|
+|`pp_egaf.m`|Plots EGAF|
+|`pp_egaf_e.m`|Plots EGAF with errorbars|
+|`pp_egaft.m`|Plots EGAFT|
+|`pp_egaft_e.m`|Plots EGAFT with errorbars|
 |`pp_gaf.m`|Plots GAF|
+|`pp_gaf_e.m`|Plots GAF with errorbars|
 |`pp_gaft.m`|Plots GAFT|
+|`pp_gaft_e.m`|Plots GAFT with errorbars|
 
 These may be run as;
 
@@ -239,6 +257,12 @@ These may be run as;
     emf/   utils/   emf.eps
     
 The output is as a `.eps` file. This may be viewed using eg Okular (`okular file.eps`) or converted into a PDF using `epstopdf file.eps`.
+
+There are two Python scripts, `aicbic.py` and `gen_bild.py`. `aicbic.py` is run as `python3 aicbic.py FOLDER MODEL OUTPUT` eg `python3 aicbic.py vgaf VGAF vgaf.csv`, and will calculate Akaike, Bayesian, and adjusted Akaike Information Criteria for each model. The output file has four columns; `residue`, `AIC`, `BIC`, `AICc`.
+
+`gen_bild.py` generates ChimeraX BILD files for given models. A PDB representing the protein of interest should be present in the folder, and the path to this should be defined on line 9. Then `gen_bild.py` may be run as `python3 gen_bild.py INPUT_FILE OUTPUT_FILE OR_VARY TYPE`, where `INPUT_FILE` is the `final.dat` file generated by Dynamix, `OUTPUT_FILE` is your desired BILD file, `OR_VARY` is `1` if the model has variable orientation or `0` if not[^2]. `TYPE` should be `fast` or `slow` depending on the GAF timescale of motions.
+
+[^2]: Note I'm not entirely convinced I have the sense of the rotations in `gen_bild.py` correct.
 
 Output File Formats
 -------------------
@@ -257,10 +281,13 @@ The remaining columns depend on which model is in use. In particular;
 * EMFT: taus (ns), S2s, tauf (ns), Eas, Eaf
 * DEMF: taus (ns), S2s, tauf (ns), S2f
 * DEMFT: taus (ns), S2s, tauf (ns), S2f, Eas, Eaf
+* EGAF: taus (ns), tauf (ns), sAs, sBs, sGs, S2f
+* EGAFT: taus (ns), tauf (ns), sAs, sBs, sGs, S2f, Eas, Eaf
 * GAF: taus (ns), tauf (ns), sAs, sBs, sGs, sAf, sBf, sGf
 * GAFT: taus (ns), tauf (ns), sAs, sBs, sGs, sAf, sBf, sGf, Eas, Eaf
 
-This may be useful for plotting to see how varied the individual responses are, eg how responsive the model is to one parameter.
+
+This may be useful for plotting to see how varied the individual responses are, eg how responsive the model is to one parameter. If `OR_VARY` is enabled, the final three columns will be the $\alpha$, $\beta$ and $\gamma$ angles.
 
 **final.dat**
 
@@ -291,31 +318,4 @@ Plotting `{calculated R}` against `{measured R}` can give a useful indication of
     {field in MHz} {spinning frequency Hz} {spin lock frequency Hz} {temperature K}
     
 
-Fitting Speed in Dynamix
-------------------------
-
-The amount of time this model will take to run depends on the amount of data being passed to it, the complexity of the modelling, and how "nice" the relaxation data is (some will converge far faster than others). As rough guides, for GB1 $^{15}$N data the following times were recorded for the model free models (in seconds)
-
-|Model|2000 iterations, 56 threads|50 iterations, 4 threads|
-|-|-|-|
-|SMF|1.38|0.58|
-|SMF + e| 2.97|1.17|
-|EMF| 3.69|1.83|
-|EMF + e|6.72|3.23|
-|SMFT|4.64|1.89|
-|SMFT + e|11.53|4.33|
-|EMFT|16.51|6.81|
-|EMFT + e|35.04|12.64|
-|DEMF|5.21|2.51|
-|DEMF + e|11.64|4.93|
-|DEMFT|18.37|7.46|
-|DEMFT + e|38.48|15.11|
-
-In lieu of the more complicated calculations required, GAF models take significantly longer than these model free models; still, it should be possible to perform upwards of 500 iterations in a few hours. 
-
-In order to verify that the new model was faster than the old model, 15246 S$^{2}$ parameters were calculated using GAF (this was done by repeating the calculation for each of the 6 order parameters calculated for $^{15}$N for $\sigma_{\alpha}$ in the range 0 to 0.1 radians, $\sigma_{\beta}$ from 0 to 0.1 radians, $\sigma_{\gamma}$ from 0 to 0.2 radians using steps of 0.01 rad). Using the MATLAB scripts running single threaded this took 8.20 seconds. With Dynamix single threaded this took 0.33 seconds, representing a possible 25$\times$ increase in calculation speed.
-
-To compare the performance of EMF calculations, 10,000,000 R1 and R2 values for random parameters were calculated. In MATLAB (single threaded, Karplus), this took 29.87 seconds. In Dynamix (single threaded, my laptop), this took 2.65 seconds. In MATLAB, R1 and R2 calculation is combined in one and so for each data point both R1 and R2 are calculated regardless of if only R1 is measured. As Dynamix separates these, for calculation of 10,000,000 R1 values MATLAB still takes 29.87 seconds; Dynamix takes 0.99 seconds. 
-
-This data suggests that there is a potential 20$\times$ speed improvement just on the basis of calculation efficiency from moving from MATLAB to Dynamix, prior to any additional increases in efficiency. For example, an EMFT optimization in MATLAB performed on Karplus prior to the creation of Dynamix took approximately $\approx$ 6000 seconds to complete 10,000 iterations. The equivalent in Dynamix should only take 82.55 seconds on the same hardware, a 72-fold increase in speed. Similarly, a run of SMF using MATLAB on Karplus took approximately 1800 seconds to complete 10,000 iterations; in Dynamix, this would be expected to take 6.9 seconds, representing a 260-fold increase in speed.
 

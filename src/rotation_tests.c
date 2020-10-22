@@ -13,13 +13,32 @@ int main(int argc, char * argv[]) {
 	initialise_dwig(HALF_PI, Dwig);
 
 	int ml, mi;
-	for (ml = -2; ml <= 2; ml++) {
-		for (mi = -2; mi <= 2; mi++) {
-			printf("%Lf\t", Dwig[mi+2][ml+2]);
+	/*for (ml = 2; ml >= -2; ml--) {
+		for (mi = 2; mi >= -2; mi--) {
+			printf("%Lf\t\t", Dwig[mi+2][ml+2], mi, ml);
+			// m' is mi+2
+			// m  is ml+2
 
 		}
 		printf("\n");
+	}*/
+
+	int m, mp;
+
+	printf("\t\t");
+	for (m = 2; m >= -2; m--) {
+		printf("%d\t", m);
 	}
+	printf("\n");
+	for (mp = 2; mp >= -2; mp--) {
+		printf("%d\t", mp);
+		for (m = 2; m >= -2; m--) {
+			printf("%Lf\t", Dwig[mp+2][m+2]);
+		}
+		printf("\n");
+	}
+
+	printf("\n\n");
 
 
 	struct Orient test;
