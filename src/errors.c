@@ -55,7 +55,14 @@ void calc_statistics(long double * vals, int length, long double * mean, long do
 	}
 	*mean = *mean / ((long double) length);
 	m2 = m2 / ((long double) length);
-	*std = sqrtl(m2 - powl(*mean, 2));
+	long double mdiff = m2 - powl(*mean, 2.);
+	if (mdiff < 0 && fabsl(mdiff) < 0.000001) {
+		// then all have converged to the same point and the std is 0. 
+		// but because floating points are ew, it will give 'nan' for sqrtl(-0.0000)
+		// so we just invert the sign. It's not pretty but ah well.
+		mdiff = -mdiff;
+	}
+	*std = sqrtl(mdiff);
 
 }
 
