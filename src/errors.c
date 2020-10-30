@@ -145,7 +145,7 @@ void * calc_errors(void *input) {
 			resid->relaxation[k].type = resid->temp_relaxation[k].type;
 			resid->relaxation[k].T = resid->temp_relaxation[k].T;
 
-			temp_R = back_calc(&(resid->parameters[k]), resid, &(resid->temp_relaxation[k]), model, &ignore);
+			temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), model, &ignore);
 			//if (i == 2 && k == 2)
 			//	printf("Iteration %d, R = %f\n", l, temp_R); // should be the same each time
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
