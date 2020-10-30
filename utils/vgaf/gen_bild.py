@@ -111,11 +111,11 @@ with open(fn, "r") as inp:
 			gamma = [9.0]
 		
 			alpha_start = centers[residue] - 3. * sA * vectors[residue, :, 0]
-			beta_start = centers[residue] - 3. * sB * vectors[residue, :,  2]
-			gamma_start = centers[residue] - 3. * sG * vectors[residue, :, 1]
+			beta_start = centers[residue] - 3. * sB * vectors[residue, :,  1]
+			gamma_start = centers[residue] - 3. * sG * vectors[residue, :, 2]
 			alpha_end = centers[residue] + 3. * sA * vectors[residue, :, 0]
-			beta_end = centers[residue] + 3. * sB * vectors[residue, :, 2]
-			gamma_end = centers[residue] + 3. * sG * vectors[residue, :, 1]
+			beta_end = centers[residue] + 3. * sB * vectors[residue, :, 1]
+			gamma_end = centers[residue] + 3. * sG * vectors[residue, :, 2]
 			
 			alpha.extend(alpha_start)
 			alpha.extend(alpha_end)
