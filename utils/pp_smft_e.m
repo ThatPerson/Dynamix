@@ -40,6 +40,7 @@ set grid xtics
 set autoscale
 unset logscale y
 set xrange [0:56]
+set yrange [0:60000]
 
 set xlabel "Peptide plane number (^{15}N_{i})"
 set xtics (10, 20, 30, 40, 50)
