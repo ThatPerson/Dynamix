@@ -1,7 +1,7 @@
 ---
 title: "Dynamix"
 author: Ben Tatman
-date: July 27th 2020
+date: October 21st 2020
 geometry: margin=2cm
 output: pdf_document
 ---
@@ -33,16 +33,18 @@ As of writing, Dynamix can fit the following models;
 * Extended Model Free with Temperature Dependence (EMFT)
   Five parameter model, fitting S$^{2}_{\text{slow}}$, $\tau_{0,\text{slow}}$, $\tau_{0,\text{fast}}$, $Ea_{\text{slow}}$, $Ea_{\text{fast}}$. S$^{2}_{\text{fast}}$ is calculated as in EMF, and the correlation times are temperature dependent as in SMFT. The spectral density is as in EMF.
   
-* Extended Model Free without Dipolar Approximation (DEMF)[^1]
+* Extended Model Free without Dipolar Approximation (DEMF)
   Four parameter model, S$^{2}_{\text{slow}}$, S$^{2}_{\text{fast}}$, $\tau_{\text{slow}}$, $\tau_{\text{fast}}$. Spectral density as in EMF.
   
 * Extended Model Free without Dipolar Approximation, with Temperature Dependence (DEMFT)
   Six parameter model, fitting S$^{2}_{\text{slow}}$, S$^{2}_{\text{fast}}$, $\tau_{0,\text{slow}}$, $\tau_{0,\text{fast}}$, $Ea_{\text{slow}}$, $Ea_{\text{fast}}$. Spectral density as in EMF.
 
-* Gaussian Axial Fluctuations (GAF)[^2]
+* Gaussian Axial Fluctuations (GAF)
   Eight parameter model: $\tau_{\text{slow}}$, $\tau_{\text{fast}}$, $\sigma^{\alpha}_{\text{slow}}$, $\sigma^{\beta}_{\text{slow}}$, $\sigma^{\gamma}_{\text{slow}}$, $\sigma^{\alpha}_{\text{fast}}$, $\sigma^{\beta}_{\text{fast}}$, $\sigma^{\gamma}_{\text{fast}}$. These axial fluctuations are then used to derive order parameters, which are then fit to the EMF spectral density function. 
 
-  $$ S^{2}_{\mu\nu} = \frac{4\pi}{5} \sum_{l,k,k',m,m' = -2}^{2} = (-i)^{k-k'} \exp\left( -\frac{\sigma^2_\alpha (k^2 + k'^2)}{2} - \sigma_\beta^2 l^2 - \frac{\sigma_\beta^2 (m^2 + m'^2)}{2} \right) \times \newline d_{kl}^{(2)}(\frac{\pi}{2}) d_{k'l}^{(2)}(\frac{\pi}{2}) d_{mk}^{(2)}(\frac{\pi}{2}) d_{m'k'}^{(2)}(\frac{\pi}{2}) Y_{2m}(e_{\mu}^{pp}) Y_{2m'}\*(e_{\nu}^{pp}) $$
+  \begin{align*}
+  S^{2}_{\mu\nu} = \frac{4\pi}{5} \sum_{l,k,k',m,m' = -2}^{2} = (-i)^{k-k'} \exp\left( -\frac{\sigma^2_\alpha (k^2 + k'^2)}{2} - \sigma_\beta^2 l^2 - \frac{\sigma_\gamma^2 (m^2 + m'^2)}{2} \right) \times \\ d_{kl}^{(2)}(\frac{\pi}{2}) d_{k'l}^{(2)}(\frac{\pi}{2}) d_{mk}^{(2)}(\frac{\pi}{2}) d_{m'k'}^{(2)}(\frac{\pi}{2}) Y_{2m}(e_{\mu}^{pp}) Y_{2m'}^{*}(e_{\nu}^{pp}) 
+  \end{align*}
 
   Where parameters are defined as in Lienin 1998. The relaxation rates take into account dipolar contributions between N-H, N..H(rest), C-N, CA-N, C-H, C..H(rest), C-N, C-CA, as well as the anisotropic chemical shifts of nitrogen and carbon.
   
@@ -58,9 +60,9 @@ These models can be fit to $^{15}$N and $^{13}$C R$_1$ and R$_{1\rho}$ values, a
 
 Passing the 'OR_VARY = 1' parameter alongside a GAF model (EGAF, EGAFT, GAF, GAFT) will transform it into a variable orientation model, in which the orientation of the axes fit to the peptide plane are allowed to vary according to three rotations, $\alpha$, $\beta$, $\gamma$. This rotation is implemented as a rotation of the second order spherical harmonics in the GAF order parameter term via Wigner D matrices. In effect,
 
-$$ Y^{m'}_{l} (r') = \sum_{m=-l}{l} [D_{m'm}^{(l)}(R)]* Y_{l}^{m}(r) $$
+$$ Y^{m'}_{l} (r') = \sum_{m=-l}{l} [D_{m'm}^{(l)}(R)]^* Y_{l}^{m}(r) $$
 
-The initial orientation of the X, Y, Z axis has Z aligned along CA-CA, with the CA-N positive relative to CA-C. X is roughly parallel to the C-O bond (C->O positive) and Y is perpendicular to X and Z such that the standard X, Y, Z convention is retained (eg Y = Z \cross X). These variable models are generally termed `VGAF`, `VGAFT`, `VEGAF`, `VEGAFT`.
+The initial orientation of the X, Y, Z axis has Z aligned along CA-CA, with the CA-N positive relative to CA-C. X is roughly parallel to the C-O bond (C->O positive) and Y is perpendicular to X and Z such that the standard X, Y, Z convention is retained (eg $Y = Z \times X$). These variable models are generally termed `VGAF`, `VGAFT`, `VEGAF`, `VEGAFT`.
 
 For each of these models, Dynamix will perform a user specified number of optimizations with random starting points using the Nelder-Mead simplex method to find an optimum. Each optimum is output into a `residue_N.dat` file. Once complete, it will perform back calculations for each relaxation data point, outputting these into `backcalc_N.dat` files. If one of the GAF modes is used, it will calculate effective S$^{2}_{\text{NH}}$ order parameters and output these into `gaf.dat`.
 
@@ -95,7 +97,10 @@ The keys are all upper case, and there must be spaces on either side of the equa
 | Key | Value |
 |-|-|
 |MODEL|Model being fit - see Features|
-|S2DIP|File containing dipolar order parameters as defined below|
+|S2NH|File containing dipolar order parameters for N-H as defined below|
+|S2CH|File containing dipolar order parameters for C-H|
+|S2CC|File containing dipolar order parameters for C-C (not currently used)|
+|S2CN|File containing dipolar order parameters for C-N|
 |CSISON|File containing isotropic chemical shifts for $^{15}$N|
 |CSISOC|File containing isotropic chemical shifts for $^{13}$C|
 |N_RESIDUES|Number of residues - **must** be the same as the number of lines in each input file (or bad things may happen)|

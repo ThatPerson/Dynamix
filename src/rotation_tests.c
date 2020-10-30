@@ -24,7 +24,7 @@ int main(int argc, char * argv[]) {
 	}*/
 
 	int m, mp;
-
+	printf("Rows are m', columns are m\n");
 	printf("\t\t");
 	for (m = 2; m >= -2; m--) {
 		printf("%d\t", m);

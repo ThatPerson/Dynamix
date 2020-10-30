@@ -128,13 +128,19 @@ void * calc_errors(void *input) {
 		resid->relaxation = NULL;
 		resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
 
+		//if (i == 2)
+		//	printf("Residue %d iteration %d: %Lf\n ", i, l, opts[0]);
+
 		for (k = 0; k < resid->n_relaxation; k++) {
 			resid->relaxation[k].field = resid->temp_relaxation[k].field;
 			resid->relaxation[k].wr = resid->temp_relaxation[k].wr;
 			resid->relaxation[k].w1 = resid->temp_relaxation[k].w1;
 			resid->relaxation[k].type = resid->temp_relaxation[k].type;
 			resid->relaxation[k].T = resid->temp_relaxation[k].T;
-			temp_R = back_calc(opts, resid, &(resid->temp_relaxation[k]), model, &ignore);
+
+			temp_R = back_calc(&(resid->parameters[k]), resid, &(resid->temp_relaxation[k]), model, &ignore);
+			//if (i == 2 && k == 2)
+			//	printf("Iteration %d, R = %f\n", l, temp_R); // should be the same each time
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
 			//resid->relaxation[k].R = norm_rand(resid->temp_relaxation[k].R, (resid->temp_relaxation[k].Rerror)/2.);
 			//printf("%f, %f -> %f \n", resid->temp_relaxation[k].R, resid->temp_relaxation[k].Rerror, resid->relaxation[k].R);
