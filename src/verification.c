@@ -7,21 +7,15 @@
 #include <stdlib.h>
 #include "datatypes.h"
 
+
+
 //__func__,__FILE__, __LINE__
 
-#define LOGGING
 
-#ifdef LOGGING
-#define error(a, args...) printf("ERROR %s(%s:%d %d): " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
-#define warn(a, args...) printf("WARN  %s(%s:%d %d): " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
-#define log(a, args...) printf("LOG   %s(%s:%d %d): " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
-#else
-#define error(a, args...) 
-#define warn(a, args...)
-#define log(a, args...)
-#endif
+
 
 #define N_BINS 10
+
 
 void verify_rotations(void) {
 	printf("\n\n\n===== VERIFYING ROTATION =====\n");
@@ -193,7 +187,6 @@ void verify_rotations(void) {
 		printf("\t%d:\t%lf + %lf I\n", i-2, creal(NHv.Y2[i]), cimag(NHv.Y2[i]));
 	}
 
-	error("Test");
 
 	return;
 }

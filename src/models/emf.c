@@ -141,7 +141,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 		R1D += EMF_Dipolar_R1(omega_13C, omega_15N, -D_CN, taus, S2s, tauf, S2f); // C-N
 		R1D += EMF_Dipolar_R1(omega_13C, omega_13C + wCOCa, -D_CC, taus, S2s, tauf, S2f); // C-C
 	} else {
-		printf("Incorrect mode.\n");
+		ERROR("Incorrect mode.");
 		return -1;
 	}
 
@@ -224,7 +224,7 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, l
 		R2D += EMF_Dipolar_R2(omega_13C, omega_15N, -D_CN, taus, S2s, tauf, S2f, J0sum); // C-N
 		R2D += EMF_Dipolar_R2(omega_13C, omega_13C + wCOCa, -D_CC, taus, S2s, tauf, S2f, J0sum); // C-C
 	} else {
-		printf("Incorrect mode.\n");
+		ERROR("Incorrect mode.");
 		return -1;
 	}
 

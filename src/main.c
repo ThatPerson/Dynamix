@@ -3,6 +3,8 @@
  */
 
 #include <stdio.h>
+#include <time.h>
+#include <pthread.h>
 #include "datatypes.h"
 #include "read_data.h"
 
@@ -14,11 +16,9 @@
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
 
-#include <time.h>
-#include <pthread.h>
 
 
-time_t start_time;
+
 
 #include "verification.h"
 
@@ -364,7 +364,7 @@ int main(int argc, char * argv[]) {
 			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
 			rc = pthread_create(&threads[i], &threadattr, run_residue, (void *) &RRA[i]);
 			if (rc != 0) {
-				printf("Failed to spawn thread %d. Crashing gracefully...\n", current_residue + i);
+				ERROR("Failed to spawn thread %d. Crashing...", current_residue+i);
 				free_all(&m);
 				free(RRA);
 				free(threads);
@@ -383,7 +383,7 @@ int main(int argc, char * argv[]) {
 	sprintf(filename, "%s/final.dat", m.outputdir);
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		free_all(&m);
 		return -1;
 	}
@@ -411,7 +411,7 @@ int main(int argc, char * argv[]) {
 		sprintf(filename, "%s/errors.dat", m.outputdir);
 		ep = fopen(filename, "w");
 		if (ep == NULL) {
-			printf("%s not found.\n", filename);
+			ERROR("%s not found.", filename);
 			free_all(&m);
 			return -1;
 		}
@@ -432,7 +432,7 @@ int main(int argc, char * argv[]) {
 				//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
 				rc = pthread_create(&threads[i], &threadattr, calc_errors, (void *) &RRA[i]);
 				if (rc != 0) {
-					printf("Failed to spawn thread %d. Crashing gracefully...\n", current_residue + i);
+					ERROR("Failed to spawn thread %d. Crashing...", current_residue+i);
 					free_all(&m);
 					exit(-1);
 				}
@@ -455,7 +455,7 @@ int main(int argc, char * argv[]) {
 		sprintf(filename, "%s/gaf.dat", m.outputdir);
 		gaf = fopen(filename, "w");
 		if (gaf == NULL) {
-			printf("%s not found.\n", filename);
+			ERROR("%s not found.", filename);
 			free_all(&m);
 			return -1;
 		}

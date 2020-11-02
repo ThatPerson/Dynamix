@@ -116,7 +116,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		R1D += SMF_Dipolar_R1(omega_13C, omega_13C + wCOCa, -D_CC, tau, S2); // C-C
 		//d = -D_CH;
 	} else {
-		printf("Incorrect mode.\n");
+		ERROR("Incorrect mode.");
 		return -1;
 	}
 
@@ -197,7 +197,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		R2D += SMF_Dipolar_R2(omega_13C, omega_13C + wCOCa, -D_CC, tau, S2, J0sum); // C-C
 		//d = -D_CH;
 	} else {
-		printf("Incorrect mode.\n");
+		ERROR("Incorrect mode.");
 		return -1;
 	}
 	

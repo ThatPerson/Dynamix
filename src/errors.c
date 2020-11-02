@@ -57,6 +57,7 @@ void calc_statistics(long double * vals, int length, long double * mean, long do
 	m2 = m2 / ((long double) length);
 	long double mdiff = m2 - powl(*mean, 2.);
 	if (mdiff < 0 && fabsl(mdiff) < 0.000001) {
+		ERROR("mdiff = %Lf, making negative.", mdiff);
 		// then all have converged to the same point and the std is 0. 
 		// but because floating points are ew, it will give 'nan' for sqrtl(-0.0000)
 		// so we just invert the sign. It's not pretty but ah well.
@@ -149,6 +150,10 @@ void * calc_errors(void *input) {
 			//if (i == 2 && k == 2)
 			//	printf("Iteration %d, R = %f\n", l, temp_R); // should be the same each time
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
+
+
+			LOG("%d %d %d prior: %f, backcalc: %f, new: %f, error: %f", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
+
 			//resid->relaxation[k].R = norm_rand(resid->temp_relaxation[k].R, (resid->temp_relaxation[k].Rerror)/2.);
 			//printf("%f, %f -> %f \n", resid->temp_relaxation[k].R, resid->temp_relaxation[k].Rerror, resid->relaxation[k].R);
 			/* Rerror is Monte-Carlo calculated 2 standard deviations; norm_rand takes 1 std */
@@ -162,8 +167,8 @@ void * calc_errors(void *input) {
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
-		simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
-
+		double min = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
+		LOG("%d %d min = %f; orig = %f", i, l, min, resid->min_val);
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
 		for (k = 0; k < params; k++) {

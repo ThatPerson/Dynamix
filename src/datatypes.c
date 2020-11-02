@@ -6,6 +6,17 @@
 #include <math.h>
 #include <complex.h>
 
+//#define LOGGING
+
+time_t start_time;
+
+#ifdef LOGGING
+#define LOG(a, args...) printf("LOG   %s(%s:%d %d) " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
+#else
+#define LOG(a, args...)
+#endif
+
+#define ERROR(a, args...) printf("ERROR %s(%s:%d %d) " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
 
 #define MOD_UNDEFINED	0
 #define MOD_SMF 		1						///< Simple Model Free

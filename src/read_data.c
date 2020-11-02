@@ -27,7 +27,7 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 	int len=255;
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		return -1;
 	}
 	int resid;
@@ -39,7 +39,7 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 			continue; // comment
 		int k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
 		if (k != 3)
-			printf("Error reading '%s'\n", line);
+			ERROR("Reading %s failed.", line);
 		resid = resid - 1; // 0 indexed in C
 		switch (dt) {
 			case DATA_S2NH:
@@ -110,7 +110,7 @@ int read_pp(struct Model *m, char *filename, unsigned int orient) {
 	int len=255;
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		return -1;
 	}
 	int resid;
@@ -121,7 +121,7 @@ int read_pp(struct Model *m, char *filename, unsigned int orient) {
 			continue; // comment
 		int k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
 		if (k != 3)
-			printf("Error reading line '%s'\n", line);
+			ERROR("Reading line '%s' failed.", line);
 		resid = resid -1; // index from 0
 		m->residues[resid].orients[orient].theta = theta;
 		m->residues[resid].orients[orient].phi = phi;
@@ -159,7 +159,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 	int len=255;
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		return -1;
 	}
 	int mode = 0;
@@ -184,7 +184,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 					m->residues[i].lim_relaxation += N_RELAXATION;
 					m->residues[i].relaxation = (struct Relaxation *) realloc(m->residues[i].relaxation, sizeof(struct Relaxation) * (m->residues[i].lim_relaxation));
 					if (m->residues[i].relaxation == NULL) {
-						printf("Pointer loss\n");
+						ERROR("Pointer loss");
 						fclose(fp); // clean up on the way out
 						exit(-1);
 					}
@@ -240,7 +240,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 		} else if (mode == 1) {
 			int k = sscanf(line, "%d %lf %lf\n", &resid, &R, &Re);
 			if (k != 3) {
-				printf("Read error.\n");
+				ERROR("Error reading line '%s'", line);
 			}/* else {
 				printf("%s : %d, %f %f\n", line, resid, R, Re);
 			}*/
@@ -303,7 +303,7 @@ int read_system_file(char *filename, struct Model * m) {
 
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		return -1;
 	}
 	int mode = 0;
@@ -339,7 +339,7 @@ int read_system_file(char *filename, struct Model * m) {
 			continue; // comment
 		if (strcmp(line, "#RELAXATION\n") == 0) {
 			if (n_resid == -1) {
-				printf("Error: Number of residues must be defined\n");
+				ERROR("Number of residues must be defined.");
 				return -1;
 			}
 
@@ -388,11 +388,11 @@ int read_system_file(char *filename, struct Model * m) {
 				t++;
 
 			if (t != 3) {
-				printf("Error: Error in reading one of S2, csisoN, csisoC\n");
+				ERROR("error reading one of S2*, csisoN, csisoC");
 				return -1;
 			}
 			if (q != 3 && (m->model == MOD_GAF || m->model == MOD_GAFT)) {
-				printf("Error: Error reading one of S2CH, S2CN, S2CC\n");
+				ERROR("error reading one of S2CH, S2CN, S2CC");
 				return -1;
 			}
 			
@@ -404,7 +404,7 @@ int read_system_file(char *filename, struct Model * m) {
 					t++;
 			}
 			if (t != N_OR) {
-				printf("Error: Error in reading orientations\n");
+				ERROR("error in reading orientations");
 				return -1;
 			}
 			mode = 1;
@@ -523,15 +523,15 @@ int read_system_file(char *filename, struct Model * m) {
 
 	/*Check requirements */
 	if (m->n_iter == 0) {
-		printf("Please provide N_ITER\n");
+		ERROR("Please provide N_ITER");
 		return -1;
 	}
 	if (m->model == MOD_UNDEFINED) {
-		printf("Please provide MODEL\n");
+		ERROR("Please provide MODEL");
 		return -1;
 	}
 	if (m->n_residues == 0){
-		printf("Please provide residue count\n");
+		ERROR("Please provide residue count");
 		return -1;
 	}
 
@@ -549,7 +549,7 @@ int print_system(struct Model *m, char *filename) {
 	FILE * fp;
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		return -1;
 	}
 	//fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);

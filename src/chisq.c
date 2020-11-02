@@ -62,7 +62,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				calc_R = SMF_R2(resid, relax, tau_eff, S2, MODE_13C);
 				break;
 			default:
-				printf("Unknown relaxation type: %d\n", relax->type);
+				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
 				break;
 		}
@@ -111,7 +111,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				calc_R = EMF_R2(resid, relax, taus_eff, S2s, tauf_eff, S2f, MODE_13C);
 				break;
 			default:
-				printf("Unknown relaxation type: %d\n", relax->type);
+				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
 				break;
 		}
@@ -156,7 +156,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				calc_R = GAF_13CR2(resid, relax, taus_eff, tauf_eff, sigs, sigf);
 				break;
 			default:
-				printf("Unknown relaxation type: %d\n", relax->type);
+				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
 				break;
 		}
@@ -200,7 +200,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				calc_R = EGAF_13CR2(resid, relax, taus_eff, tauf_eff, sigs, S2f);
 				break;
 			default:
-				printf("Unknown relaxation type: %d\n", relax->type);
+				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
 				break;
 		}
@@ -251,6 +251,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	}
 	
 	chisq += 100000 * violations;
+	if (violations > 0)
+		LOG("Chisq optimization had %d violations.", violations);
 
 	
 	if (model == MOD_DEMF || model == MOD_DEMFT) {
@@ -317,7 +319,7 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 	FILE * fp;
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
-		printf("%s not found.\n", filename);
+		ERROR("%s not found.", filename);
 		return -1;
 	}
 	int violations = 0;
