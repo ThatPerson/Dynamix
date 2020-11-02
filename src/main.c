@@ -17,6 +17,12 @@
 #include <time.h>
 #include <pthread.h>
 
+
+time_t start_time;
+
+#include "verification.h"
+
+
 void * run_residue(void *input);
 
 /**
@@ -251,6 +257,7 @@ void * run_residue(void *input) {
 int main(int argc, char * argv[]) {
 
 	/* Initialisation */
+	start_time = time(0);
 	srand((unsigned int)time(NULL));
 	initialise_dwig(HALF_PI, Dwig);
 
@@ -262,6 +269,8 @@ int main(int argc, char * argv[]) {
 		//printf("%s\n", argv[i]);
 		if (strcmp(argv[i], "-e") == 0)
 			err_mod = 1;
+		else if (strcmp(argv[i], "verify") == 0)
+			verify_all();
 		else
 			strcpy(system_file, argv[i]);
 	}
