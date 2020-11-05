@@ -228,7 +228,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	 *  for SMF, [tau, S2]
 	 */
 	double calc_R = 0;
-	double chisq = 0;
+	long double chisq = 0;
 	int violations = 0;
 	unsigned int i;
 	double alpha, beta, gamma;
@@ -249,11 +249,12 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, &violations);
 		chisq += ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
 	}
+	//dp += resid->n_relaxation;
 	
 	chisq += 100000 * violations;
-	if (violations > 0)
+	if (violations > 0) {
 		LOG("Chisq optimization had %d violations.", violations);
-
+	}
 	
 	if (model == MOD_DEMF || model == MOD_DEMFT) {
 		long double S2s = opts[1];
@@ -291,7 +292,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	//	chisq += 10*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
 	}
 	
-	return chisq; 
+	return (double) (chisq / resid->n_relaxation); 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
