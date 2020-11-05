@@ -82,10 +82,20 @@ void * calc_errors(void *input) {
 	unsigned int model = ((struct rrargs*)input)->model;
 	unsigned int or_variation = ((struct rrargs*)input)->or_variation;
 	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
+	char outputdir[255];
+	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
+
 	//double optim = resid->min_val;
 	//char outputdir[255];
 	//strcpy(outputdir, ((struct rrargs*)input)->outputdir);
-
+	FILE *errp;
+	char filename[300];
+	sprintf(filename, "%s/errors_%d.dat", outputdir, i+1);
+	errp = fopen(filename, "w");
+	if (errp == NULL) {
+		printf("%s not found.\n", filename);
+		return NULL;
+	}
 
 	unsigned int l, k, params = 0;
 	switch (model) {
@@ -171,9 +181,13 @@ void * calc_errors(void *input) {
 		LOG("%d %d min = %f; orig = %f", i, l, min, resid->min_val);
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
+
+		fprintf(errp, "%d\t%f", l+1, min);
 		for (k = 0; k < params; k++) {
 			resid->error_params[k][p] = opts[k];
+			fprintf(errp, "\t%Le", opts[k]);
 		}
+		fprintf(errp, "\n");
 		p++;
 
 
@@ -190,6 +204,7 @@ void * calc_errors(void *input) {
 	resid->S2CN = resid->S2CNb;
 
 	resid->error_calcs = p;
+	fclose(errp);
 	free(opts);
 	return NULL;
 }

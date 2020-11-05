@@ -32,7 +32,7 @@ set autoscale
 
 set xrange [0:56]
 #set yrange [1:1e5]
-set ytics ("-16" 1e-16, "-12" 1e-12, "-8" 1e-8)
+set ytics ("-12" 1e-12, "-8" 1e-8)
 
 plot 'demft/errors.dat' u 1:($4 > 0 ? $4 * 1e-9 : NaN):($5>0?$5*1e-9:NaN) w yerrorbars notitle
 
@@ -54,7 +54,7 @@ set ylabel "{/Symbol t}_{fast}"
 set logscale y
 set grid xtics
 unset ytics
-set ytics ("-20" 1e-20, "-16" 1e-16, "-12" 1e-12)
+set ytics ("-16" 1e-16, "-12" 1e-12)
 set autoscale
 
 set xrange [0:56]
@@ -62,8 +62,8 @@ set xrange [0:56]
 plot 'demft/errors.dat' u 1:($8 > 0 ? $8 * 1e-9 : NaN):($9>0?$9*1e-9:NaN) w yerrorbars notitle
 
 unset logscale y
-set ylabel "Ea_{slow} / kJ/mol"
-set ytics ("0" 0, "20" 20000, "40" 40000, "60" 60000)
+set ylabel "Ea_{s}"
+set ytics ("0" 0, "30" 30000)
 set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
 set grid xtics
 
@@ -71,8 +71,8 @@ set xrange [0:56]
 set yrange [0:60000]
 plot 'demft/errors.dat' u 1:($12 > 0 ? $12 : NaN):($13>0?$13:NaN) w yerrorbars notitle
 
-set ylabel "Ea_{fast} / kJ/mol"
-set ytics ("0" 0, "20" 20000, "40" 40000, "60" 60000)
+set ylabel "Ea_{f}"
+set ytics ("0" 0, "30" 30000)
 set xtics ("" 10, "" 20, "" 30, "" 40, "" 50)
 set grid xtics
 

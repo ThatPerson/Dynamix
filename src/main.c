@@ -428,6 +428,7 @@ int main(int argc, char * argv[]) {
 				RRA[i].resid = &(m.residues[current_residue + i]);
 				RRA[i].model = m.model;
 				RRA[i].n_iter = m.n_error_iter;
+				strcpy(RRA[i].outputdir, m.outputdir);
 				//strcpy(RRA[i].outputdir, m.outputdir);
 				//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
 				rc = pthread_create(&threads[i], &threadattr, calc_errors, (void *) &RRA[i]);
@@ -496,7 +497,7 @@ int main(int argc, char * argv[]) {
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, m.or_variation, file, params);
 		
-		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL) {
+		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL && m.or_variation == 0) {
 			// Print out 'effective S2' values.
 			double S2slow, S2fast;
 			double *S2[] = {&S2slow};
@@ -506,16 +507,34 @@ int main(int argc, char * argv[]) {
 			long double sigf[3] = {m.residues[l].parameters[5], m.residues[l].parameters[6], m.residues[l].parameters[7]};
 			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
 			S2[0] = &S2fast;
+
+			long double taus = m.residues[l].parameters[0];
+			long double tauf = m.residues[l].parameters[1];
+			if (m.model == MOD_GAFT) {
+				long double Eas = m.residues[l].parameters[8];
+				long double Eaf = m.residues[l].parameters[9];
+				taus *= expl(Eas / (RYD * 300));
+				tauf *= expl(Eaf / (RYD * 300));
+			}
+
 			GAF_S2(sigf, As, As, S2, 1, MODE_REAL);
-			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, m.residues[l].parameters[0], S2slow, m.residues[l].parameters[1], S2fast);
-		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL) {
+			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, taus, S2slow, tauf, S2fast);
+		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL && m.or_variation == 0) {
 			double S2slow;
 			double *S2[] = {&S2slow};
 			/* Approximate as just the S2NHs and S2NHf */
 			struct Orient *As[] = {&(m.residues[l].orients[OR_NH])};
 			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
 			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
-			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, m.residues[l].parameters[0], S2slow, m.residues[l].parameters[1], (double) m.residues[l].parameters[5]);
+			long double taus = m.residues[l].parameters[0];
+			long double tauf = m.residues[l].parameters[1];
+			if (m.model == MOD_EGAFT) {
+				long double Eas = m.residues[l].parameters[6];
+				long double Eaf = m.residues[l].parameters[7];
+				taus *= expl(Eas / (RYD * 300));
+				tauf *= expl(Eaf / (RYD * 300));
+			}
+			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, taus, S2slow, tauf, (double) m.residues[l].parameters[5]);
 			/* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */
 		}
 	}
