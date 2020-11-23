@@ -19,7 +19,7 @@ n_relax = lk[0]
 
 data = np.zeros((n+1, n_relax, lk[1]))
 
-fig,axs = plt.subplots(int(np.floor(n_relax / 3.)) + 1, 3, figsize=(8, 12), dpi=80)
+fig,axs = plt.subplots(int(np.floor(n_relax / 3.)) + 1, 3, figsize=(12, 30), dpi=80)
 
 
 
@@ -77,7 +77,7 @@ for ax in axs.flat:
 fig.tight_layout(h_pad=1)
 #plt.show(block=True)
 
-plt.savefig('output.eps', dpi=300, facecolor='w', edgecolor='w',
+plt.savefig('%s_backcalc.eps' % (folder), dpi=300, facecolor='w', edgecolor='w',
         orientation='portrait', papertype='a4', format='eps',
         transparent=False, bbox_inches=None, pad_inches=0.5,
         frameon=None, metadata=None)
