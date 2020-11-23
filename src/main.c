@@ -497,7 +497,7 @@ int main(int argc, char * argv[]) {
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, m.or_variation, file, params);
 		
-		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL && m.or_variation == 0) {
+		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL && m.or_variation != VARIANT_A) {
 			// Print out 'effective S2' values.
 			double S2slow, S2fast;
 			double *S2[] = {&S2slow};
@@ -519,7 +519,7 @@ int main(int argc, char * argv[]) {
 
 			GAF_S2(sigf, As, As, S2, 1, MODE_REAL);
 			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, taus, S2slow, tauf, S2fast);
-		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL && m.or_variation == 0) {
+		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL && m.or_variation != VARIANT_A) {
 			double S2slow;
 			double *S2[] = {&S2slow};
 			/* Approximate as just the S2NHs and S2NHf */
