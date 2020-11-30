@@ -369,7 +369,7 @@ int main(int argc, char * argv[]) {
 			}
 		}
 		if (bc_mod == 1) {
-			sprintf(fn_BC, "%s/bc_%d.csv", output_folder, i);
+			sprintf(fn_BC, "%s/bc_%d.csv", output_folder, i+1);
 			back_calculate(opts, resid, m.model, m.or_variation, fn_BC, params);
 
 			// int back_calculate(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
