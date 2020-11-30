@@ -14,7 +14,10 @@
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
-#include <time.h>
+#include <stdlib.h>  
+#include <time.h>   
+
+#include "verification.h"
 
 
 /**
@@ -61,12 +64,11 @@ int read_data_file(char *filename, struct Model * m) {
 	if (m->or_variation == VARIANT_A)
 		params += 3; // theta, phi
 
-	float param;
 	int res;
 	float S2NH, chisq;
 	int length = 0;
 	int length_d = 0;
-	int i;
+	unsigned int i;
 
 
 	while(fgets(line, len, fp)) {
@@ -118,8 +120,6 @@ int read_data_file(char *filename, struct Model * m) {
 int write_correlation_function_emf(char * fn, double T, double dT, long double taus, long double S2s, long double tauf, long double S2f) {
 	long double S2 = S2f * S2s;
 	FILE * fp;
-	char line[255];
-	int len = 255;
 
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
@@ -156,8 +156,6 @@ int write_correlation_function_emf(char * fn, double T, double dT, long double t
  */
 int write_correlation_function_smf(char * fn, double T, double dT, long double tau, long double S2) {
 	FILE * fp;
-	char line[255];
-	int len = 255;
 
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
@@ -189,14 +187,16 @@ int write_correlation_function_smf(char * fn, double T, double dT, long double t
 int main(int argc, char * argv[]) {
 
 	/* Initialisation */
+	start_time = time(0);
 	srand((unsigned int)time(NULL));
-	initialise_dwig();
+	initialise_dwig(HALF_PI, Dwig);
+
 
 	char system_file[255] = "";
 	char data_file[255] = "";
 	char output_folder[255] = "";
 	unsigned int i;
-	int err_mod = 0;
+	//int err_mod = 0;
 	unsigned int bc_mod = 0, cor_mod = 0;
 	for (i = 1; i < (unsigned int) argc; i++) {
 		//printf("%s\n", argv[i]);
@@ -278,8 +278,8 @@ int main(int argc, char * argv[]) {
 			sprintf(fn_CH, "%s/corr_%d_CH.dat", output_folder, i+1);
 
 			if (m.or_variation == VARIANT_A) {
-				theta = (double) opts[params-3];
-				phi = (double) opts[params-2];
+				alpha = (double) opts[params-3];
+				beta = (double) opts[params-2];
 				gamma = (double) opts[params-1];
 				for (j = 0; j < N_OR; j++) {
 					calculate_Y2(&(m.residues[i].orients[j]));

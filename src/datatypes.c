@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
-
+#include <stdlib.h>
+#include <time.h>    
 //#define LOGGING
 
 time_t start_time;
