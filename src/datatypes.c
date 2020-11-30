@@ -391,6 +391,9 @@ void free_all(struct Model *m) {
 		default: params = 0; break;
 	}
 
+	if (m->or_variation == VARIANT_A)
+		params += 3;
+
 	for (res = 0; res < m->n_residues; res++) {
 		if (m->residues[res].relaxation != NULL)
 			free(m->residues[res].relaxation);

@@ -428,6 +428,7 @@ int main(int argc, char * argv[]) {
 				RRA[i].resid = &(m.residues[current_residue + i]);
 				RRA[i].model = m.model;
 				RRA[i].n_iter = m.n_error_iter;
+				RRA[i].or_variation = m.or_variation;
 				strcpy(RRA[i].outputdir, m.outputdir);
 				//strcpy(RRA[i].outputdir, m.outputdir);
 				//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
