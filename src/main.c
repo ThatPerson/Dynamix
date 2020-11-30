@@ -37,7 +37,6 @@ void * run_residue(void *input) {
 	struct Model * m = ((struct rrargs*)input)->model;
 
 	unsigned int model = m->model;
-	unsigned int or_variation = m->or_variation;
 	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	char outputdir[255];
 	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
@@ -197,13 +196,24 @@ void * run_residue(void *input) {
 			opts[7] = (rand()%60000)/1.;
 		}
 
-		if (or_variation == VARIANT_A) {
+		if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
 			/* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
 			 * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
 			 */
+			opts[params - 6] = 0; // papbC
+			opts[params - 5] = 0; // papbN
+			opts[params - 4] = (rand() % 20000)/1.; // kex
 			opts[params - 3] = 0; // alpha
 			opts[params - 2] = 0; // beta
 			opts[params - 1] = 0; // gamma
+		} else if (m->or_variation == VARIANT_A) {
+			opts[params - 3] = 0; // alpha
+			opts[params - 2] = 0; // beta
+			opts[params - 1] = 0; // gamma
+		} else if (m->rdc == RDC_ON) {
+			opts[params - 3] = 0; // papbC
+			opts[params - 2] = 0; // papbN
+			opts[params - 1] = (rand() % 20000)/1.; // kex
 		}
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);

@@ -22,9 +22,13 @@ for model in sys.argv[1:]:
 	adj = 0
 	params = -10
 	modeln = model
-	if (model[0] == "v"):
-		modeln = model[1:]
-		adj = 3
+	while (modeln[0] == 'v' or modeln[0] == 'r'):
+		if (modeln[0] == 'v'):
+			adj += 3
+		else:
+			adj += 3 # as only fitting 15N for now.
+		modeln = modeln[1:]
+
 
 	if (modeln == "smf"):
 		params = 2
@@ -46,6 +50,7 @@ for model in sys.argv[1:]:
 		params = 6
 	elif (modeln == "egaft"):
 		params = 8
+
 
 	params = params + adj
 	print("%s Params: %d" % (model, params))

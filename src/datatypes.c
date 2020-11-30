@@ -106,6 +106,8 @@ time_t start_time;
 #define T_UP			1000000000
 #define T_S				9
 
+#define RDC_ON			1
+#define RDC_OFF			0
 
 long double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
 
@@ -141,6 +143,7 @@ struct Model {
 	unsigned int params;
 	struct Residue * residues;
 	unsigned int n_residues;
+	unsigned int rdc;
 	unsigned int nthreads;
 	unsigned int or_variation; // VARIANT_A or INVARIANT_A.
 	int error_mode;

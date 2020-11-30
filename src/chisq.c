@@ -210,6 +210,40 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 		printf("Model not yet implemented.\n");
 		calc_R = -1;
 	}
+	long double papbN=0,papbC=0,kex=0, RDC=0, fm = 1;
+	if (m->rdc == RDC_ON) {
+		if (m->or_variation == VARIANT_A) {
+			papbC = opts[m->params - 6];
+			papbN = opts[m->params - 5];
+			kex  = opts[m->params - 4];
+		} else {
+			papbC = opts[m->params - 3];
+			papbN = opts[m->params - 2];
+			kex  = opts[m->params - 1];
+		}
+
+		if (papbC < 0)
+			(*violations)++;
+		if (papbN < 0)
+			(*violations)++;
+		if (kex < 0)
+			(*violations)++;
+		
+		fm = relax->field / 700.;
+		if (relax->type == R_13CR1p) {
+			fm *= 9.869683408806043/3.976489314034722;
+			RDC = papbC * sq(fm) * kex;
+			RDC /= (sq(relax->w1) + sq(kex));
+		} else if (relax->type == R_15NR1p) {
+			fm *= 1;
+			RDC = papbN * sq(fm) * kex;
+			RDC /= (sq(relax->w1) + sq(kex));
+		} else {
+			RDC = 0;
+		}
+		calc_R += (double) RDC;
+	}
+
 	return calc_R;
 }
 
