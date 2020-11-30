@@ -79,9 +79,9 @@ void * calc_errors(void *input) {
 	unsigned int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i+1);
 	struct Residue * resid = ((struct rrargs*)input)->resid;
-	unsigned int model = ((struct rrargs*)input)->model;
-	unsigned int or_variation = ((struct rrargs*)input)->or_variation;
 	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
+	struct Model * m = ((struct rrargs*)input)->model;
+
 	char outputdir[255];
 	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 
@@ -98,22 +98,7 @@ void * calc_errors(void *input) {
 	}
 
 	unsigned int l, k, params = 0;
-	switch (model) {
-		case MOD_SMF: params = 2; break;
-		case MOD_EMF: params = 3; break;
-		case MOD_EMFT: params= 5; break;
-		case MOD_SMFT: params= 3; break;
-		case MOD_DEMF: params = 4; break;
-		case MOD_DEMFT: params= 6; break;
-		case MOD_GAF: params = 8; break;
-		case MOD_GAFT:params = 10; break;
-		case MOD_EGAF: params = 6; break;
-		case MOD_EGAFT: params = 8; break;
-		default: params = 0; break;
-	}
-	if (or_variation == VARIANT_A)
-                params += 3; // alpha, beta, gamma
-
+	params = m->params;
 	//printf("%d\n", params);
 	long double *opts;
 	opts = (long double *) malloc (sizeof(long double) * params);
@@ -156,7 +141,7 @@ void * calc_errors(void *input) {
 			resid->relaxation[k].type = resid->temp_relaxation[k].type;
 			resid->relaxation[k].T = resid->temp_relaxation[k].T;
 
-			temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), model, &ignore);
+			temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), m, &ignore);
 			//if (i == 2 && k == 2)
 			//	printf("Iteration %d, R = %f\n", l, temp_R); // should be the same each time
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
@@ -177,7 +162,7 @@ void * calc_errors(void *input) {
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
-		double min = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
+		double min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
 		LOG("%d %d min = %f; orig = %f", i, l, min, resid->min_val);
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);

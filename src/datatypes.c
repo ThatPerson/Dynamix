@@ -138,6 +138,7 @@ struct Model {
 	unsigned int max_func_evals, max_iter, n_iter, n_error_iter;
 	char outputdir[255];
 	unsigned int model;
+	unsigned int params;
 	struct Residue * residues;
 	unsigned int n_residues;
 	unsigned int nthreads;
@@ -274,9 +275,8 @@ struct Relaxation {
 struct rrargs {
 	unsigned int i;
 	struct Residue * resid;
-	unsigned int model;
+	struct Model * model;
 	unsigned int n_iter;
-	unsigned int or_variation;
 	char outputdir[255];
 };
 
@@ -379,21 +379,7 @@ void initialise_dwig(double angle, long double Dw[5][5]) {
  */
 void free_all(struct Model *m) {
 	unsigned int res, k;
-	unsigned int params;
-	switch (m->model) {
-		case MOD_SMF: params = 2; break;
-		case MOD_EMF: params = 3; break;
-		case MOD_EMFT:params = 5; break;
-		case MOD_SMFT:params = 3; break;
-		case MOD_DEMF: params = 4; break;
-		case MOD_DEMFT: params= 6; break;
-		case MOD_GAF: params = 8; break;
-		case MOD_GAFT: params = 10; break;
-		default: params = 0; break;
-	}
-
-	if (m->or_variation == VARIANT_A)
-		params += 3;
+	unsigned int params = m->params;
 
 	for (res = 0; res < m->n_residues; res++) {
 		if (m->residues[res].relaxation != NULL)

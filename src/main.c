@@ -34,8 +34,10 @@ void * run_residue(void *input) {
 	unsigned int i = ((struct rrargs*)input)->i;
 	printf("\tThread %d alive...\n", i + 1);
 	struct Residue * resid = ((struct rrargs*)input)->resid;
-	unsigned int model = ((struct rrargs*)input)->model;
-	unsigned int or_variation = ((struct rrargs*)input)->or_variation;
+	struct Model * m = ((struct rrargs*)input)->model;
+
+	unsigned int model = m->model;
+	unsigned int or_variation = m->or_variation;
 	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	char outputdir[255];
 	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
@@ -52,21 +54,7 @@ void * run_residue(void *input) {
 	//printf("Number of relaxations: %d\n", resid->n_relaxation);
 	unsigned int l, k;
 	unsigned int params = 0;
-	switch (model) {
-		case MOD_SMF: params = 2; break;
-		case MOD_EMF: params = 3; break;
-		case MOD_EMFT: params= 5; break;
-		case MOD_SMFT: params= 3; break;
-		case MOD_DEMF: params = 4; break;
-		case MOD_DEMFT: params= 6; break;
-		case MOD_GAF: params = 8; break;
-		case MOD_GAFT:params = 10; break;
-		case MOD_EGAF: params = 6; break;
-		case MOD_EGAFT: params = 8; break;
-		default: params = 0; break;
-	}
-	if (or_variation == VARIANT_A)
-		params += 3; // alpha, beta, gamma
+	params = m->params;
 	//printf("%d\n", params);
 	long double *opts;
 	opts = (long double *) malloc (sizeof(long double) * params);
@@ -219,7 +207,7 @@ void * run_residue(void *input) {
 		}
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
-		double val = simplex(optimize_chisq, opts, params, 1.0e-16, 1, resid, model, or_variation);
+		double val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
 		if (val >= 1000000 || val < 0) {
 			val = -1;
 			for (k = 0; k < params; k++) {
@@ -357,8 +345,7 @@ int main(int argc, char * argv[]) {
 			if (current_residue + i >= m.n_residues)
 				continue;
 			RRA[i].resid = &(m.residues[current_residue + i]);
-			RRA[i].model = m.model;
-			RRA[i].or_variation = m.or_variation;
+			RRA[i].model = &m;
 			RRA[i].n_iter = m.n_iter;
 			strcpy(RRA[i].outputdir, m.outputdir);
 			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
@@ -387,24 +374,9 @@ int main(int argc, char * argv[]) {
 		free_all(&m);
 		return -1;
 	}
-	unsigned int params;
+	unsigned int params = m.params;
 	FILE * ep = NULL;
 	
-	switch (m.model) {
-		case MOD_SMF: params = 2; break;
-		case MOD_EMF: params = 3; break;
-		case MOD_EMFT:params = 5; break;
-		case MOD_SMFT:params = 3; break;
-		case MOD_DEMF: params = 4; break;
-		case MOD_DEMFT: params= 6; break;
-		case MOD_GAF: params = 8; break;
-		case MOD_GAFT:params = 10; break;
-		case MOD_EGAF: params = 6; break;
-		case MOD_EGAFT: params = 8; break;
-		default: params = 0; break;
-	}
-	if (m.or_variation == VARIANT_A)
-		params += 3;
 	
 	
 	if (m.error_mode == 1) {
@@ -426,9 +398,8 @@ int main(int argc, char * argv[]) {
 				if (current_residue + i >= m.n_residues)
 					continue;
 				RRA[i].resid = &(m.residues[current_residue + i]);
-				RRA[i].model = m.model;
+				RRA[i].model = &m;
 				RRA[i].n_iter = m.n_error_iter;
-				RRA[i].or_variation = m.or_variation;
 				strcpy(RRA[i].outputdir, m.outputdir);
 				//strcpy(RRA[i].outputdir, m.outputdir);
 				//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
@@ -496,7 +467,7 @@ int main(int argc, char * argv[]) {
 			fprintf(ep, "\n");
 		}
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
-		back_calculate((m.residues[l].parameters), &(m.residues[l]), m.model, m.or_variation, file, params);
+		back_calculate((m.residues[l].parameters), &(m.residues[l]), &m, file, params);
 		
 		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL && m.or_variation != VARIANT_A) {
 			// Print out 'effective S2' values.

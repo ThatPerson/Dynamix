@@ -331,6 +331,7 @@ int read_system_file(char *filename, struct Model * m) {
 	m->model = MOD_UNDEFINED;
 	m->or_variation = INVARIANT_A;
 	m->n_residues = 0;
+	m->params = 0;
 	m->nthreads = 1;
 
 
@@ -415,27 +416,37 @@ int read_system_file(char *filename, struct Model * m) {
 				continue;
 			sscanf(line, "%255s = %255s\n", key, val);
 			if (strcmp(key, "MODEL") == 0) {
-				if (strcmp(val, "SMF") == 0)
+				if (strcmp(val, "SMF") == 0) {
+					m->params = 2;
 					m->model = MOD_SMF;
-				else if (strcmp(val, "EMF") == 0)
+				} else if (strcmp(val, "EMF") == 0) {
+					m->params = 3;
 					m->model = MOD_EMF;
-				else if (strcmp(val, "EMFT") == 0)
+				} else if (strcmp(val, "EMFT") == 0) {
+					m->params = 5;
 					m->model = MOD_EMFT;
-				else if (strcmp(val, "SMFT") == 0)
+				} else if (strcmp(val, "SMFT") == 0) {
+					m->params = 3;
 					m->model = MOD_SMFT;
-				else if (strcmp(val, "GAF") == 0)
+				} else if (strcmp(val, "GAF") == 0) {
+					m->params = 8;
 					m->model = MOD_GAF;
-				else if (strcmp(val, "GAFT") == 0)
+				} else if (strcmp(val, "GAFT") == 0) {
+					m->params = 10;
 					m->model = MOD_GAFT;
-				else if (strcmp(val, "DEMF") == 0)
+				} else if (strcmp(val, "DEMF") == 0) {
+					m->params = 4;
 					m->model = MOD_DEMF;
-				else if (strcmp(val, "DEMFT") == 0)
+				} else if (strcmp(val, "DEMFT") == 0) {
+					m->params = 6;
 					m->model = MOD_DEMFT;
-				else if (strcmp(val, "EGAF") == 0)
+				} else if (strcmp(val, "EGAF") == 0) {
+					m->params = 6;
 					m->model = MOD_EGAF;
-				else if (strcmp(val, "EGAFT") == 0)
+				} else if (strcmp(val, "EGAFT") == 0) {
+					m->params = 8;
 					m->model = MOD_EGAFT;
-				else {
+				} else {
 					printf("Model %s unknown.\n", val);
 					return -1;
 				}
@@ -448,6 +459,7 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
 			} else if (strcmp(key, "OR_VARY") == 0) {
+				m->params += 3;
 				m->or_variation = VARIANT_A;
 			} else if (strcmp(key, "CSISON") == 0) {
 				strcpy(csisoN, val);

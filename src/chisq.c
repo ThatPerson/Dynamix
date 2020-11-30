@@ -21,9 +21,11 @@
  *  Int returning number of violations of constraints (for chisq)
  * @return calculated R value
  */
-double back_calc(long double * opts, struct Residue * resid, struct Relaxation * relax, unsigned int model, int *violations) {
+double back_calc(long double * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
 	double calc_R = 0;
 	unsigned int i;
+
+	unsigned int model = m->model;
 	if (relax->R <= 0)
 		return -1;
 	
@@ -222,11 +224,14 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
  *  MOD_SMF etc.
  * @return Returns chisq value.
  */
-double optimize_chisq(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, unsigned int params) {
+double optimize_chisq(long double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
 	 */
+
+	unsigned int model = m->model;
+	unsigned int or_variations = m->or_variation;
 	double calc_R = 0;
 	long double chisq = 0;
 	int violations = 0;
@@ -246,7 +251,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
 	
 	
 	for (i = 0; i < resid->n_relaxation; i++) {
-		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, &violations);
+		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
 		chisq += ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
 	}
 	//dp += resid->n_relaxation;
@@ -309,13 +314,14 @@ double optimize_chisq(long double * opts, struct Residue * resid, unsigned int m
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
+int back_calculate(long double * opts, struct Residue * resid, struct Model * m, char *filename, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
 	 */
 	//if (opts[0] == -1)
 	//	return -1;
+	unsigned int or_variations = m->or_variation;
 	double calc_R = 0;
 	FILE * fp;
 	fp = fopen(filename, "w");
@@ -339,7 +345,7 @@ int back_calculate(long double * opts, struct Residue * resid, unsigned int mode
 	}
 	
 	for (i = 0; i < resid->n_relaxation; i++) {
-		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), model, &violations);
+		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
 
 		fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 
