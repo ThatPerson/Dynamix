@@ -236,18 +236,16 @@ int main(int argc, char * argv[]) {
 	ret = read_data_file(data_file, &m);
 	long double * opts;
 	unsigned int j;
-	long double S2NH, S2CN, S2CH;
+	long double S2NH=0, S2CN=0, S2CH=0;
 	double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf;
-	long double S2s, S2f;
-	long double tau, taus, tauf;
 	long double temp = 300;
 	double T = 200; // 1000
 	double dT = 0.01; // 0.01
 	double alpha, beta, gamma;
-	char fn_NH[255];
-	char fn_CN[255];
-	char fn_CH[255];
-	char fn_BC[255];
+	char fn_NH[355];
+	char fn_CN[355];
+	char fn_CH[355];
+	char fn_BC[355];
 
 	unsigned int params = 0;
 	switch (m.model) {
@@ -267,6 +265,7 @@ int main(int argc, char * argv[]) {
 		params += 3; // theta, phi
 
 
+	long double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
 	struct Residue * resid;
 	for (i = 0; i < m.n_residues; i++) {
 		opts = (m.residues[i].parameters);
@@ -292,7 +291,6 @@ int main(int argc, char * argv[]) {
 				S2NH = (double) opts[1];
 				S2CN = (double) opts[1];
 				S2CH = (double) opts[1];
-				long double Ea = 0;
 				if (m.model == MOD_SMFT) {
 					Ea = opts[2];
 					tau *= expl(Ea / (RYD * temp));
@@ -305,7 +303,6 @@ int main(int argc, char * argv[]) {
 				S2s = opts[1];
 				tauf = opts[2];
 				S2f = m.residues[i].S2NH / S2s;
-				long double Eas = 0, Eaf = 0;
 				if (m.model == MOD_EMFT) {
 					Eas = opts[3];
 					Eaf = opts[4];
@@ -330,7 +327,6 @@ int main(int argc, char * argv[]) {
 				tauf = opts[1];
 				long double sigs[3] = {opts[2], opts[3], opts[4]};
 				long double sigf[3] = {opts[5], opts[6], opts[7]};
-				long double Eas = 0, Eaf = 0;
 				if (m.model == MOD_GAFT) {
 					Eas = opts[8];
 					Eaf = opts[9];
@@ -348,7 +344,6 @@ int main(int argc, char * argv[]) {
 				tauf = opts[1];
 				long double sigs[3] = {opts[2], opts[3], opts[4]};
 				S2f = opts[5];
-				long double Eas = 0, Eaf = 0;
 				if (m.model == MOD_GAFT) {
 					Eas = opts[6];
 					Eaf = opts[7];
