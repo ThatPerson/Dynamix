@@ -572,8 +572,8 @@ int print_system(struct Model *m, char *filename) {
 	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
 	fprintf(fp, "Params: %d\nN threads: %d\n", m->params, m->nthreads);
 	fprintf(fp, "Error Mode: %s\n", (m->error_mode == 1)?"ON":"OFF");
-	fprintf(fp, "RDC: %s\n", (m->rdc == 1)?"ON":"OFF");
-	fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == 1)?"ON":"OFF");
+	fprintf(fp, "RDC: %s\n", (m->rdc == RDC_ON)?"ON":"OFF");
+	fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == VARIANT_A)?"ON":"OFF");
 
 
 
