@@ -94,16 +94,16 @@ for model in sys.argv[1:]:
 			corr_f = (2 * params * (params + 1)) / (n_data - params - 1)
 			AICc = AIC + corr_f
 		else:
-			AIC = -1
-			BIC = -1
-			AICc = -1
+			AIC = 1e9
+			BIC = 1e9
+			AICc = 1e9
 
-		if (AIC < 0 or AIC > 100000):
-			AIC = -1
-		if (BIC < 0 or BIC > 100000):
-			BIC = -1
-		if (AICc < 0 or AICc > 100000):
-			AICc = -1
+		if (AIC < 0 or AIC > 1000000):
+			AIC = 1e9 
+		if (BIC < 0 or BIC > 1000000):
+			BIC = 1e9
+		if (AICc < 0 or AICc > 1000000):
+			AICc = 1e9
 
 		results[i-1, c, :] = [AIC, BIC, AICc]
 	c = c + 1
@@ -130,19 +130,19 @@ with open("AIC.csv", "w") as aic, open('BIC.csv', 'w') as bic, open('AICc.csv', 
 		bicmin = np.argmin(results[i, :, 1])
 		aiccmin = np.argmin(results[i, :, 2])
 
-		if (-1 not in results[i, :, 0]):
+		if (-1 not in results[i, :, 0] and sum(results[i, :, 0]) != num_mods * 1e9):
 			aic.write(", %s\n" % (modellist[aicmin]))
 			modelbins[aicmin, 0] = modelbins[aicmin, 0] + 1
 		else:
 			aic.write(", \n")
 
-		if (-1 not in results[i, :, 1]):
+		if (-1 not in results[i, :, 1] and sum(results[i, :, 1]) != num_mods * 1e9):
 			bic.write(", %s\n" % (modellist[bicmin]))
 			modelbins[bicmin, 1] = modelbins[bicmin, 1] + 1
 		else:
 			bic.write(", \n")
 
-		if (-1 not in results[i, :, 2]):
+		if (-1 not in results[i, :, 2] and sum(results[i, :, 2]) != num_mods * 1e9):
 			aicc.write(", %s\n" % (modellist[aiccmin]))
 			modelbins[aiccmin, 2] = modelbins[aiccmin, 2] + 1
 		else:
