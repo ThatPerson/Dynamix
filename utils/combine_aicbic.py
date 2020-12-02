@@ -26,7 +26,7 @@ for model in sys.argv[1:]:
 		if (modeln[0] == 'v'):
 			adj += 3
 		else:
-			adj += 3 # as only fitting 15N for now.
+			adj += 2 # as only fitting 15N for now.
 		modeln = modeln[1:]
 
 
@@ -68,35 +68,57 @@ for model in sys.argv[1:]:
 		err_R = x[:, 3]
 		n_data = np.size(calc_R)
 		sigma = err_R / 2.
-		## errors are 2sigma (2 standard deviations). So sigma is err_R/2
-		expFun = -np.power(calc_R - exp_R, 2.) / (2 * np.power(sigma, 2.))
-		divisor = np.sqrt(2 * np.pi * np.power(sigma, 2.))
 
-		errF = np.exp(expFun) / divisor
-		
-		LerrF = np.log(errF)
-		
-		
-		for qw in range(0, np.size(calc_R)):
-			if (calc_R[qw] < 0): # no fit
-				LerrF[qw] = 0
-				n_data = n_data - 1
-		
-		#LerrF[LerrF < 1E-308] = 0 # not entirely sure how valid this is
-		#print(LerrF)
-		logv = np.sum(LerrF)
-		
-		AIC = 2 * params - 2 * logv
-		BIC = params * np.log(n_data) - 2 * logv
 
-		#adjusted AIC
-		if (n_data - params - 1 > 0):
-			corr_f = (2 * params * (params + 1)) / (n_data - params - 1)
-			AICc = AIC + corr_f
-		else:
+		# from 'Solid-State NMR Provides Evidence for Small-Amplitude Slow Domain Motions in a Multispanning Transmembrane α-Helical Protein'
+
+		chisq = 0
+
+		for i in range(0, len(calc_R)):
+			c = np.power((exp_R[i] - calc_R[i]), 2.) / np.power(err_R[i], 2.)
+			chisq += c
+
+		df = len(calc_R) - params - 1
+		if (df <= 0 ):
 			AIC = 1e9
 			BIC = 1e9
 			AICc = 1e9
+			results[i-1, c, :] = [AIC, BIC, AICc]
+			continue
+
+		AIC = chisq + 2 * params
+		BIC = chisq + params * np.log(len(calc_R))
+		AICc = AIC + ((2 * params * (params + 1)) / df)
+
+		## errors are 2sigma (2 standard deviations). So sigma is err_R/2
+		#expFun = -np.power(calc_R - exp_R, 2.) / (2 * np.power(sigma, 2.))
+		#divisor = np.sqrt(2 * np.pi * np.power(sigma, 2.))
+
+		#errF = np.exp(expFun) / divisor
+		
+		#LerrF = np.log(errF)
+		
+		
+		#for qw in range(0, np.size(calc_R)):
+		#	if (calc_R[qw] < 0): # no fit
+		#		LerrF[qw] = 0
+		#		n_data = n_data - 1
+		
+		#LerrF[LerrF < 1E-308] = 0 # not entirely sure how valid this is
+		#print(LerrF)
+		#logv = np.sum(LerrF)
+		
+		#AIC = 2 * params - 2 * logv
+		#BIC = params * np.log(n_data) - 2 * logv
+
+		#adjusted AIC
+		#if (n_data - params - 1 > 0):
+		#	corr_f = (2 * params * (params + 1)) / (n_data - params - 1)
+		#	AICc = AIC + corr_f
+		#else:
+		#	AIC = 1e9#
+		#	BIC = 1e9
+		#	AICc = 1e9
 
 		if (AIC < 0 or AIC > 1000000):
 			AIC = 1e9 

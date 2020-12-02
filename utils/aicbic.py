@@ -64,42 +64,24 @@ with open(sys.argv[3], "w") as q:
 		n_data = np.size(calc_R)
 
 
+		# from 'Solid-State NMR Provides Evidence for Small-Amplitude Slow Domain Motions in a Multispanning Transmembrane α-Helical Protein'
 
+		chisq = 0
 
-		#exp_R[err_R == -1] = calc_R[err_R == -1]
-		#err_R[err_R == -1
+		for i in range(0, len(calc_R)):
+			c = np.power((exp_R[i] - calc_R[i]), 2.) / np.power(err_R[i], 2.)
+			chisq += c
 
-		sigma = err_R / 2.
-		## errors are 2sigma (2 standard deviations). So sigma is err_R/2
-
-		expFun = -np.power(calc_R - exp_R, 2.) / (2 * np.power(sigma, 2.))
-		divisor = np.sqrt(2 * np.pi * np.power(sigma, 2.))
-
-		errF = np.exp(expFun) / divisor
-		
-		LerrF = np.log(errF)
-		
-		
-		for qw in range(0, np.size(calc_R)):
-			if (calc_R[qw] < 0): # no fit
-				LerrF[qw] = 0
-				n_data = n_data - 1
-		
-		#LerrF[LerrF < 1E-308] = 0 # not entirely sure how valid this is
-		#print(LerrF)
-		logv = np.sum(LerrF)
-		
-		AIC = 2 * params - 2 * logv
-		BIC = params * np.log(n_data) - 2 * logv
-
-		#adjusted AIC
-		if (n_data - params - 1 > 0):
-			corr_f = (2 * params * (params + 1)) / (n_data - params - 1)
-			AICc = AIC + corr_f
+		df = len(calc_R) - params - 1
+		if (df <= 0 ):
+			AIC = 1e9
+			BIC = 1e9
+			AICc = 1e9
 		else:
-			AIC = -1
-			BIC = -1
-			AICc = -1
+			AIC = chisq + 2 * params
+			BIC = chisq + params * np.log(len(calc_R))
+			AICc = AIC + ((2 * params * (params + 1)) / df)
+
 
 		#print("%d, %f, %f\n"% (i, AIC, BIC))
 		q.write("%d, %f, %f, %f\n"% (i, AIC, BIC, AICc))
