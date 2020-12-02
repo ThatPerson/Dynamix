@@ -79,7 +79,7 @@ for model in sys.argv[1:]:
 			chisq += ctmp
 
 		df = len(calc_R) - params - 1
-		if (df <= 0 ):
+		if (df <= 0 or chisq == 0):
 			AIC = 1e9
 			BIC = 1e9
 			AICc = 1e9
