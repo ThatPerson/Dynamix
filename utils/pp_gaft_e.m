@@ -74,7 +74,7 @@ unset logscale y
 set xrange [0:56]
 set yrange [0:30]
 
-plot 'gaft/errors.dat' u 1:($8 > 0 ? $8 * (180./3.141593) : NaN):($9>0?$9 * (180.*3.141593):NaN) w yerrorbars notitle
+plot 'gaft/errors.dat' u 1:($8 > 0 ? $8 * (180./3.141593) : NaN):($9>0?$9 * (180./3.141593):NaN) w yerrorbars notitle
 
 
 set ylabel "{/Symbol s}_{B}^{slow}"
@@ -84,7 +84,7 @@ unset logscale y
 set xrange [0:56]
 set yrange [0:30]
 
-plot 'gaft/errors.dat' u 1:($10 > 0 ? $10 * (180./3.141593) : NaN):($11>0?$11 * (180.*3.141593):NaN) w yerrorbars notitle
+plot 'gaft/errors.dat' u 1:($10 > 0 ? $10 * (180./3.141593) : NaN):($11>0?$11 * (180./3.141593):NaN) w yerrorbars notitle
 
 
 set ylabel "{/Symbol s}_{G}^{slow}"
@@ -95,7 +95,7 @@ set xrange [0:56]
 set yrange [0:30]
 set xlabel "Peptide plane number (^{15}N_{i})"
 
-plot 'gaft/errors.dat' u 1:($12 > 0 ? $12 * (180./3.141593) : NaN):($13>0?$13 * (180.*3.141593):NaN) w yerrorbars notitle
+plot 'gaft/errors.dat' u 1:($12 > 0 ? $12 * (180./3.141593) : NaN):($13>0?$13 * (180./3.141593):NaN) w yerrorbars notitle
 
 unset multiplot
 
@@ -117,7 +117,7 @@ unset logscale y
 set xrange [0:56]
 set yrange [0:30]
 
-plot 'gaft/errors.dat' u 1:($14 > 0 ? $14 * (180./3.141593) : NaN):($15>0?$15 * (180.*3.141593):NaN) w yerrorbars notitle
+plot 'gaft/errors.dat' u 1:($14 > 0 ? $14 * (180./3.141593) : NaN):($15>0?$15 * (180./3.141593):NaN) w yerrorbars notitle
 
 
 set ylabel "{/Symbol s}_{B}^{fast}"
@@ -127,7 +127,7 @@ unset logscale y
 set xrange [0:56]
 set yrange [0:30]
 
-plot 'gaft/errors.dat' u 1:($16 > 0 ? $16 * (180./3.141593) : NaN):($17>0?$17 * (180.*3.141593):NaN) w yerrorbars notitle
+plot 'gaft/errors.dat' u 1:($16 > 0 ? $16 * (180./3.141593) : NaN):($17>0?$17 * (180./3.141593):NaN) w yerrorbars notitle
 
 
 set ylabel "{/Symbol s}_{G}^{fast}"
@@ -138,4 +138,4 @@ set xrange [0:56]
 set yrange [0:30]
 set xlabel "Peptide plane number (^{15}N_{i})"
 
-plot 'gaft/errors.dat' u 1:($18 > 0 ? $18 * (180./3.141593) : NaN):($19>0?$19 * (180.*3.141593):NaN) w yerrorbars notitle
+plot 'gaft/errors.dat' u 1:($18 > 0 ? $18 * (180./3.141593) : NaN):($19>0?$19 * (180./3.141593):NaN) w yerrorbars notitle
