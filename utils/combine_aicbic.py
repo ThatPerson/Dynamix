@@ -74,9 +74,9 @@ for model in sys.argv[1:]:
 
 		chisq = 0
 
-		for i in range(0, len(calc_R)):
-			c = np.power((exp_R[i] - calc_R[i]), 2.) / np.power(err_R[i], 2.)
-			chisq += c
+		for il in range(0, len(calc_R)):
+			ctmp = np.power((exp_R[il] - calc_R[il]), 2.) / np.power(err_R[il], 2.)
+			chisq += ctmp
 
 		df = len(calc_R) - params - 1
 		if (df <= 0 ):
