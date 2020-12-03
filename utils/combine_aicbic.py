@@ -1,9 +1,16 @@
-## https://en.wikipedia.org/wiki/Maximum_likelihood_estimation - equation under "Continuous distribution, continuous parameter space" - normal distribution PDF.
+### todo: add in order parameter calculation
+
+### note that you can't directly compare the chisq outputs from Dynamix because different models include different numbers of order paremters.
+### (eg SMF and EMF only fit to S2NH as this is the dominant one. In principle they could be fit to the others too but this leads to worse fits).
+### as the order parameter contribution is x10 it follows that this can lead to a huge difference. Instead you should use the output of this
+### (which only fits to relaxation data note, not order parameters - need to add this!)
+
 
 # https://www-cdf.fnal.gov/physics/statistics/recommendations/modeling.html
 
 import sys
 import numpy as np
+import models
 # arguments are python aicbic.py FOLDER modeltype OUTPUTFILE
 # then we read FOLDER/backcalc_N.dat from N=1-56
 # for each, 
@@ -22,7 +29,7 @@ for model in sys.argv[1:]:
 	adj = 0
 	params = -10
 	modeln = model
-	while (modeln[0] == 'v' or modeln[0] == 'r'):
+	'''while (modeln[0] == 'v' or modeln[0] == 'r'):
 		if (modeln[0] == 'v'):
 			adj += 3
 		else:
@@ -52,7 +59,11 @@ for model in sys.argv[1:]:
 		params = 8
 
 
-	params = params + adj
+	params = params + adj'''
+	if (model in models.mds):
+		params = models.mds[model]['n']
+	else:
+		exit(-1)
 	print("%s Params: %d" % (model, params))
 	if (params <= 0):
 		print("Incorrect model specifier")

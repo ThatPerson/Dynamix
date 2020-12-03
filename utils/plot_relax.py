@@ -9,77 +9,93 @@ import matplotlib.pyplot as plt
 # then we read FOLDER/backcalc_N.dat from N=1-56
 # for each, 
 
-folder = sys.argv[1]
-n = int(sys.argv[2])
+def run_plot(folder):
 
-k = np.loadtxt("%s/backcalc_2.dat" % (folder))
-lk = (np.shape(k))
+	# TODO: read in final.dat length
+	n = 0 #int(sys.argv[2])
+	with open('%s/final.dat' % (folder), 'r') as f:
+		for l in f:
+			n = n + 1
+	print(n)
+	k = np.loadtxt("%s/backcalc_2.dat" % (folder))
+	lk = (np.shape(k))
 
-n_relax = lk[0]
+	n_relax = lk[0]
 
-data = np.zeros((n+1, n_relax, lk[1]))
+	data = np.zeros((n+1, n_relax, lk[1]))
 
-fig,axs = plt.subplots(int(np.floor(n_relax / 3.)) + 1, 3, figsize=(8, 12), dpi=80)
-
-
-
-curr_x = 0
-curr_y = 0
-
-for i in range(1, n+1):
-	data[i, :, :] = np.loadtxt("%s/backcalc_%d.dat" % (folder, i))
-
-x = np.arange(1, n+2)
-
-types = ['15N R1', '15N R1p', '13C R1', '13C R1p']
-
-for i in range(0, n_relax):
-	print(np.shape(x))
-	print(np.shape(data[:, i, 2]))
-
-	R = data[:, i, 2]
-	Rerr = data[:, i, 3]
-	Rcalc = data[:, i, 1]
-	R = R[Rcalc > 0]
-	Rerr = Rerr[Rcalc > 0]
-	Rcalc = Rcalc[Rcalc > 0]
-
-	axs[curr_x,curr_y].errorbar(x, data[:, i, 2], yerr=data[:, i, 3], fmt='k,')
-	axs[curr_x,curr_y].plot(x, data[:, i, 1], 'b,')
-	axs[curr_x,curr_y].set_ylim(bottom=0)
-
-	field = data[20, i, 4]
-	wr = data[20, i, 5]/1000.
-	w1 = data[20, i, 6]/1000.
-	T = data[20, i, 7]
-	print(data[20, i, :])
-	typ =  int(data[20,i, 8])
+	fig,axs = plt.subplots(int(np.floor(n_relax / 3.)) + 1, 3, figsize=(8, n_relax/1.2), dpi=80)
 
 
 
-	#fprintf(fp, "\t%f\t%f\t%f\t%f\t%d", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type); 
-	#	fprintf(fp, "\n");
-	print("%s (%d MHz, %0.1f kHz, %0.1f kHz, %0.1f K)" % (types[typ], field, wr, w1,T))
-	axs[curr_x,curr_y].set_title("%s (%d MHz, %0.1f kHz, %0.1f kHz, %0.1f K)" % (types[typ], field, wr, w1,T), fontsize=5)
+	curr_x = 0
+	curr_y = 0
 
-	curr_y = curr_y + 1
-	if (curr_y == 3):
-		curr_y = 0
-		curr_x = curr_x + 1
+	for i in range(1, n+1):
+		data[i, :, :] = np.loadtxt("%s/backcalc_%d.dat" % (folder, i))
 
-	#fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+	x = np.arange(1, n+2)
+
+	types = ['15N R1', '15N R1p', '13C R1', '13C R1p']
+
+	for i in range(0, n_relax):
+		print(np.shape(x))
+		print(np.shape(data[:, i, 2]))
+
+		R = data[:, i, 2]
+		Rerr = data[:, i, 3]
+		Rcalc = data[:, i, 1]
+		R = R[Rcalc > 0]
+		Rerr = Rerr[Rcalc > 0]
+		Rcalc = Rcalc[Rcalc > 0]
+
+		axs[curr_x,curr_y].errorbar(x, data[:, i, 2], yerr=data[:, i, 3], fmt='k,')
+		axs[curr_x,curr_y].plot(x, data[:, i, 1], 'b,')
+		axs[curr_x,curr_y].set_ylim(bottom=0)
 
 
 
-for ax in axs.flat:
-    ax.set(xlabel='residue', ylabel='rate / s^-1')
+		field = data[20, i, 4]
+		wr = data[20, i, 5]/1000.
+		w1 = data[20, i, 6]/1000.
+		T = data[20, i, 7]
+		print(data[20, i, :])
+		typ =  int(data[20,i, 8])
 
-fig.tight_layout(h_pad=1)
-#plt.show(block=True)
+		if (typ == 0 or typ == 2):
+			krt = axs[curr_x, curr_y].get_ylim()
+			if (krt[1] > 0.4):
+				axs[curr_x, curr_y].set_ylim(top = 0.4)
+		if (typ == 1 or typ == 3):
+			krt = axs[curr_x, curr_y].get_ylim()
+			if (krt[1] > 6):
+				axs[curr_x, curr_y].set_ylim(top = 6)
+			
 
-plt.savefig('output.eps', dpi=300, facecolor='w', edgecolor='w',
-        orientation='portrait', papertype='a4', format='eps',
-        transparent=False, bbox_inches=None, pad_inches=0.5,
-        frameon=None, metadata=None)
+		#fprintf(fp, "\t%f\t%f\t%f\t%f\t%d", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type); 
+		#	fprintf(fp, "\n");
+		print("%s (%d MHz, %0.1f kHz, %0.1f kHz, %0.1f K)" % (types[typ], field, wr, w1,T))
+		axs[curr_x,curr_y].set_title("%s (%d MHz, %0.1f kHz, %0.1f kHz, %0.1f K)" % (types[typ], field, wr, w1,T), fontsize=5)
+
+		curr_y = curr_y + 1
+		if (curr_y == 3):
+			curr_y = 0
+			curr_x = curr_x + 1
+
+		#fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 
 
+
+	for ax in axs.flat:
+	    ax.set(xlabel='residue', ylabel='rate / s^-1')
+
+	fig.tight_layout(h_pad=1)
+	#plt.show(block=True)
+
+	plt.savefig('%s_relax.eps' % (folder), dpi=300, facecolor='w', edgecolor='w',
+	        orientation='portrait', papertype='a4', format='eps',
+	        transparent=False, bbox_inches=None, pad_inches=0.5,
+	        frameon=None, metadata=None)
+
+for i in sys.argv[1:]:
+	run_plot(i)
