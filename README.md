@@ -66,9 +66,9 @@ The initial orientation of the X, Y, Z axis has Z aligned along CA-CA, with the 
 
 For each of these models, Dynamix will perform a user specified number of optimizations with random starting points using the Nelder-Mead simplex method to find an optimum. Each optimum is output into a `residue_N.dat` file. Once complete, it will perform back calculations for each relaxation data point, outputting these into `backcalc_N.dat` files. If one of the GAF modes is used, it will calculate effective S$^{2}_{\text{NH}}$ order parameters and output these into `gaf.dat`.
 
-If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. Back calculated relaxation rates are then varied within experimental error, and optimization performed. The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values[^3].
+If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. Back calculated relaxation rates are then varied within experimental error, and optimization performed. The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values[^1].
 
-[^3]: Note that the output will have the minimum optimized points and two standard deviations for the errors; it will not output the mean of the error calculations (unless you explicitly change the code to do so - at the moment this is line 408 of main.c, in which you should change `m.residues[l].parameters[i]` to `m.residues[l].errors_mean[i]`.
+[^1]: Note that the output will have the minimum optimized points and two standard deviations for the errors; it will not output the mean of the error calculations (unless you explicitly change the code to do so - at the moment this is line 408 of main.c, in which you should change `m.residues[l].parameters[i]` to `m.residues[l].errors_mean[i]`.
 
 Compilation
 -----------
@@ -228,46 +228,19 @@ If the 'VERBOSE' key is enabled in `datatypes.c`, the back calculated files will
 
 **Visualising Parameters**
 
-In the `utils/` directory there are `gnuplot` scripts to plot data. These are set up assuming that the output directories are named as the model type (eg, an EMF model is in `emf/`). At the moment there are scripts to plot each model, with and without errors, except for the GAF models for which no scripts exist to plot errors as of yet. For non error plots, the colour of each point is related to the chisq value - darker points represent better fits.
+The outputs of Dynamix may be analysed using Python files present in the `utils` directory. 
 
-|Script Name|Description|
-|-|-|
-|`pp_smf.m`|Plots SMF|
-|`pp_smf_e.m`|Plots SMF with errorbars|
-|`pp_emf.m`|Plots EMF|
-|`pp_emf_e.m`|Plots EMF with errorbars|
-|`pp_smft.m`|Plots SMFT|
-|`pp_smft_e.m`|Plots SMFT with errorbars|
-|`pp_emft.m`|Plots EMFT|
-|`pp_emft_e.m`|Plots EMFT with errorbars|
-|`pp_demf.m`|Plots DEMF|
-|`pp_demf_e.m`|Plots DEMF with errorbars|
-|`pp_demft.m`|Plots DEMFT|
-|`pp_demft_e.m`|Plots DEMFT with errorbars|
-|`pp_egaf.m`|Plots EGAF|
-|`pp_egaf_e.m`|Plots EGAF with errorbars|
-|`pp_egaft.m`|Plots EGAFT|
-|`pp_egaft_e.m`|Plots EGAFT with errorbars|
-|`pp_gaf.m`|Plots GAF|
-|`pp_gaf_e.m`|Plots GAF with errorbars|
-|`pp_gaft.m`|Plots GAFT|
-|`pp_gaft_e.m`|Plots GAFT with errorbars|
+* `aicbic.py` calculates Akaike, Bayesian, and adjust Akaike Information Criteria for each model[^2]. Currently only relaxation data is used. 
+  Input is taken as `python3 aicbic.py <folder> <model> <output>`, e.g. `python3 aicbic.py gaft/ gaft gaft.csv` will output the values into `gaft.csv`, which will consist of columns `residue`, `AIC`, `BIC`, `AICc`. This output may require sanitization (e.g. removing `-1` or other error codes).
+* `combine_aicbic.py` calculates AIC, BIC and AICc for comparison between multiple models. Input is taken as a list of folders, where the folder name is the model, e.g.; `python3 combine_aicbic.py gaf gaft egaf egaft`. This will produce three files, `AIC.csv`, `BIC.csv`, `AICc.csv` containing the corresponding IC values in columns ordered as given in the command. The output will additionally provide counts for how many residues were best fit for each model.
+* `gen_attr.py` generates an attribute file which may be used with Chimera or ChimeraX for visualising results. Arguments are of the format `python3 gen_attr.py <filename> <model> <tag> <outputfile>` where `<filename>` is the `final.dat`, `<model>` should be the model (lower case, standard form given above e.g. `gaf` for 3D-GAF), `<tag>` should be the protein tag in Chimera (typically `#1`, though this may vary for complexes), and `<outputfile>` is an attribute file. Attributes defined include `chisq`, and others which are labelled as given in the output plots from `plot.py` (or may be seen in `models.py`).
+* `plot_relax.py` generates EPS files `<model>_relax.eps` containing all relaxation data separated by conditions for easy visualisation. Arguments are taken as a list of folders containing `backcalc_*.eps` files. e.g. `python3 plot_relax.py gaf gaft egaf egaft`.
+* `plot.py` generates EPS files `<model>_params.eps` containing the calculated parameters. Input is taken as a list of folders where by default the folder name is taken as the model. For non specific folder names, the parameter `-m<model>` may be passed. If error calculation was enabled, these may be plotted as error bars using the `-e` flag. For example, `python3 plot.py gaf -mgaf -e` will plot `/gaf/` as a GAF model with error bars, while `python3 plot.py egaf egaft demf demft` will produce non error bar plots of those four models.
+* `gen_bild.py` generates ChimeraX BILD files for GAF models. A PDB representing the protein of interest should be given in the folder, and the path to this defined on line 9. It may then be run as `python3 gen_bild.py <filename> <outputfile> <v flag> <type>`, where `<filename>` and `<outputfile>` are as given in `gen_attr.py`, `<v flag>` is `1` if variable orientation is enabled[^3].
 
-These may be run as;
+[^2]: As defined in the SI for Good, D. B., Wang, S., Ward, M. E., Struppe, J., Brown, L. S., Lewandowski, J. R. & Ladizhansky, V. Conformational Dynamics of a Seven Transmembrane Helical Protein Anabaena Sensory Rhodopsin Probed by Solid-State NMR. J Am Chem Soc 136, 2833–2842 (2014).
 
-    > ls
-    emf/   utils/
-    > gnuplot utils/pp_emf.m
-    > ls
-    emf/   utils/   emf.eps
-    
-The output is as a `.eps` file. This may be viewed using eg Okular (`okular file.eps`) or converted into a PDF using `epstopdf file.eps`.
-
-There are two Python scripts, `aicbic.py` and `gen_bild.py`. `aicbic.py` is run as `python3 aicbic.py FOLDER MODEL OUTPUT` eg `python3 aicbic.py vgaf VGAF vgaf.csv`, and will calculate Akaike, Bayesian, and adjusted Akaike Information Criteria for each model. The output file has four columns; `residue`, `AIC`, `BIC`, `AICc`.
-
-`gen_bild.py` generates ChimeraX BILD files for given models. A PDB representing the protein of interest should be present in the folder, and the path to this should be defined on line 9. Then `gen_bild.py` may be run as `python3 gen_bild.py INPUT_FILE OUTPUT_FILE OR_VARY TYPE`, where `INPUT_FILE` is the `final.dat` file generated by Dynamix, `OUTPUT_FILE` is your desired BILD file, `OR_VARY` is `1` if the model has variable orientation or `0` if not[^2]. `TYPE` should be `fast` or `slow` depending on the GAF timescale of motions.
-
-[^2]: Note I'm not entirely convinced I have the sense of the rotations in `gen_bild.py` correct.
+[^3]: Not that I'm not entirely convinced I have the sense of the rotations in `gen_bild.py` correct for variable orientations.
 
 Output File Formats
 -------------------

@@ -27,6 +27,10 @@ mds = {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf']
 	}, 
+	'demft600': {
+		'n': 7,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', '600del']
+	}, 
 	'egaf': {
 		'n': 6,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f']

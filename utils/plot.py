@@ -60,7 +60,7 @@ def run_plot(folder):
 		print(x) 
 		print(np.shape(x))
 
-	x[x < 0] = np.nan
+	x[x == -1] = np.nan
 
 	# now for plotting
 	xdat = x[:, 0]
@@ -113,6 +113,10 @@ def run_plot(folder):
 			axs[xd].set_ylim(bottom=0, top = 60000)
 		if ('S2' in mod['p'][pl]):
 			axs[xd].set_ylim(top=1)
+			kl = axs[xd].get_ylim()
+			if (kl[0] < 0.2):
+				axs[xd].set_ylim(bottom=0.5)
+
 		if ('sA' in mod['p'][pl] or 'sB' in mod['p'][pl] or 'sG' in mod['p'][pl]):
 			axs[xd].set_ylim(bottom=0)
 		if (mod['p'][pl] in ['alph', 'beta', 'gamm']):
@@ -121,6 +125,12 @@ def run_plot(folder):
 			axs[xd].set_ylim(bottom=0, top=2*np.nanmedian(ydat))
 		if (mod['p'][pl] in ['kex']):
 			axs[xd].set_ylim(bottom=0, top=2*np.nanmedian(ydat))
+		if ('600del' in mod['p'][pl]):
+			print("T Delta")
+			print(ydat)
+			plw = np.nanstd(ydat)
+			axs[xd].set_ylim(-100, 100)
+			axs[xd].set_xlim(0, 56)
 			
 		#yd = yd + 1
 		#if (yd > 1):
