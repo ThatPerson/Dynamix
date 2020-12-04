@@ -73,13 +73,14 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 		long double S2s = opts[1];
 		long double tauf = opts[2];
 		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f=resid->S2NH / S2s;
+		long double temp_delta = 0;
 		if (model == MOD_EMFT) {
 			Eas = opts[3];
 			Eaf = opts[4];
 		} else if (model == MOD_DEMFT) {
 			Eas = opts[4];
 			Eaf = opts[5];
-		} 
+		}
 		if (model == MOD_EMFT || model == MOD_DEMFT) {
 			taus_eff = taus * expl(Eas / (RYD * relax->T));
 			tauf_eff = tauf * expl(Eaf / (RYD * relax->T));

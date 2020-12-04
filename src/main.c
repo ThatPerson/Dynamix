@@ -202,7 +202,7 @@ void * run_residue(void *input) {
 			 */
 			opts[params - 6] = 0; // papbC
 			opts[params - 5] = 0; // papbN
-			opts[params - 4] = (rand() % 20000)/1.; // kex
+			opts[params - 4] = (rand() % 20000) / 1.; // kex
 			opts[params - 3] = 0; // alpha
 			opts[params - 2] = 0; // beta
 			opts[params - 1] = 0; // gamma
@@ -213,7 +213,7 @@ void * run_residue(void *input) {
 		} else if (m->rdc == RDC_ON) {
 			opts[params - 3] = 0; // papbC
 			opts[params - 2] = 0; // papbN
-			opts[params - 1] = (rand() % 20000)/1.; // kex
+			opts[params - 1] = (rand() % 20000) / 1.; // kex
 		}
 		
 		//printf("%Le, %Le\n", opts[0], opts[1]);
@@ -444,6 +444,15 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
+	FILE * orderparams;
+	sprintf(filename, "%s/orderparams.dat", m.outputdir);
+	orderparams = fopen(filename, "w");
+	if (orderparams == NULL) {
+		ERROR("%s not found.", filename);
+		free_all(&m);
+		return -1;
+	}
+
 	printf("Outputting Files...\n");
 	char file[300];
 	for (l = 0; l < m.n_residues; l++) {
@@ -460,13 +469,13 @@ int main(int argc, char * argv[]) {
 		}
 		fprintf(fp, "%d\t%f\t%f", l+1, m.residues[l].S2NH, m.residues[l].min_val);
 		if (m.error_mode == 1) {
-			fprintf(ep, "%d, %f, %f", l+1, m.residues[l].S2NH, m.residues[l].min_val);
+			fprintf(ep, "%d\t%f\t%f", l+1, m.residues[l].S2NH, m.residues[l].min_val);
 		}
 		for (i = 0; i < params; i++) {
 			fprintf(fp, "\t%Le", m.residues[l].parameters[i]);
 			if (m.error_mode == 1) {
 				//printf("%Le\n", m.residues[l].errors_std[i]);
-				fprintf(ep, ", %Le, %Le", m.residues[l].parameters[i], 2 * m.residues[l].errors_std[i]);
+				fprintf(ep, "\t%Le\t%Le", m.residues[l].parameters[i], 2 * m.residues[l].errors_std[i]);
 			}
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
 			 * The error_means are generally not minimal. */
@@ -479,16 +488,30 @@ int main(int argc, char * argv[]) {
 		sprintf(file, "%s/backcalc_%d.dat", m.outputdir, l+1);
 		back_calculate((m.residues[l].parameters), &(m.residues[l]), &m, file, params);
 		
-		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL && m.or_variation != VARIANT_A) {
-			// Print out 'effective S2' values.
-			double S2slow, S2fast;
-			double *S2[] = {&S2slow};
-			/* Approximate as just the S2NHs and S2NHf */
-			struct Orient *As[] = {&(m.residues[l].orients[OR_NH])};
+		double alpha, beta, gamma;
+		if (m.or_variation == VARIANT_A) {
+			alpha = (double) m.residues[l].parameters[m.params-3];
+			beta = (double) m.residues[l].parameters[m.params-2];
+			gamma = (double) m.residues[l].parameters[m.params-1];
+			for (i = 0; i < N_OR; i++) {
+				calculate_Y2(&(m.residues[l].orients[i]));
+				rotate_Y2(&(m.residues[l].orients[i]), alpha, beta, gamma);
+			}
+		}
+
+		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL) {
+			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; 
 			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
 			long double sigf[3] = {m.residues[l].parameters[5], m.residues[l].parameters[6], m.residues[l].parameters[7]};
-			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
-			S2[0] = &S2fast;
+			struct Orient *Os[] = {&(m.residues[l].orients[OR_NH]), &(m.residues[l].orients[OR_CH]), &(m.residues[l].orients[OR_CN])};
+			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
+			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
+			GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
+			GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
+			fprintf(orderparams, "%d\t", l+1);
+			fprintf(orderparams, "%f\t%f\t", S2NHs*S2NHf, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\t", S2CHs*S2CHf, m.residues[l].S2CH);
+			fprintf(orderparams, "%f\t%f\n", S2CNs*S2CNf, m.residues[l].S2CN);
 
 			long double taus = m.residues[l].parameters[0];
 			long double tauf = m.residues[l].parameters[1];
@@ -499,15 +522,22 @@ int main(int argc, char * argv[]) {
 				tauf *= expl(Eaf / (RYD * 300));
 			}
 
-			GAF_S2(sigf, As, As, S2, 1, MODE_REAL);
-			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, taus, S2slow, tauf, S2fast);
-		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL && m.or_variation != VARIANT_A) {
-			double S2slow;
-			double *S2[] = {&S2slow};
+			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
+		} else if ((m.model == MOD_EGAF || m.model == MOD_EGAFT) && gaf != NULL) {
+			double S2NHs, S2NHf = (double) m.residues[l].parameters[5];
+			double *S2[] = {&S2NHs};
 			/* Approximate as just the S2NHs and S2NHf */
 			struct Orient *As[] = {&(m.residues[l].orients[OR_NH])};
 			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
 			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
+
+
+			fprintf(orderparams, "%d\t", l+1);
+			fprintf(orderparams, "%f\t%f\t", S2NHs*S2NHf, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\t", S2NHs*S2NHf, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\n", S2NHs*S2NHf, m.residues[l].S2NH);
+
+
 			long double taus = m.residues[l].parameters[0];
 			long double tauf = m.residues[l].parameters[1];
 			if (m.model == MOD_EGAFT) {
@@ -516,8 +546,23 @@ int main(int argc, char * argv[]) {
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
-			fprintf(gaf, "%d, %Le, %f, %Le, %f\n", l+1, taus, S2slow, tauf, (double) m.residues[l].parameters[5]);
+			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
 			/* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */
+		} else if (m.model == MOD_DEMF || m.model == MOD_DEMFT) {
+			double S2NHs, S2NHf;
+			S2NHs = (double) m.residues[l].parameters[1];
+			S2NHf = (double) m.residues[l].parameters[3];
+			fprintf(orderparams, "%d\t", l+1);
+			fprintf(orderparams, "%f\t%f\t", S2NHs*S2NHf, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\t", S2NHs*S2NHf, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\n", S2NHs*S2NHf, m.residues[l].S2NH);
+		} else if (m.model == MOD_SMF || m.model == MOD_SMFT) {
+			double S2 = (double) m.residues[l].parameters[1];
+
+			fprintf(orderparams, "%d\t", l+1);
+			fprintf(orderparams, "%f\t%f\t", S2, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\t", S2, m.residues[l].S2NH);
+			fprintf(orderparams, "%f\t%f\n", S2, m.residues[l].S2NH);
 		}
 	}
 

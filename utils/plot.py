@@ -47,7 +47,7 @@ def run_plot(folder):
 	fig,axs = plt.subplots(xdim, 1, figsize=(7., mod['n'] * 2), dpi=80)
 
 	if (errors == True):
-		x = np.loadtxt("%s/errors.dat" % (folder), delimiter=',')
+		x = np.loadtxt("%s/errors.dat" % (folder), delimiter='\t')
 		print(np.shape(x))
 		print(mod['n'])
 	else:
@@ -92,10 +92,10 @@ def run_plot(folder):
 			axs[xd].set_yscale("log")
 			if ('taus' in mod['p'][pl] and 't' in model):
 				# temperature dependent
-				axs[xd].set_ylim(bottom=1e-16, top=1e-8)
+				axs[xd].set_ylim(bottom=1e-18, top=1e-8)
 			elif ('tauf' in mod['p'][pl] and 't' in model):
 				# temperature dependent
-				axs[xd].set_ylim(bottom=1e-16, top=1e-8)
+				axs[xd].set_ylim(bottom=1e-18, top=1e-8)
 			elif ('taus' in mod['p'][pl] and 't' not in model):
 				# temperature independent
 				axs[xd].set_ylim(bottom=1e-9, top=1e-6)
