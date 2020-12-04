@@ -69,6 +69,8 @@ for model in sys.argv[1:]:
 		print("Incorrect model specifier")
 		exit()
 
+	orderparams = np.loadtxt("%s/orderparams.dat" % (model))	
+
 	for i in range(1, 57):
 		x = np.loadtxt("%s/backcalc_%d.dat" % (model, i))
 		if (np.size(x) == 0):
@@ -89,7 +91,24 @@ for model in sys.argv[1:]:
 			ctmp = np.power((exp_R[il] - calc_R[il]), 2.) / np.power(err_R[il], 2.)
 			chisq += ctmp
 
-		df = len(calc_R) - params - 1
+		# order parameters
+		## for now, for GAF and GAFT models I'm using S2NH, S2CH and S2CN.
+		## in order to allow for direct comparison with the other models
+		## note that their contribution from S2NH is tripled - I don't know how
+		## statistically valid this is? But as we're not using reduced chisq
+		## the altnerative will cause chisq to be much bigger for them.
+
+		ops = orderparams[orderparams[:, 0] == i, :]
+		#print(ops)
+		for inc in range(0, 3):
+			calc = ops[0, 1 + (inc*3)]
+			exp = ops[0, 2 + (inc*3)]
+			err = ops[0, 3 + (inc*3)]
+			ctmp = np.power(exp - calc, 2.) / np.power(err, 2.)
+			chisq += ctmp
+
+
+		df = 3 + len(calc_R) - params - 1
 		if (df <= 0 or chisq == 0):
 			AIC = 1e9
 			BIC = 1e9
