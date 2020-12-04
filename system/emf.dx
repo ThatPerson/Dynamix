@@ -2,8 +2,8 @@ MODEL  =   EMF
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
-S2NH  =  system/s2_dipolar_jozef.csv
-%S2DIP = system/s2_dipolar_trent.csv
+%S2NH  =  system/s2_dipolar_jozef.csv
+S2NH = system/s2_dipolar_trent.csv
 
 %S2DIP  =  system/s2_dipolar_jozef.csv
 %S2DIP = system/s2_dipolar_trent.csv
@@ -41,7 +41,7 @@ OR_CCSAxx = system/or_CCSAxx.csv
 OR_CCSAyy = system/or_CCSAyy.csv
 OR_CCSAzz = system/or_CCSAzz.csv
 
-NTHREADS = 4 
+NTHREADS = 56
 
 #RELAXATION
 system/15N_R1_600_50_0_271.csv

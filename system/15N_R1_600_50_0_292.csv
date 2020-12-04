@@ -1,7 +1,8 @@
 FIELD = 600
 WR = 50000
 W1 = 0
-TEMP = 292
+TEMP = 275.55
+% changed with Jozef's new values, 4th Dec 2020
 TYPE = 15NR1
 #DATA
 1 -1 -1

@@ -1,7 +1,11 @@
 FIELD = 600
 WR = 50000
-W1 = 8000
-TEMP = 301
+W1 = 7435.5
+TEMP = 282.35
+% changed with Jozef's new values, 4th Dec 2020
+% note this one wasn't updated, but it was taken
+% simultaneously with R1_301 so I've taken the correction
+% to be the same.
 TYPE = 15NR1p
 #DATA
 1 -1 -1

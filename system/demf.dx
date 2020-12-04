@@ -1,4 +1,4 @@
-MODEL  =   SMF
+MODEL  =   DEMF
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
@@ -19,7 +19,7 @@ CSISOC  =  system/csisoC.csv
 
 
 N_RESIDUES  =  56
-OUTPUT = smf/
+OUTPUT = demf/
 N_ITER = 50
 IGNORE = 42
 IGNORE = 25
@@ -41,7 +41,7 @@ OR_CCSAxx = system/or_CCSAxx.csv
 OR_CCSAyy = system/or_CCSAyy.csv
 OR_CCSAzz = system/or_CCSAzz.csv
 
-NTHREADS = 56
+NTHREADS = 56 
 
 #RELAXATION
 system/15N_R1_600_50_0_271.csv

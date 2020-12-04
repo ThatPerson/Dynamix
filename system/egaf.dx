@@ -1,9 +1,9 @@
-MODEL  =   SMF
+MODEL  =   EGAF
 
 
 % Dipolar order parameters from PNAS 2012, see Dipolar_order_parameters.xlsx
-%S2NH  =  system/s2_dipolar_jozef.csv
-S2NH = system/s2_dipolar_trent.csv
+S2NH  =  system/s2_dipolar_jozef.csv
+%S2DIP = system/s2_dipolar_trent.csv
 
 %S2DIP  =  system/s2_dipolar_jozef.csv
 %S2DIP = system/s2_dipolar_trent.csv
@@ -19,11 +19,11 @@ CSISOC  =  system/csisoC.csv
 
 
 N_RESIDUES  =  56
-OUTPUT = smf/
+OUTPUT = egaf/ 
 N_ITER = 50
 IGNORE = 42
 IGNORE = 25
-N_ERROR_ITER = 50 
+N_ERROR_ITER = 50
 
 
 % Orientations taken from Lienin 1998
