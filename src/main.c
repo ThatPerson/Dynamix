@@ -503,9 +503,11 @@ int main(int argc, char * argv[]) {
 			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; 
 			long double sigs[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
 			long double sigf[3] = {m.residues[l].parameters[5], m.residues[l].parameters[6], m.residues[l].parameters[7]};
-			struct Orient *Os[] = {&(m.residues[l].orients[OR_NH]), &(m.residues[l].orients[OR_CH]), &(m.residues[l].orients[OR_CN])};
+			struct Orient *Os[] = {&(m.residues[l].orients[OR_NH]), &(m.residues[l].orients[OR_CNH]), &(m.residues[l].orients[OR_CN])};
 			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
+			
+			printf("%f, %f :: %f\n", S2CHs, S2CHf, S2CHs * S2CHf);
 			GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 			GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
 			fprintf(orderparams, "%d\t", l+1);

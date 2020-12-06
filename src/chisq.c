@@ -308,7 +308,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		
 		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; // S2CCs, S2CCf
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
 		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
@@ -323,7 +323,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		
 		double S2NHs, S2CHs, S2CNs; // S2CCs
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
 		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 		/* 100 weghting for order parameters */

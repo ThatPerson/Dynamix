@@ -333,7 +333,7 @@ int main(int argc, char * argv[]) {
 					taus *= expl(Eas / (RYD * temp));
 					tauf *= expl(Eaf / (RYD * temp));
 				}
-				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
+				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
 				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 				double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
 				GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
@@ -350,7 +350,7 @@ int main(int argc, char * argv[]) {
 					taus *= expl(Eas / (RYD * temp));
 					tauf *= expl(Eaf / (RYD * temp));
 				}
-				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CH]), &(resid->orients[OR_CN])};
+				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
 				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 				GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 				S2NHf = (double) S2f;
