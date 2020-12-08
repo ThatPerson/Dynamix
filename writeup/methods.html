@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Ben P. Tatman" />
+  <title>Methods.</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  
+  
+  
+  
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Methods.</h1>
+<p class="author">Ben P. Tatman</p>
+</header>
+<h1 id="dynamics-fitting">Dynamics Fitting</h1>
+<p>The various models were fit to the relaxation data using an in-house fitting model implemented using the C programming language. This model can be found at http://www.website.com. Expressions for the rates and spectral densities for the models can be found below. Minimization was performed using the Nelder-Mead algorithm<span class="citation" data-cites="Nelder.1965"><sup>1</sup></span>, using N repeats with random starting points. Table 1 shows the variation in the random starting points for each model, along with the bounds used in the fitting to ensure physical solutions were found<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>Table 1: Parameters used in the dynamic model fitting. SMF refers to Simple Model Free, EMF refers to Extended Model Free, GAF refers to Gaussian Axial Fluctuation Model, 3D and 6D refer to the dimensionality of the axial fluctuations. A prefix of T indicates temperature dependence. * indicates these are bound via the non-temperature dependent forms.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Units</th>
+<th>Models</th>
+<th>Start Range</th>
+<th>Bound Range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\tau\)</span></td>
+<td>Correlation time</td>
+<td>s</td>
+<td>SMF</td>
+<td><span class="math inline">\(0-10^{-8}\)</span></td>
+<td><span class="math inline">\(\geq 0\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\tau_0\)</span></td>
+<td>Correlation preexponential</td>
+<td>s</td>
+<td>SMFT</td>
+<td><span class="math inline">\(0-10^{-15}\)</span></td>
+<td><span class="math inline">\(\geq 0\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\tau^{\text{s}}\)</span></td>
+<td>Slow motion correlation time</td>
+<td>s</td>
+<td>EMF/GAF</td>
+<td><span class="math inline">\(0-10^{-8}\)</span></td>
+<td><span class="math inline">\(10^{-5} \geq \tau \geq 0\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\tau^{\text{f}}\)</span></td>
+<td>Fast motion correlation time</td>
+<td>s</td>
+<td>EMF/GAF</td>
+<td><span class="math inline">\(0-10^{-11}\)</span></td>
+<td><span class="math inline">\(10^{-5} \geq \tau \geq 0\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\tau^{\text{s}}_0\)</span></td>
+<td>Slow preexponential factor</td>
+<td>s</td>
+<td>EMFT/GAFT</td>
+<td><span class="math inline">\(0-10^{-15}\)</span></td>
+<td>*</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\tau^{\text{f}}_0\)</span></td>
+<td>Fast preexponential factor</td>
+<td>s</td>
+<td>EMFT/GAFT</td>
+<td><span class="math inline">\(0-10^{-20}\)</span></td>
+<td>*</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(S^2\)</span></td>
+<td>Order parameter</td>
+<td>-</td>
+<td>SMF</td>
+<td><span class="math inline">\(0.5 - 1.0\)</span></td>
+<td><span class="math inline">\(1\geq S^2 \geq 0\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(S^2_{\text{s}}\)</span></td>
+<td>Slow order parameter</td>
+<td>-</td>
+<td>EMF/EMFT</td>
+<td><span class="math inline">\(S^{2}_{NH} - 1.0\)</span></td>
+<td><span class="math inline">\(1\geq S^2 \geq 0\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(S^2_{\text{f}}\)</span></td>
+<td>Fast order parameter</td>
+<td>-</td>
+<td>EMF/EMFT/3D-GAF/3D-GAFT</td>
+<td><span class="math inline">\(S^{2}_{NH} - 1.0\)</span></td>
+<td><span class="math inline">\(1\geq S^2 \geq 0\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\sigma_{\alpha/\beta/\gamma}^{\text{s}}\)</span></td>
+<td>Angular deflections for slow motions</td>
+<td>radians</td>
+<td>3D/6D-GAF/GAFT</td>
+<td><span class="math inline">\(0.00-0.25\)</span></td>
+<td><span class="math inline">\(0.52 \geq \sigma \geq 0.00\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\sigma_{\alpha/\beta/\gamma}^{\text{f}}\)</span></td>
+<td>Angular deflections for fast motions</td>
+<td>radians</td>
+<td>6D-GAF/GAFT</td>
+<td><span class="math inline">\(0.00-0.25\)</span></td>
+<td><span class="math inline">\(0.52 \geq \sigma \geq 0.00\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\text{Ea}\)</span></td>
+<td>Correlation time activation energy</td>
+<td>J mol<span class="math inline">\(^{-1}\)</span></td>
+<td>SMFT</td>
+<td><span class="math inline">\(0-60000\)</span></td>
+<td>*</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\text{Ea}^{\text{s}}\)</span></td>
+<td>Slow correlation time activation energy</td>
+<td>J mol<span class="math inline">\(^{-1}\)</span></td>
+<td>EMFT/GAFT</td>
+<td><span class="math inline">\(0-60000\)</span></td>
+<td>*</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\text{Ea}^{\text{f}}\)</span></td>
+<td>Fast correlation time activation energy</td>
+<td>J mol<span class="math inline">\(^{-1}\)</span></td>
+<td>EMFT/GAFT</td>
+<td><span class="math inline">\(0-60000\)</span></td>
+<td>*</td>
+</tr>
+</tbody>
+</table>
+<p>The best fit parameters were found for all models by minimizing the <span class="math inline">\(\chi^{2}\)</span> target function:</p>
+<p><span class="math display">\[\chi^{2} = \ \sum_{i}^{}{W_{i}\frac{{(X_{i,exp} - \ X_{i,\ calc})}^{2}}{\sigma_{i,\ exp}^{2}}}\]</span></p>
+<p>where <span class="math inline">\(X_{i}\)</span> are relaxation rates and dipolar order parameter measurements and <span class="math inline">\(\sigma_{i}\)</span> appropriate experimental errors<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. <span class="math inline">\(W_{i}\)</span> is a weighting which is taken to be <span class="math inline">\(1\)</span> for all relaxation measurements and <span class="math inline">\(100\)</span> for dipolar order parameters to reflect the increased model reliance on these order parameters.<span class="citation" data-cites="Lamley.2015"><sup>2</sup></span> The rigid limit NH distance was assumed to be N <span class="math inline">\(\text{Ang}\)</span>.</p>
+<p>Errors were estimated using Monte Carlo error analysis using N iterations. Relaxation rates were back-calculated from the model fit parameters, and random noise within experimental error was added using the Box-Muller method. The model was then fit to these new relaxation rates. This procedure was repeated N times per residue, and the error is given as twice the standard deviation of all of these repeats<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<h2 id="simple-model-free">Simple Model Free</h2>
+<p>The Simple Model Free model was implemented as outlined in Lipari <em>et al</em>. 1982<span class="citation" data-cites="Lipari.1982"><sup>3</sup></span>. In brief, the spectral density is taken as<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>:</p>
+<p><span class="math display">\[J\left( \omega\ (rad\ s^{- 1}) \right) = \ \frac{\left( 1 - \ S^{2} \right)\tau}{(1 + \left( \omega\tau \right)^{2})}\ \]</span></p>
+<p>Where <span class="math inline">\(\omega\)</span> is the frequency of interest, and the other parameters are as defined in Table 1. The contribution to the <span class="math inline">\(R_{1}\)</span> relaxation rate from a dipolar interaction was obtained using<span class="citation" data-cites="Kurbanov.2011"><sup>4</sup></span><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>:</p>
+<p><span class="math display">\[R_{1,\ dipolar}\left( \Omega,\omega \right) = \frac{1}{10}\omega_{D}^{2}(J\left( \omega - \ \Omega \right) + 3 \times J\left( \omega \right) + 6 \times J\left( \omega + \ \Omega \right))\]</span></p>
+<p>Where <span class="math inline">\(\Omega\)</span> is the Larmor frequency for the nuclei being observed, <span class="math inline">\(\omega\)</span> is the Larmor frequency for the dipolar coupled nuclei, and the dipolar coupling is given by <span class="math inline">\(\omega_{D}\)</span>. The CSA contribution is<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>:</p>
+<p><span class="math display">\[R_{1,\ CSA}\left( \Omega \right) = \ \frac{2}{15}\ \left( \delta_{11}^{2} + \ \delta_{22}^{2} + \ \delta_{33}^{2} - \ \delta_{11}\delta_{22} - \delta_{11}\delta_{33} - \ \delta_{22}\delta_{33} \right)\Omega^{2} \times J(\Omega)\ \ \]</span></p>
+<p>In which <span class="math inline">\(\delta_{11}^{2}\)</span> are components of the CSA, parameterized using the isotropic chemical shift of the given nuclei. Defining <span class="math inline">\(J_{k}\)</span> as follows (where <span class="math inline">\(\omega_{r}\)</span> and <span class="math inline">\(\omega_{1}\)</span> are the spinning frequency and spin lock frequency in Hz, respectively)<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<p><span class="math display">\[J_{k}\left( \omega_{r},\omega_{1} \right) = \frac{2}{3}J(2\pi\left( \omega_{1} - 2\omega_{r} \right) + \ \frac{2}{3}J(2\pi\left( \omega_{1} + 2\omega_{r} \right) + \ \frac{4}{3}J(2\pi\left( \omega_{1} - \omega_{r} \right) + \ \frac{4}{3}J(2\pi\left( \omega_{1} + \omega_{r} \right)\]</span></p>
+<p>The dipolar contribution to the <span class="math inline">\(R_{1\rho}\)</span> rate is taken as<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>;</p>
+<p><span class="math display">\[R_{1\rho,\ dipolar}\left( \Omega,\omega \right) = \frac{1}{20}\omega_{D}^{2}(J_{k} + 3 \times J\left( \Omega \right) + \ J\left( \omega - \ \Omega \right) + 6 \times J\left( \omega \right) + 6 \times J\left( \omega + \ \Omega \right))\]</span></p>
+<p>And correspondingly<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></p>
+<p><span class="math display">\[R_{1\rho,\ CSA}\left( \Omega \right) = \ \frac{1}{45}\ \left( \delta_{11}^{2} + \ \delta_{22}^{2} + \ \delta_{33}^{2} - \ \delta_{11}\delta_{22} - \delta_{11}\delta_{33} - \ \delta_{22}\delta_{33} \right)\Omega^{2} \times (J_{k} + 3 \times J\left( \Omega \right))\ \ \]</span></p>
+<p>For <sup>15</sup>N, contributions from N-H, N-Hr, N-C and N-Ca dipolar interactions were considered. For <sup>13</sup>C, C-H, C-Hr, C-N and C-C dipolar interactions were considered. The effective distances used for calculation of dipolar couplings are given in Table 2.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Bond</strong></th>
+<th style="text-align: left;"><strong>Length / Å</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">N-H</td>
+<td style="text-align: left;">1.02<span class="citation" data-cites="Ferrage.2006"><sup>5</sup></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N-H (rest)</td>
+<td style="text-align: left;">1.80<span class="citation" data-cites="Ferrage.2006"><sup>5</sup></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N-C</td>
+<td style="text-align: left;">1.33<span class="citation" data-cites="Ferrage.2006"><sup>5</sup></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N-C<span class="math inline">\(\alpha\)</span></td>
+<td style="text-align: left;">1.46<span class="citation" data-cites="Ferrage.2006"><sup>5</sup></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C-H</td>
+<td style="text-align: left;">2.04<span class="citation" data-cites="Engh.1991"><sup>6</sup></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C-H (rest)</td>
+<td style="text-align: left;">1.82<span class="citation" data-cites="Ferrage.2006"><sup>5</sup></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C-N</td>
+<td style="text-align: left;">1.33<span class="citation" data-cites="Ferrage.2006"><sup>5</sup></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C-C</td>
+<td style="text-align: left;">1.53<span class="citation" data-cites="Engh.1991"><sup>6</sup></span></td>
+</tr>
+</tbody>
+</table>
+<h2 id="extended-model-free">Extended Model Free</h2>
+<p>The Extended Model Free spectral density was taken as:<span class="citation" data-cites="Clore.1990"><sup>7</sup></span><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a>:</p>
+<p><span class="math display">\[J\left( \omega\ (rad\ s^{- 1}) \right)\  = \ \frac{\left( 1 - \ S_{\text{fast}}^{2} \right)\tau_{\text{fast}}}{(1 + \left( \omega\tau_{\text{fast}} \right)^{2})} + \ \frac{S_{\text{fast}}^{2}\left( 1 - S_{\text{slow}}^{2} \right)\tau_{\text{slow}}}{\left( 1 + \left( \omega\tau_{\text{slow}} \right)^{2} \right)}\ \]</span></p>
+<p>The form of the relaxation rates was as in Simple Model Free.</p>
+<h2 id="gaussian-axial-fluctuations">Gaussian Axial Fluctuations</h2>
+<p>The GAF spectral density was taken as<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a></p>
+<p><span class="math display">\[J\left( \omega \right) = \ \frac{\left( 1 - \ S_{\text{fast}}^{2} \right)\tau_{\text{fast}}}{(1 + \left( \omega\tau_{\text{fast}} \right)^{2})} + \ \frac{1}{P_{2}(\cos\left( \theta_{\text{\mu
+u}} \right))}\frac{S_{\text{fast}}^{2}\left( P_{2}(\cos\left( \theta_{\text{\mu
+u}} \right)) - S_{\text{slow}}^{2} \right)\tau_{\text{slow}}}{\left( 1 + \left( \omega\tau_{\text{slow}} \right)^{2} \right)}\ \]</span></p>
+<p>Where <span class="math inline">\(P_{2}\left( \cos\left( \theta_{\text{\mu
+u}} \right) \right)\)</span> equals 1 for autocorrelated motions and -1/2 for cross correlated motions. The GAF order parameters were obtained as by Lienin et al, 1998<span class="citation" data-cites="Lienin.1998"><sup>8</sup></span> via<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></p>
+<p><span class="math display">\[S_{\text{\mu
+u}}^{2} = \ \frac{4\pi}{5}\sum_{l,\ k,k^{&#39;},m,m^{&#39;} = - 2}^{2}{\left( - i \right)^{k - k^{&#39;}}\exp\left\lbrack - \frac{\sigma_{\alpha}^{2}\left( k^{2} + k^{&#39;2} \right)}{2} - \ \sigma_{\beta}^{2}l^{2} - \ \frac{\sigma_{\gamma}^{2}\left( m^{2} + m^{&#39;2} \right)}{2} \right\rbrack \times \ d_{\text{kl}}^{\left( 2 \right)}\left( \frac{\pi}{2} \right)d_{k^{&#39;}l}^{\left( 2 \right)}\left( \frac{\pi}{2} \right)d_{\text{mk}}^{\left( 2 \right)}\left( \frac{\pi}{2} \right)d_{m^{&#39;}k^{&#39;}}^{\left( 2 \right)}\left( \frac{\pi}{2} \right)Y_{2m}\left( \mathbf{e}_{\mu}^{\text{pp}} \right)Y_{2m^{&#39;}}^{*}(\mathbf{e}_{\nu}^{\text{pp}})}\]</span></p>
+<p>In which <span class="math inline">\(d_{mm^{&#39;}}^{\left( 2 \right)}\left( \frac{\pi}{2} \right)\)</span> are reduced Wigner matrix elements evaluated at <span class="math inline">\(\frac{\pi}{2}\)</span>, <span class="math inline">\(Y_{2m}\left( \theta(t),\ \phi(t) \right)\)</span> are second order spherical harmonics, and <span class="math inline">\(\mathbf{e}_{\alpha}^{\text{pp}}\)</span>, <span class="math inline">\(\mathbf{e}_{\beta}^{\text{pp}}\)</span>, <span class="math inline">\(\mathbf{e}_{\gamma}^{\text{pp}}\)</span> are principal axes rigidly attached to the peptide plane. The deflection angles, <span class="math inline">\(\sigma_{\alpha}\)</span>, <span class="math inline">\(\sigma_{\beta}\)</span>, <span class="math inline">\(\sigma_{\gamma}\)</span> refer to Gaussian rotations about these axes. Here, we have taken the same definition of these principal axes as in Lienin et al, 1998.<span class="citation" data-cites="Lienin.1998"><sup>8</sup></span> Relaxation rates were obtained. Dipolar contributions to the relaxation rates were taken as in EMF, while CSA contributions were calculated as:<span class="citation" data-cites="Bremi.1997"><sup>9</sup></span><a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a>:</p>
+<p><span class="math display">\[R_{1,\ CSA}^{X}\left( \Omega \right) = \ \frac{1}{15} \times \left( \delta_{\text{xx}} - \delta_{\text{zz}} \right)^{2} \times \Omega^{2} \times J(\Omega)\ \]</span></p>
+<p><span class="math display">\[R_{1,\ CSA}^{Y}\left( \Omega \right) = \ \frac{1}{15} \times \left( \delta_{\text{yy}} - \delta_{\text{zz}} \right)^{2} \times \Omega^{2} \times J(\Omega)\]</span></p>
+<p><span class="math display">\[R_{1,\ CSA}^{\text{XY}}\left( \Omega \right) = \ \frac{1}{15} \times (\delta_{\text{xx}} - \ \delta_{\text{zz}})(\delta_{\text{yy}} - \delta_{\text{zz}}) \times \Omega^{2} \times J(\Omega)\]</span></p>
+<p><span class="math display">\[R_{1,\ CSA}^{}\left( \Omega \right) = \ R_{1,\ CSA}^{X}\left( \Omega \right) + R_{1,\ CSA}^{Y}\left( \Omega \right) + 2 \times R_{1,\ CSA}^{\text{XY}}\left( \Omega \right)\]</span></p>
+<p>For <span class="math inline">\(R_{1\rho}\)</span>, CSA contributions to the relaxation rate were taken as<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a>:</p>
+<p><span class="math display">\[R_{1\rho,\ CSA}^{X}\left( \Omega \right) = \ \frac{1}{15} \times \left( \delta_{\text{xx}} - \delta_{\text{zz}} \right)^{2} \times \Omega^{2} \times (J_{k} + 3 \times J\left( \Omega \right))\ \]</span></p>
+<p><span class="math display">\[R_{1\rho,\ CSA}^{Y}\left( \Omega \right) = \ \frac{1}{15} \times \left( \delta_{\text{yy}} - \delta_{\text{zz}} \right)^{2} \times \Omega^{2} \times (J_{k} + 3 \times J\left( \Omega \right))\]</span></p>
+<p><span class="math display">\[R_{1\rho,\ CSA}^{\text{XY}}\left( \Omega \right) = \ \frac{1}{15} \times (\delta_{\text{xx}} - \ \delta_{\text{zz}})(\delta_{\text{yy}} - \delta_{\text{zz}}) \times \Omega^{2} \times (J_{k} + 3 \times J\left( \Omega \right))\]</span></p>
+<p><span class="math display">\[R_{1\rho,\ CSA}^{}\left( \Omega \right) = \ R_{1\rho,\ CSA}^{X}\left( \Omega \right) + R_{1\rho,\ CSA}^{Y}\left( \Omega \right) + 2 \times R_{1\rho,\ CSA}^{\text{XY}}\left( \Omega \right)\]</span></p>
+<h2 id="temperature-dependence">Temperature Dependence</h2>
+<p>For the temperature dependent models we assumed that the timescales of motion would be time dependent according to the Arrhenius equation<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a>:</p>
+<p><span class="math display">\[\tau\left( T \right) = \ \tau^{0}\exp\left( \frac{\text{Ea}}{R T} \right)\]</span></p>
+<h2 id="fitted-correlation-functions">Fitted Correlation Functions</h2>
+<p>Using the parameters obtained from the dynamics model fitting described above we determined the form of the correlation functions for these motions. For Simple Model Free analysis, the correlation functions were plotted according to:<span class="citation" data-cites="Lipari.1982"><sup>3</sup></span><a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a>:</p>
+<p><span class="math display">\[C\left( t \right) = S^{2} + \left( 1 - S^{2} \right)\exp\left( \frac{- t}{\tau} \right)\]</span></p>
+<p>For Extended Model Free, the following form was used:<span class="citation" data-cites="Clore.1990"><sup>7</sup></span><a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a>:</p>
+<p><span class="math display">\[C\left( t \right) = S^{2} + \left( 1 - S_{f}^{2} \right)\exp{\left( \frac{- t}{\tau_{f}} \right) + S_{f}^{2}\left( 1 - S_{s}^{2} \right)\exp\left( \frac{- t}{\tau_{s}} \right)}\]</span></p>
+<h1 id="amber-md">AMBER MD</h1>
+<p>A molecular dynamics trajectory for GB1 in a supercell was computed using AMBER MD<span class="citation" data-cites="Case.2005"><sup>10</sup></span>. The coordinates of the X-ray structure of GB1 (PDB:2gi9) were taken as a starting conformation. A unit cell containing 4 GB1 molecules was created using the AMBER MD <em>UnitCell</em> utility, which was propagated by <em>PropPDB</em> to produce a 3x3x3 supercell containing 108 GB1 proteins. To this, 108 PO<sub>4</sub><sup>3-</sup> counter ions were added using <em>AddToBox</em>, along with 108 MPD and 648 IPA cocrystallising ligands. Finally, 12852 water molecules were added to the box. This was then charge balanced by addition of sodium ions, to give an overall box size of 75.591 Å x 107.152 Å x 150.822 Å. The ff14SB<span class="citation" data-cites="Maier.2015"><sup>11</sup></span> forcefield was used for the GB1 proteins, while TIP3P was used for water and GAFF for the cocrystals.</p>
+<p>The system was heated to 300 K and allowed to equilibrate for 25 ps with a timestep of 0.5 fs. The system was then simulated for a full 1 <span class="math inline">\(\mu\)</span>s run with a 2 fs timestep and a cut off of 11 Å for non-bonded interactions. The temperature was maintained at 300 K using Langevin thermostat, and the SHAKE algorithm<span class="citation" data-cites="Ryckaert.1977"><sup>12</sup></span> was applied to all bond lengths involving a hydrogen atom. Anisotropic pressure scaling was used with periodic boundary conditions.</p>
+<p>Correlation functions for NH, CH and CN bonds were extracted from the final trajectories for each of the 108 GB1 molecules simulated in the following manner. <em>Pytraj</em><span class="citation" data-cites="Nguyen.2016"><sup>13</sup></span> was used align the supercells to minimize the effects of overall tumbling. Atomic coordinates were then extracted, and for each time step the orientation of the relevant atomic bond vector was obtained. The correlation function was then calculated using<span class="citation" data-cites="Bremi.1997"><sup>9</sup></span></p>
+<p><span class="math display">\[C_{\mu\nu}^{\text{int}}\left( k\Delta t \right) = \ \frac{1}{(N - k)}\sum_{i = 1}^{N - k}\frac{3\left( \mathbf{e}_{\mu,i + k} \cdot \mathbf{e}_{\nu,i} \right)^{2} - 1}{2}\]</span></p>
+<h1 class="unnumbered" id="bibliography">Bibliography</h1>
+<div id="refs" class="references" role="doc-bibliography">
+<div id="ref-Nelder.1965">
+<p>1. Nelder, J. A. &amp; Mead, R. A Simplex Method for Function Minimization. <em>The Computer Journal</em> <strong>7</strong>, 308–313 (1965).</p>
+</div>
+<div id="ref-Lamley.2015">
+<p>2. Lamley, J. M. <em>et al.</em> Unraveling the complexity of protein backbone dynamics with combined 13 C and 15 N solid-state NMR relaxation measurements. <em>Physical Chemistry Chemical Physics</em> <strong>17</strong>, 21997–22008 (2015).</p>
+</div>
+<div id="ref-Lipari.1982">
+<p>3. Lipari, G. &amp; Szabo, A. Model-free approach to the interpretation of nuclear magnetic resonance relaxation in macromolecules. 1. Theory and range of validity. <em>Journal of the American Chemical Society</em> <strong>104</strong>, 4546–4559 (1982).</p>
+</div>
+<div id="ref-Kurbanov.2011">
+<p>4. Kurbanov, R., Zinkevich, T. &amp; Krushelnitsky, A. The nuclear magnetic resonance relaxation data analysis in solids: General R 1 / R 1 ρ equations and the model-free approach. <em>The Journal of Chemical Physics</em> <strong>135</strong>, 184104 (2011).</p>
+</div>
+<div id="ref-Ferrage.2006">
+<p>5. Ferrage, F., Pelupessy, P., Cowburn, D. &amp; Bodenhausen, G. Protein Backbone Dynamics through 13C‘−13Cα Cross-Relaxation in NMR Spectroscopy. <em>J. Am. Chem. Soc.</em> <strong>128</strong>, 11072–11078 (2006).</p>
+</div>
+<div id="ref-Engh.1991">
+<p>6. Engh, R. A. &amp; Huber, R. {Accurate bond and angle parameters for X-ray protein structure refinement}. <em>Acta Crystallographica Section A</em> <strong>47</strong>, 392—400 (1991).</p>
+</div>
+<div id="ref-Clore.1990">
+<p>7. Clore, G. M. <em>et al.</em> Deviations from the simple two-parameter model-free approach to the interpretation of nitrogen-15 nuclear magnetic relaxation of proteins. <em>Journal of the American Chemical Society</em> <strong>112</strong>, 4989–4991 (1990).</p>
+</div>
+<div id="ref-Lienin.1998">
+<p>8. Lienin, S. F., Bremi, T., Brutscher, B., Brüschweiler, R. &amp; Ernst, R. R. Anisotropic Intramolecular Backbone Dynamics of Ubiquitin Characterized by NMR Relaxation and MD Computer Simulation. <em>Journal of the American Chemical Society</em> <strong>120</strong>, 9870–9879 (1998).</p>
+</div>
+<div id="ref-Bremi.1997">
+<p>9. Bremi, T. &amp; Brüschweiler, R. Locally Anisotropic Internal Polypeptide Backbone Dynamics by NMR Relaxation. <em>Journal of the American Chemical Society</em> <strong>119</strong>, 6672–6673 (1997).</p>
+</div>
+<div id="ref-Case.2005">
+<p>10. Case, D. A. <em>et al.</em> The Amber biomolecular simulation programs. <em>Journal of Computational Chemistry</em> <strong>26</strong>, 1668–1688 (2005).</p>
+</div>
+<div id="ref-Maier.2015">
+<p>11. Maier, J. A. <em>et al.</em> ff14SB: Improving the Accuracy of Protein Side Chain and Backbone Parameters from ff99SB. <em>J. Chem. Theory Comput.</em> <strong>11</strong>, 3696–3713 (2015).</p>
+</div>
+<div id="ref-Ryckaert.1977">
+<p>12. Ryckaert, J.-P., Ciccotti, G. &amp; Berendsen, H. J. C. Numerical integration of the cartesian equations of motion of a system with constraints: molecular dynamics of n-alkanes. <em>Journal of Computational Physics</em> <strong>23</strong>, 327–341 (1977).</p>
+</div>
+<div id="ref-Nguyen.2016">
+<p>13. Nguyen, H., Roe, D. R., Swails, J. &amp; Case, D. A. PYTRAJ: Interactive data analysis for molecular dynamics simulations. <em>New Brunswick, NJ: Rutgers University</em> (2016).</p>
+</div>
+</div>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>(see chisq.c lines 34-211, main.c 135-204. I’ve omitted orientation variation for now.). crosen.c includes Nelder-Mead method.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>See chisq.c lines 246-248 for relaxation data fitting, and lines 254-288 for order parameter fitting<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>Errors.c lines 26-35 for the Box-Muller method, 48-60 for standard deviation calculation. Errors calculated in calc_errors(). Back calculation of rates is line 131, adding error is done 132. Simplex performed 141. Statistics and output done main.c lines 457-460.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>Smf.c, lines 15-18<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5" role="doc-endnote"><p>Smf.c, SMF_Dipolar_R1 33-40<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6" role="doc-endnote"><p>Smf.c eg 123-125<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7" role="doc-endnote"><p>This is J0sum, eg 177-181 in smf.c and 203-207 in emf.c<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8" role="doc-endnote"><p>Smf.c 58-65, emf.c 81-88.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9" role="doc-endnote"><p>Smf.c 205-207 and emf.c 231-233.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10" role="doc-endnote"><p>Emf.c 14-24.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11" role="doc-endnote"><p>The case for autocorrelated is just J0_EMF, emf.c 14-24. The cross correlate is emf.c 30-40.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12" role="doc-endnote"><p>Gaf.c 103-177. Note I’ve messed it around a bit. The individual terms of the exponential are calculated once per loop, and I’ve considered that the Y2m components have no real components and so if we’re selecting for real order parameters we can ignore any cases where (-i)^(k-k’) is imaginary.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13" role="doc-endnote"><p>Gaf.c, 248-256, 416-422.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14" role="doc-endnote"><p>Gaf.c, 36-60 implements each summation, then 333-336 and 501-503.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15" role="doc-endnote"><p>eg chisq.c 46, 82-83, 128-129, 172-173.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16" role="doc-endnote"><p>Correlation.c, 171-172<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn17" role="doc-endnote"><p>Correlation.c, 134-136<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
