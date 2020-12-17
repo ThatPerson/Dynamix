@@ -16,7 +16,7 @@
  * Equation as 3.28, McConnell1986, only for solid state spins.
  * Kurbanov2011, eq 9 (factor of 1/10 arising from (2/5.) in spectral density and 1/4. in dipolar.
  */
-inline double GAF_Dipolar_R1(long double omega_obs, long double omega_neigh, long double taus, long double S2s, long double tauf, long double S2f, long double D) {
+double GAF_Dipolar_R1(long double omega_obs, long double omega_neigh, long double taus, long double S2s, long double tauf, long double S2f, long double D) {
 	long double q = (0.1) * sq(D) * ( \
 		(J0_EMF(omega_neigh - omega_obs, taus, S2s, tauf, S2f)) \
 		 + 3 * (J0_EMF(omega_obs, taus, S2s, tauf, S2f)) \
@@ -31,9 +31,9 @@ inline double GAF_Dipolar_R1(long double omega_obs, long double omega_neigh, lon
  * D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)
  * Kurbanov2011, eqs 18-20.
  */
- //inline long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
+ //long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
  
-inline double GAF_CSA_R2(long double omega, \
+double GAF_CSA_R2(long double omega, \
 						 double w1, \
 						 double wr, \
 						 long double taus, \
@@ -64,7 +64,7 @@ inline double GAF_CSA_R2(long double omega, \
  * Kurbanov2011, for the case where theta_p = 90 such that sin(theta_p) = 1 and so
  * R1p = 0.5*R1 + R1delta
  */
-inline double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, double w1, double wr, long double taus, long double S2s, long double tauf, long double S2f, double D) {
+double GAF_Dipolar_R2(long double omega_obs, long double omega_neigh, double w1, double wr, long double taus, long double S2s, long double tauf, long double S2f, double D) {
 	return (double) (\
   		(1/20.) * sq(D) * (\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\

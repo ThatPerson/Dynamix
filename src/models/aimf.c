@@ -156,7 +156,7 @@ double AIMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 
 	double omega_1H = 2 * M_PI * field;
 	double omega_13C, omega_15N;
-	double d2x, d2y, d2xy;
+	double d2x, d2y;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -241,7 +241,7 @@ double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau
 
 	double omega_1H = 2 * M_PI * field;
 	double omega_13C, omega_15N;
-	double d2x, d2y, d2xy;
+	double d2x, d2y;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -251,7 +251,6 @@ double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau
 
 	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
 	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
-	d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 
 	/* Calculate all order parameters */
@@ -262,7 +261,6 @@ double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau
 	double *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2CNf, &S2CaNf};
 	
 	struct Orient * As[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
-	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	
 	AIMF_S2(Ss, As, S2s, 5);
 	AIMF_S2(Sf, As, S2f, 5);
@@ -270,7 +268,7 @@ double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau
 	
 
 	/* N CSA relaxation contribution */
-	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
+	double R2CSAx, R2CSAy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
 
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
@@ -326,7 +324,7 @@ double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 
 	double omega_1H = 2 * M_PI * field;
 	double omega_13C, omega_15N, wCOCa;
-	double d2x, d2y, d2xy;
+	double d2x, d2y;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -337,7 +335,7 @@ double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 
 	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
 	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-	d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	//d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
 	double S2CHs, S2CSAxs, S2CSAys, S2CNs, S2CCs;
@@ -347,7 +345,6 @@ double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 	double *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CNf, &S2CCf};
 	
 	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
-	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
 	
 	AIMF_S2(Ss, As, S2s, 5);
 	AIMF_S2(Sf, As, S2f, 5);
@@ -409,7 +406,7 @@ double AIMF_13CR2(struct Residue *res, struct Relaxation* relax, long double tau
 
 	double omega_1H = 2 * M_PI * field;
 	double omega_13C, omega_15N, wCOCa;
-	double d2x, d2y, d2xy;
+	double d2x, d2y;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -420,7 +417,7 @@ double AIMF_13CR2(struct Residue *res, struct Relaxation* relax, long double tau
 
 	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
 	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-	d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	//d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 
 	/* Calculate all order parameters */
@@ -431,7 +428,6 @@ double AIMF_13CR2(struct Residue *res, struct Relaxation* relax, long double tau
 	double *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CNf, &S2CCf};
 	
 	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
-	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAc])};
 	
 	AIMF_S2(Ss, As, S2s, 5);
 	AIMF_S2(Sf, As, S2f, 5);
