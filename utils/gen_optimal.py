@@ -218,7 +218,7 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 		X = vectors[peptide_plane, :, 0]
 		Y = vectors[peptide_plane, :, 1]
 		Z = vectors[peptide_plane, :, 2]
-		X, Y, Z = calc.apply_wigner(X, Y, Z, orients[0], orients[1], orients[2])
+		X, Y, Z = calc.undo_wigner(X, Y, Z, orients[0], orients[1], orients[2])
 		vectors[peptide_plane, :, 0] = X
 		vectors[peptide_plane, :, 1] = Y
 		vectors[peptide_plane, :, 2] = Z

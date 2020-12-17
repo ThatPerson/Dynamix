@@ -119,3 +119,9 @@ def apply_wigner(X, Y, Z, alpha, beta, gamma):
 	X, Y, Z = vrot(X, Y, Z, beta, Y)
 	X, Y, Z = vrot(X, Y, Z, gamma, Z)
 	return X, Y, Z
+	
+def undo_wigner(X, Y, Z, alpha, beta, gamma):
+	X, Y, Z = vrot(X, Y, Z, -gamma, Z)
+	X, Y, Z = vrot(X, Y, Z, -beta, Y)
+	X, Y, Z = vrot(X, Y, Z, -alpha, Z)
+	return X, Y, Z
