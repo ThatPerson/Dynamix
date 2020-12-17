@@ -166,7 +166,7 @@ double AIMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 
 	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
 	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
-	d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	//d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
 	double S2NHs, S2NCSAxs, S2NCSAys, S2CNs, S2CaNs;
