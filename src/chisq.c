@@ -163,6 +163,51 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				exit(0);
 				break;
 		}
+	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
+		long double taus = opts[0];
+		long double tauf = opts[1];
+		long double Ss[3] = {opts[2], opts[3], opts[4]};
+		long double Sf[3] = {opts[5], opts[6], opts[7]};
+		long double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		/* WARNING: Need to perform variant orientations before entering back_calc.*/
+		if (model == MOD_AIMFT) {
+			Eas = opts[8];
+			Eaf = opts[9];
+			taus_eff *= expl(Eas / (RYD * relax->T));
+			tauf_eff *= expl(Eaf / (RYD * relax->T));
+		}
+		
+		if (taus < 0 || tauf < 0)
+			(*violations)++;
+		if (tauf_eff > taus_eff)
+			(*violations)++;
+		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
+			(*violations)++;
+		for (i = 0; i < 3; i++) {
+			if (Ss[i] < 0 || Ss[i] > 1)
+				(*violations)++;
+			if (Sf[i] < 0 || Sf[i] > 1)
+				(*violations)++;
+		}
+		
+		switch (relax->type) {
+			case R_15NR1:
+				calc_R = AIMF_15NR1(resid, relax, taus_eff, tauf_eff, Ss, Sf);
+				break;
+			case R_15NR1p:
+				calc_R = AIMF_15NR2(resid, relax, taus_eff, tauf_eff, Ss, Sf);
+				break;
+			case R_13CR1:
+				calc_R = AIMF_13CR1(resid, relax, taus_eff, tauf_eff, Ss, Sf);
+				break;
+			case R_13CR1p:
+				calc_R = AIMF_13CR2(resid, relax, taus_eff, tauf_eff, Ss, Sf);
+				break;
+			default:
+				ERROR("Unknown relaxation type: %d", relax->type);
+				exit(0);
+				break;
+		}
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
 		long double taus = opts[0];
 		long double tauf = opts[1];
@@ -313,6 +358,21 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
 		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 		GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
+		/* 100 weighting for order parameters */
+		chisq += ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
+		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
+		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
+	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
+		long double sigs[3] = {opts[2], opts[3], opts[4]};
+		long double sigf[3] = {opts[5], opts[6], opts[7]};
+		
+		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; // S2CCs, S2CCf
+		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
+		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
+		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
+		AIMF_S2(sigs, Os, S2s, 3);
+		AIMF_S2(sigf, Os, S2f, 3);
 		/* 100 weighting for order parameters */
 		chisq += ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
 		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));

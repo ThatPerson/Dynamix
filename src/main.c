@@ -12,6 +12,7 @@
 #include "models/emf.h"
 #include "models/gaf.h"
 #include "models/egaf.h"
+#include "models/aimf.h"
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
@@ -170,6 +171,21 @@ void * run_residue(void *input) {
 			for (k = 2; k <= 7; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
+			}
+			opts[8] = (rand()%60000)/1.;
+			opts[9] = (rand()%60000)/1.;
+		} else if (model == MOD_AIMF) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			for (k = 2; k <= 7; k++) {
+				opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
+				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			}
+		} else if (model == MOD_AIMFT) {
+			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+			opts[1] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+			for (k = 2; k <= 7; k++) {
+				opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 			}
 			opts[8] = (rand()%60000)/1.;
 			opts[9] = (rand()%60000)/1.;
@@ -434,7 +450,7 @@ int main(int argc, char * argv[]) {
 
 	unsigned int k;
 	FILE * gaf;
-	if (m.model == MOD_GAF || m.model == MOD_GAFT || m.model == MOD_EGAF || m.model == MOD_EGAFT) {
+	if (m.model == MOD_GAF || m.model == MOD_GAFT || m.model == MOD_EGAF || m.model == MOD_EGAFT || m.model == MOD_AIMF || m.model == MOD_AIMFT) {
 		sprintf(filename, "%s/gaf.dat", m.outputdir);
 		gaf = fopen(filename, "w");
 		if (gaf == NULL) {
@@ -498,6 +514,8 @@ int main(int argc, char * argv[]) {
 				rotate_Y2(&(m.residues[l].orients[i]), alpha, beta, gamma);
 			}
 		}
+		
+		/* I really need to clean this mess up at some point... */
 
 		if ((m.model == MOD_GAF || m.model == MOD_GAFT) && gaf != NULL) {
 			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; 
@@ -507,7 +525,6 @@ int main(int argc, char * argv[]) {
 			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
 			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
 			
-			printf("%f, %f :: %f\n", S2CHs, S2CHf, S2CHs * S2CHf);
 			GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
 			GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
 			fprintf(orderparams, "%d\t", l+1);
@@ -518,6 +535,31 @@ int main(int argc, char * argv[]) {
 			long double taus = m.residues[l].parameters[0];
 			long double tauf = m.residues[l].parameters[1];
 			if (m.model == MOD_GAFT) {
+				long double Eas = m.residues[l].parameters[8];
+				long double Eaf = m.residues[l].parameters[9];
+				taus *= expl(Eas / (RYD * 300));
+				tauf *= expl(Eaf / (RYD * 300));
+			}
+
+			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
+		} else if ((m.model == MOD_AIMF || m.model == MOD_AIMFT) && gaf != NULL) {
+			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; 
+			long double Ss[3] = {m.residues[l].parameters[2], m.residues[l].parameters[3], m.residues[l].parameters[4]};
+			long double Sf[3] = {m.residues[l].parameters[5], m.residues[l].parameters[6], m.residues[l].parameters[7]};
+			struct Orient *Os[] = {&(m.residues[l].orients[OR_NH]), &(m.residues[l].orients[OR_CNH]), &(m.residues[l].orients[OR_CN])};
+			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
+			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
+			
+			AIMF_S2(Ss, Os, S2s, 3);
+			AIMF_S2(Sf, Os, S2f, 3);
+			fprintf(orderparams, "%d\t", l+1);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m.residues[l].S2NH, m.residues[l].S2NHe);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m.residues[l].S2CH, m.residues[l].S2CHe);
+			fprintf(orderparams, "%f\t%f\t%f\n", S2CNs*S2CNf, m.residues[l].S2CN, m.residues[l].S2CNe);
+
+			long double taus = m.residues[l].parameters[0];
+			long double tauf = m.residues[l].parameters[1];
+			if (m.model == MOD_AIMFT) {
 				long double Eas = m.residues[l].parameters[8];
 				long double Eaf = m.residues[l].parameters[9];
 				taus *= expl(Eas / (RYD * 300));

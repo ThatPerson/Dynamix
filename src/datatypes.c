@@ -30,6 +30,9 @@ time_t start_time;
 #define MOD_GAFT 		8						///< Gaussian Axial Fluctuations model with Temperature Dependence
 #define MOD_EGAF		9						///< 3D GAF for slow motions, EMF for fast motions
 #define MOD_EGAFT		10						///< 3D GAF for slow motions, EMF for fast motions, temperature dependence.
+#define MOD_AIMF 		23
+#define MOD_AIMFT 		24
+
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
  * are allowed to vary.

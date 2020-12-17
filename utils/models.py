@@ -47,6 +47,14 @@ mds = {
 		'n': 10,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf']
 	}, 
+	'aimf': {
+		'n': 8,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf']
+	}, 
+	'aimft': {
+		'n': 10,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'Eas', 'Eaf']
+	}, 
 	'vegaf': {
 		'n': 9,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'alph', 'beta', 'gamm']

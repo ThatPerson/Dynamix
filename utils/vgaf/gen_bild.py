@@ -97,7 +97,12 @@ with open(fn, "r") as inp:
 				Y = vectors[peptide_plane, :, 1]
 				Z = vectors[peptide_plane, :, 2]
 				print(X)
-				X, Y, Z = calc.apply_wigner(X, Y, Z, alpha, beta, gamma)
+				
+				## I _think_ it should be undo_wigner. 
+				# In the C code we rotate the atoms, and fit the axes on top of this.
+				# Here, we rotate the axes. So the axis rotation must be inverse to the atom rotation right?
+				
+				X, Y, Z = calc.undo_wigner(X, Y, Z, alpha, beta, gamma)
 				print(X)
 				vectors[peptide_plane, :, 0] = X
 				vectors[peptide_plane, :, 1] = Y
