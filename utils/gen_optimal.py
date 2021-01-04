@@ -18,12 +18,21 @@ try:
 except IndexError:
 	print("Insufficient arguments. Should be python gen_optimal.py <IC file> <mode> <output>")
 	exit()
+	
+
 
 try:
 	temperature = float(sys.argv[4])
 except IndexError:
 	temperature = 300
 	print("Defaulting temperature to 300 K")
+
+try:
+	min_mag = float(sys.argv[5])
+	max_mag = float(sys.argv[6])
+except IndexError:
+	min_mag = 0.7
+	max_mag = 1.0
 
 ## load in atomic coordinates from PDB file.
 traj = pt.load("2GI9.pdb")
@@ -103,6 +112,8 @@ def read_model(name, model):
 	components = []
 	l_tau = 100
 	u_tau = -100
+	u_mag = -1000
+	l_mag = 1000
 	with open("%s/final.dat" % (name), "r") as f:
 		for l in f:
 			k = l.split("\t")
@@ -157,6 +168,19 @@ def read_model(name, model):
 				current_res["tauf"] = temp_tau(kf[4], kf[10], temperature)
 				current_res["slow"] = kf[5:8]
 				current_res["S2f"] = kf[8]
+			elif (model == "aimf" or model == "vaimf"):
+				current_res["mags"] = kf[5:8]
+				current_res["magf"] = kf[8:11]
+				current_res["taus"] = kf[3]
+				current_res["tauf"] = kf[4]
+			elif (model == "aimft" or model == "vaimft"):
+				current_res["mags"] = kf[5:8]
+				current_res["magf"] = kf[8:11]
+				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
+				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
+				
+				
+
 			if (model[0] == "v"):
 				current_res["orientation"] = kf[-3:]
 			while (len(components) < resid+1):
@@ -173,8 +197,70 @@ def read_model(name, model):
 				u_tau = np.log(current_res["taus"])
 			elif (np.log(current_res["tauf"]) > u_tau):
 				u_tau = np.log(current_res["tauf"])
+			
+			
+			
 	return components, l_tau, u_tau
 			
+def generate_aimf(parms, residue, mode, min_tau, max_tau, min_mag, max_mag):
+	st = ""
+	tau = 0
+	mags = []
+	if (mode == "slow"):
+		tau = np.log(parms["taus"])
+		mags = parms["mags"]
+	elif (mode == "fast"):
+		tau = np.log(parms["tauf"])
+		mags = parms["magf"]
+	else:
+		return ""
+		
+	mags = [(a - min_mag) / (max_mag - min_mag) for a in mags]
+	for i in range(0, len(mags)):
+		if (mags[i] < 0):
+			mags[i] = 0.01
+			
+	x, y, z = midpoints[residue]
+	#print(mags)
+		
+	beta = np.arcsin(-vectors[residue, 2, 0])
+	gamma = np.arcsin(vectors[residue, 2, 1] / np.cos(beta))
+	alpha = np.arccos(vectors[residue, 0, 0] / np.cos(beta))
+	
+	alpha = (180. / np.pi) * alpha
+	beta = (180. / np.pi) * beta
+	gamma = (180. / np.pi) * gamma
+	
+	#print("Rotation gamma %f about x" % (gamma))
+	#print("Rotation beta %f about y" % (beta))
+	#print("Rotation alpha %f about z" % (alpha))
+	
+	if ("orientation" in parms):
+		print("Not yet implemented")
+		return ""
+		
+	st = st + ".comment residue %d (%f, %f, %f)\n" % (residue, x, y, z)
+	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
+	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
+	st = st + ".translate %f %f %f\n" % (x, y, z)
+	st = st + ".scale %f %f %f\n" % (mags[1], mags[2], mags[0]) # Sb along X, Sc along Y, Sa along Z
+	st = st + ".rotate %f x\n" % (gamma)
+	st = st + ".rotate %f y\n" % (beta)
+	st = st + ".rotate %f z\n" % (alpha)
+	st = st + ".sphere 0 0 0 1\n" # unit sphere
+	st = st + ".pop\n.pop\n.pop\n.pop\n.pop\n"
+
+	
+	
+	
+	#
+	return st
+	
+	
+	''' *   Let Sa, Sb, Sc be the squared order parameters along the following directions;
+ *     Sa - CaCa axis (eg the axis with gamma deflections about it)
+ *     Sb - ~N-H axis (eg the axis with alpha deflections about it)
+ *     Sc - perpendicular to plane axis (eg beta).'''
 
 
 def generate_mf(parms, residue, mode, min_tau, max_tau):
@@ -199,6 +285,8 @@ def generate_mf(parms, residue, mode, min_tau, max_tau):
 	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
 	st = st + ".sphere %f %f %f %f\n" % (x, y, z, 2* ((1 - mag)) / 0.2)
 	return st
+
+
 
 def generate_gaf(parms, residue, mode, min_tau, max_tau):
 	st = ""
@@ -256,6 +344,7 @@ choices, mods = read_file(ic_file)
 models = {}
 max_tau = -1000
 min_tau = 1000
+
 for i in mods:
 	models[i], l_tau, u_tau = read_model(i, i)
 	print("%f, %f\n" % (l_tau, u_tau))
@@ -263,14 +352,16 @@ for i in mods:
 		min_tau = l_tau
 	if (u_tau > max_tau):
 		max_tau = u_tau
-print(models["smf"][2])
-print("Min: %f Max: %f" % (min_tau, max_tau))
-generate_mf(models["smf"][3], 3, "slow", min_tau, max_tau)
-generate_gaf(models["gaft"][3], 3, "slow", min_tau, max_tau) 
+
+#print(models["smf"][2])
+#print("Min: %f Max: %f" % (min_tau, max_tau))
+#generate_mf(models["smf"][3], 3, "slow", min_tau, max_tau)
+#generate_gaf(models["gaft"][3], 3, "slow", min_tau, max_tau) 
 
 direct_mf = ["smf", "smft", "demf", "demft"]
 direct_gaf = ["gaf", "gaft", "vgaf", "vgaft"]
 slow_gaf = ["egaf", "egaft", "vegaf", "vegaft"]
+aimf = ["aimf", "aimft"]
 
 with open(output_file, "w") as of:
 	for l in choices:
@@ -287,6 +378,10 @@ with open(output_file, "w") as of:
 				st = generate_gaf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
 			else:
 				st = generate_mf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
+		elif (l["model"] in aimf): 
+			st = generate_aimf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau, min_mag, max_mag)
+				
 		of.write(st)
+		
 		
 ## blocks should be sized by their order parameter or angular deflection, and coloured by their timescale.
