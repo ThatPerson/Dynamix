@@ -329,10 +329,17 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		}
 	}
 	
+	float mult = 1.;
 	
 	for (i = 0; i < resid->n_relaxation; i++) {
 		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
-		chisq += ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
+		if (m->cn_ratio == CNRATIO_ON) {
+			mult = 1;
+			if (resid->relaxation[i].type == R_13CR1 && resid->relaxation[i].type == R_13CR1p)
+				mult = resid->cn;
+		}
+		
+		chisq += mult*((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
 	}
 	//dp += resid->n_relaxation;
 	

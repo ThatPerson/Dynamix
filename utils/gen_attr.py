@@ -5,6 +5,8 @@ import models
 ## python3 gen_attr.py <final.dat> <model> <tag> <outputfile>
 # eg python3 gen_attr.py demf/final.dat demf #1 file.attr
 
+print(len(sys.argv))
+print(sys.argv)
 if (len(sys.argv) != 5):
 	print("Wrong number of arguments")
 	exit(-1)

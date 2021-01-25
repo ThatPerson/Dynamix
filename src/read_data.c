@@ -334,7 +334,8 @@ int read_system_file(char *filename, struct Model * m) {
 	m->params = 0;
 	m->nthreads = 1;
 	m->rdc = RDC_OFF;
-
+	m->cn_ratio = CNRATIO_OFF;
+	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -485,6 +486,8 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "IGNORE") == 0) {
 				to_ignore[ig] = (unsigned int) atoi(val);
 				ig++;
+			} else if (strcmp(key, "CNCOMP") == 0) {
+				m->cn_ratio = CNRATIO_ON;
 			} else if (strcmp(key, "N_ERROR_ITER") == 0){
 				m->n_error_iter = (unsigned int) atoi(val);
 			} else if (strcmp(key, "OR_NH") == 0) {
@@ -536,10 +539,32 @@ int read_system_file(char *filename, struct Model * m) {
 			read_relaxation_data(m, key);
 		}
 	}
-	
+	int k;
+	int c_count = 0, n_count = 0;
 	for (i = 0; i < m->n_residues; i++) {
 		if (m->residues[i].n_relaxation < 5)
 			m->residues[i].ignore = 1;
+		if (m->cn_ratio == CNRATIO_OFF)
+			continue;
+		c_count = 0;
+		n_count = 0;
+		for (k = 0; k < m->residues[i].n_relaxation; k++) {
+			if (m->residues[i].relaxation[k].type == R_13CR1)
+				c_count++;
+			else if (m->residues[i].relaxation[k].type == R_13CR1p)
+				c_count++;
+			else if (m->residues[i].relaxation[k].type == R_15NR1)
+				n_count++;
+			else if (m->residues[i].relaxation[k].type == R_15NR1p)
+				n_count++;
+		}
+		if (n_count == 0 || c_count == 0) {
+			printf("Residue %d: Only one nuclei measured. CN ratio set to 1.\n", i);
+			m->residues[i].cn = 1;
+		} else {
+			m->residues[i].cn = ((float) n_count) / ((float) c_count);
+			//printf("%d, %d -> %f\n", c_count, n_count, m->residues[i].cn);
+		}
 	}
 	fclose(fp);
 
@@ -580,7 +605,7 @@ int print_system(struct Model *m, char *filename) {
 	fprintf(fp, "Error Mode: %s\n", (m->error_mode == 1)?"ON":"OFF");
 	fprintf(fp, "RDC: %s\n", (m->rdc == RDC_ON)?"ON":"OFF");
 	fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == VARIANT_A)?"ON":"OFF");
-
+	fprintf(fp, "C/N Ratio Compensation: %s\n", (m->cn_ratio == CNRATIO_ON)?"ON":"OFF");
 
 
 	unsigned int i, j;
@@ -594,6 +619,10 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].csisoN, m->residues[i].csisoC);
 		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
+		if (m->cn_ratio == CNRATIO_ON)
+			fprintf(fp, "\tCNRATIO: %f\n", m->residues[i].cn);
+		else
+			fprintf(fp, "\tCNRATIO: OFF\n");
 		fprintf(fp, "\tOrients;\n");
 		for (j = 0; j < N_OR; j++) {
 			//if (m->residues[i].orients[j] != NULL)

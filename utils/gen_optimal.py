@@ -15,21 +15,30 @@ try:
 	ic_file = sys.argv[1]
 	mode = sys.argv[2]
 	output_file = sys.argv[3]
+
 except IndexError:
 	print("Insufficient arguments. Should be python gen_optimal.py <IC file> <mode> <output>")
 	exit()
 	
+try:
+	def_file = sys.argv[4]
+	residue_inc = []
+	with open(def_file, "r") as f:
+		for l in f:
+			residue_inc.append(float(l))
+except IndexError:
+	residue_inc = []
 
 
 try:
-	temperature = float(sys.argv[4])
+	temperature = float(sys.argv[5])
 except IndexError:
 	temperature = 300
 	print("Defaulting temperature to 300 K")
 
 try:
-	min_mag = float(sys.argv[5])
-	max_mag = float(sys.argv[6])
+	min_mag = float(sys.argv[6])
+	max_mag = float(sys.argv[7])
 except IndexError:
 	min_mag = 0.7
 	max_mag = 1.0
@@ -243,7 +252,7 @@ def generate_aimf(parms, residue, mode, min_tau, max_tau, min_mag, max_mag):
 	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
 	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
 	st = st + ".translate %f %f %f\n" % (x, y, z)
-	st = st + ".scale %f %f %f\n" % (mags[1], mags[2], mags[0]) # Sb along X, Sc along Y, Sa along Z
+	st = st + ".scale %f %f %f\n" % (np.power(mags[1], 3.), np.power(mags[0], 3), np.power(mags[2], 3.)) # Sb along X, Sa along Y, Sc along Z
 	st = st + ".rotate %f x\n" % (gamma)
 	st = st + ".rotate %f y\n" % (beta)
 	st = st + ".rotate %f z\n" % (alpha)
@@ -252,7 +261,7 @@ def generate_aimf(parms, residue, mode, min_tau, max_tau, min_mag, max_mag):
 
 	
 	
-	
+
 	#
 	return st
 	
@@ -268,11 +277,19 @@ def generate_mf(parms, residue, mode, min_tau, max_tau):
 	tau = 0
 	mag = 0
 	if (mode == "slow"):
-		tau = np.log(parms["taus"])
-		mag = parms["S2s"]
+		try:
+			tau = np.log(parms["taus"])
+			mag = parms["S2s"]
+		except RuntimeWarning:
+			tau = np.log(parms["tau"])
+			mag = parms["S2"]
 	elif (mode == "fast"):
-		tau = np.log(parms["tauf"])
-		mag = parms["S2f"]
+		try:
+			tau = np.log(parms["tauf"])
+			mag = parms["S2f"]
+		except RuntimeWarning:
+			tau = np.log(parms["tau"])
+			mag = parms["S2"]
 	else:
 		return ""
 	if (tau == -1 or mag == -1):
@@ -286,6 +303,25 @@ def generate_mf(parms, residue, mode, min_tau, max_tau):
 	st = st + ".sphere %f %f %f %f\n" % (x, y, z, 2* ((1 - mag)) / 0.2)
 	return st
 
+def format_v(v):
+	st = ""
+	for i in v:
+		st += "%f "%(i)
+	return st
+
+def generate_pp(residue):
+	st = ".transparency 60\n"
+	st += ".color 0.6 0.6 0.6\n"
+	
+	corner1 = midpoints[residue] - 1.*vectors[residue, :, 0] - 1.*vectors[residue, :, 2] 
+	corner2 = midpoints[residue] + 1.*vectors[residue, :, 0] - 1.*vectors[residue, :, 2]
+	corner3 = midpoints[residue] + 1.*vectors[residue, :, 0] + 1.*vectors[residue, :, 2]
+	corner4 = midpoints[residue] - 1.*vectors[residue, :, 0] + 1.*vectors[residue, :, 2]
+	
+	st += ".polygon "+format_v(corner1) + format_v(corner2) + format_v(corner3) + format_v(corner4)+"\n"
+	
+	st += ".transparency 0\n"
+	return st
 
 
 def generate_gaf(parms, residue, mode, min_tau, max_tau):
@@ -302,14 +338,16 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 		return ""
 	if ("orientation" in parms):
 		# then vgaf
+		print("Performing rotation")
 		orients = parms["orientation"]
-		X = vectors[peptide_plane, :, 0]
-		Y = vectors[peptide_plane, :, 1]
-		Z = vectors[peptide_plane, :, 2]
+		X = vectors[residue, :, 0]
+		Y = vectors[residue, :, 1]
+		Z = vectors[residue, :, 2]
+
 		X, Y, Z = calc.undo_wigner(X, Y, Z, orients[0], orients[1], orients[2])
-		vectors[peptide_plane, :, 0] = X
-		vectors[peptide_plane, :, 1] = Y
-		vectors[peptide_plane, :, 2] = Z
+		vectors[residue, :, 0] = X
+		vectors[residue, :, 1] = Y
+		vectors[residue, :, 2] = Z
 		
 	if (tau == -1 or sigs[0] == -1):
 		return ""
@@ -329,15 +367,24 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 	#print("(%f, %f, %f)" % (x, y, z))
 	st = st + ".comment residue %d (%f, %f, %f)\n" % (residue, x, y, z)
 	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
-	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
-	st = st + ".cylinder %f %f %f %f %f %f %f\n" % (alpha_start[0], alpha_start[1], alpha_start[2], \
-		alpha_end[0], alpha_end[1], alpha_end[2], 0.4 * S[0])
-	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
-	st = st + ".cylinder %f %f %f %f %f %f %f\n" % (beta_start[0], beta_start[1], beta_start[2], \
-		beta_end[0], beta_end[1], beta_end[2], 0.4 * S[1])
-	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
-	st = st + ".cylinder %f %f %f %f %f %f %f\n" % (gamma_start[0], gamma_start[1], gamma_start[2], \
-		gamma_end[0], gamma_end[1], gamma_end[2], 0.4 * S[0])
+	#st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
+	st = st + ".color %f 0 0\n" % (cspec)
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], alpha_start[0], alpha_start[1], alpha_start[2], 0.4 * S[0], 0.6 * S[0])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], alpha_end[0], alpha_end[1], alpha_end[2], 0.4 * S[0], 0.6 * S[0])
+	#st = st + ".cylinder %f %f %f %f %f %f %f\n" % (alpha_start[0], alpha_start[1], alpha_start[2], \
+	#	alpha_end[0], alpha_end[1], alpha_end[2], 0.4 * S[0])
+	#st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
+	st = st + ".color 0 %f 0\n" % (cspec)
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], beta_start[0], beta_start[1], beta_start[2], 0.4 * S[1], 0.6 * S[1])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], beta_end[0], beta_end[1], beta_end[2], 0.4 * S[1], 0.6 * S[1])
+	#st = st + ".cylinder %f %f %f %f %f %f %f\n" % (beta_start[0], beta_start[1], beta_start[2], \
+	#	beta_end[0], beta_end[1], beta_end[2], 0.4 * S[1])
+	#st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
+	st = st + ".color 0 0 %f\n" % (cspec)
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], gamma_start[0], gamma_start[1], gamma_start[2], 0.4 * S[2], 0.6 * S[2])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], gamma_end[0], gamma_end[1], gamma_end[2], 0.4 * S[2], 0.6 * S[2])
+	#st = st + ".cylinder %f %f %f %f %f %f %f\n" % (gamma_start[0], gamma_start[1], gamma_start[2], \
+	#	gamma_end[0], gamma_end[1], gamma_end[2], 0.4 * S[2])
 	return st
 
 choices, mods = read_file(ic_file)
@@ -365,6 +412,11 @@ aimf = ["aimf", "aimft"]
 
 with open(output_file, "w") as of:
 	for l in choices:
+		if (l["residue"] not in residue_inc and len(residue_inc) != 0):
+			continue
+		if ("pp" in sys.argv):
+			st = generate_pp(l["residue"])
+			of.write(st)
 		#print(l)
 		if (l["model"] == ''):
 			continue
@@ -380,8 +432,11 @@ with open(output_file, "w") as of:
 				st = generate_mf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
 		elif (l["model"] in aimf): 
 			st = generate_aimf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau, min_mag, max_mag)
-				
+		
 		of.write(st)
 		
+		
+
+
 		
 ## blocks should be sized by their order parameter or angular deflection, and coloured by their timescale.

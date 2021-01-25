@@ -70,6 +70,8 @@ time_t start_time;
 #define N_OR			14
 #define OR_LIMIT		3.14
 
+#define CNRATIO_ON		1
+#define CNRATIO_OFF		0
 
 #define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
 #define NTHREADS		40						///< Unused
@@ -147,6 +149,7 @@ struct Model {
 	unsigned int n_residues;
 	unsigned int rdc;
 	unsigned int nthreads;
+	unsigned int cn_ratio;
 	unsigned int or_variation; // VARIANT_A or INVARIANT_A.
 	int error_mode;
 };
@@ -222,7 +225,7 @@ struct Residue {
 	//float orients[14][2]; // theta,phi
 	struct Relaxation * relaxation;
 	struct Relaxation * temp_relaxation;
-
+	float cn;
 	long double ** error_params;
 
 	unsigned int n_relaxation;
