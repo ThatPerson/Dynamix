@@ -38,7 +38,7 @@ void *run_global_iteration(void *input) {
 
 	//printf("RESIDUE %d\n", i+1);
 	//printf("Number of relaxations: %d\n", resid->n_relaxation);
-	unsigned int l, k;
+	unsigned int k;
 	unsigned int params = 0;
 	params = m->params;
 	//printf("%d\n", params);
@@ -227,7 +227,7 @@ void *run_global_iteration(void *input) {
 		}
 	}
 	pthread_mutex_lock(&write_lock);
-	fprintf(fp, "%d\t%f", l+1, val);
+	fprintf(fp, "%d\t%f", i+1, val);
 	for (k = 0; k < params; k++) {
 		fprintf(fp, "\t%Le", opts[k]);
 	}
@@ -252,7 +252,7 @@ void *run_global_iteration(void *input) {
 	return NULL;
 }
 
-void * calc_global_errors(struct Model *m) {
+int calc_global_errors(struct Model *m) {
 	printf("Global GAF Error code is not yet parallelised.\n");
 	FILE *errp;
 	char filename[300];
@@ -260,7 +260,7 @@ void * calc_global_errors(struct Model *m) {
 	errp = fopen(filename, "a");
 	if (errp == NULL) {
 		printf("%s not found.\n", filename);
-		return NULL;
+		return -1;
 	}
 	
 	unsigned int l, k, i;
@@ -343,6 +343,7 @@ void * calc_global_errors(struct Model *m) {
 	}
 	fclose(errp);
 	free(opts);
+	return 1;
 }
 
 
@@ -351,7 +352,7 @@ void * calc_global_errors(struct Model *m) {
  * @param input
  *  Pointer to rrarg containing thread information
  */
-void * run_global(struct Model *m) {
+int run_global(struct Model *m) {
 	if ((pthread_mutex_init(&write_lock, NULL) != 0) || (pthread_mutex_init(&param_lock, NULL) != 0)) {
 		ERROR("Mutex init failed.\n");
 		free_all(m);
@@ -371,19 +372,19 @@ void * run_global(struct Model *m) {
 	int rc;
 
 	unsigned int current_it = 0;
-	unsigned int n_spawns = 0, i, current_residue;
+	unsigned int n_spawns = 0, i;
 	n_spawns = m->n_iter / m->nthreads;
 	n_spawns ++;
 	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m->nthreads);
 	
-	unsigned int params = m->params;
+	//unsigned int params = m->params;
 
 
-	current_residue = 0;
+	current_it = 0;
 	for (l = 0; l < n_spawns; l++) {
 		for (i=0; i<m->nthreads; ++i) {
-			RRA[i].i = current_residue + i;
-			if (current_residue + i >= m->n_residues)
+			RRA[i].i = current_it + i;
+			if (current_it + i >= m->n_residues)
 				continue;
 			RRA[i].resid = NULL;
 			RRA[i].model = m;
@@ -392,12 +393,12 @@ void * run_global(struct Model *m) {
 			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
 			rc = pthread_create(&threads[i], &threadattr, run_global_iteration, (void *) &RRA[i]);
 			if (rc != 0) {
-				ERROR("Failed to spawn thread %d. Crashing...", current_residue+i);
+				ERROR("Failed to spawn thread %d. Crashing...", current_it+i);
 				free_all(m);
 				exit(-1);
 			}
 		}
-		current_residue += m->nthreads;
+		current_it += m->nthreads;
 
 		for (i=0; i<m->nthreads; ++i) {
 			rc = pthread_join(threads[i], NULL);
@@ -409,5 +410,6 @@ void * run_global(struct Model *m) {
 	
 	pthread_mutex_destroy(&write_lock);
 	pthread_mutex_destroy(&param_lock);
+	return 1;
 }
 

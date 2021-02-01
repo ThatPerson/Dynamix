@@ -542,7 +542,7 @@ int read_system_file(char *filename, struct Model * m) {
 			read_relaxation_data(m, key);
 		}
 	}
-	int k;
+	unsigned int k;
 	int c_count = 0, n_count = 0;
 	for (i = 0; i < m->n_residues; i++) {
 		if (m->residues[i].n_relaxation < 5)

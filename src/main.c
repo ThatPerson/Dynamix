@@ -324,8 +324,7 @@ int run_errors(struct Model *m) {
 	n_spawns = m->n_residues / m->nthreads;
 	n_spawns ++;
 	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m->nthreads);
-	
-	unsigned int params = m->params;
+
 
 
 	current_residue = 0;
@@ -356,6 +355,7 @@ int run_errors(struct Model *m) {
 
 	free(RRA);
 	free(threads);
+	return 1;
 }
 
 int print_errors(struct Model *m) {
@@ -385,6 +385,7 @@ int print_errors(struct Model *m) {
 		fprintf(ep, "\n");	
 	}
 	fclose(ep);
+	return 1;
 }
 
 int print_residues(struct Model *m) {
