@@ -628,7 +628,10 @@ int main(int argc, char * argv[]) {
 	print_residues(&m);
 	if (m.error_mode == 1) {
 		printf("Running errors...\n");
-		run_errors(&m);
+		if (m.global == LOCAL)
+			run_errors(&m);
+		else
+			calc_global_errors(&m);
 		printf("Printing errors...\n");
 		print_errors(&m);
 	}

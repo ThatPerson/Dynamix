@@ -252,7 +252,98 @@ void *run_global_iteration(void *input) {
 	return NULL;
 }
 
+void * calc_global_errors(struct Model *m) {
+	printf("Global GAF Error code is not yet parallelised.\n");
+	FILE *errp;
+	char filename[300];
+	sprintf(filename, "%s/errors.dat", m->outputdir);
+	errp = fopen(filename, "a");
+	if (errp == NULL) {
+		printf("%s not found.\n", filename);
+		return NULL;
+	}
+	
+	unsigned int l, k, i;
+	struct Residue *resid;
+	long double *opts;
+	opts = (long double *) malloc(sizeof(long double) * m->params);
+	
+	
+	int p = 0;
+	double temp_R = 0;
+	int ignore = -1;
+	
+	for (i = 0; i < m->n_residues; i++) {
+		resid = &(m->residues[i]);
+		resid->S2NHb = resid->S2NH;
+		resid->S2CHb = resid->S2CH;
+		resid->S2CNb = resid->S2CN;
+		resid->errors_mean = (long double *) malloc (sizeof(long double) * m->params);
+		resid->errors_std = (long double *) malloc(sizeof(long double) * m->params);
+		resid->error_params = (long double **) malloc (sizeof(long double *) * m->params);
+		for (k = 0; k < m->params; k++) {
+			resid->error_params[k] = (long double *) malloc (sizeof(long double) * m->n_error_iter);
+		}
+	}
+	
 
+	
+	for (l = 0; l < m->n_error_iter; l++) {
+		printf("Iteration %d.\n", l);
+		for (i = 0; i < m->n_residues; i++) {
+			resid = &(m->residues[i]);
+			resid->temp_relaxation = (resid->relaxation);
+			resid->relaxation = NULL;
+			resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
+
+			for (k = 0; k < resid->n_relaxation; k++) {
+				resid->relaxation[k].field = resid->temp_relaxation[k].field;
+				resid->relaxation[k].wr = resid->temp_relaxation[k].wr;
+				resid->relaxation[k].w1 = resid->temp_relaxation[k].w1;
+				resid->relaxation[k].type = resid->temp_relaxation[k].type;
+				resid->relaxation[k].T = resid->temp_relaxation[k].T;
+				
+				temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), m, &ignore);
+				resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
+				LOG("%d %d %d prior: %f, backcalc: %f, new: %f, error: %f", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
+				resid->relaxation[k].Rerror = resid->temp_relaxation[k].Rerror;
+			}
+			resid->S2NH = norm_rand(resid->S2NHb, (resid->S2NHe / 2.)); // divided by two to get 1 standard deviation
+			resid->S2CH = norm_rand(resid->S2CHb, (resid->S2CHe / 2.));
+			resid->S2CN = norm_rand(resid->S2CNb, (resid->S2CNe / 2.));
+		}
+		for (k = 0; k < m->params; k++) {
+			opts[k] = m->residues[0].parameters[k]; // doesn't matter which we take it from, all are the same.
+		}
+
+		resid = NULL;
+		double min = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
+		LOG("%d %d min = %f", i, l, min);
+		fprintf(errp, "%d\t%f", l+1, min);
+		for (k = 0; k < m->params; k++) {
+			for (i = 0; i < m->n_residues; i++)
+				m->residues[i].error_params[k][p] = opts[k];
+			fprintf(errp, "\t%Le", opts[k]);
+		}
+		fprintf(errp, "\n");
+		p++;
+		for (i = 0; i < m->n_residues; i++) {
+			resid = &(m->residues[i]);
+			free(resid->relaxation);
+			resid->relaxation = NULL;
+			resid->relaxation = resid->temp_relaxation;
+			resid->temp_relaxation = NULL;
+		}
+	}
+	for (i = 0; i < m->n_residues; i++) {
+		m->residues[i].S2NH = m->residues[i].S2NHb;
+		m->residues[i].S2CH = m->residues[i].S2CHb;
+		m->residues[i].S2CN = m->residues[i].S2CNb;
+		m->residues[i].error_calcs = p;
+	}
+	fclose(errp);
+	free(opts);
+}
 
 
 /**
