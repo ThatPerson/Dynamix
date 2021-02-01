@@ -16,6 +16,7 @@
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
+#include "global_gaf.h"
 
 
 
@@ -619,8 +620,10 @@ int main(int argc, char * argv[]) {
 	sprintf(filename, "%s/model.txt", m.outputdir);
 	print_system(&m, filename);
 
-
-	run_fitting(&m);
+	if (m.global == LOCAL)
+		run_fitting(&m);
+	else if (m.global == GLOBAL)
+		run_global(&m);
 	printf("Printing residues...\n");
 	print_residues(&m);
 	if (m.error_mode == 1) {

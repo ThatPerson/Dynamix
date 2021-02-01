@@ -335,6 +335,7 @@ int read_system_file(char *filename, struct Model * m) {
 	m->nthreads = 1;
 	m->rdc = RDC_OFF;
 	m->cn_ratio = CNRATIO_OFF;
+	m->global = LOCAL;
 	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
@@ -488,6 +489,8 @@ int read_system_file(char *filename, struct Model * m) {
 				ig++;
 			} else if (strcmp(key, "CNCOMP") == 0) {
 				m->cn_ratio = CNRATIO_ON;
+			} else if (strcmp(key, "GLOBAL") == 0) {
+				m->global = GLOBAL;
 			} else if (strcmp(key, "N_ERROR_ITER") == 0){
 				m->n_error_iter = (unsigned int) atoi(val);
 			} else if (strcmp(key, "OR_NH") == 0) {
@@ -559,7 +562,7 @@ int read_system_file(char *filename, struct Model * m) {
 				n_count++;
 		}
 		if (n_count == 0 || c_count == 0) {
-			printf("Residue %d: Only one nuclei measured. CN ratio set to 1.\n", i);
+			printf("Residue %d: Only one nuclei measured. CN ratio set to 1.\n", i+1);
 			m->residues[i].cn = 1;
 		} else {
 			m->residues[i].cn = ((float) n_count) / ((float) c_count);
@@ -606,7 +609,7 @@ int print_system(struct Model *m, char *filename) {
 	fprintf(fp, "RDC: %s\n", (m->rdc == RDC_ON)?"ON":"OFF");
 	fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == VARIANT_A)?"ON":"OFF");
 	fprintf(fp, "C/N Ratio Compensation: %s\n", (m->cn_ratio == CNRATIO_ON)?"ON":"OFF");
-
+	fprintf(fp, "Global: %s\n", (m->global == GLOBAL)?"ON":"OFF");
 
 	unsigned int i, j;
 	struct Relaxation *r;

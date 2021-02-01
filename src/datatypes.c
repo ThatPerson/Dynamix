@@ -77,7 +77,8 @@ time_t start_time;
 #define NTHREADS		40						///< Unused
 #define THREAD_STACK	32768*2 				///< Bytes per thread. Raise if stack overflows, lower if insufficient stack for number of workers
 
-
+#define GLOBAL			1
+#define LOCAL			0
 
 #define MIN_VAL			10000000				///< Maximum value of chisq function for which it will be considered fit
 
@@ -149,6 +150,7 @@ struct Model {
 	unsigned int n_residues;
 	unsigned int rdc;
 	unsigned int nthreads;
+	unsigned int global;
 	unsigned int cn_ratio;
 	unsigned int or_variation; // VARIANT_A or INVARIANT_A.
 	int error_mode;
