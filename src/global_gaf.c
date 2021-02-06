@@ -19,13 +19,7 @@ double optimize_global_chisq(long double * opts, struct Residue *r, struct Model
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
-pthread_mutex_t write_lock;
-pthread_mutex_t param_lock;
-
-void *run_global_iteration(void *input) {
-	unsigned int i = ((struct rrargs*)input)->i;
-	printf("\tThread %d alive...\n", i+1);
-	struct Model *m = ((struct rrargs*)input)->model;
+int run_global_iteration(struct Model *m, int i) {
 	struct Residue *resid = NULL;
 	FILE *fp;
 	char filename[300];
@@ -33,7 +27,7 @@ void *run_global_iteration(void *input) {
 	fp = fopen(filename, "a");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
-		return NULL;
+		return -1;
 	}
 
 	//printf("RESIDUE %d\n", i+1);
@@ -226,15 +220,13 @@ void *run_global_iteration(void *input) {
 			opts[k] = -1;
 		}
 	}
-	pthread_mutex_lock(&write_lock);
+
 	fprintf(fp, "%d\t%f", i+1, val);
 	for (k = 0; k < params; k++) {
 		fprintf(fp, "\t%Le", opts[k]);
 	}
 	fprintf(fp, "\n");
-	pthread_mutex_unlock(&write_lock);
-	
-	pthread_mutex_lock(&param_lock);
+
 	for (i = 0; i < m->n_residues; i++) {
 		if (val < m->residues[i].min_val && val != -1) {
 		//printf("New lowest %f\n", val);	
@@ -244,16 +236,15 @@ void *run_global_iteration(void *input) {
 			}
 		}
 	}
-	pthread_mutex_unlock(&param_lock);
+
 
 
 	free(opts);
 	fclose(fp);
-	return NULL;
+	return 1;
 }
 
 int calc_global_errors(struct Model *m) {
-	printf("Global GAF Error code is not yet parallelised.\n");
 	FILE *errp;
 	char filename[300];
 	sprintf(filename, "%s/errors.dat", m->outputdir);
@@ -353,11 +344,12 @@ int calc_global_errors(struct Model *m) {
  *  Pointer to rrarg containing thread information
  */
 int run_global(struct Model *m) {
-	if ((pthread_mutex_init(&write_lock, NULL) != 0) || (pthread_mutex_init(&param_lock, NULL) != 0)) {
-		ERROR("Mutex init failed.\n");
+	if (m->numprocs > 1) {
+		ERROR("Global GAF fitting _does not_ support MPI parallelisation at the moment.\n");
 		free_all(m);
 		exit(-1);
 	}
+
 	unsigned int l;
 	for (l = 0; l < m->n_residues; l++) {
 		m->residues[l].parameters = (long double *) malloc (sizeof(long double) * m->params);
@@ -365,51 +357,10 @@ int run_global(struct Model *m) {
 	}
 	
 	// launch
-	pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * m->nthreads);
-	pthread_attr_t threadattr;
-	pthread_attr_init(&threadattr);
-	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
-	int rc;
-
-	unsigned int current_it = 0;
-	unsigned int n_spawns = 0, i;
-	n_spawns = m->n_iter / m->nthreads;
-	n_spawns ++;
-	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m->nthreads);
-	
-	//unsigned int params = m->params;
-
-
-	current_it = 0;
-	for (l = 0; l < n_spawns; l++) {
-		for (i=0; i<m->nthreads; ++i) {
-			RRA[i].i = current_it + i;
-			if (current_it + i >= m->n_residues)
-				continue;
-			RRA[i].resid = NULL;
-			RRA[i].model = m;
-			strcpy(RRA[i].outputdir, m->outputdir);
-			//strcpy(RRA[i].outputdir, m.outputdir);
-			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
-			rc = pthread_create(&threads[i], &threadattr, run_global_iteration, (void *) &RRA[i]);
-			if (rc != 0) {
-				ERROR("Failed to spawn thread %d. Crashing...", current_it+i);
-				free_all(m);
-				exit(-1);
-			}
-		}
-		current_it += m->nthreads;
-
-		for (i=0; i<m->nthreads; ++i) {
-			rc = pthread_join(threads[i], NULL);
-		}
+	for (l = 0; l < m->n_iter; l++) {
+		printf("\tRunning iteration %d\n", l);
+		run_global_iteration(m, l);
 	}
-
-	free(RRA);
-	free(threads);
-	
-	pthread_mutex_destroy(&write_lock);
-	pthread_mutex_destroy(&param_lock);
 	return 1;
 }
 

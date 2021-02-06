@@ -150,7 +150,6 @@ struct Model {
 	unsigned int n_residues;
 	unsigned int rdc;
 	unsigned int nthreads;
-	unsigned int ompthreads;
 	unsigned int global;
 	unsigned int cn_ratio;
 	unsigned int or_variation; // VARIANT_A or INVARIANT_A.

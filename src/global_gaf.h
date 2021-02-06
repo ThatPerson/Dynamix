@@ -2,7 +2,7 @@
 #define GLOBAL_H
 
 double optimize_global_chisq(long double *opts, struct Residue *r, struct Model *m, unsigned int params);
-void *run_global_iteration(void *input);
+int run_global_iteration(struct Model *m, int i);
 int calc_global_errors(struct Model *m);
 int run_global(struct Model *m);
 

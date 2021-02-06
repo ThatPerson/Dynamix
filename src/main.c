@@ -6,7 +6,7 @@
 #include <time.h>
 #include <omp.h>
 #include <mpi.h>
-#include <pthread.h>
+
 #include "datatypes.h"
 #include "read_data.h"
 
@@ -538,7 +538,7 @@ int main(int argc, char * argv[]) {
 	int s, e;
 	determine_residues(&m, myid, numprocs, &(m.proc_start), &(m.proc_end));
 	//printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
-	omp_set_num_threads(m.ompthreads);
+	omp_set_num_threads(m.nthreads);
 	
 	m.error_mode = err_mod;
 	if (m.error_mode == 1 && m.n_error_iter == 0) {
@@ -557,7 +557,7 @@ int main(int argc, char * argv[]) {
 	}
 
 
-	printf("%d\n", ret);
+	//printf("%d\n", ret);
 	char filename[300];
 	sprintf(filename, "%s/model.txt", m.outputdir);
 	print_system(&m, filename);
