@@ -75,26 +75,23 @@ void calc_statistics(long double * vals, int length, long double * mean, long do
  * @param input
  *  rrarg struct containing the residue under consideration.
  */
-void * calc_errors(void *input) {
-	unsigned int i = ((struct rrargs*)input)->i;
-	printf("\tThread %d alive...\n", i+1);
-	struct Residue * resid = ((struct rrargs*)input)->resid;
-	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
-	struct Model * m = ((struct rrargs*)input)->model;
+int calc_errors(struct Model *m, int residue) {
+	struct Residue *resid = &(m->residues[residue]);
+	
 
 	char outputdir[255];
-	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
+	strcpy(outputdir, m->outputdir);
 
 	//double optim = resid->min_val;
 	//char outputdir[255];
 	//strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 	FILE *errp;
 	char filename[300];
-	sprintf(filename, "%s/errors_%d.dat", outputdir, i+1);
+	sprintf(filename, "%s/errors_%d.dat", outputdir, residue+1);
 	errp = fopen(filename, "w");
 	if (errp == NULL) {
 		printf("%s not found.\n", filename);
-		return NULL;
+		return -1;
 	}
 
 	unsigned int l, k, params = 0;
@@ -106,7 +103,7 @@ void * calc_errors(void *input) {
 	resid->errors_std = (long double *) malloc(sizeof(long double) * params);
 	resid->error_params = (long double **) malloc (sizeof(long double *) * params);
 	for (k = 0; k < params; k++) {
-		resid->error_params[k] = (long double *) malloc (sizeof(long double) * n_iter);
+		resid->error_params[k] = (long double *) malloc (sizeof(long double) * m->n_iter);
 	}
 	//resid->min_val = MIN_VAL;*/
 	//double val = 0;
@@ -119,9 +116,9 @@ void * calc_errors(void *input) {
 	resid->S2CHb = resid->S2CH;
 	resid->S2CNb = resid->S2CN;
 
-	for (l = 0; l < n_iter; l++) {
+	for (l = 0; l < m->n_iter; l++) {
 		if (resid->ignore == 1) {
-			return NULL;
+			return -1;
 		}
 		
 		/* As the simplex optimization looks in the relaxation pointer, we temporarily
@@ -191,5 +188,5 @@ void * calc_errors(void *input) {
 	resid->error_calcs = p;
 	fclose(errp);
 	free(opts);
-	return NULL;
+	return 1;
 }

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <omp.h>
-//#include <mpi.h>
+#include <mpi.h>
 #include <pthread.h>
 #include "datatypes.h"
 #include "read_data.h"
@@ -27,30 +27,26 @@
 #include "verification.h"
 
 
-void * run_residue(void *input);
 
 /**
  * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.
  * @param input
  *  Pointer to rrarg containing thread information
  */
-void * run_residue(void *input) {
-	unsigned int i = ((struct rrargs*)input)->i;
-	printf("\tThread %d alive...\n", i + 1);
-	struct Residue * resid = ((struct rrargs*)input)->resid;
-	struct Model * m = ((struct rrargs*)input)->model;
+int run_residue(struct Model *m, int residue) {
+	struct Residue * resid = &(m->residues[residue]);
+
 
 	unsigned int model = m->model;
-	unsigned int n_iter = ((struct rrargs*)input)->n_iter;
 	char outputdir[255];
-	strcpy(outputdir, ((struct rrargs*)input)->outputdir);
+	strcpy(outputdir, m->outputdir);
 	FILE *fp;
 	char filename[300];
-	sprintf(filename, "%s/residue_%d.dat", outputdir, i+1);
+	sprintf(filename, "%s/residue_%d.dat", outputdir, residue+1);
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
-		return NULL;
+		return -1;
 	}
 
 	//printf("RESIDUE %d\n", i+1);
@@ -64,12 +60,12 @@ void * run_residue(void *input) {
 	resid->parameters = (long double *) malloc (sizeof(long double) * params);
 	resid->min_val = MIN_VAL;
 
-	for (l = 0; l < n_iter; l++) {
+	for (l = 0; l < m->n_iter; l++) {
 		if (resid->ignore == 1) {
-			fprintf(fp, "%d, %f, -1, -1\n", i+1, 1000.);
+			fprintf(fp, "%d, %f, -1, -1\n", residue+1, 1000.);
 			fclose(fp);
 			free(opts);
-			return NULL;
+			return -1;
 		}
 		//long double opts[20] = {0, 0};
 		
@@ -243,7 +239,7 @@ void * run_residue(void *input) {
 				opts[k] = -1;
 			}
 		}
-		fprintf(fp, "%d\t%f", i+1, val);
+		fprintf(fp, "%d\t%f", residue+1, val);
 		for (k = 0; k < params; k++) {
 			fprintf(fp, "\t%Le", opts[k]);
 		}
@@ -259,104 +255,26 @@ void * run_residue(void *input) {
 	}
 	free(opts);
 	fclose(fp);
-	return NULL;
+	return 0;
 }
 
 int run_fitting(struct Model *m) {
-	pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * m->nthreads);
-	pthread_attr_t threadattr;
-	pthread_attr_init(&threadattr);
-	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
-	int rc;
-
-	unsigned int current_residue = 0;
-	unsigned int n_spawns = 0;
-	unsigned int i;
-	/* if we have 56 residues and 4 threads then we need
-	 * 56 / 4 spawn events (= 14). Add 1 in case (eg for 57).
-	 * Then loop over threads, increment current_residue and assign pointers.
-	 */
-	n_spawns = m->n_residues / m->nthreads;
-	n_spawns ++;
-	//printf("%d spawns\n", n_spawns);
-
-	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m->nthreads);
-	printf("Optimizing...\n");
-
-	/* spawn the threads */
-	unsigned int l = 0;
-	for (l = 0; l < n_spawns; l++) {
-		for (i=0; i<m->nthreads; ++i) {
-			RRA[i].i = current_residue + i;
-			if (current_residue + i >= m->n_residues)
-				continue;
-			RRA[i].resid = &(m->residues[current_residue + i]);
-			RRA[i].model = m;
-			RRA[i].n_iter = m->n_iter;
-			strcpy(RRA[i].outputdir, m->outputdir);
-			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
-			rc = pthread_create(&threads[i], &threadattr, run_residue, (void *) &RRA[i]);
-			if (rc != 0) {
-				ERROR("Failed to spawn thread %d. Crashing...", current_residue+i);
-				free_all(m);
-				free(RRA);
-				free(threads);
-				exit(-1);
-			}
-		}
-		current_residue += m->nthreads;
-
-
-		for (i=0; i<m->nthreads; ++i) {
-			rc = pthread_join(threads[i], NULL);
-		}
+	int i;
+	for (i = m->proc_start; i < m->proc_end; i++) {
+		printf("\t%d/%d: Running %d.\n", m->myid, m->numprocs, i);
+		run_residue(m, i);
 	}
 	return 1;
 }
 
 int run_errors(struct Model *m) {
-	pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * m->nthreads);
-	pthread_attr_t threadattr;
-	pthread_attr_init(&threadattr);
-	pthread_attr_setstacksize(&threadattr, THREAD_STACK);
-	int rc;
-
-	unsigned int current_residue = 0;
-	unsigned int n_spawns = 0,l, i;
-	n_spawns = m->n_residues / m->nthreads;
-	n_spawns ++;
-	struct rrargs * RRA = (struct rrargs *)malloc(sizeof(struct rrargs) * m->nthreads);
-
-
-
-	current_residue = 0;
-	for (l = 0; l < n_spawns; l++) {
-		for (i=0; i<m->nthreads; ++i) {
-			RRA[i].i = current_residue + i;
-			if (current_residue + i >= m->n_residues)
-				continue;
-			RRA[i].resid = &(m->residues[current_residue + i]);
-			RRA[i].model = m;
-			RRA[i].n_iter = m->n_error_iter;
-			strcpy(RRA[i].outputdir, m->outputdir);
-			//strcpy(RRA[i].outputdir, m.outputdir);
-			//printf("spawning thread %d (residue %d)\n", i, current_residue + i);
-			rc = pthread_create(&threads[i], &threadattr, calc_errors, (void *) &RRA[i]);
-			if (rc != 0) {
-				ERROR("Failed to spawn thread %d. Crashing...", current_residue+i);
-				free_all(m);
-				exit(-1);
-			}
-		}
-		current_residue += m->nthreads;
-
-		for (i=0; i<m->nthreads; ++i) {
-			rc = pthread_join(threads[i], NULL);
-		}
+	int i;
+	for (i = m->proc_start; i < m->proc_end; i++) {
+		printf("\t%d/%d: Running %d (errors).\n", m->myid, m->numprocs, i);
+		calc_errors(m, i);
 	}
-
-	free(RRA);
-	free(threads);
+	return 1;
+	
 	return 1;
 }
 
@@ -364,14 +282,14 @@ int print_errors(struct Model *m) {
 	FILE * ep = NULL;
 	char filename[300];
 	unsigned int l, k, i;
-	sprintf(filename, "%s/errors.dat", m->outputdir);
+	sprintf(filename, "%s/errors_proc%d.dat", m->outputdir, m->myid);
 	ep = fopen(filename, "w");
 	if (ep == NULL) {
 		ERROR("%s not found.", filename);
 		free_all(m);
 		return -1;
 	}
-	for (l = 0; l < m->n_residues; l++) {
+	for (l = m->proc_start; l < m->proc_end; l++) {
 		for (k = 0; k < m->params; k++) {
 			calc_statistics(m->residues[l].error_params[k], m->residues[l].error_calcs, &(m->residues[l].errors_mean[k]), &(m->residues[l].errors_std[k]));
 		}
@@ -394,14 +312,14 @@ int print_residues(struct Model *m) {
 	FILE * fp;
 	char filename[300];
 	unsigned int l, i;
-	sprintf(filename, "%s/final.dat", m->outputdir);
+	sprintf(filename, "%s/final_proc%d.dat", m->outputdir, m->myid);
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
 		ERROR("%s not found.", filename);
 		free_all(m);
 		return -1;
 	}
-	for (l = 0; l < m->n_residues; l++) {
+	for (l = m->proc_start; l < m->proc_end; l++) {
 		if (m->residues[l].min_val == MIN_VAL) {
 			m->residues[l].min_val = -1.;
 			for (i = 0; i < m->params; i++) {
@@ -423,7 +341,7 @@ int print_gaf(struct Model *m) {
 	FILE * gaf;
 	unsigned int l, i;
 	char filename[300];
-	sprintf(filename, "%s/gaf.dat", m->outputdir);
+	sprintf(filename, "%s/gaf_proc%d.dat", m->outputdir, m->myid);
 	gaf = fopen(filename, "w");
 	if (gaf == NULL) {
 		ERROR("%s not found.", filename);
@@ -431,7 +349,7 @@ int print_gaf(struct Model *m) {
 		return -1;
 	}
 	FILE * orderparams;
-	sprintf(filename, "%s/orderparams.dat", m->outputdir);
+	sprintf(filename, "%s/orderparams_proc%d.dat", m->outputdir, m->myid);
 	orderparams = fopen(filename, "w");
 	if (orderparams == NULL) {
 		ERROR("%s not found.", filename);
@@ -439,7 +357,7 @@ int print_gaf(struct Model *m) {
 		return -1;
 	}
 	
-	for (l = 0; l < m->n_residues; l++) {
+	for (l = m->proc_start; l < m->proc_end; l++) {
 		double alpha, beta, gamma;
 		if (m->or_variation == VARIANT_A) {
 			alpha = (double) m->residues[l].parameters[m->params-3];
@@ -553,13 +471,23 @@ int print_gaf(struct Model *m) {
 int print_backcalcs(struct Model *m) {
 	char filename[300];
 	unsigned int l;
-	for (l = 0; l < m->n_residues; l++) {
+	for (l = m->proc_start; l < m->proc_end; l++) {
 		sprintf(filename, "%s/backcalc_%d.dat", m->outputdir, l+1);
 		back_calculate((m->residues[l].parameters), &(m->residues[l]), m, filename, m->params);
 	}
 	return 1;
 }
 
+int determine_residues(struct Model *m, int myid, int numprocs, int *start, int *end) {
+	// we have m->n_residues split over numprocs. 
+	// so 
+	int res_per_proc = ((int) m->n_residues / numprocs) + 1;
+	*start = res_per_proc * myid;
+	*end = *start + res_per_proc;
+	if (*end > m->n_residues)
+		*end = m->n_residues;
+	return 1;
+}
 
 /**
  * Start function. Initialises parameters, loads files, spawns threads and outputs data.
@@ -569,6 +497,12 @@ int print_backcalcs(struct Model *m) {
  *  Enables error mode
  */
 int main(int argc, char * argv[]) {
+	MPI_Init( &argc, &argv );
+	int numprocs, myid;
+	MPI_Comm_size( MPI_COMM_WORLD, &numprocs ); 
+	MPI_Comm_rank( MPI_COMM_WORLD, &myid );
+	
+	//printf("I am %d/%d.\n", myid, numprocs);
 
 	/* Initialisation */
 	start_time = time(0);
@@ -598,7 +532,12 @@ int main(int argc, char * argv[]) {
 
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
+	m.myid = myid;
+	m.numprocs = numprocs;
 	
+	int s, e;
+	determine_residues(&m, myid, numprocs, &(m.proc_start), &(m.proc_end));
+	//printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
 	omp_set_num_threads(m.ompthreads);
 	
 	m.error_mode = err_mod;
@@ -627,8 +566,12 @@ int main(int argc, char * argv[]) {
 		run_fitting(&m);
 	else if (m.global == GLOBAL)
 		run_global(&m);
+	
+	
+	
 	printf("Printing residues...\n");
 	print_residues(&m);
+	
 	if (m.error_mode == 1) {
 		printf("Running errors...\n");
 		if (m.global == LOCAL)
@@ -638,6 +581,7 @@ int main(int argc, char * argv[]) {
 		printf("Printing errors...\n");
 		print_errors(&m);
 	}
+	
 	printf("Printing gaf...\n");
 	print_gaf(&m);
 	print_backcalcs(&m);
@@ -645,5 +589,6 @@ int main(int argc, char * argv[]) {
 
 
 	free_all(&m);
-	return 1;
+	MPI_Finalize();
+	return 0;
 }

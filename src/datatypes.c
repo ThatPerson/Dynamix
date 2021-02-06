@@ -155,6 +155,9 @@ struct Model {
 	unsigned int cn_ratio;
 	unsigned int or_variation; // VARIANT_A or INVARIANT_A.
 	int error_mode;
+	int proc_start;
+	int proc_end;
+	int myid, numprocs;
 };
 
 /** @struct Orient

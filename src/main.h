@@ -1,7 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-void * run_residue(void *input);
+int run_residue(struct Model *m, int residue);
+int run_errors(struct Model *m);
 int main(int argc, char * argv[]);
 int print_backcalcs(struct Model *m);
 int print_gaf(struct Model *m);
