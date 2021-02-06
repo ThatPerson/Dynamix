@@ -336,6 +336,7 @@ int read_system_file(char *filename, struct Model * m) {
 	m->rdc = RDC_OFF;
 	m->cn_ratio = CNRATIO_OFF;
 	m->global = LOCAL;
+	m->ompthreads = 1;
 	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
@@ -527,6 +528,12 @@ int read_system_file(char *filename, struct Model * m) {
 					printf("Number of threads must be greater than 0.\n");
 					exit(-1);
 				}
+			} else if (strcmp(key, "OMPTHREADS") == 0) {
+				m->ompthreads = (unsigned int) atoi(val);
+				if (m->ompthreads <= 0) {
+					printf("Number of OMP threads must be greater than 0.\n");
+					exit(-1);
+				}
 			} else if (strcmp(key, "RDC") == 0 && m->rdc != RDC_ON) {
 				m->rdc = RDC_ON;
 				m->params += 3;
@@ -605,6 +612,7 @@ int print_system(struct Model *m, char *filename) {
 	//fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
 	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
 	fprintf(fp, "Params: %d\nN threads: %d\n", m->params, m->nthreads);
+	fprintf(fp, "OMP threads: %d\n", m->ompthreads);
 	fprintf(fp, "Error Mode: %s\n", (m->error_mode == 1)?"ON":"OFF");
 	fprintf(fp, "RDC: %s\n", (m->rdc == RDC_ON)?"ON":"OFF");
 	fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == VARIANT_A)?"ON":"OFF");

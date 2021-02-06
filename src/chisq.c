@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <math.h>
-
+#include <omp.h>
 
 /**
  * Relaxation back calculation. Takes parameters, residue and relaxation and returns
@@ -330,7 +330,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 	}
 	
 	float mult = 1.;
-	
+	omp_set_num_threads(m->ompthreads);
+	#pragma omp parallel for reduction(+:chisq)
 	for (i = 0; i < resid->n_relaxation; i++) {
 		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
 		if (m->cn_ratio == CNRATIO_ON) {

@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <omp.h>
+//#include <mpi.h>
 #include <pthread.h>
 #include "datatypes.h"
 #include "read_data.h"
@@ -597,7 +599,7 @@ int main(int argc, char * argv[]) {
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
 	
-	
+	omp_set_num_threads(m.ompthreads);
 	
 	m.error_mode = err_mod;
 	if (m.error_mode == 1 && m.n_error_iter == 0) {
