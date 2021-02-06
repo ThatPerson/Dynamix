@@ -467,6 +467,8 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
 			} else if (strcmp(key, "OR_VARY") == 0) {
+				if (m->or_variation == VARIANT_A)
+					continue;
 				m->params += 3;
 				m->or_variation = VARIANT_A;
 			} else if (strcmp(key, "CSISON") == 0) {
@@ -528,6 +530,8 @@ int read_system_file(char *filename, struct Model * m) {
 					exit(-1);
 				}
 			} else if (strcmp(key, "RDC") == 0 && m->rdc != RDC_ON) {
+				if (m->rdc == RDC_ON)
+					continue;
 				m->rdc = RDC_ON;
 				m->params += 3;
 

@@ -261,7 +261,7 @@ int run_residue(struct Model *m, int residue) {
 int run_fitting(struct Model *m) {
 	int i;
 	for (i = m->proc_start; i < m->proc_end; i++) {
-		printf("\t%d/%d: Running %d.\n", m->myid, m->numprocs, i);
+		printf("\tWorker %d/%d: Residue %d.\n", m->myid + 1, m->numprocs, i + 1);
 		run_residue(m, i);
 	}
 	return 1;
@@ -270,7 +270,7 @@ int run_fitting(struct Model *m) {
 int run_errors(struct Model *m) {
 	int i;
 	for (i = m->proc_start; i < m->proc_end; i++) {
-		printf("\t%d/%d: Running %d (errors).\n", m->myid, m->numprocs, i);
+		printf("\tWorker %d/%d: Residue %d (errors).\n", m->myid + 1, m->numprocs, i+1);
 		calc_errors(m, i);
 	}
 	return 1;
@@ -297,6 +297,7 @@ int print_errors(struct Model *m) {
 		fprintf(ep, "%d\t%f\t%f", l+1, m->residues[l].S2NH, m->residues[l].min_val);
 
 		for (i = 0; i < m->params; i++) {
+
 			fprintf(ep, "\t%Le\t%Le", m->residues[l].parameters[i], 2 * m->residues[l].errors_std[i]);
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
 			 * The error_means are generally not minimal. */
@@ -534,7 +535,8 @@ int main(int argc, char * argv[]) {
 	int ret = read_system_file(system_file, &m);
 	m.myid = myid;
 	m.numprocs = numprocs;
-	
+	//printf("%d params.\n", m.params);
+	//exit(-1);
 	int s, e;
 	determine_residues(&m, myid, numprocs, &(m.proc_start), &(m.proc_end));
 	//printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
@@ -569,20 +571,20 @@ int main(int argc, char * argv[]) {
 	
 	
 	
-	printf("Printing residues...\n");
+	printf("Worker %d: Printing residues...\n", m.myid+1);
 	print_residues(&m);
 	
 	if (m.error_mode == 1) {
-		printf("Running errors...\n");
+		printf("Worker %d: Running errors...\n", m.myid+1);
 		if (m.global == LOCAL)
 			run_errors(&m);
 		else
 			calc_global_errors(&m);
-		printf("Printing errors...\n");
+		printf("Worker %d: Printing errors...\n", m.myid+1);
 		print_errors(&m);
 	}
 	
-	printf("Printing gaf...\n");
+	printf("Worker %d: Printing gaf...\n", m.myid+1);
 	print_gaf(&m);
 	print_backcalcs(&m);
 	
