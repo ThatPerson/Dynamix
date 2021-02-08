@@ -560,10 +560,11 @@ int main(int argc, char * argv[]) {
 
 
 	//printf("%d\n", ret);
-	char filename[300];
-	sprintf(filename, "%s/model.txt", m.outputdir);
-	print_system(&m, filename);
-
+	if (m.myid == 1) {
+		char filename[300];
+		sprintf(filename, "%s/model.txt", m.outputdir);
+		print_system(&m, filename);
+	}
 	if (m.global == LOCAL)
 		run_fitting(&m);
 	else if (m.global == GLOBAL)
