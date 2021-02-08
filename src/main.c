@@ -560,7 +560,7 @@ int main(int argc, char * argv[]) {
 
 
 	//printf("%d\n", ret);
-	if (m.myid == 1) {
+	if (m.myid == 0) {
 		char filename[300];
 		sprintf(filename, "%s/model.txt", m.outputdir);
 		print_system(&m, filename);
