@@ -1,0 +1,25 @@
+2021-02-06
+ * Removed pthread parallelisation and replaced with MPI/OpenMP parallelisation.
+   * Can give ~2x speed up depending on model.
+ * Tested running on Tinis HPC cluster successfully.
+
+2021-02-01
+ * Added global GAF fitting. 
+ * Can be enabled by passing GLOBAL = 1 parameter in system file.
+ 
+2021-01-25
+ * Added C/N ratio support.
+   * Changes relative weighting of 13C and 15N data in chisq function to account for differences in amount of data.
+
+2021-01-04
+ * Added plotting support for *AIMF* models.
+
+2020-12-20
+ * Added anisotropic model free model. Models order parameter as a 3D tensor.
+ 
+2020-12-03
+ * Data visualisation redone; gnuplot scripts replaced by python scripts.
+ * README updated.
+
+before
+ * See git log.

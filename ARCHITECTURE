@@ -1,0 +1,69 @@
+# Dynamix
+
+This document aims to describe the high-level layout of the Dynamix code. The operation of the program will be described as a function of the individual functions and c-files.
+
+## C Files
+
+ * *main.c*         - functions relating to overall running of program and output.
+ * *chisq.c*        - functions related to back calculating relaxation rates, and using these to calculate chisq values for optimiztaion.
+ * *crosen.c*       - implementation of the Nelder-Mead Simplex algorithm
+ * *errors.c*       - statistical functions and error calculation
+ * *datatypes.c*    - definitions of all MACRO values and structs, plus generic functions acting on these.
+ * *read_data.c*    - functions relating to input of files.
+ * *verification.c* - provides test cases of all statistics, rortation, and GAF functions.
+ * *global_gaf.c*   - implements global GAF.
+ * *models/smf.c*   - implements simple model free R1, R1p, and spectral densities.
+ * *models/emf.c*   - implements extended model free R1, R1p, and spectral densities.
+ * *models/aimf.c*  - implements anisotropic model free R1, R1p, and spectral densities.
+ * *models/egaf.c*  - implements GAF/MF R1, R1p, and spectral densities.
+ * *models/gaf.c*   - implements GAF R1, R1p, and spectral densities.
+ 
+## Python Files
+
+ * *calc.py*           - general utility functions
+ * *combine_aicbic.py* - calculated AIC/BIC/AICc for models
+    `python combine_aicbic.py <model> <model> ...`
+ * *gen_attr.py*       - generates .attr file for ChimeraX
+ 	`python gen_attr.py <final.dat> <model> <pdb tag> <output>`
+ 	eg `python gen_attr.py vgaf/final.dat vgaf #1.3 vgaf.attr`
+ * *gen_optimal.py*    - generates .bild file for ChimeraX
+    `python gen_optimal <ic file> <mode> <outputfile> <pdb> <def> <~temp> <~min> <~max>`
+    eg `python gen_attr.py AIC.csv slow slow_bs.bild 2GI9.pdb betasheet.def`
+ * *plot.py*           - generates EPS file containing fit parameters.
+    `python plot.py <model> <model>... {-e}`
+    eg `python plot.py vgaf vgaft -e` (-e turns on errors)
+ * *plot_relax.py*     - generates EPS file containing relaxation back calculations.
+    `python plot_relax.py <model> <model>...`
+ * *global/extract.py* - generates GAF orientation files.
+    `python extract.py <pdb> <prefix> <mode>`
+    (pdb must contain H (eg use AMBER to reduce first), prefix is the output file prefix, mode is 'local' or 'global').
+
+## Architecture
+
+Program starts execution at `main.c/main()`. Various components are initialised; eg MPI ranks, initialising Wigner D matrices (`datatypes.c/initialise_dwig()`). 
+
+Arguments are read. If 'verify' is passed, then we run `verification.c/verify_all.c` which in turn runs `verification.c/verify_rotations()`, `verification.c/verify_GAF()`, and `verification.c/verify_stats()`. If '-e' is passed, then we set the model error mode (`struct Model:error_mode`) to be 1. 
+
+System files are loaded (`read_data.c/read_system_file()`), then calling `read_data.c/read_relaxation_data()`, `read_data.c/read_pp()`, `read_data.c/read_resid_data()`. Then, we identify which residues we are fitting (`main.c/determine_residues()`).
+
+For verification purposes, we then print out the system to a file (`read_data.c/print_system()`). 
+
+If we are in local mode (`struct Model:global = LOCAL`), then fitting is performed by calling `main.c/run_fitting()`. This loops over all residues assigned to this process, calling `main.c/run_residue()`, which performs `struct Model:n_iter` iterations of generating initial parameters, then calling `crosen.c/simplex()` on `chisq.c/optimize_chisq()`.
+
+`chisq.c/optimize_chisq()` starts by checking if we are in variable orientation mode. If so, it performs the requisite Y2 rotations. Then, it performs a back calculation (`chisq.c/back_calc()`) for each relaxation data point, and sums this to give a chisq value. This summation is parallelised across threads using OpenMP. Then, it back calculates the order parameters and calculates the order parameter contribution to the chisq (directly for MF models, using `models/aimf.c/AIMF_S2()` and `models/gaf.c/GAF_S2()` for AIMF/GAF respectively), before returning this. The `chisq.c/back_calc()` function calls the respective relaxation rate functions in the `models/*.c` files depending on the model of interest, which in turn call their respective spectral densities. If RDC mode is enabled then these are also calculated, though in practice this is deprecated.
+
+If we are in global mode (`struct Model:global = GLOBAL`), then fitting is performed by calling `global_gaf.c/run_global()`. This complains if MPI parallelisation is being used*, defines a parameter array, and runs `struct Model:n_iter` iterations of `global_gaf.c/run_global_iteration()`, which generates random starting parameters and then calls `global_gaf.c/optimize_global_chisq()` in `crosen.c/simplex()` to optimize the parameters, before then saving the parameters for each residue. `global_gaf.c/optimize_global_chisq()` simply runs `chisq.c/optimize_chisq()` with the current parameters for each residue, and takes the average of the result.
+
+*MPI parallelisation is implemented by splitting residues across processes; global GAF fits all residues simultaneously which is incompatible with this MPI parallelisation.
+
+After fitting, `main.c/print_residues()` is used to output these values. This simply loops over all residues in the proc set, and prints out the fit parameters.
+
+If error mode is enabled (`struct Model:error_mode = 1`), then errors are calculated using `main.c/run_errors()` and `global_gaf.c/calc_global_errors()`, depending whether we are concerned with local or global motions (`struct Model:global`).
+
+In local mode, `main.c/run_errors()` successively calls `errors.c/calc_errors()`. In this, memory for error fits is allocated, backups of order parameters and relaxation rates made, before regenerating these with random variation (`errors.c/norm_rand()`) about their back calculated value (`chisq.c/back_calc()`). The initial parameters are taken as those from the original fitting, which are then refined using `crosen.c/simplex()` acting on `chisq.c/optimize_chisq()`, before then being saved and the order parameters/relaxation rates restored.
+
+In global mode, the exact same procedure is followed with the exception that parameters are varied within all residues simultaneously, with `crosen.c/simplex()` being instead called on `global_gaf/optimize_global_chisq()`.
+
+After this error calculation, the errors are output using `main.c/print_errors()`. Then, `main.c/print_gaf()` is called to output both `gaf_proc%d.dat` files (containing DEMF equivalent output for GAF models to allow for easy comparison) and `orderparams_proc%d.dat` files (containing backcalculated order parameters).
+
+Finally, `main.c/print_backcalc()` is called, which successively calls `chisq.c/back_calculated()` for each residue, in which `chisq.c/back_calc()` is used to output a file containing the experimental and calculated relaxation rates for easy visualisation.

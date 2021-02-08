@@ -55,6 +55,14 @@ mds = {
 		'n': 10,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'Eas', 'Eaf']
 	}, 
+	'vaimf': {
+		'n': 8,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'alph', 'beta', 'gamm']
+	}, 
+	'vaimft': {
+		'n': 10,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'Eas', 'Eaf', 'alph', 'beta', 'gamm']
+	}, 
 	'vegaf': {
 		'n': 9,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'alph', 'beta', 'gamm']

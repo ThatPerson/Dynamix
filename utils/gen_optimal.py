@@ -15,13 +15,14 @@ try:
 	ic_file = sys.argv[1]
 	mode = sys.argv[2]
 	output_file = sys.argv[3]
+	pdb_file = sys.argv[4]
 
 except IndexError:
 	print("Insufficient arguments. Should be python gen_optimal.py <IC file> <mode> <output>")
 	exit()
 	
 try:
-	def_file = sys.argv[4]
+	def_file = sys.argv[5]
 	residue_inc = []
 	with open(def_file, "r") as f:
 		for l in f:
@@ -31,20 +32,20 @@ except IndexError:
 
 
 try:
-	temperature = float(sys.argv[5])
+	temperature = float(sys.argv[6])
 except IndexError:
 	temperature = 300
 	print("Defaulting temperature to 300 K")
 
 try:
-	min_mag = float(sys.argv[6])
-	max_mag = float(sys.argv[7])
+	min_mag = float(sys.argv[7])
+	max_mag = float(sys.argv[8])
 except IndexError:
 	min_mag = 0.7
 	max_mag = 1.0
 
 ## load in atomic coordinates from PDB file.
-traj = pt.load("2GI9.pdb")
+traj = pt.load(pdb_file)
 min_v = 1
 max_v = 56
 N_coords = traj[:, ':%d-%d@N' % (min_v + 1, max_v)]
@@ -127,6 +128,7 @@ def read_model(name, model):
 		for l in f:
 			k = l.split("\t")
 			
+			#print(k)
 			try:
 				resid = int(k[0])
 				kf = [float(p) for p in k]
@@ -188,14 +190,15 @@ def read_model(name, model):
 				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
 				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
 				
-				
 
 			if (model[0] == "v"):
 				current_res["orientation"] = kf[-3:]
 			while (len(components) < resid+1):
 				components.append({})
 			components[resid] = current_res
+		#	print(resid)
 			if (current_res["taus"] <= 0):
+				print("Oof")
 				continue
 			
 			if (np.log(current_res["taus"]) < l_tau):
@@ -207,7 +210,7 @@ def read_model(name, model):
 			elif (np.log(current_res["tauf"]) > u_tau):
 				u_tau = np.log(current_res["tauf"])
 			
-			
+	#print(components)
 			
 	return components, l_tau, u_tau
 			
@@ -325,6 +328,8 @@ def generate_pp(residue):
 
 
 def generate_gaf(parms, residue, mode, min_tau, max_tau):
+	if (parms == {}):
+		return ""
 	st = ""
 	tau = 0
 	sigs = []
@@ -353,6 +358,9 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 		return ""
 	
 	S = [p * (180 / 3.14)/20. for p in sigs]
+	
+	if (S[0] > 1 or S[1] > 1 or S[2] > 1):
+		return "" # eg deflection is so big it's no longer gaussian.
 	
 	alpha_start = midpoints[residue] - 3. * S[0] * vectors[residue, :, 0]
 	beta_start = midpoints[residue] - 3. * S[1] * vectors[residue, :,  1]
@@ -424,6 +432,8 @@ with open(output_file, "w") as of:
 		if (l["model"] in direct_mf):
 			st = generate_mf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
 		elif (l["model"] in direct_gaf):
+			print("Hello")
+			print(models[l["model"]][l["residue"]])
 			st = generate_gaf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
 		elif (l["model"] in slow_gaf):
 			if (mode == "slow"):
