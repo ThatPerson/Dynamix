@@ -373,19 +373,20 @@ int print_gaf(struct Model *m) {
 		/* I really need to clean this mess up at some point... */
 
 		if ((m->model == MOD_GAF || m->model == MOD_GAFT) && gaf != NULL) {
-			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; 
+			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
 			long double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
 			long double sigf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
-			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN])};
-			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
+			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
+			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 			
-			GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
-			GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
+			GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
+			GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			fprintf(orderparams, "%f\t%f\t%f\n", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
 
 			long double taus = m->residues[l].parameters[0];
 			long double tauf = m->residues[l].parameters[1];
@@ -398,19 +399,20 @@ int print_gaf(struct Model *m) {
 
 			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
 		} else if ((m->model == MOD_AIMF || m->model == MOD_AIMFT) && gaf != NULL) {
-			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; 
+			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
 			long double Ss[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
 			long double Sf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
-			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN])};
-			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
+			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
+			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 			
-			AIMF_S2(Ss, Os, S2s, 3);
-			AIMF_S2(Sf, Os, S2f, 3);
+			AIMF_S2(Ss, Os, S2s, 4);
+			AIMF_S2(Sf, Os, S2f, 4);
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			fprintf(orderparams, "%f\t%f\t%f\n", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
 
 			long double taus = m->residues[l].parameters[0];
 			long double tauf = m->residues[l].parameters[1];
@@ -434,6 +436,7 @@ int print_gaf(struct Model *m) {
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\n", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 
 
@@ -454,11 +457,13 @@ int print_gaf(struct Model *m) {
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\n", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 		} else if (m->model == MOD_SMF || m->model == MOD_SMFT) {
 			double S2 = (double) m->residues[l].parameters[1];
 
 			fprintf(orderparams, "%d\t", l+1);
+			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
 			fprintf(orderparams, "%f\t%f\t%f\n", S2, m->residues[l].S2NH, m->residues[l].S2NHe);

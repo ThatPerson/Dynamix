@@ -115,6 +115,7 @@ int calc_errors(struct Model *m, int residue) {
 	resid->S2NHb = resid->S2NH;
 	resid->S2CHb = resid->S2CH;
 	resid->S2CNb = resid->S2CN;
+	resid->S2CCb = resid->S2CC;
 
 	for (l = 0; l < m->n_iter; l++) {
 		if (resid->ignore == 1) {
@@ -155,6 +156,7 @@ int calc_errors(struct Model *m, int residue) {
 		resid->S2NH = norm_rand(resid->S2NHb, (resid->S2NHe / 2.)); // divided by two to get 1 standard deviation
 		resid->S2CH = norm_rand(resid->S2CHb, (resid->S2CHe / 2.));
 		resid->S2CN = norm_rand(resid->S2CNb, (resid->S2CNe / 2.));
+		resid->S2CC = norm_rand(resid->S2CCb, (resid->S2CCe / 2.));
 
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
@@ -184,6 +186,7 @@ int calc_errors(struct Model *m, int residue) {
 	resid->S2NH = resid->S2NHb;
 	resid->S2CH = resid->S2CHb;
 	resid->S2CN = resid->S2CNb;
+	resid->S2CC = resid->S2CCb;
 
 	resid->error_calcs = p;
 	fclose(errp);

@@ -6,11 +6,12 @@
 #include <stdio.h>
 #include "datatypes.h"
 #include "read_data.h"
-
+#include <omp.h>
 #include "models/smf.h"
 #include "models/emf.h"
 #include "models/gaf.h"
 #include "models/egaf.h"
+#include "models/aimf.h"
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
@@ -236,8 +237,8 @@ int main(int argc, char * argv[]) {
 	ret = read_data_file(data_file, &m);
 	long double * opts;
 	unsigned int j;
-	long double S2NH=0, S2CN=0, S2CH=0;
-	double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf;
+	long double S2NH=0, S2CN=0, S2CH=0, S2CC=0;
+	double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
 	long double temp = 300;
 	double T = 200; // 1000
 	double dT = 0.01; // 0.01
@@ -267,6 +268,8 @@ int main(int argc, char * argv[]) {
 
 	long double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
 	struct Residue * resid;
+	
+	#pragma omp parallel for 
 	for (i = 0; i < m.n_residues; i++) {
 		opts = (m.residues[i].parameters);
 		resid = &(m.residues[i]);
@@ -275,6 +278,7 @@ int main(int argc, char * argv[]) {
 			sprintf(fn_NH, "%s/corr_%d_NH.dat", output_folder, i+1);
 			sprintf(fn_CN, "%s/corr_%d_CN.dat", output_folder, i+1);
 			sprintf(fn_CH, "%s/corr_%d_CH.dat", output_folder, i+1);
+			sprintf(fn_CC, "%s/corr_%d_CCAp.dat", output_folder, i+1);
 
 			if (m.or_variation == VARIANT_A) {
 				alpha = (double) opts[params-3];
@@ -291,6 +295,7 @@ int main(int argc, char * argv[]) {
 				S2NH = (double) opts[1];
 				S2CN = (double) opts[1];
 				S2CH = (double) opts[1];
+				S2CC = (double) opts[1];
 				if (m.model == MOD_SMFT) {
 					Ea = opts[2];
 					tau *= expl(Ea / (RYD * temp));
@@ -321,6 +326,8 @@ int main(int argc, char * argv[]) {
 				S2NHf = (double) S2f;
 				S2CHf = (double) S2f;
 				S2CNf = (double) S2f;
+				S2CCs = (double) S2f;
+				S2CCf = (double) S2f;
 			} else if (m.model == MOD_GAF || m.model == MOD_GAFT) {
 				// need to perform reorientation before.
 				taus = opts[0];
@@ -333,11 +340,11 @@ int main(int argc, char * argv[]) {
 					taus *= expl(Eas / (RYD * temp));
 					tauf *= expl(Eaf / (RYD * temp));
 				}
-				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
-				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-				double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
-				GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
-				GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
+				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
+				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+				double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+				GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
+				GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 			} else if (m.model == MOD_EGAF || m.model == MOD_EGAFT) {
 				// need to perform reorientation before.
 				taus = opts[0];
@@ -350,22 +357,25 @@ int main(int argc, char * argv[]) {
 					taus *= expl(Eas / (RYD * temp));
 					tauf *= expl(Eaf / (RYD * temp));
 				}
-				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
-				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-				GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
+				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
+				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+				GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 				S2NHf = (double) S2f;
 				S2CNf = (double) S2f;
 				S2CHf = (double) S2f;
+				S2CCf = (double) S2f;
 			}
 
 			if (m.model == MOD_SMF || m.model == MOD_SMFT) {
 				write_correlation_function_smf(fn_NH, T, dT, tau, S2NH);
 				write_correlation_function_smf(fn_CH, T, dT, tau, S2CH);
 				write_correlation_function_smf(fn_CN, T, dT, tau, S2CN);
+				write_correlation_function_smf(fn_CC, T, dT, tau, S2CC);
 			} else {
 				write_correlation_function_emf(fn_NH, T, dT, taus, S2NHs, tauf, S2NHf);
 				write_correlation_function_emf(fn_CH, T, dT, taus, S2CHs, tauf, S2CHf);
 				write_correlation_function_emf(fn_CN, T, dT, taus, S2CNs, tauf, S2CNf);
+				write_correlation_function_emf(fn_CC, T, dT, taus, S2CCs, tauf, S2CCf);
 			}
 		}
 		if (bc_mod == 1) {

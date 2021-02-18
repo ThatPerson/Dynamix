@@ -269,6 +269,7 @@ int calc_global_errors(struct Model *m) {
 		resid->S2NHb = resid->S2NH;
 		resid->S2CHb = resid->S2CH;
 		resid->S2CNb = resid->S2CN;
+		resid->S2CCb = resid->S2CC;
 		resid->errors_mean = (long double *) malloc (sizeof(long double) * m->params);
 		resid->errors_std = (long double *) malloc(sizeof(long double) * m->params);
 		resid->error_params = (long double **) malloc (sizeof(long double *) * m->params);
@@ -302,6 +303,7 @@ int calc_global_errors(struct Model *m) {
 			resid->S2NH = norm_rand(resid->S2NHb, (resid->S2NHe / 2.)); // divided by two to get 1 standard deviation
 			resid->S2CH = norm_rand(resid->S2CHb, (resid->S2CHe / 2.));
 			resid->S2CN = norm_rand(resid->S2CNb, (resid->S2CNe / 2.));
+			resid->S2CC = norm_rand(resid->S2CCb, (resid->S2CCe / 2.));
 		}
 		for (k = 0; k < m->params; k++) {
 			opts[k] = m->residues[0].parameters[k]; // doesn't matter which we take it from, all are the same.
@@ -330,6 +332,7 @@ int calc_global_errors(struct Model *m) {
 		m->residues[i].S2NH = m->residues[i].S2NHb;
 		m->residues[i].S2CH = m->residues[i].S2CHb;
 		m->residues[i].S2CN = m->residues[i].S2CNb;
+		m->residues[i].S2CC = m->residues[i].S2CCb;
 		m->residues[i].error_calcs = p;
 	}
 	fclose(errp);

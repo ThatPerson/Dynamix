@@ -359,45 +359,49 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
 		
-		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; // S2CCs, S2CCf
+		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
-		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
-		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
-		GAF_S2(sigf, Os, Os, S2f, 3, MODE_REAL);
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
+		// CCAp is shorter than CCAc.
+		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+		GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
+		GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 		/* 100 weighting for order parameters */
 		chisq += ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
 		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
 		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
+		chisq += ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		long double sigf[3] = {opts[5], opts[6], opts[7]};
 		
-		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf; // S2CCs, S2CCf
-		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
-		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf};
-		AIMF_S2(sigs, Os, S2s, 3);
-		AIMF_S2(sigf, Os, S2f, 3);
+		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; // S2CCs, S2CCf
+	
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
+		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+		AIMF_S2(sigs, Os, S2s, 4);
+		AIMF_S2(sigf, Os, S2f, 4);
 		/* 100 weighting for order parameters */
 		chisq += ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
 		chisq += ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
 		chisq += ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
+		chisq += ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
 		long double sigs[3] = {opts[2], opts[3], opts[4]};
 		double S2f = (double) opts[5];
 		
-		double S2NHs, S2CHs, S2CNs; // S2CCs
-		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN])};
-		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs};
-		GAF_S2(sigs, Os, Os, S2s, 3, MODE_REAL);
+		double S2NHs, S2CHs, S2CNs, S2CCs; // S2CCs
+
+		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
+		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+		GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 		/* 100 weghting for order parameters */
 		chisq += ((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
 	//	chisq += 10*((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
 	//	chisq += 10*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
+	//	chisq += 10*((pow(resid->S2CC - (S2CCs * S2f), 2)) / pow(resid->S2CCe, 2));
 	}
 	
 	return (double) (chisq / resid->n_relaxation); 
