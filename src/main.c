@@ -487,7 +487,11 @@ int print_backcalcs(struct Model *m) {
 int determine_residues(struct Model *m, int myid, int numprocs, int *start, int *end) {
 	// we have m->n_residues split over numprocs. 
 	// so 
-	int res_per_proc = ((int) m->n_residues / numprocs) + 1;
+
+
+	int res_per_proc = ((int) m->n_residues / numprocs);
+	if (m->n_residues % numprocs != 0)
+		res_per_proc++;
 	*start = res_per_proc * myid;
 	*end = *start + res_per_proc;
 	if (*end > m->n_residues)
@@ -544,7 +548,7 @@ int main(int argc, char * argv[]) {
 	//exit(-1);
 	int s, e;
 	determine_residues(&m, myid, numprocs, &(m.proc_start), &(m.proc_end));
-	//printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
+	printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
 	omp_set_num_threads(m.nthreads);
 	
 	m.error_mode = err_mod;
