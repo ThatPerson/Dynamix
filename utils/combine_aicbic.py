@@ -100,7 +100,7 @@ for model in sys.argv[1:]:
 
 		ops = orderparams[orderparams[:, 0] == i, :]
 		#print(ops)
-		for inc in range(0, 3):
+		for inc in range(0, 4):
 			calc = ops[0, 1 + (inc*3)]
 			exp = ops[0, 2 + (inc*3)]
 			err = ops[0, 3 + (inc*3)]
