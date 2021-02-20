@@ -77,7 +77,14 @@ for model in sys.argv[1:]:
 			results[i-1, c, :] = [-1, -1, -1]
 			continue
 		calc_R = x[:, 1]
+		ign = 0
+		
 		exp_R = x[:, 2]
+		
+		cr = exp_R[exp_R > 0]
+		if (len(cr) < 5):
+			ign = 1
+		
 		err_R = x[:, 3]
 		n_data = np.size(calc_R)
 		sigma = err_R / 2.
@@ -98,23 +105,27 @@ for model in sys.argv[1:]:
 		## statistically valid this is? But as we're not using reduced chisq
 		## the altnerative will cause chisq to be much bigger for them.
 
+
+
 		ops = orderparams[orderparams[:, 0] == i, :]
 		#print(ops)
 		ops_s = np.shape(ops)
-		print(ops_s)
-		max_op = 4
+		#print(ops_s)
+		max_op = 3
 		if (ops_s[1] == 10):
 			max_op = 3
 		for inc in range(0, max_op):
 			calc = ops[0, 1 + (inc*3)]
 			exp = ops[0, 2 + (inc*3)]
+			if (exp <= 0):
+				ign = 1
 			err = ops[0, 3 + (inc*3)]
 			ctmp = np.power(exp - calc, 2.) / np.power(err, 2.)
 			chisq += ctmp
 
 
 		df = 3 + len(calc_R) - params - 1
-		if (df <= 0 or chisq == 0):
+		if (df <= 0 or chisq == 0 or ign == 1):
 			AIC = 1e9
 			BIC = 1e9
 			AICc = 1e9
