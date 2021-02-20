@@ -17,6 +17,8 @@ import models
 
 #arguments are python combine_aicbic.py smf smft demf demft... etc.
 
+s2weight = 1 ## how much extra weight to put on S2 parameters?
+ # eg in Lamley I believe the weight of these was increased (as it is for fitting) but I don't know if this is also done for the analysis.
 
 modellist = sys.argv[1:]
 modelbins = np.zeros((len(modellist), 3))
@@ -121,9 +123,9 @@ for model in sys.argv[1:]:
 				ign = 1
 			err = ops[0, 3 + (inc*3)]
 			ctmp = np.power(exp - calc, 2.) / np.power(err, 2.)
-			chisq += ctmp
+			chisq += s2weight * ctmp
 
-
+		
 		df = 3 + len(calc_R) - params - 1
 		if (df <= 0 or chisq == 0 or ign == 1):
 			AIC = 1e9
