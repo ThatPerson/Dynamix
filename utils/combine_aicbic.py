@@ -100,7 +100,12 @@ for model in sys.argv[1:]:
 
 		ops = orderparams[orderparams[:, 0] == i, :]
 		#print(ops)
-		for inc in range(0, 4):
+		ops_s = np.shape(ops)
+		print(ops_s)
+		max_op = 4
+		if (ops_s[1] == 10):
+			max_op = 3
+		for inc in range(0, max_op):
 			calc = ops[0, 1 + (inc*3)]
 			exp = ops[0, 2 + (inc*3)]
 			err = ops[0, 3 + (inc*3)]
