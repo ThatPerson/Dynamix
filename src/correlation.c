@@ -246,8 +246,8 @@ int main(int argc, char * argv[]) {
 	char fn_NH[355];
 	char fn_CN[355];
 	char fn_CH[355];
+	char fn_CC[355];
 	char fn_BC[355];
-
 	unsigned int params = 0;
 	switch (m.model) {
 		case MOD_SMF: params = 2; break;
@@ -379,7 +379,7 @@ int main(int argc, char * argv[]) {
 			}
 		}
 		if (bc_mod == 1) {
-			sprintf(fn_BC, "%s/bc_%d.csv", output_folder, i+1);
+			sprintf(fn_BC, "%s/backcalc_%d.dat", output_folder, i+1);
 			back_calculate(opts, resid, &m, fn_BC, params);
 
 

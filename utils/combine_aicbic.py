@@ -113,7 +113,7 @@ for model in sys.argv[1:]:
 		#print(ops)
 		ops_s = np.shape(ops)
 		#print(ops_s)
-		max_op = 3
+		max_op = 4
 		if (ops_s[1] == 10):
 			max_op = 3
 		for inc in range(0, max_op):

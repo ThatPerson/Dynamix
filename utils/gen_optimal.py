@@ -252,7 +252,8 @@ def generate_aimf(parms, residue, mode, min_tau, max_tau, min_mag, max_mag):
 		return ""
 		
 	st = st + ".comment residue %d (%f, %f, %f)\n" % (residue, x, y, z)
-	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
+	cspec = 1
+#	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
 	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
 	st = st + ".translate %f %f %f\n" % (x, y, z)
 	st = st + ".scale %f %f %f\n" % (np.power(mags[1], 3.), np.power(mags[0], 3), np.power(mags[2], 3.)) # Sb along X, Sa along Y, Sc along Z
@@ -301,7 +302,8 @@ def generate_mf(parms, residue, mode, min_tau, max_tau):
 	#print(midpoints[residue])
 	#print("(%f, %f, %f)" % (x, y, z))
 	st = st + ".comment residue %d (%f, %f, %f)\n" % (residue, x, y, z)
-	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
+	#cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
+	cspec = 1
 	st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
 	st = st + ".sphere %f %f %f %f\n" % (x, y, z, 2* ((1 - mag)) / 0.2)
 	return st
@@ -375,22 +377,23 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 	#print("(%f, %f, %f)" % (x, y, z))
 	st = st + ".comment residue %d (%f, %f, %f)\n" % (residue, x, y, z)
 	cspec = (tau - min_tau) / (max_tau - min_tau) # normalise colours.
+	cspec = 1
 	#st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
 	st = st + ".color %f 0 0\n" % (cspec)
-	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], alpha_start[0], alpha_start[1], alpha_start[2], 0.4 * S[0], 0.6 * S[0])
-	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], alpha_end[0], alpha_end[1], alpha_end[2], 0.4 * S[0], 0.6 * S[0])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], alpha_start[0], alpha_start[1], alpha_start[2], 0.4 * S[0], 0.4 * S[0])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], alpha_end[0], alpha_end[1], alpha_end[2], 0.4 * S[0], 0.4 * S[0])
 	#st = st + ".cylinder %f %f %f %f %f %f %f\n" % (alpha_start[0], alpha_start[1], alpha_start[2], \
 	#	alpha_end[0], alpha_end[1], alpha_end[2], 0.4 * S[0])
 	#st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
-	st = st + ".color 0 %f 0\n" % (cspec)
-	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], beta_start[0], beta_start[1], beta_start[2], 0.4 * S[1], 0.6 * S[1])
-	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], beta_end[0], beta_end[1], beta_end[2], 0.4 * S[1], 0.6 * S[1])
+	st = st + ".color %f 0 %f\n" % (cspec, cspec)
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], beta_start[0], beta_start[1], beta_start[2], 0.4 * S[1], 0.4 * S[1])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], beta_end[0], beta_end[1], beta_end[2], 0.4 * S[1], 0.4 * S[1])
 	#st = st + ".cylinder %f %f %f %f %f %f %f\n" % (beta_start[0], beta_start[1], beta_start[2], \
 	#	beta_end[0], beta_end[1], beta_end[2], 0.4 * S[1])
 	#st = st + ".color %f %f %f\n" % (0, 1. * cspec, 1.*(1-cspec))
 	st = st + ".color 0 0 %f\n" % (cspec)
-	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], gamma_start[0], gamma_start[1], gamma_start[2], 0.4 * S[2], 0.6 * S[2])
-	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], gamma_end[0], gamma_end[1], gamma_end[2], 0.4 * S[2], 0.6 * S[2])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], gamma_start[0], gamma_start[1], gamma_start[2], 0.4 * S[2], 0.4 * S[2])
+	st = st + ".arrow %f %f %f %f %f %f %f %f\n" % (midpoints[residue, 0], midpoints[residue, 1], midpoints[residue, 2], gamma_end[0], gamma_end[1], gamma_end[2], 0.4 * S[2], 0.4 * S[2])
 	#st = st + ".cylinder %f %f %f %f %f %f %f\n" % (gamma_start[0], gamma_start[1], gamma_start[2], \
 	#	gamma_end[0], gamma_end[1], gamma_end[2], 0.4 * S[2])
 	return st

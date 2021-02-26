@@ -69,7 +69,7 @@ def run_plot(folder):
 		if (typ == 1 or typ == 3):
 			krt = axs[curr_x, curr_y].get_ylim()
 			if (krt[1] > 6):
-				axs[curr_x, curr_y].set_ylim(top = 6)
+				axs[curr_x, curr_y].set_ylim(top = 20)
 			
 
 		#fprintf(fp, "\t%f\t%f\t%f\t%f\t%d", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type); 

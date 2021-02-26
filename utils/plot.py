@@ -53,8 +53,9 @@ def run_plot(folder):
 	else:
 		y = np.loadtxt("%s/final.dat" % (folder), delimiter='\t')
 		k = np.shape(y)
-		x = np.zeros((k[0], k[1] + mod['n'] - 1))
+		x = np.zeros((k[0], k[1] + mod['n']))
 		x[:, 0:3] = y[:, 0:3]
+		print(np.shape(x))
 		for counter in range(0, mod['n']):
 			x[:, 3 + (counter * 2) ] = y[:, 3 + counter]
 		print(x) 
@@ -75,9 +76,16 @@ def run_plot(folder):
 	for pl in range(0, mod['n']):
 		print("%d, %d"% (xd, yd))
 		xdat = x[:, 0]
+		#if (errors == True):
 		ydat = x[:, 3 + (pl * 2)]
 		yerr = x[:, 4 + (pl * 2)]
+	
+		#else:
 
+		#	ydat = x[:, 3 + pl]
+		#	print("%s : %d : %f" % (mod['p'][pl], 3 + pl, np.mean(ydat)))
+		#	yerr = np.zeros(np.shape(ydat))
+			
 		if ("tau" in mod['p'][pl]):
 			ydat = ydat * 1e-9
 			yerr = yerr * 1e-9
