@@ -42,6 +42,10 @@ int read_data_file(char *filename, struct Model * m) {
 	char line[255];
 	int len = 255;
 
+	unsigned int k;
+	for (k = 0; k < m->n_residues; k++)
+		m->residues[k].ignore = 1;
+
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
@@ -78,16 +82,18 @@ int read_data_file(char *filename, struct Model * m) {
 		int k = sscanf(line, "%d\t%f\t%f\t%n", &res, &S2NH, &chisq, &length);
 		res--;
 		m->residues[res].parameters = (long double *) malloc(sizeof(long double) * params);
-
+		m->residues[res].ignore = 0;
 		for (i = 0; i < params; i++) {
 			k = sscanf(line + length, "%Le\t%n", &(m->residues[res].parameters[i]), &length_d);
+			//printf("%d: %Lf\n", i, m->residues[res].parameters[i]);
 			//m->residues[res].parameters[i] = (long double) param;
 			//printf("K = %d\n", k);
 			//printf("Param = %f\n", parameters[i]);
-			if (k <= 0)
+			if (k <= 0) {
 				break;
-			else
+			}else {
 				length += length_d;
+			}
 		}
 	}
 
@@ -235,19 +241,7 @@ int main(int argc, char * argv[]) {
 	}
 
 	ret = read_data_file(data_file, &m);
-	long double * opts;
-	unsigned int j;
-	long double S2NH=0, S2CN=0, S2CH=0, S2CC=0;
-	double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
-	long double temp = 300;
-	double T = 200; // 1000
-	double dT = 0.01; // 0.01
-	double alpha, beta, gamma;
-	char fn_NH[355];
-	char fn_CN[355];
-	char fn_CH[355];
-	char fn_CC[355];
-	char fn_BC[355];
+	printf("Ret: %d\n", ret);
 	unsigned int params = 0;
 	switch (m.model) {
 		case MOD_SMF: params = 2; break;
@@ -266,20 +260,41 @@ int main(int argc, char * argv[]) {
 		params += 3; // theta, phi
 
 
-	long double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
-	struct Residue * resid;
+	
 	
 	#pragma omp parallel for 
 	for (i = 0; i < m.n_residues; i++) {
+		long double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
+		struct Residue * resid;
+		long double * opts;
+		unsigned int j;
+		long double S2NH=0, S2CN=0, S2CH=0, S2CC=0;
+		double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
+		long double temp = 300;
+		double T = 200; // 1000
+		double dT = 0.01; // 0.01
+		double alpha, beta, gamma;
+		char fn_NH[355];
+		char fn_CN[355];
+		char fn_CH[355];
+		char fn_CC[355];
+		char fn_BC[355];
 		opts = (m.residues[i].parameters);
+		printf("%d: %d\n", i, m.residues[i].ignore);
+		if (m.residues[i].ignore == 1)
+			continue;
+		printf("Hola. %d\n", sizeof(m.residues[i].parameters));
+		for (j = 0; j < params; j++) {
+			printf("%d %d %Lf\n", i, j, m.residues[i].parameters[j]);
+		}
 		resid = &(m.residues[i]);
 		if (cor_mod == 1) {
-			
+
 			sprintf(fn_NH, "%s/corr_%d_NH.dat", output_folder, i+1);
 			sprintf(fn_CN, "%s/corr_%d_CN.dat", output_folder, i+1);
 			sprintf(fn_CH, "%s/corr_%d_CH.dat", output_folder, i+1);
 			sprintf(fn_CC, "%s/corr_%d_CCAp.dat", output_folder, i+1);
-
+			printf("Hello\n");
 			if (m.or_variation == VARIANT_A) {
 				alpha = (double) opts[params-3];
 				beta = (double) opts[params-2];
@@ -289,7 +304,7 @@ int main(int argc, char * argv[]) {
 					rotate_Y2(&(m.residues[i].orients[j]), alpha, beta, gamma);
 				}
 			}
-
+			printf("Hello2\n");
 			if (m.model == MOD_SMF || m.model == MOD_SMFT) {
 				tau = opts[0];
 				S2NH = (double) opts[1];
@@ -329,9 +344,11 @@ int main(int argc, char * argv[]) {
 				S2CCs = (double) S2f;
 				S2CCf = (double) S2f;
 			} else if (m.model == MOD_GAF || m.model == MOD_GAFT) {
+				printf("In GAF\n");
 				// need to perform reorientation before.
 				taus = opts[0];
 				tauf = opts[1];
+				printf("taus tauf\n");
 				long double sigs[3] = {opts[2], opts[3], opts[4]};
 				long double sigf[3] = {opts[5], opts[6], opts[7]};
 				if (m.model == MOD_GAFT) {
@@ -340,6 +357,7 @@ int main(int argc, char * argv[]) {
 					taus *= expl(Eas / (RYD * temp));
 					tauf *= expl(Eaf / (RYD * temp));
 				}
+				printf("QUe?\n");
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
 				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
 				double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
