@@ -82,6 +82,10 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 				m->residues[resid].csaC[0] = 0.24 * val + 200;
 				m->residues[resid].csaC[1] = 2.82 * val - 305;
 				m->residues[resid].csaC[2] = 96.5;
+				//m->residues[resid].csaC[0] *= 1.08;
+				//m->residues[resid].csaC[1] *= 1.08;
+				//m->residues[resid].csaC[2] *= 1.08;
+				
 				break;
 			default:break;
 		}

@@ -113,7 +113,7 @@ double SMF_R1(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		R1D += SMF_Dipolar_R1(omega_13C, omega_1H, -D_CH, tau, S2); // C-H
 		R1D += SMF_Dipolar_R1(omega_13C, omega_1H, -D_CHr, tau, S2); // C-Hr
 		R1D += SMF_Dipolar_R1(omega_13C, omega_15N, -D_CN, tau, S2); // C-N
-		R1D += SMF_Dipolar_R1(omega_13C, omega_13C + wCOCa, -D_CC, tau, S2); // C-C
+		R1D += SMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CC, tau, S2); // C-C
 		//d = -D_CH;
 	} else {
 		ERROR("Incorrect mode.");
@@ -194,7 +194,7 @@ double SMF_R2(struct Residue *res, struct Relaxation* relax, long double tau, lo
 		R2D += SMF_Dipolar_R2(omega_13C, omega_1H, -D_CH, tau, S2, J0sum); // C-H
 		R2D += SMF_Dipolar_R2(omega_13C, omega_1H, -D_CHr, tau, S2, J0sum); // C-Hr
 		R2D += SMF_Dipolar_R2(omega_13C, omega_15N, -D_CN, tau, S2, J0sum); // C-N
-		R2D += SMF_Dipolar_R2(omega_13C, omega_13C + wCOCa, -D_CC, tau, S2, J0sum); // C-C
+		R2D += SMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CC, tau, S2, J0sum); // C-C
 		//d = -D_CH;
 	} else {
 		ERROR("Incorrect mode.");
