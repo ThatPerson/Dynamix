@@ -157,6 +157,7 @@ struct Model {
 	int proc_start;
 	int proc_end;
 	int myid, numprocs;
+	double WS2NH, WS2CH, WS2CN, WS2CC;
 };
 
 /** @struct Orient

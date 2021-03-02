@@ -337,6 +337,11 @@ int read_system_file(char *filename, struct Model * m) {
 	m->cn_ratio = CNRATIO_OFF;
 	m->global = LOCAL;
 	
+	m->WS2NH = 1;
+	m->WS2CH = 1;
+	m->WS2CN = 1;
+	m->WS2CC = 1;
+	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -361,24 +366,31 @@ int read_system_file(char *filename, struct Model * m) {
 			int t=0, q=0; // t is general counter, q is for GAF models only
 			if (strcmp(s2nh, "") != 0)
 				t += read_resid_data(m, s2nh, DATA_S2NH);
-			else
+			else {
 				t++;
+				m->WS2NH = 0;
+			}
 			
 			if (strcmp(s2cc, "") != 0)
 				q += read_resid_data(m, s2cc, DATA_S2CC);
-			else
+			else {
 				q++;
+				m->WS2CC = 0;
+			}
 			
 			if (strcmp(s2ch, "") != 0)
 				q += read_resid_data(m, s2ch, DATA_S2CH);
-			else
+			else {
 				q++;
+				m->WS2CH = 0;
+			}
 			
 			if (strcmp(s2cn, "") != 0)
 				q += read_resid_data(m, s2cn, DATA_S2CN);
-			else
+			else {
 				q++;
-			
+				m->WS2CN = 0;
+			}
 			
 			
 			if (strcmp(csisoN, "") != 0)
@@ -396,7 +408,7 @@ int read_system_file(char *filename, struct Model * m) {
 			}
 			if (q != 3 && (m->model == MOD_GAF || m->model == MOD_GAFT)) {
 				ERROR("error reading one of S2CH, S2CN, S2CC");
-				return -1;
+				ERROR("The weight of those not present was set to 0.");
 			}
 			
 			t = 0;
@@ -466,6 +478,14 @@ int read_system_file(char *filename, struct Model * m) {
 				strcpy(s2cc, val);
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
+			} else if (strcmp(key, "W_S2NH") == 0) {
+				m->WS2NH = (double) atof(val);
+			} else if (strcmp(key, "W_S2CH") == 0) {
+				m->WS2CH = (double) atof(val);
+			} else if (strcmp(key, "W_S2CN") == 0) {
+				m->WS2CN = (double) atof(val);
+			} else if (strcmp(key, "W_S2CC") == 0) {
+				m->WS2CC = (double) atof(val);
 			} else if (strcmp(key, "OR_VARY") == 0) {
 				if (m->or_variation == VARIANT_A)
 					continue;
@@ -622,7 +642,7 @@ int print_system(struct Model *m, char *filename) {
 		if (m->residues[i].ignore == 1)
 			fprintf(fp, "--- IGNORING ---\n");
 
-		fprintf(fp, "\tS2NH = %f\n\tS2CH = %f\n\tS2CC = %f\n\tS2CN = %f\n", m->residues[i].S2NH, m->residues[i].S2CH, m->residues[i].S2CC, m->residues[i].S2CN);
+		fprintf(fp, "\tS2NH = %f (%f) \n\tS2CH = %f (%f) \n\tS2CC = %f (%f) \n\tS2CN = %f (%f) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
 		fprintf(fp, "\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].csisoN, m->residues[i].csisoC);
 		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);

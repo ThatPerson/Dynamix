@@ -384,10 +384,11 @@ int print_gaf(struct Model *m) {
 			GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
-
+			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "\n");
+			
 			long double taus = m->residues[l].parameters[0];
 			long double tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_GAFT) {
@@ -410,9 +411,10 @@ int print_gaf(struct Model *m) {
 			AIMF_S2(Sf, Os, S2f, 4);
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "\n");
 
 			long double taus = m->residues[l].parameters[0];
 			long double tauf = m->residues[l].parameters[1];
@@ -435,9 +437,10 @@ int print_gaf(struct Model *m) {
 
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "\n");
 
 
 			long double taus = m->residues[l].parameters[0];
@@ -456,17 +459,19 @@ int print_gaf(struct Model *m) {
 			S2NHf = (double) m->residues[l].parameters[3];
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "\n");
 		} else if (m->model == MOD_SMF || m->model == MOD_SMFT) {
 			double S2 = (double) m->residues[l].parameters[1];
 
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CH, m->residues[l].S2CHe);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CN, m->residues[l].S2CNe);
-			fprintf(orderparams, "%f\t%f\t%f\n", S2, m->residues[l].S2CC, m->residues[l].S2CCe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "\n");
 		}
 	}
 	fclose(gaf);
