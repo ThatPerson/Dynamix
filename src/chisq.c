@@ -333,6 +333,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 	omp_set_num_threads(m->nthreads);
 	#pragma omp parallel for reduction(+:chisq)
 	for (i = 0; i < resid->n_relaxation; i++) {
+		if (resid->relaxation[i].R == -1)
+			continue;
 		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
 		if (m->cn_ratio == CNRATIO_ON) {
 			mult = 1;
