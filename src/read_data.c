@@ -6,6 +6,48 @@
 #include <string.h>
 #include <stdlib.h>
 
+int read_csa(struct Model *m, char *filename, int dt) {
+	FILE *fp;
+	char line[255];
+	int len=255;
+	fp = fopen(filename, "r");
+	if (fp == NULL) {
+		ERROR("%s not found.", filename);
+		return -1;
+	}
+	int resid;
+	float val;
+	float err;
+	float s11, s22, s33;
+	while(fgets(line, len, fp)) {
+		if (line[0] == '%')
+			continue; // comment
+		int k = sscanf(line, "%d %f %f %f\n", &resid, &s11, &s22, &s33);
+		printf("%s -> %d, %f, %f, %f\n",  line, resid, s11, s22, s33);
+		if (k != 4)
+			ERROR("Reading %s failed.", line);
+		resid = resid - 1; // 0 indexed in C
+		
+		if (s11 == -1 || s22 == -1 || s33 == -1)
+			m->residues[resid].ignore = 1;
+		switch (dt) {
+			case DATA_CSISOC:
+				m->residues[resid].csaC[0] = s11;
+				m->residues[resid].csaC[1] = s22;
+				m->residues[resid].csaC[2] = s33;
+				break;
+			case DATA_CSISON:
+				m->residues[resid].csaN[0] = s11;			
+				m->residues[resid].csaN[1] = s22;
+				m->residues[resid].csaN[2] = s33;
+				break;
+			default: break;
+		}
+	}
+	fclose(fp);
+	return 1;
+}
+
 /**
  * Reads residue specific data from datafile. \n
  * Data file being read should be set out in columns, with spaces between them.\n
@@ -316,6 +358,8 @@ int read_system_file(char *filename, struct Model * m) {
 	char s2nh[255] = "", s2ch[255] = "", s2cc[255] = "", s2cn[255] = "";
 	char csisoN[255] = "";
 	char csisoC[255] = "";
+	char csaN[255] = "";
+	char csaC[255] = "";
 	int n_resid = -1;
 	char pp_orient[N_OR][255];
 	unsigned int i;
@@ -371,7 +415,6 @@ int read_system_file(char *filename, struct Model * m) {
 			if (strcmp(s2nh, "") != 0)
 				t += read_resid_data(m, s2nh, DATA_S2NH);
 			else {
-				t++;
 				m->WS2NH = 0;
 			}
 			
@@ -397,14 +440,18 @@ int read_system_file(char *filename, struct Model * m) {
 			}
 			
 			
+			
 			if (strcmp(csisoN, "") != 0)
 				t += read_resid_data(m, csisoN, DATA_CSISON);
-			else
-				t++;
+			if (strcmp(csaN, "") != 0)
+				read_csa(m, csaN, DATA_CSISON);
+			
+			
+			
 			if (strcmp(csisoC, "") != 0)
 				t += read_resid_data(m, csisoC, DATA_CSISOC);
-			else
-				t++;
+			if (strcmp(csaC, "") != 0)
+				read_csa(m, csaC, DATA_CSISOC);
 
 			if (t != 3) {
 				ERROR("error reading one of S2*, csisoN, csisoC");
@@ -499,6 +546,10 @@ int read_system_file(char *filename, struct Model * m) {
 				strcpy(csisoN, val);
 			} else if (strcmp(key, "CSISOC") == 0) {
 				strcpy(csisoC, val);
+			} else if (strcmp(key, "CSAN") == 0) {
+				strcpy(csaN, val);
+			} else if (strcmp(key, "CSAC") == 0) {
+				strcpy(csaC, val);
 			} else if (strcmp(key, "MAXFUNCEVALS") == 0) {
 				m->max_func_evals = (unsigned int) atoi(val);
 			} else if (strcmp(key, "MAXITER") == 0) {
@@ -630,6 +681,14 @@ int print_system(struct Model *m, char *filename) {
 		ERROR("%s not found.", filename);
 		return -1;
 	}
+	
+	FILE * qp;
+	qp = fopen("vals.dat", "w");
+	if (qp == NULL) {
+		ERROR("%s not found.", "vals.dat");
+		return -1;
+	}
+	
 	//fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
 	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
 	fprintf(fp, "Params: %d\nN threads: %d\n", m->params, m->nthreads);
@@ -649,7 +708,17 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "\tS2NH = %f (%f) \n\tS2CH = %f (%f) \n\tS2CC = %f (%f) \n\tS2CN = %f (%f) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
 		fprintf(fp, "\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].csisoN, m->residues[i].csisoC);
 		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
+		double Qcsiso = m->residues[i].csisoN;
+		double Qred_aniso = m->residues[i].csaN[0] - Qcsiso;
+		double Qeta = (m->residues[i].csaN[1] - m->residues[i].csaN[2]) / Qred_aniso;
+		fprintf(fp, "\t\tCSA: d %f, n %f\n", Qred_aniso, Qeta);
+		// z y x
 		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
+		double Ccsiso = m->residues[i].csisoC;
+		double Cred_aniso = m->residues[i].csaC[0] - Ccsiso;
+		double Ceta = (m->residues[i].csaC[1] - m->residues[i].csaC[2]) / Cred_aniso;
+		fprintf(fp, "\t\tCSA: d %f, n %f\n", Cred_aniso, Ceta);
+		fprintf(qp, "%d, %f, %f, %f, %f\n", i+1, Qred_aniso, Qeta, Cred_aniso, Ceta);
 		if (m->cn_ratio == CNRATIO_ON)
 			fprintf(fp, "\tCNRATIO: %f\n", m->residues[i].cn);
 		else
@@ -665,6 +734,7 @@ int print_system(struct Model *m, char *filename) {
 			fprintf(fp, "\t\t%d: %d [%f, %f, %f, %f] %f +- %f\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R, r->Rerror);
 		}
 	}
+	fclose(qp);
 	fclose(fp);
 	return 1;
 
