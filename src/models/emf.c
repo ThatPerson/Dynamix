@@ -122,6 +122,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 	long double omega_L;
 	long double d2tot;
 	double *csa;
+	
 	long double R1D = 0, R1CSA = 0;
 
 	if (mode == MODE_15N) {
@@ -149,7 +150,6 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
 	d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
 	d2tot*=sq(0.000001 * omega_L);
 
-	omega_1H *= T_DOWN;
 	omega_L *= T_DOWN;
 
 	R1CSA = (2/15.) * d2tot * J0_EMF(omega_L, taus, S2s, tauf, S2f);
