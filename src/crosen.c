@@ -54,7 +54,7 @@
  * Implementation of Nelder-Mead Simplex method written by Michael F. Hutt.\n
  * Has been modified to allow for optimization of the optimize_chisq() function directly.\n
  * @param *func
- *  Pointer to function taking arguments (long double[], struct Residue*, int) to be optimized (see optimize_chisq())\n
+ *  Pointer to function taking arguments (double[], struct Residue*, int) to be optimized (see optimize_chisq())\n
  * @param start[]
  *  Array of starting parameters
  * @param n
@@ -69,9 +69,9 @@
  *  Model type (MOD_SMF etc)
  * @return Returns minimum of (*func).
  */
-double simplex(double (*func)(long double[], struct Residue*, struct Model *, unsigned int), long double start[], long double EPSILON, long double scale, struct Residue * resid, struct Model * mod)
+double simplex(double (*func)(double[], struct Residue*, struct Model *, unsigned int), double start[], double EPSILON, double scale, struct Residue * resid, struct Model * mod)
 {
-  //printf("SIMPLEX %Le\n", start[2]);
+  //printf("SIMPLEX %le\n", start[2]);
 
   unsigned int n = mod->params;
   unsigned int vs;        	/* vertex with smallest value */
@@ -82,33 +82,33 @@ double simplex(double (*func)(long double[], struct Residue*, struct Model *, un
   unsigned int k;		/* track the number of function evaluations */
   unsigned int itr;		/* track the number of iterations */
 
-  long double **v;           /* holds vertices of simplex */
-  long double pn,qn;         /* values used to create initial simplex */
-  long double *f;            /* value of function at each vertex */
-  long double fr;            /* value of function at reflection point */
-  long double fe;            /* value of function at expansion point */
-  long double fc;            /* value of function at contraction point */
-  long double *vr;           /* reflection - coordinates */
-  long double *ve;           /* expansion - coordinates */
-  long double *vc;           /* contraction - coordinates */
-  long double *vm;           /* centroid - coordinates */
-  long double min;
+  double **v;           /* holds vertices of simplex */
+  double pn,qn;         /* values used to create initial simplex */
+  double *f;            /* value of function at each vertex */
+  double fr;            /* value of function at reflection point */
+  double fe;            /* value of function at expansion point */
+  double fc;            /* value of function at contraction point */
+  double *vr;           /* reflection - coordinates */
+  double *ve;           /* expansion - coordinates */
+  double *vc;           /* contraction - coordinates */
+  double *vm;           /* centroid - coordinates */
+  double min;
 
-  long double fsum,favg,s,cent;
+  double fsum,favg,s,cent;
 
   /* dynamically allocate arrays */
 
   /* allocate the rows of the arrays */
-  v =  (long double **) malloc ((n+1) * sizeof(long double *));
-  f =  (long double *) malloc ((n+1) * sizeof(long double));
-  vr = (long double *) malloc (n * sizeof(long double));
-  ve = (long double *) malloc (n * sizeof(long double));
-  vc = (long double *) malloc (n * sizeof(long double));
-  vm = (long double *) malloc (n * sizeof(long double));
+  v =  (double **) malloc ((n+1) * sizeof(double *));
+  f =  (double *) malloc ((n+1) * sizeof(double));
+  vr = (double *) malloc (n * sizeof(double));
+  ve = (double *) malloc (n * sizeof(double));
+  vc = (double *) malloc (n * sizeof(double));
+  vm = (double *) malloc (n * sizeof(double));
 
   /* allocate the columns of the arrays */
   for (i=0;i<=n;i++) {
-    v[i] = (long double *) malloc (n * sizeof(long double));
+    v[i] = (double *) malloc (n * sizeof(double));
   }
 
 
@@ -143,13 +143,13 @@ double simplex(double (*func)(long double[], struct Residue*, struct Model *, un
   /* print out the initial values */
   /*printf("Initial Values\n");
   for (j=0;j<=n;j++) {
-    printf("%Le %Le %Le\n",v[j][0],v[j][1],f[j]);
+    printf("%le %le %le\n",v[j][0],v[j][1],f[j]);
   }*/
 
 
   /* begin the main loop of the minimization */
   for (itr=1;itr<=MAX_IT;itr++) {
-	 // printf("%Le\n", vr[2]);
+	 // printf("%le\n", vr[2]);
     /* find the index of the largest value */
     vg=0;
     for (j=0;j<=n;j++) {
@@ -211,7 +211,7 @@ double simplex(double (*func)(long double[], struct Residue*, struct Model *, un
 
       /* by making fe < fr as opposed to fe < f[vs],
 	 Rosenbrocks function takes 63 iterations as opposed
-	 to 64 when using long doubles and e = 1.0e-6. */
+	 to 64 when using doubles and e = 1.0e-6. */
 
       if (fe < fr) {
 	for (j=0;j<=n-1;j++) {
@@ -265,7 +265,7 @@ double simplex(double (*func)(long double[], struct Residue*, struct Model *, un
     /* print out the value at each iteration */
     /*printf("Iteration %d\n",itr);
     for (j=0;j<=n;j++) {
-      printf("%Le %Le %Le\n",v[j][0],v[j][1],f[j]);
+      printf("%le %le %le\n",v[j][0],v[j][1],f[j]);
     }*/
 
     /* test for convergence */
@@ -293,7 +293,7 @@ double simplex(double (*func)(long double[], struct Residue*, struct Model *, un
 
   //printf("The minimum was found at\n");
   for (j=0;j<n;j++) {
-    //printf("%Le\n",v[vs][j]);
+    //printf("%le\n",v[vs][j]);
     start[j] = v[vs][j];
 
   }
@@ -316,14 +316,14 @@ double simplex(double (*func)(long double[], struct Residue*, struct Model *, un
 /*
 int main()
 {
-  long double start[] = {-1.2,1.0};
-  long double min;
+  double start[] = {-1.2,1.0};
+  double min;
   int i;
 
   min=simplex(rosen,start,2,1.0e-8,1);
 
   for (i=0;i<2;i++) {
-    printf("%Le\n",start[i]);
+    printf("%le\n",start[i]);
   }
   return 0;
 }*/

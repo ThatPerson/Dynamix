@@ -70,7 +70,7 @@ int read_data_file(char *filename, struct Model * m) {
 		params += 3; // theta, phi
 
 	int res;
-	float S2NH, chisq;
+	double S2NH, chisq;
 	int length = 0;
 	int length_d = 0;
 	unsigned int i;
@@ -79,16 +79,16 @@ int read_data_file(char *filename, struct Model * m) {
 	while(fgets(line, len, fp)) {
 
 		//3	0.780000	201.669690	1.461383e+01	9.604572e-01	0
-		int k = sscanf(line, "%d\t%f\t%f\t%n", &res, &S2NH, &chisq, &length);
+		int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
 		res--;
-		m->residues[res].parameters = (long double *) malloc(sizeof(long double) * params);
+		m->residues[res].parameters = (double *) malloc(sizeof(double) * params);
 		m->residues[res].ignore = 0;
 		for (i = 0; i < params; i++) {
-			k = sscanf(line + length, "%Le\t%n", &(m->residues[res].parameters[i]), &length_d);
-			//printf("%d: %Lf\n", i, m->residues[res].parameters[i]);
-			//m->residues[res].parameters[i] = (long double) param;
+			k = sscanf(line + length, "%le\t%n", &(m->residues[res].parameters[i]), &length_d);
+			//printf("%d: %lf\n", i, m->residues[res].parameters[i]);
+			//m->residues[res].parameters[i] = (double) param;
 			//printf("K = %d\n", k);
-			//printf("Param = %f\n", parameters[i]);
+			//printf("Param = %lf\n", parameters[i]);
 			if (k <= 0) {
 				break;
 			}else {
@@ -99,7 +99,7 @@ int read_data_file(char *filename, struct Model * m) {
 
 	/*int residue = 40;
 	for (i = 0; i < params; i++) {
-		printf("Parameter %d = %Lf\n", i, m->residues[residue].parameters[i]);
+		printf("Parameter %d = %lf\n", i, m->residues[residue].parameters[i]);
 	}*/
 
 	fclose(fp);
@@ -124,8 +124,8 @@ int read_data_file(char *filename, struct Model * m) {
  *  Fast motion order parameter
  * @return 1 on success, -1 on failure
  */
-int write_correlation_function_emf(char * fn, double T, double dT, long double taus, long double S2s, long double tauf, long double S2f) {
-	long double S2 = S2f * S2s;
+int write_correlation_function_emf(char * fn, double T, double dT, double taus, double S2s, double tauf, double S2f) {
+	double S2 = S2f * S2s;
 	FILE * fp;
 
 	fp = fopen(fn, "w");
@@ -140,14 +140,14 @@ int write_correlation_function_emf(char * fn, double T, double dT, long double t
 		correl = S2;
 		correl += (1 - S2f) * expl(-t / tauf);
 		correl += (S2f - S2) * expl(-t / taus);
-		fprintf(fp, "%lf\t%Lf\n", t, correl);
+		fprintf(fp, "%lf\t%lf\n", t, correl);
 	}
 
 	fclose(fp);
 	return 1;
 }
 
-int write_spectral_density_emf(char *fn, long double taus, long double S2s, long double tauf, long double S2f) {
+int write_spectral_density_emf(char *fn, double taus, double S2s, double tauf, double S2f) {
 	FILE * fp;
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
@@ -156,42 +156,42 @@ int write_spectral_density_emf(char *fn, long double taus, long double S2s, long
 	}
 	
 	double w;
-	long double v, slow, fast;
+	double v, slow, fast;
 	for (w = pow(10, 1)*T_DOWN; w < pow(10., 10)*T_DOWN; w*=2) {
 		
 		/*v = (((1 - S2f) * tauf) / (1 + (w * tauf * w * tauf)));
 		q = v + ((S2f * (1 - S2s) * taus) / (1 + (w * taus * w * taus)));
 		
 		l =  ( \
-			((((1 - (double) S2f)) * (long double) tauf)) \
-			/ (1 + ((double) w * (long double) tauf * (double) w * (long double) tauf)) \
+			((((1 - (double) S2f)) * (double) tauf)) \
+			/ (1 + ((double) w * (double) tauf * (double) w * (double) tauf)) \
 		);
 		p = l +\
 		(\
-			(((double) S2f) * (1 - (double) S2s) * (long double) taus)\
-			/ (1 + ((double) w * (long double) taus * (double) w * (long double) taus))\
+			(((double) S2f) * (1 - (double) S2s) * (double) taus)\
+			/ (1 + ((double) w * (double) taus * (double) w * (double) taus))\
 		);*/
 		v = J0_EMF(w, taus, S2s, tauf, S2f);
-		//printf("%f (%lf, %lf) (%lf, %lf) %lf\n", w, v, l, q, p, rt);
+		//printf("%lf (%lf, %lf) (%lf, %lf) %lf\n", w, v, l, q, p, rt);
 		fast = ( \
-			((((1 - (long double) S2f)) * (long double) tauf)) \
-			/ (1 + ((long double) w * (long double) tauf * (long double) w * (long double) tauf)) \
+			((((1 - (double) S2f)) * (double) tauf)) \
+			/ (1 + ((double) w * (double) tauf * (double) w * (double) tauf)) \
 		);
 		slow = (\
-			(((long double) S2f) * (1 - (long double) S2s) * (long double) taus)\
-			/ (1 + ((long double) w * (long double) taus * (long double) w * (long double) taus))\
+			(((double) S2f) * (1 - (double) S2s) * (double) taus)\
+			/ (1 + ((double) w * (double) taus * (double) w * (double) taus))\
 		);
 		v *= T_DOWN;
 		slow *= T_DOWN;
 		fast *= T_DOWN;
-		printf("%f\t%Lf\n", w*T_UP, v);
-		fprintf(fp, "%f\t%Le\t%Le\t%Le\n", w*T_UP, v, slow, fast);
+		printf("%lf\t%lf\n", w*T_UP, v);
+		fprintf(fp, "%lf\t%le\t%le\t%le\n", w*T_UP, v, slow, fast);
 	}
 	fclose(fp);
 	return 1;
 }
 
-int write_spectral_density_smf(char *fn, long double tau, long double S2) {
+int write_spectral_density_smf(char *fn, double tau, double S2) {
 	FILE * fp;
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
@@ -200,10 +200,10 @@ int write_spectral_density_smf(char *fn, long double tau, long double S2) {
 	}
 	
 	double w;
-	long double v;
+	double v;
 	for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
 		v = J0_SMF(w, tau, S2) * T_DOWN;
-		fprintf(fp, "%f\t%Le\n", w*T_UP, v);
+		fprintf(fp, "%lf\t%le\n", w*T_UP, v);
 	}
 	fclose(fp);
 	return 1;
@@ -223,7 +223,7 @@ int write_spectral_density_smf(char *fn, long double tau, long double S2) {
  *  Motion order parameter
  * @return 1 on success, -1 on failure
  */
-int write_correlation_function_smf(char * fn, double T, double dT, long double tau, long double S2) {
+int write_correlation_function_smf(char * fn, double T, double dT, double tau, double S2) {
 	FILE * fp;
 
 	fp = fopen(fn, "w");
@@ -237,7 +237,7 @@ int write_correlation_function_smf(char * fn, double T, double dT, long double t
 	for (t = 0; t < T; t += dT) {
 		correl = S2;
 		correl += (1 - S2) * expl(-t / tau);
-		fprintf(fp, "%lf\t%Lf\n", t, correl);
+		fprintf(fp, "%lf\t%lf\n", t, correl);
 	}
 
 	fclose(fp);
@@ -328,13 +328,13 @@ int main(int argc, char * argv[]) {
 	
 	#pragma omp parallel for 
 	for (i = 0; i <m.n_residues; i++) {
-		long double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
+		double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
 		struct Residue * resid;
-		long double * opts;
+		double * opts;
 		unsigned int j;
-		long double S2NH=0, S2CN=0, S2CH=0, S2CC=0;
+		double S2NH=0, S2CN=0, S2CH=0, S2CC=0;
 		double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
-		long double temp = 300;
+		double temp = 300;
 		double T = 200; // 1000
 		double dT = 0.01; // 0.01
 		double alpha, beta, gamma;
@@ -353,7 +353,7 @@ int main(int argc, char * argv[]) {
 			continue;
 		printf("Hola. %d\n", sizeof(m.residues[i].parameters));
 		for (j = 0; j < params; j++) {
-			printf("%d %d %Lf\n", i, j, m.residues[i].parameters[j]);
+			printf("%d %d %lf\n", i, j, m.residues[i].parameters[j]);
 		}
 		resid = &(m.residues[i]);
 		if (cor_mod == 1 || sd_mod == 1) {
@@ -421,8 +421,8 @@ int main(int argc, char * argv[]) {
 				taus = opts[0];
 				tauf = opts[1];
 				printf("taus tauf\n");
-				long double sigs[3] = {opts[2], opts[3], opts[4]};
-				long double sigf[3] = {opts[5], opts[6], opts[7]};
+				double sigs[3] = {opts[2], opts[3], opts[4]};
+				double sigf[3] = {opts[5], opts[6], opts[7]};
 				if (m.model == MOD_GAFT) {
 					Eas = opts[8];
 					Eaf = opts[9];
@@ -439,7 +439,7 @@ int main(int argc, char * argv[]) {
 				// need to perform reorientation before.
 				taus = opts[0];
 				tauf = opts[1];
-				long double sigs[3] = {opts[2], opts[3], opts[4]};
+				double sigs[3] = {opts[2], opts[3], opts[4]};
 				S2f = opts[5];
 				if (m.model == MOD_GAFT) {
 					Eas = opts[6];
@@ -487,11 +487,11 @@ int main(int argc, char * argv[]) {
 			back_calculate(opts, resid, &m, fn_BC, params);
 
 
-			// int back_calculate(long double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
+			// int back_calculate(double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
 
 		}
 	}
-	//int write_correlation_function_smf(char * fn, double T, double dT, long double tau, long double S2) {
+	//int write_correlation_function_smf(char * fn, double T, double dT, double tau, double S2) {
 
 
 	//fclose(fp);

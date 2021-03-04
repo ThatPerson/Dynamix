@@ -6,12 +6,12 @@
 #include <math.h>
 
 /** 
- * Generates uniform random long double from 0 to 1 inclusive.
- * @return long double
+ * Generates uniform random double from 0 to 1 inclusive.
+ * @return double
  *  Long double containing uniform random number.
  */
-long double uniform_rand(void) {
-	return ((long double) rand() + 1.) / ((long double) RAND_MAX + 1.);
+double uniform_rand(void) {
+	return ((double) rand() + 1.) / ((double) RAND_MAX + 1.);
 }
 
 /**
@@ -20,7 +20,7 @@ long double uniform_rand(void) {
  *  Mean of normal distribution to select random variable from
  * @param std
  *  Standard deviation of normal distribution from which random variable selected
- * @return float
+ * @return double
  *  Returns normally distributed random number
  */
 double norm_rand(double mean, double std) {
@@ -30,7 +30,7 @@ double norm_rand(double mean, double std) {
 	rnd2 = (double) uniform_rand();
 	double unadj = sqrt(-2 * log(rnd1)) * cos(2 * M_PI * rnd2);
 
-	//printf("%f, %f, %f\n", rnd1, rnd2, mean + std*unadj);
+	//printf("%lf, %lf, %lf\n", rnd1, rnd2, mean + std*unadj);
 	return mean + std * unadj;
 }
 
@@ -41,25 +41,25 @@ double norm_rand(double mean, double std) {
  * @param length
  *  Length of vals
  * @param mean
- *  Pointer to long double to contain mean
+ *  Pointer to double to contain mean
  * @param std
- *  Pointer to long double to contain standard deviation
+ *  Pointer to double to contain standard deviation
  */
-void calc_statistics(long double * vals, int length, long double * mean, long double * std) {
+void calc_statistics(double * vals, int length, double * mean, double * std) {
 	int k;
 	*mean = 0;
-	long double m2 = 0;
+	double m2 = 0;
 	for (k = 0; k < length; k++) {
 		*mean += vals[k];
 		m2 += powl(vals[k], 2);
 	}
-	*mean = *mean / ((long double) length);
-	m2 = m2 / ((long double) length);
-	long double mdiff = m2 - powl(*mean, 2.);
+	*mean = *mean / ((double) length);
+	m2 = m2 / ((double) length);
+	double mdiff = m2 - powl(*mean, 2.);
 	if (mdiff < 0 && fabsl(mdiff) < 0.000001) {
-		ERROR("mdiff = %Lf, making negative.", mdiff);
+		ERROR("mdiff = %lf, making negative.", mdiff);
 		// then all have converged to the same point and the std is 0. 
-		// but because floating points are ew, it will give 'nan' for sqrtl(-0.0000)
+		// but because doubleing points are ew, it will give 'nan' for sqrtl(-0.0000)
 		// so we just invert the sign. It's not pretty but ah well.
 		mdiff = -mdiff;
 	}
@@ -97,13 +97,13 @@ int calc_errors(struct Model *m, int residue) {
 	unsigned int l, k, params = 0;
 	params = m->params;
 	//printf("%d\n", params);
-	long double *opts;
-	opts = (long double *) malloc (sizeof(long double) * params);
-	resid->errors_mean = (long double *) malloc (sizeof(long double) * params);
-	resid->errors_std = (long double *) malloc(sizeof(long double) * params);
-	resid->error_params = (long double **) malloc (sizeof(long double *) * params);
+	double *opts;
+	opts = (double *) malloc (sizeof(double) * params);
+	resid->errors_mean = (double *) malloc (sizeof(double) * params);
+	resid->errors_std = (double *) malloc(sizeof(double) * params);
+	resid->error_params = (double **) malloc (sizeof(double *) * params);
 	for (k = 0; k < params; k++) {
-		resid->error_params[k] = (long double *) malloc (sizeof(long double) * m->n_iter);
+		resid->error_params[k] = (double *) malloc (sizeof(double) * m->n_iter);
 	}
 	//resid->min_val = MIN_VAL;*/
 	//double val = 0;
@@ -130,7 +130,7 @@ int calc_errors(struct Model *m, int residue) {
 		resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
 
 		//if (i == 2)
-		//	printf("Residue %d iteration %d: %Lf\n ", i, l, opts[0]);
+		//	printf("Residue %d iteration %d: %lf\n ", i, l, opts[0]);
 
 		for (k = 0; k < resid->n_relaxation; k++) {
 			resid->relaxation[k].field = resid->temp_relaxation[k].field;
@@ -141,14 +141,14 @@ int calc_errors(struct Model *m, int residue) {
 
 			temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), m, &ignore);
 			//if (i == 2 && k == 2)
-			//	printf("Iteration %d, R = %f\n", l, temp_R); // should be the same each time
+			//	printf("Iteration %d, R = %lf\n", l, temp_R); // should be the same each time
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
 
 
-			LOG("%d %d %d prior: %f, backcalc: %f, new: %f, error: %f", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
+			LOG("%d %d %d prior: %lf, backcalc: %lf, new: %lf, error: %lf", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
 
 			//resid->relaxation[k].R = norm_rand(resid->temp_relaxation[k].R, (resid->temp_relaxation[k].Rerror)/2.);
-			//printf("%f, %f -> %f \n", resid->temp_relaxation[k].R, resid->temp_relaxation[k].Rerror, resid->relaxation[k].R);
+			//printf("%lf, %lf -> %lf \n", resid->temp_relaxation[k].R, resid->temp_relaxation[k].Rerror, resid->relaxation[k].R);
 			/* Rerror is Monte-Carlo calculated 2 standard deviations; norm_rand takes 1 std */
 			resid->relaxation[k].Rerror = resid->temp_relaxation[k].Rerror;
 		}
@@ -162,14 +162,14 @@ int calc_errors(struct Model *m, int residue) {
 			opts[k] = resid->parameters[k];
 		}
 		double min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
-		LOG("%d %d min = %f; orig = %f", i, l, min, resid->min_val);
+		LOG("%d %d min = %lf; orig = %lf", i, l, min, resid->min_val);
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
-		//resid->error_params[l] = (long double *) malloc (sizeof(long double) * params);
+		//resid->error_params[l] = (double *) malloc (sizeof(double) * params);
 
-		fprintf(errp, "%d\t%f", l+1, min);
+		fprintf(errp, "%d\t%lf", l+1, min);
 		for (k = 0; k < params; k++) {
 			resid->error_params[k][p] = opts[k];
-			fprintf(errp, "\t%Le", opts[k]);
+			fprintf(errp, "\t%le", opts[k]);
 		}
 		fprintf(errp, "\n");
 		p++;

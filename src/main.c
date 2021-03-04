@@ -55,19 +55,19 @@ int run_residue(struct Model *m, int residue) {
 	unsigned int params = 0;
 	params = m->params;
 	//printf("%d\n", params);
-	long double *opts;
-	opts = (long double *) malloc (sizeof(long double) * params);
-	resid->parameters = (long double *) malloc (sizeof(long double) * params);
+	double *opts;
+	opts = (double *) malloc (sizeof(double) * params);
+	resid->parameters = (double *) malloc (sizeof(double) * params);
 	resid->min_val = MIN_VAL;
 
 	for (l = 0; l < m->n_iter; l++) {
 		if (resid->ignore == 1) {
-			fprintf(fp, "%d, %f, -1, -1\n", residue+1, 1000.);
+			fprintf(fp, "%d, %lf, -1, -1\n", residue+1, 1000.);
 			fclose(fp);
 			free(opts);
 			return -1;
 		}
-		//long double opts[20] = {0, 0};
+		//double opts[20] = {0, 0};
 		
 		/**
 		 * SMF parameters are \n 
@@ -132,14 +132,14 @@ int run_residue(struct Model *m, int residue) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
-			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2NH, opts[0], opts[1], opts[2]);
+			//printf("RUN: %lf, %le, %le, %le\n", resid->S2NH, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_EMFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 			opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
 			opts[3] = (rand()%60000)/1.;
 			opts[4] = (rand()%60000)/1.;
-			//printf("RUN: %f, %Le, %Le, %Le\n", resid->S2NH, opts[0], opts[1], opts[2]);
+			//printf("RUN: %lf, %le, %le, %le\n", resid->S2NH, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_DEMF) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
@@ -162,7 +162,7 @@ int run_residue(struct Model *m, int residue) {
 			for (k = 2; k <= 7; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
-				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+				//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 			}
 		} else if (model == MOD_GAFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
@@ -178,7 +178,7 @@ int run_residue(struct Model *m, int residue) {
 			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
 			for (k = 2; k <= 7; k++) {
 				opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
-				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+				//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 			}
 		} else if (model == MOD_AIMFT) {
 			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
@@ -194,7 +194,7 @@ int run_residue(struct Model *m, int residue) {
 			for (k = 2; k <= 4; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
-				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+				//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 			}
 			opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 			
@@ -204,7 +204,7 @@ int run_residue(struct Model *m, int residue) {
 			for (k = 2; k <= 4; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
-				//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+				//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 			}
 			opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 			opts[6] = (rand()%60000)/1.;
@@ -231,7 +231,7 @@ int run_residue(struct Model *m, int residue) {
 			opts[params - 1] = (rand() % 20000) / 1.; // kex
 		}
 		
-		//printf("%Le, %Le\n", opts[0], opts[1]);
+		//printf("%le, %le\n", opts[0], opts[1]);
 		double val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
 		if (val >= 1000000 || val < 0) {
 			val = -1;
@@ -239,13 +239,13 @@ int run_residue(struct Model *m, int residue) {
 				opts[k] = -1;
 			}
 		}
-		fprintf(fp, "%d\t%f", residue+1, val);
+		fprintf(fp, "%d\t%lf", residue+1, val);
 		for (k = 0; k < params; k++) {
-			fprintf(fp, "\t%Le", opts[k]);
+			fprintf(fp, "\t%le", opts[k]);
 		}
 
 		if (val < resid->min_val && val != -1) {
-			//printf("New lowest %f\n", val);
+			//printf("New lowest %lf\n", val);
 			resid->min_val = val;
 			for (k = 0; k < params; k++) {
 				resid->parameters[k] = opts[k];
@@ -294,11 +294,11 @@ int print_errors(struct Model *m) {
 			calc_statistics(m->residues[l].error_params[k], m->residues[l].error_calcs, &(m->residues[l].errors_mean[k]), &(m->residues[l].errors_std[k]));
 		}
 
-		fprintf(ep, "%d\t%f\t%f", l+1, m->residues[l].S2NH, m->residues[l].min_val);
+		fprintf(ep, "%d\t%lf\t%lf", l+1, m->residues[l].S2NH, m->residues[l].min_val);
 
 		for (i = 0; i < m->params; i++) {
 
-			fprintf(ep, "\t%Le\t%Le", m->residues[l].parameters[i], 2 * m->residues[l].errors_std[i]);
+			fprintf(ep, "\t%le\t%le", m->residues[l].parameters[i], 2 * m->residues[l].errors_std[i]);
 			/* WARNING: I'm printing the actual minimized parameters with the errors from calculation.
 			 * The error_means are generally not minimal. */
 		}
@@ -327,9 +327,9 @@ int print_residues(struct Model *m) {
 				m->residues[l].parameters[i] = -1.;
 			}
 		}
-		fprintf(fp, "%d\t%f\t%f", l+1, m->residues[l].S2NH, m->residues[l].min_val);
+		fprintf(fp, "%d\t%lf\t%lf", l+1, m->residues[l].S2NH, m->residues[l].min_val);
 		for (i = 0; i < m->params; i++) {
-			fprintf(fp, "\t%Le", m->residues[l].parameters[i]);
+			fprintf(fp, "\t%le", m->residues[l].parameters[i]);
 		}
 		fprintf(fp, "\t%d\n", m->residues[l].error_calcs);
 	}
@@ -374,8 +374,8 @@ int print_gaf(struct Model *m) {
 
 		if ((m->model == MOD_GAF || m->model == MOD_GAFT) && gaf != NULL) {
 			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
-			long double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-			long double sigf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
+			double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
+			double sigf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
 			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
 			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
 			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
@@ -383,26 +383,26 @@ int print_gaf(struct Model *m) {
 			GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 			GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 			fprintf(orderparams, "%d\t", l+1);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 			
-			long double taus = m->residues[l].parameters[0];
-			long double tauf = m->residues[l].parameters[1];
+			double taus = m->residues[l].parameters[0];
+			double tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_GAFT) {
-				long double Eas = m->residues[l].parameters[8];
-				long double Eaf = m->residues[l].parameters[9];
+				double Eas = m->residues[l].parameters[8];
+				double Eaf = m->residues[l].parameters[9];
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
 
-			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
+			fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
 		} else if ((m->model == MOD_AIMF || m->model == MOD_AIMFT) && gaf != NULL) {
 			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
-			long double Ss[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-			long double Sf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
+			double Ss[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
+			double Sf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
 			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
 			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
 			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
@@ -410,67 +410,67 @@ int print_gaf(struct Model *m) {
 			AIMF_S2(Ss, Os, S2s, 4);
 			AIMF_S2(Sf, Os, S2f, 4);
 			fprintf(orderparams, "%d\t", l+1);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 
-			long double taus = m->residues[l].parameters[0];
-			long double tauf = m->residues[l].parameters[1];
+			double taus = m->residues[l].parameters[0];
+			double tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_AIMFT) {
-				long double Eas = m->residues[l].parameters[8];
-				long double Eaf = m->residues[l].parameters[9];
+				double Eas = m->residues[l].parameters[8];
+				double Eaf = m->residues[l].parameters[9];
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
 
-			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
+			fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
 		} else if ((m->model == MOD_EGAF || m->model == MOD_EGAFT) && gaf != NULL) {
 			double S2NHs, S2NHf = (double) m->residues[l].parameters[5];
 			double *S2[] = {&S2NHs};
 			/* Approximate as just the S2NHs and S2NHf */
 			struct Orient *As[] = {&(m->residues[l].orients[OR_NH])};
-			long double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
+			double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
 			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
 
 
 			fprintf(orderparams, "%d\t", l+1);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 
 
-			long double taus = m->residues[l].parameters[0];
-			long double tauf = m->residues[l].parameters[1];
+			double taus = m->residues[l].parameters[0];
+			double tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_EGAFT) {
-				long double Eas = m->residues[l].parameters[6];
-				long double Eaf = m->residues[l].parameters[7];
+				double Eas = m->residues[l].parameters[6];
+				double Eaf = m->residues[l].parameters[7];
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
-			fprintf(gaf, "%d\t%Le\t%f\t%Le\t%f\n", l+1, taus, S2NHs, tauf, S2NHf);
+			fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
 			/* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */
 		} else if (m->model == MOD_DEMF || m->model == MOD_DEMFT) {
 			double S2NHs, S2NHf;
 			S2NHs = (double) m->residues[l].parameters[1];
 			S2NHf = (double) m->residues[l].parameters[3];
 			fprintf(orderparams, "%d\t", l+1);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
-			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 		} else if (m->model == MOD_SMF || m->model == MOD_SMFT) {
 			double S2 = (double) m->residues[l].parameters[1];
 
 			fprintf(orderparams, "%d\t", l+1);
-			fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
-			if (m->WS2CH != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CH, m->residues[l].S2CHe);
-			if (m->WS2CN != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CN, m->residues[l].S2CNe);
-			if (m->WS2CC != 0) fprintf(orderparams, "%f\t%f\t%f\t", S2, m->residues[l].S2CC, m->residues[l].S2CCe);
+			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
+			if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2CH, m->residues[l].S2CHe);
+			if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2CN, m->residues[l].S2CNe);
+			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 		}
 	}

@@ -1,5 +1,5 @@
 
-double optimize_global_chisq(long double * opts, struct Residue *r, struct Model * m, unsigned int params) {
+double optimize_global_chisq(double * opts, struct Residue *r, struct Model * m, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -8,7 +8,7 @@ double optimize_global_chisq(long double * opts, struct Residue *r, struct Model
 	unsigned int l, c = 0;
 	double chisq = 0;
 	for (l = 0; l < m->n_residues; l++) {
-	//	double optimize_chisq(long double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
+	//	double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
 		if (m->residues[l].ignore == 1)
 			continue;
 		chisq += optimize_chisq(opts, &(m->residues[l]), m, params);
@@ -36,18 +36,18 @@ int run_global_iteration(struct Model *m, int i) {
 	unsigned int params = 0;
 	params = m->params;
 	//printf("%d\n", params);
-	long double *opts;
-	opts = (long double *) malloc (sizeof(long double) * params);
+	double *opts;
+	opts = (double *) malloc (sizeof(double) * params);
 	
 	
 
 		/*if (resid->ignore == 1) {
-			fprintf(fp, "%d, %f, -1, -1\n", i+1, 1000.);
+			fprintf(fp, "%d, %lf, -1, -1\n", i+1, 1000.);
 			fclose(fp);
 			free(opts);
 			return NULL;
 		}*/
-		//long double opts[20] = {0, 0};
+		//double opts[20] = {0, 0};
 		
 		/**
 		 * SMF parameters are \n 
@@ -113,14 +113,14 @@ int run_global_iteration(struct Model *m, int i) {
 		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 		opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
-		//printf("RUN: %f, %Le, %Le, %Le\n", 0.7, opts[0], opts[1], opts[2]);
+		//printf("RUN: %lf, %le, %le, %le\n", 0.7, opts[0], opts[1], opts[2]);
 	} else if (model == MOD_EMFT) {
 		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
 		opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
 		opts[3] = (rand()%60000)/1.;
 		opts[4] = (rand()%60000)/1.;
-		//printf("RUN: %f, %Le, %Le, %Le\n", 0.7, opts[0], opts[1], opts[2]);
+		//printf("RUN: %lf, %le, %le, %le\n", 0.7, opts[0], opts[1], opts[2]);
 	} else if (model == MOD_DEMF) {
 		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
@@ -143,7 +143,7 @@ int run_global_iteration(struct Model *m, int i) {
 		for (k = 2; k <= 7; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
-			//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 		}
 	} else if (model == MOD_GAFT) {
 		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
@@ -159,7 +159,7 @@ int run_global_iteration(struct Model *m, int i) {
 		opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
 		for (k = 2; k <= 7; k++) {
 			opts[k] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-			//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 		}
 	} else if (model == MOD_AIMFT) {
 		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
@@ -175,7 +175,7 @@ int run_global_iteration(struct Model *m, int i) {
 		for (k = 2; k <= 4; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
-			//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 		}
 		opts[5] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 		
@@ -185,7 +185,7 @@ int run_global_iteration(struct Model *m, int i) {
 		for (k = 2; k <= 4; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
-			//printf("%d %Lf\n", k, opts[k] * (180. / M_PI));
+			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 		}
 		opts[5] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 		opts[6] = (rand()%60000)/1.;
@@ -212,7 +212,7 @@ int run_global_iteration(struct Model *m, int i) {
 	}
 	
 
-	//printf("%Le, %Le\n", opts[0], opts[1]);
+	//printf("%le, %le\n", opts[0], opts[1]);
 	double val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
 	if (val >= 1000000 || val < 0) {
 		val = -1;
@@ -221,15 +221,15 @@ int run_global_iteration(struct Model *m, int i) {
 		}
 	}
 
-	fprintf(fp, "%d\t%f", i+1, val);
+	fprintf(fp, "%d\t%lf", i+1, val);
 	for (k = 0; k < params; k++) {
-		fprintf(fp, "\t%Le", opts[k]);
+		fprintf(fp, "\t%le", opts[k]);
 	}
 	fprintf(fp, "\n");
 
 	for (i = 0; i < m->n_residues; i++) {
 		if (val < m->residues[i].min_val && val != -1) {
-		//printf("New lowest %f\n", val);	
+		//printf("New lowest %lf\n", val);	
 			m->residues[i].min_val = val;
 			for (k = 0; k < params; k++) {
 				m->residues[i].parameters[k] = opts[k];
@@ -256,8 +256,8 @@ int calc_global_errors(struct Model *m) {
 	
 	unsigned int l, k, i;
 	struct Residue *resid;
-	long double *opts;
-	opts = (long double *) malloc(sizeof(long double) * m->params);
+	double *opts;
+	opts = (double *) malloc(sizeof(double) * m->params);
 	
 	
 	int p = 0;
@@ -270,11 +270,11 @@ int calc_global_errors(struct Model *m) {
 		resid->S2CHb = resid->S2CH;
 		resid->S2CNb = resid->S2CN;
 		resid->S2CCb = resid->S2CC;
-		resid->errors_mean = (long double *) malloc (sizeof(long double) * m->params);
-		resid->errors_std = (long double *) malloc(sizeof(long double) * m->params);
-		resid->error_params = (long double **) malloc (sizeof(long double *) * m->params);
+		resid->errors_mean = (double *) malloc (sizeof(double) * m->params);
+		resid->errors_std = (double *) malloc(sizeof(double) * m->params);
+		resid->error_params = (double **) malloc (sizeof(double *) * m->params);
 		for (k = 0; k < m->params; k++) {
-			resid->error_params[k] = (long double *) malloc (sizeof(long double) * m->n_error_iter);
+			resid->error_params[k] = (double *) malloc (sizeof(double) * m->n_error_iter);
 		}
 	}
 	
@@ -297,7 +297,7 @@ int calc_global_errors(struct Model *m) {
 				
 				temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), m, &ignore);
 				resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
-				LOG("%d %d %d prior: %f, backcalc: %f, new: %f, error: %f", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
+				LOG("%d %d %d prior: %lf, backcalc: %lf, new: %lf, error: %lf", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
 				resid->relaxation[k].Rerror = resid->temp_relaxation[k].Rerror;
 			}
 			resid->S2NH = norm_rand(resid->S2NHb, (resid->S2NHe / 2.)); // divided by two to get 1 standard deviation
@@ -311,12 +311,12 @@ int calc_global_errors(struct Model *m) {
 
 		resid = NULL;
 		double min = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
-		LOG("%d %d min = %f", i, l, min);
-		fprintf(errp, "%d\t%f", l+1, min);
+		LOG("%d %d min = %lf", i, l, min);
+		fprintf(errp, "%d\t%lf", l+1, min);
 		for (k = 0; k < m->params; k++) {
 			for (i = 0; i < m->n_residues; i++)
 				m->residues[i].error_params[k][p] = opts[k];
-			fprintf(errp, "\t%Le", opts[k]);
+			fprintf(errp, "\t%le", opts[k]);
 		}
 		fprintf(errp, "\n");
 		p++;
@@ -355,7 +355,7 @@ int run_global(struct Model *m) {
 
 	unsigned int l;
 	for (l = 0; l < m->n_residues; l++) {
-		m->residues[l].parameters = (long double *) malloc (sizeof(long double) * m->params);
+		m->residues[l].parameters = (double *) malloc (sizeof(double) * m->params);
 		m->residues[l].min_val = MIN_VAL;
 	}
 	

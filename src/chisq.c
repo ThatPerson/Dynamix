@@ -21,7 +21,7 @@
  *  Int returning number of violations of constraints (for chisq)
  * @return calculated R value
  */
-double back_calc(long double * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
+double back_calc(double * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
 	double calc_R = 0;
 	unsigned int i;
 
@@ -29,14 +29,14 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 	if (relax->R <= 0)
 		return -1;
 	
-	long double upper_lim_tf = (long double) 1 * pow(10, -8 + T_S);
-	long double upper_lim_ts = (long double) 1 * pow(10, -5 + T_S);
-	long double lower_lim_tf = (long double) 1 * pow(10, -13 + T_S);
+	double upper_lim_tf = (double) 1 * pow(10, -8 + T_S);
+	double upper_lim_ts = (double) 1 * pow(10, -5 + T_S);
+	double lower_lim_tf = (double) 1 * pow(10, -13 + T_S);
 	
 	if (model == MOD_SMF || model == MOD_SMFT) {
-		long double tau = opts[0];
-		long double S2 = opts[1];
-		long double tau_eff = 0, Ea = 0;
+		double tau = opts[0];
+		double S2 = opts[1];
+		double tau_eff = 0, Ea = 0;
 		
 		if (tau < 0)
 			(*violations)++;
@@ -69,10 +69,10 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				break;
 		}
 	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
-		long double taus = opts[0];
-		long double S2s = opts[1];
-		long double tauf = opts[2];
-		long double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f=resid->S2NH / S2s;
+		double taus = opts[0];
+		double S2s = opts[1];
+		double tauf = opts[2];
+		double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f=resid->S2NH / S2s;
 
 		if (model == MOD_EMFT) {
 			Eas = opts[3];
@@ -119,11 +119,11 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				break;
 		}
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		long double taus = opts[0];
-		long double tauf = opts[1];
-		long double sigs[3] = {opts[2], opts[3], opts[4]};
-		long double sigf[3] = {opts[5], opts[6], opts[7]};
-		long double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		double taus = opts[0];
+		double tauf = opts[1];
+		double sigs[3] = {opts[2], opts[3], opts[4]};
+		double sigf[3] = {opts[5], opts[6], opts[7]};
+		double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
 		/* WARNING: Need to perform variant orientations before entering back_calc.*/
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
@@ -164,11 +164,11 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				break;
 		}
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		long double taus = opts[0];
-		long double tauf = opts[1];
-		long double Ss[3] = {opts[2], opts[3], opts[4]};
-		long double Sf[3] = {opts[5], opts[6], opts[7]};
-		long double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		double taus = opts[0];
+		double tauf = opts[1];
+		double Ss[3] = {opts[2], opts[3], opts[4]};
+		double Sf[3] = {opts[5], opts[6], opts[7]};
+		double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
 		/* WARNING: Need to perform variant orientations before entering back_calc.*/
 		if (model == MOD_AIMFT) {
 			Eas = opts[8];
@@ -209,11 +209,11 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 				break;
 		}
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
-		long double taus = opts[0];
-		long double tauf = opts[1];
-		long double sigs[3] = {opts[2], opts[3], opts[4]};
-		long double S2f = opts[5];
-		long double taus_eff = taus, tauf_eff = tauf, Eas=0, Eaf=0;
+		double taus = opts[0];
+		double tauf = opts[1];
+		double sigs[3] = {opts[2], opts[3], opts[4]};
+		double S2f = opts[5];
+		double taus_eff = taus, tauf_eff = tauf, Eas=0, Eaf=0;
 		if (model == MOD_EGAFT) {
 			Eas = opts[6];
 			Eaf = opts[7];
@@ -256,7 +256,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
 		printf("Model not yet implemented.\n");
 		calc_R = -1;
 	}
-	long double papbN=0,papbC=0,kex=0, RDC=0, fm = 1;
+	double papbN=0,papbC=0,kex=0, RDC=0, fm = 1;
 	if (m->rdc == RDC_ON) {
 		if (m->or_variation == VARIANT_A) {
 			papbC = opts[m->params - 6];
@@ -304,7 +304,7 @@ double back_calc(long double * opts, struct Residue * resid, struct Relaxation *
  *  MOD_SMF etc.
  * @return Returns chisq value.
  */
-double optimize_chisq(long double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
+double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -313,7 +313,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 	unsigned int model = m->model;
 	unsigned int or_variations = m->or_variation;
 	double calc_R = 0;
-	long double chisq = 0;
+	double chisq = 0;
 	int violations = 0;
 	unsigned int i;
 	double alpha, beta, gamma;
@@ -329,7 +329,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		}
 	}
 	
-	float mult = 1.;
+	double mult = 1.;
 	omp_set_num_threads(m->nthreads);
 	#pragma omp parallel for reduction(+:chisq)
 	for (i = 0; i < resid->n_relaxation; i++) {
@@ -354,14 +354,14 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 	double s2_mult = 100;
 	
 	if (model == MOD_DEMF || model == MOD_DEMFT) {
-		long double S2s = opts[1];
-		long double S2f = opts[3];
-		long double S2NH = S2s * S2f;
+		double S2s = opts[1];
+		double S2f = opts[3];
+		double S2NH = S2s * S2f;
 		
 		chisq += m->WS2NH * ((pow(resid->S2NH - (double) S2NH, 2.)) / pow(resid->S2NHe, 2.));
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		long double sigs[3] = {opts[2], opts[3], opts[4]};
-		long double sigf[3] = {opts[5], opts[6], opts[7]};
+		double sigs[3] = {opts[2], opts[3], opts[4]};
+		double sigf[3] = {opts[5], opts[6], opts[7]};
 		
 		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
@@ -377,8 +377,8 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 		if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		long double sigs[3] = {opts[2], opts[3], opts[4]};
-		long double sigf[3] = {opts[5], opts[6], opts[7]};
+		double sigs[3] = {opts[2], opts[3], opts[4]};
+		double sigf[3] = {opts[5], opts[6], opts[7]};
 		
 		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; // S2CCs, S2CCf
 	
@@ -393,7 +393,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
 		if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 		if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
-		long double sigs[3] = {opts[2], opts[3], opts[4]};
+		double sigs[3] = {opts[2], opts[3], opts[4]};
 		double S2f = (double) opts[5];
 		
 		double S2NHs, S2CHs, S2CNs, S2CCs; // S2CCs
@@ -425,7 +425,7 @@ double optimize_chisq(long double * opts, struct Residue * resid, struct Model *
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(long double * opts, struct Residue * resid, struct Model * m, char *filename, unsigned int params) {
+int back_calculate(double * opts, struct Residue * resid, struct Model * m, char *filename, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -458,10 +458,10 @@ int back_calculate(long double * opts, struct Residue * resid, struct Model * m,
 	for (i = 0; i < resid->n_relaxation; i++) {
 		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
 
-		fprintf(fp, "%d\t%f\t%f\t%f", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
+		fprintf(fp, "%d\t%lf\t%lf\t%lf", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 
 		if (VERBOSE)
-			fprintf(fp, "\t%f\t%f\t%f\t%f\t%d", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type); 
+			fprintf(fp, "\t%lf\t%lf\t%lf\t%lf\t%d", resid->relaxation[i].field, resid->relaxation[i].wr, resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type); 
 		fprintf(fp, "\n");
 	}
 

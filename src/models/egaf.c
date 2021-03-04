@@ -30,12 +30,12 @@
  * @return R1
  *  Returns R1 as double
  */
-double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double S2f) {
+double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -62,8 +62,8 @@ double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
 
 	/* N CSA relaxation contribution */
-	long double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
-	long double J1 = 0;
+	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
+	double J1 = 0;
 	
 
 	omega_1H *= T_DOWN;
@@ -111,12 +111,12 @@ double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
  * @return R2
  *  Returns R2 as double
  */
-double EGAF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double S2f) {
+double EGAF_15NR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 	double w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -191,12 +191,12 @@ double EGAF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau
  *  Returns R1 as double
  */
 
-double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double S2f) {
+double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -225,8 +225,8 @@ double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
 	
 	/* N CSA relaxation contribution */
-	long double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-	long double J1 = 0;
+	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	double J1 = 0;
 
 
 	omega_1H *= T_DOWN;
@@ -271,12 +271,12 @@ double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
  *  Returns R2 as double
  */
 
-double EGAF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * sigs, long double S2f) {
+double EGAF_13CR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 	double w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -325,5 +325,5 @@ double EGAF_13CR2(struct Residue *res, struct Relaxation* relax, long double tau
 	R2CHr = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2f, D_CHr);
 	R2CN = GAF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2f, D_CN);
 	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCs, tauf, S2f, D_CC);
-	return (double) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(long double)T_DOWN);
+	return (double) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(double)T_DOWN);
 }

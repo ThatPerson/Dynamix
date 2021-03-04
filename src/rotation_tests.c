@@ -15,7 +15,7 @@ int main(int argc, char * argv[]) {
 	int ml, mi;
 	/*for (ml = 2; ml >= -2; ml--) {
 		for (mi = 2; mi >= -2; mi--) {
-			printf("%Lf\t\t", Dwig[mi+2][ml+2], mi, ml);
+			printf("%lf\t\t", Dwig[mi+2][ml+2], mi, ml);
 			// m' is mi+2
 			// m  is ml+2
 
@@ -33,7 +33,7 @@ int main(int argc, char * argv[]) {
 	for (mp = 2; mp >= -2; mp--) {
 		printf("%d\t", mp);
 		for (m = 2; m >= -2; m--) {
-			printf("%Lf\t", Dwig[mp+2][m+2]);
+			printf("%lf\t", Dwig[mp+2][m+2]);
 		}
 		printf("\n");
 	}

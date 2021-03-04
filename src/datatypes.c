@@ -11,6 +11,8 @@
 
 time_t start_time;
 
+
+
 #ifdef LOGGING
 #define LOG(a, args...) printf("LOG   %s(%s:%d %d) " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
 #else
@@ -114,7 +116,7 @@ time_t start_time;
 #define RDC_ON			1
 #define RDC_OFF			0
 
-long double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
+double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
 
 
 /** @struct Model
@@ -172,8 +174,8 @@ struct Model {
  *  Conjugate to Y2.
  */
 struct Orient {
-	float phi;
-	float theta;
+	double phi;
+	double theta;
 	double complex Y2[5];
 	double complex Y2c[5];
 };
@@ -228,19 +230,19 @@ struct Residue {
 	double csaN[3];
 	double csaC[3];
 	struct Orient orients[14];
-	//float orients[14][2]; // theta,phi
+	//double orients[14][2]; // theta,phi
 	struct Relaxation * relaxation;
 	struct Relaxation * temp_relaxation;
-	float cn;
-	long double ** error_params;
+	double cn;
+	double ** error_params;
 
 	unsigned int n_relaxation;
 	unsigned int lim_relaxation;
 	int ignore;
 	double min_val;
-	long double * parameters;
-	long double * errors_std;
-	long double * errors_mean;
+	double * parameters;
+	double * errors_std;
+	double * errors_mean;
 	int error_calcs;
 };
 
@@ -295,7 +297,7 @@ struct rrargs {
 };
 
 
-long double sq(long double x) {
+double sq(double x) {
 	return x * x;
 }
 
@@ -337,7 +339,7 @@ void calculate_Y2(struct Orient * or) {
 /**
  * Initialises Wigner D matrix in global space. 
  */
-void initialise_dwig(double angle, long double Dw[5][5]) {
+void initialise_dwig(double angle, double Dw[5][5]) {
 	// beta taken as pi/2.
 	/* It could be taken as an argument but hopefully
 	 * doing it this way will mean the compiler will fill it out
@@ -352,8 +354,8 @@ void initialise_dwig(double angle, long double Dw[5][5]) {
 
 	/* verified against https://link.springer.com/content/pdf/bbm%3A978-1-4684-0208-7%2F1.pdf in rotation_tests.c*/
 
-	long double cosp = cosl(angle);
-	long double sinp = sinl(angle);
+	double cosp = cosl(angle);
+	double sinp = sinl(angle);
 	Dw[0][0] = powl(cosl(angle/2.), 4); // -2 -2 
 	Dw[1][0] = (-1/2.) * (1 + cosp) * sinp; // -1 -2
 	Dw[2][0] = sqrtl(3/8.) * powl(sinp, 2); // 0 -2
@@ -438,7 +440,7 @@ void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
 	// the idea should be to run calculate_Y2 _first_, and then this function.
 	// it will take the orient and overwrite it with the rotated vectors.
 
-	long double Dw[5][5];
+	double Dw[5][5];
 
 	initialise_dwig(beta, Dw); // we initialise Dw[][] with the reduced Wigner matrices.
 

@@ -16,8 +16,8 @@
  * Equation as 3.28, McConnell1986, only for solid state spins.
  * Kurbanov2011, eq 9 (factor of 1/10 arising from (2/5.) in spectral density and 1/4. in dipolar.
  */
-double AIMF_Dipolar_R1(long double omega_obs, long double omega_neigh, long double taus, long double S2s, long double tauf, long double S2f, long double D) {
-	long double q = (0.1) * sq(D) * ( \
+double AIMF_Dipolar_R1(double omega_obs, double omega_neigh, double taus, double S2s, double tauf, double S2f, double D) {
+	double q = (0.1) * sq(D) * ( \
 		(J0_EMF(omega_neigh - omega_obs, taus, S2s, tauf, S2f)) \
 		 + 3 * (J0_EMF(omega_obs, taus, S2s, tauf, S2f)) \
 		  + 6 * (J0_EMF(omega_neigh + omega_obs, taus, S2s, tauf, S2f)) \
@@ -31,22 +31,22 @@ double AIMF_Dipolar_R1(long double omega_obs, long double omega_neigh, long doub
  * D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)
  * Kurbanov2011, eqs 18-20.
  */
- //long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
+ //double J0_EMF_CC(double omega, double taus, double S2s, double tauf, double S2f) {
  
-double AIMF_CSA_R2(long double omega, \
+double AIMF_CSA_R2(double omega, \
 						 double w1, \
 						 double wr, \
-						 long double taus, \
-						 long double S2s, \
-						 long double tauf, \
-						 long double S2f, \
+						 double taus, \
+						 double S2s, \
+						 double tauf, \
+						 double S2f, \
 						 double D2, \
-						 long double  (*J_SD)(\
-						 	long double,\
-						 	long double, \
-						 	long double, \
-						 	long double, \
-						 	long double)\
+						 double  (*J_SD)(\
+						 	double,\
+						 	double, \
+						 	double, \
+						 	double, \
+						 	double)\
 						) {
 	return (double) ( \
   		(1/45.) * (double) D2 * ( \
@@ -64,7 +64,7 @@ double AIMF_CSA_R2(long double omega, \
  * Kurbanov2011, for the case where theta_p = 90 such that sin(theta_p) = 1 and so
  * R1p = 0.5*R1 + R1delta
  */
-double AIMF_Dipolar_R2(long double omega_obs, long double omega_neigh, double w1, double wr, long double taus, long double S2s, long double tauf, long double S2f, double D) {
+double AIMF_Dipolar_R2(double omega_obs, double omega_neigh, double w1, double wr, double taus, double S2s, double tauf, double S2f, double D) {
 	return (double) (\
   		(1/20.) * sq(D) * (\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
@@ -100,12 +100,12 @@ double AIMF_Dipolar_R2(long double omega_obs, long double omega_neigh, double w1
  *  Number of S2 values being calculated (eg length of S2)
  * @return Returns 1 in all cases.
  */
-int AIMF_S2(long double order_params[3], struct Orient ** A, double * S2[], int length) {
+int AIMF_S2(double order_params[3], struct Orient ** A, double * S2[], int length) {
 	int i;
 	double ct, st, cp, sp;
-	long double S2a = powl(order_params[0], 2.), S2b = powl(order_params[1], 2.), S2c = powl(order_params[2], 2.);
-	long double SaSbSc = S2a * S2b * S2c;
-	long double denom;
+	double S2a = powl(order_params[0], 2.), S2b = powl(order_params[1], 2.), S2c = powl(order_params[2], 2.);
+	double SaSbSc = S2a * S2b * S2c;
+	double denom;
 	for (i = 0; i < length; i++) {
 		// A[i].theta, A[i].phi
 		// order_params[0], [1], [2] (x, y, z)
@@ -146,12 +146,12 @@ int AIMF_S2(long double order_params[3], struct Orient ** A, double * S2[], int 
  * @return R1
  *  Returns R1 as double
  */
-double AIMF_15NR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * Ss, long double * Sf) {
+double AIMF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * Ss, double * Sf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -182,8 +182,8 @@ double AIMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
 	
 
 	/* N CSA relaxation contribution */
-	long double R1CSAx, R1CSAy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
-	long double J1 = 0;
+	double R1CSAx, R1CSAy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
+	double J1 = 0;
 	
 
 	omega_1H *= T_DOWN;
@@ -231,12 +231,12 @@ double AIMF_15NR1(struct Residue *res, struct Relaxation* relax, long double tau
  * @return R2
  *  Returns R2 as double
  */
-double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * Ss, long double * Sf) {
+double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * Ss, double * Sf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 	double w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -314,12 +314,12 @@ double AIMF_15NR2(struct Residue *res, struct Relaxation* relax, long double tau
  *  Returns R1 as double
  */
 
-double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * Ss, long double * Sf) {
+double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * Ss, double * Sf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -350,8 +350,8 @@ double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
 	AIMF_S2(Sf, As, S2f, 5);
 	
 	/* N CSA relaxation contribution */
-	long double R1CSAx, R1CSAy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-	long double J1 = 0;
+	double R1CSAx, R1CSAy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	double J1 = 0;
 
 
 	omega_1H *= T_DOWN;
@@ -396,12 +396,12 @@ double AIMF_13CR1(struct Residue *res, struct Relaxation* relax, long double tau
  *  Returns R2 as double
  */
 
-double AIMF_13CR2(struct Residue *res, struct Relaxation* relax, long double taus, long double tauf, long double * Ss, long double * Sf) {
+double AIMF_13CR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * Ss, double * Sf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	double field = relax->field * 1000000; // conversion to Hz
 	double w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
 	double omega_1H = 2 * M_PI * field;
@@ -452,7 +452,7 @@ double AIMF_13CR2(struct Residue *res, struct Relaxation* relax, long double tau
 	R2CHr = AIMF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = AIMF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
 	R2CC = AIMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
-	return (double) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(long double)T_DOWN);
+	return (double) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(double)T_DOWN);
 }
 
 

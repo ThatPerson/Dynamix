@@ -11,15 +11,15 @@
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2), 
  *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
  */
-inline long double J0_EMF(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
+inline double J0_EMF(double omega, double taus, double S2s, double tauf, double S2f) {
 	return ( \
-			((((1 - (long double) S2f)) * (long double) tauf)) \
-			/ (1 + ((long double) omega * (long double) tauf * (long double) omega * (long double) tauf)) \
+			((((1 - (double) S2f)) * (double) tauf)) \
+			/ (1 + ((double) omega * (double) tauf * (double) omega * (double) tauf)) \
 		)\
 		+\
 		(\
-			(((long double) S2f) * (1 - (long double) S2s) * (long double) taus)\
-			/ (1 + ((long double) omega * (long double) taus * (long double) omega * (long double) taus))\
+			(((double) S2f) * (1 - (double) S2s) * (double) taus)\
+			/ (1 + ((double) omega * (double) taus * (double) omega * (double) taus))\
 		);
 }
 
@@ -27,15 +27,15 @@ inline long double J0_EMF(long double omega, long double taus, long double S2s, 
  * Juv(w) = (1-S2f) tf / (1 + (wtf)^2) + (1/P2) S2f (P2 - S2s) (ts / 1+(wts)^2)
  * eq 2
  */
-inline long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
+inline double J0_EMF_CC(double omega, double taus, double S2s, double tauf, double S2f) {
 	return ( \
-			((((1 - (long double) S2f)) * (long double) tauf)) \
-			/ (1 + ((long double) omega * (long double) tauf * (long double) omega * (long double) tauf)) \
+			((((1 - (double) S2f)) * (double) tauf)) \
+			/ (1 + ((double) omega * (double) tauf * (double) omega * (double) tauf)) \
 		)\
 		-\
 		2. * (\
-			(((long double) S2f) * (-0.5 - (long double) S2s) * (long double) taus)\
-			/ (1 + ((long double) omega * (long double) taus * (long double) omega * (long double) taus))\
+			(((double) S2f) * (-0.5 - (double) S2s) * (double) taus)\
+			/ (1 + ((double) omega * (double) taus * (double) omega * (double) taus))\
 		);
 }
   
@@ -53,9 +53,9 @@ inline long double J0_EMF_CC(long double omega, long double taus, long double S2
  * @param S2
  *  Order parameter of motion.
  */
-double EMF_Dipolar_R1(long double omega_X, long double omega_Y, long double d, long double taus, long double S2s, long double tauf, long double S2f) {
+double EMF_Dipolar_R1(double omega_X, double omega_Y, double d, double taus, double S2s, double tauf, double S2f) {
 	// omega_X is the measured nuclei (eg 15N, 13C), Y is the other (eg 1H)
-	long double Jcomp = 0;
+	double Jcomp = 0;
 	Jcomp += J0_EMF(omega_Y - omega_X, taus, S2s, tauf, S2f);
 	Jcomp += 3. * J0_EMF(omega_X, taus, S2s, tauf, S2f);
 	Jcomp += 6. * J0_EMF(omega_Y + omega_X, taus, S2s, tauf, S2f);
@@ -78,9 +78,9 @@ double EMF_Dipolar_R1(long double omega_X, long double omega_Y, long double d, l
  * @param J0sum
  *  J0sum
  */
-double EMF_Dipolar_R2(long double omega_X, long double omega_Y, long double d, long double taus, long double S2s, long double tauf, long double S2f, long double J0sum) {
+double EMF_Dipolar_R2(double omega_X, double omega_Y, double d, double taus, double S2s, double tauf, double S2f, double J0sum) {
 	// all args should've been T_DOWN'ed
-	long double JD = J0sum + 3 * J0_EMF(omega_X, taus, S2s, tauf, S2f);
+	double JD = J0sum + 3 * J0_EMF(omega_X, taus, S2s, tauf, S2f);
 	JD += J0_EMF(omega_Y - omega_X, taus, S2s, tauf, S2f);
 	JD += 6 * J0_EMF(omega_Y, taus, S2s, tauf, S2f);
 	JD += 6 * J0_EMF(omega_Y + omega_X, taus, S2s, tauf, S2f);
@@ -108,22 +108,22 @@ double EMF_Dipolar_R2(long double omega_X, long double omega_Y, long double d, l
  * @return R1
  *  Returns R1 as double
  */
-double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, long double S2f, int mode) {
-	long double field = relax->field * 1000000; // conversion to Hz
+double EMF_R1(struct Residue *res, struct Relaxation* relax, double taus, double S2s, double tauf, double S2f, int mode) {
+	double field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it. */
 
-	long double omega_1H = T_DOWN * 2 * M_PI * field;
-	long double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
-	long double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
-	long double wCOCa = 120 * omega_13C * 0.000001;
-	long double omega_L;
-	long double d2tot;
+	double omega_1H = T_DOWN * 2 * M_PI * field;
+	double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
+	double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+	double wCOCa = 120 * omega_13C * 0.000001;
+	double omega_L;
+	double d2tot;
 	double *csa;
 	
-	long double R1D = 0, R1CSA = 0;
+	double R1D = 0, R1CSA = 0;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -179,34 +179,34 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, long double taus, l
  * @return R2
  *  Returns R2 as double
  */
-double EMF_R2(struct Residue *res, struct Relaxation* relax, long double taus, long double S2s, long double tauf, long double S2f, int mode) {
+double EMF_R2(struct Residue *res, struct Relaxation* relax, double taus, double S2s, double tauf, double S2f, int mode) {
 	//if (d_mode == DIPOLAR) 
 	//	S2f = res->S2_dipolar / S2s;
-	long double field = relax->field * 1000000; // conversion to Hz
+	double field = relax->field * 1000000; // conversion to Hz
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a float128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
 	 * software division) I've predefined it.  */
 
-	long double omega_1H = T_DOWN * 2 * M_PI * field;
-	long double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
-	long double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
-	long double omega_L;
-	long double d2tot;
+	double omega_1H = T_DOWN * 2 * M_PI * field;
+	double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
+	double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+	double omega_L;
+	double d2tot;
 	double *csa;
-	long double wCOCa = 120 * omega_13C * 0.000001;
+	double wCOCa = 120 * omega_13C * 0.000001;
 	
-	long double w1 = relax->w1;
-	long double wr = relax->wr;
+	double w1 = relax->w1;
+	double wr = relax->wr;
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
 	
-	long double J0sum = 0;
+	double J0sum = 0;
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f);
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f);
 
-	long double R2D = 0, R2CSA = 0;
+	double R2D = 0, R2CSA = 0;
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;

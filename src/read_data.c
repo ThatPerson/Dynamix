@@ -16,14 +16,14 @@ int read_csa(struct Model *m, char *filename, int dt) {
 		return -1;
 	}
 	int resid;
-	float val;
-	float err;
-	float s11, s22, s33;
+	double val;
+	double err;
+	double s11, s22, s33;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		int k = sscanf(line, "%d %f %f %f\n", &resid, &s11, &s22, &s33);
-		printf("%s -> %d, %f, %f, %f\n",  line, resid, s11, s22, s33);
+		int k = sscanf(line, "%d %lf %lf %lf\n", &resid, &s11, &s22, &s33);
+		printf("%s -> %d, %lf, %lf, %lf\n",  line, resid, s11, s22, s33);
 		if (k != 4)
 			ERROR("Reading %s failed.", line);
 		resid = resid - 1; // 0 indexed in C
@@ -73,13 +73,13 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 		return -1;
 	}
 	int resid;
-	float val;
-	float err;
+	double val;
+	double err;
 	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		int k = sscanf(line, "%d %f %f\n", &resid, &val, &err);
+		int k = sscanf(line, "%d %lf %lf\n", &resid, &val, &err);
 		if (k != 3)
 			ERROR("Reading %s failed.", line);
 		resid = resid - 1; // 0 indexed in C
@@ -111,7 +111,7 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 			case DATA_CSISON:
 				m->residues[resid].csisoN = val;
 				/* 15N CSA parametrization according to isotropic chemical shift
-				 * Wylie, B. J. et al.; Rienstra, C. M. Proc. Natl. Acad. Sci. U. S. A. 2011, 108, 16974.%from Rienstra, PNAS 2011.:
+				 * Wylie, B. J. et al.; Rienstra, C. M. Proc. Natl. Acad. Sci. U. S. A. 2011, 108, 16974.%lfrom Rienstra, PNAS 2011.:
 				 */
 				m->residues[resid].csaN[0] = 1.1283 * val + 93.77;
 				m->residues[resid].csaN[1] = 1.0086 * val - 42.475;
@@ -160,12 +160,12 @@ int read_pp(struct Model *m, char *filename, unsigned int orient) {
 		return -1;
 	}
 	int resid;
-	float theta;
-	float phi;
+	double theta;
+	double phi;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		int k = sscanf(line, "%d %f %f\n", &resid, &theta, &phi);
+		int k = sscanf(line, "%d %lf %lf\n", &resid, &theta, &phi);
 		if (k != 3)
 			ERROR("Reading line '%s' failed.", line);
 		resid = resid -1; // index from 0
@@ -288,9 +288,9 @@ int read_relaxation_data(struct Model *m, char *filename) {
 			if (k != 3) {
 				ERROR("Error reading line '%s'", line);
 			}/* else {
-				printf("%s : %d, %f %f\n", line, resid, R, Re);
+				printf("%s : %d, %lf %lf\n", line, resid, R, Re);
 			}*/
-			//printf("%d, %d, %f, %f\n", rel, resid, R, Re);
+			//printf("%d, %d, %lf, %lf\n", rel, resid, R, Re);
 			// index from 0
 			/*if (R == -1) {
 				//printf("%s %d\n", line, m->residues[resid-1].n_relaxation);
@@ -644,8 +644,8 @@ int read_system_file(char *filename, struct Model * m) {
 			printf("Residue %d: Only one nuclei measured. CN ratio set to 1.\n", i+1);
 			m->residues[i].cn = 1;
 		} else {
-			m->residues[i].cn = ((float) n_count) / ((float) c_count);
-			//printf("%d, %d -> %f\n", c_count, n_count, m->residues[i].cn);
+			m->residues[i].cn = ((double) n_count) / ((double) c_count);
+			//printf("%d, %d -> %lf\n", c_count, n_count, m->residues[i].cn);
 		}
 	}
 	fclose(fp);
@@ -705,33 +705,33 @@ int print_system(struct Model *m, char *filename) {
 		if (m->residues[i].ignore == 1)
 			fprintf(fp, "--- IGNORING ---\n");
 
-		fprintf(fp, "\tS2NH = %f (%f) \n\tS2CH = %f (%f) \n\tS2CC = %f (%f) \n\tS2CN = %f (%f) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
-		fprintf(fp, "\tCSISON = %f\n\tCSISOC = %f\n", m->residues[i].csisoN, m->residues[i].csisoC);
-		fprintf(fp, "\tCSAN: [%f, %f, %f]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
+		fprintf(fp, "\tS2NH = %lf (%lf) \n\tS2CH = %lf (%lf) \n\tS2CC = %lf (%lf) \n\tS2CN = %lf (%lf) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
+		fprintf(fp, "\tCSISON = %lf\n\tCSISOC = %lf\n", m->residues[i].csisoN, m->residues[i].csisoC);
+		fprintf(fp, "\tCSAN: [%lf, %lf, %lf]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
 		double Qcsiso = m->residues[i].csisoN;
 		double Qred_aniso = m->residues[i].csaN[0] - Qcsiso;
 		double Qeta = (m->residues[i].csaN[1] - m->residues[i].csaN[2]) / Qred_aniso;
-		fprintf(fp, "\t\tCSA: d %f, n %f\n", Qred_aniso, Qeta);
+		fprintf(fp, "\t\tCSA: d %lf, n %lf\n", Qred_aniso, Qeta);
 		// z y x
-		fprintf(fp, "\tCSAC: [%f, %f, %f]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
+		fprintf(fp, "\tCSAC: [%lf, %lf, %lf]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
 		double Ccsiso = m->residues[i].csisoC;
 		double Cred_aniso = m->residues[i].csaC[0] - Ccsiso;
 		double Ceta = (m->residues[i].csaC[1] - m->residues[i].csaC[2]) / Cred_aniso;
-		fprintf(fp, "\t\tCSA: d %f, n %f\n", Cred_aniso, Ceta);
-		fprintf(qp, "%d, %f, %f, %f, %f\n", i+1, Qred_aniso, Qeta, Cred_aniso, Ceta);
+		fprintf(fp, "\t\tCSA: d %lf, n %lf\n", Cred_aniso, Ceta);
+		fprintf(qp, "%d, %lf, %lf, %lf, %lf\n", i+1, Qred_aniso, Qeta, Cred_aniso, Ceta);
 		if (m->cn_ratio == CNRATIO_ON)
-			fprintf(fp, "\tCNRATIO: %f\n", m->residues[i].cn);
+			fprintf(fp, "\tCNRATIO: %lf\n", m->residues[i].cn);
 		else
 			fprintf(fp, "\tCNRATIO: OFF\n");
 		fprintf(fp, "\tOrients;\n");
 		for (j = 0; j < N_OR; j++) {
 			//if (m->residues[i].orients[j] != NULL)
-			fprintf(fp, "\t\t%d: %f, %f\n", j, m->residues[i].orients[j].theta, m->residues[i].orients[j].phi);
+			fprintf(fp, "\t\t%d: %lf, %lf\n", j, m->residues[i].orients[j].theta, m->residues[i].orients[j].phi);
 		}
 		fprintf(fp, "\tRelaxation Constraints: %d\n", m->residues[i].n_relaxation);
 		for (j = 0; j < m->residues[i].n_relaxation; j++) {
 			r = &(m->residues[i].relaxation[j]);
-			fprintf(fp, "\t\t%d: %d [%f, %f, %f, %f] %f +- %f\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R, r->Rerror);
+			fprintf(fp, "\t\t%d: %d [%lf, %lf, %lf, %lf] %lf +- %lf\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R, r->Rerror);
 		}
 	}
 	fclose(qp);
