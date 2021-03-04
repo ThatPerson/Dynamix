@@ -140,9 +140,71 @@ int write_correlation_function_emf(char * fn, double T, double dT, long double t
 		correl = S2;
 		correl += (1 - S2f) * expl(-t / tauf);
 		correl += (S2f - S2) * expl(-t / taus);
-		fprintf(fp, "%lf\t%lf\n", t, correl);
+		fprintf(fp, "%lf\t%Lf\n", t, correl);
 	}
 
+	fclose(fp);
+	return 1;
+}
+
+int write_spectral_density_emf(char *fn, long double taus, long double S2s, long double tauf, long double S2f) {
+	FILE * fp;
+	fp = fopen(fn, "w");
+	if (fp == NULL) {
+		printf("%s not found.\n", fn);
+		return -1;
+	}
+	
+	double w;
+	long double v, slow, fast;
+	for (w = pow(10, 1)*T_DOWN; w < pow(10., 10)*T_DOWN; w*=2) {
+		
+		/*v = (((1 - S2f) * tauf) / (1 + (w * tauf * w * tauf)));
+		q = v + ((S2f * (1 - S2s) * taus) / (1 + (w * taus * w * taus)));
+		
+		l =  ( \
+			((((1 - (double) S2f)) * (long double) tauf)) \
+			/ (1 + ((double) w * (long double) tauf * (double) w * (long double) tauf)) \
+		);
+		p = l +\
+		(\
+			(((double) S2f) * (1 - (double) S2s) * (long double) taus)\
+			/ (1 + ((double) w * (long double) taus * (double) w * (long double) taus))\
+		);*/
+		v = J0_EMF(w, taus, S2s, tauf, S2f);
+		//printf("%f (%lf, %lf) (%lf, %lf) %lf\n", w, v, l, q, p, rt);
+		fast = ( \
+			((((1 - (long double) S2f)) * (long double) tauf)) \
+			/ (1 + ((long double) w * (long double) tauf * (long double) w * (long double) tauf)) \
+		);
+		slow = (\
+			(((long double) S2f) * (1 - (long double) S2s) * (long double) taus)\
+			/ (1 + ((long double) w * (long double) taus * (long double) w * (long double) taus))\
+		);
+		v *= T_DOWN;
+		slow *= T_DOWN;
+		fast *= T_DOWN;
+		printf("%f\t%Lf\n", w*T_UP, v);
+		fprintf(fp, "%f\t%Le\t%Le\t%Le\n", w*T_UP, v, slow, fast);
+	}
+	fclose(fp);
+	return 1;
+}
+
+int write_spectral_density_smf(char *fn, long double tau, long double S2) {
+	FILE * fp;
+	fp = fopen(fn, "w");
+	if (fp == NULL) {
+		printf("%s not found.\n", fn);
+		return -1;
+	}
+	
+	double w;
+	long double v;
+	for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
+		v = J0_SMF(w, tau, S2) * T_DOWN;
+		fprintf(fp, "%f\t%Le\n", w*T_UP, v);
+	}
 	fclose(fp);
 	return 1;
 }
@@ -175,7 +237,7 @@ int write_correlation_function_smf(char * fn, double T, double dT, long double t
 	for (t = 0; t < T; t += dT) {
 		correl = S2;
 		correl += (1 - S2) * expl(-t / tau);
-		fprintf(fp, "%lf\t%lf\n", t, correl);
+		fprintf(fp, "%lf\t%Lf\n", t, correl);
 	}
 
 	fclose(fp);
@@ -204,7 +266,7 @@ int main(int argc, char * argv[]) {
 	char output_folder[255] = "";
 	unsigned int i;
 	//int err_mod = 0;
-	unsigned int bc_mod = 0, cor_mod = 0;
+	unsigned int bc_mod = 0, cor_mod = 0, sd_mod = 0;
 	for (i = 1; i < (unsigned int) argc; i++) {
 		//printf("%s\n", argv[i]);
 		if (strncmp(argv[i], "-o", 2) == 0) {
@@ -218,6 +280,8 @@ int main(int argc, char * argv[]) {
 			bc_mod = 1;
 		} else if (strncmp(argv[i], "-co", 3) == 0) { 
 			cor_mod = 1;
+		} else if (strncmp(argv[i], "-de", 3) == 0) {
+			sd_mod = 1;
 		} else {
 			printf("Please pass system file (-s), output folder (-o), and Dynamix results file (-f). Options -bc and -co.\n");
 			return -1;
@@ -263,7 +327,7 @@ int main(int argc, char * argv[]) {
 	
 	
 	#pragma omp parallel for 
-	for (i = 0; i < m.n_residues; i++) {
+	for (i = 0; i <m.n_residues; i++) {
 		long double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
 		struct Residue * resid;
 		long double * opts;
@@ -278,6 +342,10 @@ int main(int argc, char * argv[]) {
 		char fn_CN[355];
 		char fn_CH[355];
 		char fn_CC[355];
+		char sd_NH[355];
+		char sd_CN[355];
+		char sd_CH[355];
+		char sd_CC[355];
 		char fn_BC[355];
 		opts = (m.residues[i].parameters);
 		printf("%d: %d\n", i, m.residues[i].ignore);
@@ -288,12 +356,16 @@ int main(int argc, char * argv[]) {
 			printf("%d %d %Lf\n", i, j, m.residues[i].parameters[j]);
 		}
 		resid = &(m.residues[i]);
-		if (cor_mod == 1) {
+		if (cor_mod == 1 || sd_mod == 1) {
 
 			sprintf(fn_NH, "%s/corr_%d_NH.dat", output_folder, i+1);
 			sprintf(fn_CN, "%s/corr_%d_CN.dat", output_folder, i+1);
 			sprintf(fn_CH, "%s/corr_%d_CH.dat", output_folder, i+1);
 			sprintf(fn_CC, "%s/corr_%d_CCAp.dat", output_folder, i+1);
+			sprintf(sd_NH, "%s/sd_%d_NH.dat", output_folder, i+1);
+			sprintf(sd_CN, "%s/sd_%d_CN.dat", output_folder, i+1);
+			sprintf(sd_CH, "%s/sd_%d_CH.dat", output_folder, i+1);
+			sprintf(sd_CC, "%s/sd_%d_CCAp.dat", output_folder, i+1);
 			printf("Hello\n");
 			if (m.or_variation == VARIANT_A) {
 				alpha = (double) opts[params-3];
@@ -383,17 +455,31 @@ int main(int argc, char * argv[]) {
 				S2CHf = (double) S2f;
 				S2CCf = (double) S2f;
 			}
-
-			if (m.model == MOD_SMF || m.model == MOD_SMFT) {
-				write_correlation_function_smf(fn_NH, T, dT, tau, S2NH);
-				write_correlation_function_smf(fn_CH, T, dT, tau, S2CH);
-				write_correlation_function_smf(fn_CN, T, dT, tau, S2CN);
-				write_correlation_function_smf(fn_CC, T, dT, tau, S2CC);
-			} else {
-				write_correlation_function_emf(fn_NH, T, dT, taus, S2NHs, tauf, S2NHf);
-				write_correlation_function_emf(fn_CH, T, dT, taus, S2CHs, tauf, S2CHf);
-				write_correlation_function_emf(fn_CN, T, dT, taus, S2CNs, tauf, S2CNf);
-				write_correlation_function_emf(fn_CC, T, dT, taus, S2CCs, tauf, S2CCf);
+			if (cor_mod == 1) {
+				if (m.model == MOD_SMF || m.model == MOD_SMFT) {
+					write_correlation_function_smf(fn_NH, T, dT, tau, S2NH);
+					write_correlation_function_smf(fn_CH, T, dT, tau, S2CH);
+					write_correlation_function_smf(fn_CN, T, dT, tau, S2CN);
+					write_correlation_function_smf(fn_CC, T, dT, tau, S2CC);
+				} else {
+					write_correlation_function_emf(fn_NH, T, dT, taus, S2NHs, tauf, S2NHf);
+					write_correlation_function_emf(fn_CH, T, dT, taus, S2CHs, tauf, S2CHf);
+					write_correlation_function_emf(fn_CN, T, dT, taus, S2CNs, tauf, S2CNf);
+					write_correlation_function_emf(fn_CC, T, dT, taus, S2CCs, tauf, S2CCf);
+				}
+			}
+			if (sd_mod == 1) {
+				if (m.model == MOD_SMF || m.model == MOD_SMFT) {
+					write_spectral_density_smf(sd_NH, tau, S2NH);
+					write_spectral_density_smf(sd_CH, tau, S2CH);
+					write_spectral_density_smf(sd_CN, tau, S2CN);
+					write_spectral_density_smf(sd_CC, tau, S2CC);
+				} else {
+					write_spectral_density_emf(sd_NH, taus, S2NHs, tauf, S2NHf);
+					write_spectral_density_emf(sd_CH, taus, S2CHs, tauf, S2CHf);
+					write_spectral_density_emf(sd_CN, taus, S2CNs, tauf, S2CNf);
+					write_spectral_density_emf(sd_CC, taus, S2CCs, tauf, S2CCf);
+				}
 			}
 		}
 		if (bc_mod == 1) {

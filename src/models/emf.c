@@ -13,13 +13,13 @@
  */
 inline long double J0_EMF(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
 	return ( \
-			((((1 - (double) S2f)) * (long double) tauf)) \
-			/ (1 + ((double) omega * (long double) tauf * (double) omega * (long double) tauf)) \
+			((((1 - (long double) S2f)) * (long double) tauf)) \
+			/ (1 + ((long double) omega * (long double) tauf * (long double) omega * (long double) tauf)) \
 		)\
 		+\
 		(\
-			(((double) S2f) * (1 - (double) S2s) * (long double) taus)\
-			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
+			(((long double) S2f) * (1 - (long double) S2s) * (long double) taus)\
+			/ (1 + ((long double) omega * (long double) taus * (long double) omega * (long double) taus))\
 		);
 }
 
@@ -29,13 +29,13 @@ inline long double J0_EMF(long double omega, long double taus, long double S2s, 
  */
 inline long double J0_EMF_CC(long double omega, long double taus, long double S2s, long double tauf, long double S2f) {
 	return ( \
-			((((1 - (double) S2f)) * (long double) tauf)) \
-			/ (1 + ((double) omega * (long double) tauf * (double) omega * (long double) tauf)) \
+			((((1 - (long double) S2f)) * (long double) tauf)) \
+			/ (1 + ((long double) omega * (long double) tauf * (long double) omega * (long double) tauf)) \
 		)\
 		-\
 		2. * (\
-			(((double) S2f) * (-0.5 - (double) S2s) * (long double) taus)\
-			/ (1 + ((double) omega * (long double) taus * (double) omega * (long double) taus))\
+			(((long double) S2f) * (-0.5 - (long double) S2s) * (long double) taus)\
+			/ (1 + ((long double) omega * (long double) taus * (long double) omega * (long double) taus))\
 		);
 }
   
