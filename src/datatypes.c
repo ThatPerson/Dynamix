@@ -116,7 +116,7 @@ time_t start_time;
 #define RDC_ON			1
 #define RDC_OFF			0
 
-double Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
+Decimal Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
 
 
 /** @struct Model
@@ -159,7 +159,7 @@ struct Model {
 	int proc_start;
 	int proc_end;
 	int myid, numprocs;
-	double WS2NH, WS2CH, WS2CN, WS2CC;
+	Decimal WS2NH, WS2CH, WS2CN, WS2CC;
 };
 
 /** @struct Orient
@@ -174,10 +174,10 @@ struct Model {
  *  Conjugate to Y2.
  */
 struct Orient {
-	double phi;
-	double theta;
-	double complex Y2[5];
-	double complex Y2c[5];
+	Decimal phi;
+	Decimal theta;
+	Complex Y2[5];
+	Complex Y2c[5];
 };
 
 /** @struct Residue
@@ -222,27 +222,27 @@ struct Orient {
  *  Actual number of points used in error calculation
  */
 struct Residue {
-	double S2NH, S2CC, S2CH, S2CN;
-	double S2NHe,S2CCe,S2CHe,S2CNe;
-	double S2NHb, S2CCb, S2CHb, S2CNb; // order parameter backups for error calculation.
-	double csisoN;
-	double csisoC;
-	double csaN[3];
-	double csaC[3];
+	Decimal S2NH, S2CC, S2CH, S2CN;
+	Decimal S2NHe,S2CCe,S2CHe,S2CNe;
+	Decimal S2NHb, S2CCb, S2CHb, S2CNb; // order parameter backups for error calculation.
+	Decimal csisoN;
+	Decimal csisoC;
+	Decimal csaN[3];
+	Decimal csaC[3];
 	struct Orient orients[14];
-	//double orients[14][2]; // theta,phi
+	//Decimal orients[14][2]; // theta,phi
 	struct Relaxation * relaxation;
 	struct Relaxation * temp_relaxation;
-	double cn;
-	double ** error_params;
+	Decimal cn;
+	Decimal ** error_params;
 
 	unsigned int n_relaxation;
 	unsigned int lim_relaxation;
 	int ignore;
-	double min_val;
-	double * parameters;
-	double * errors_std;
-	double * errors_mean;
+	Decimal min_val;
+	Decimal * parameters;
+	Decimal * errors_std;
+	Decimal * errors_mean;
 	int error_calcs;
 };
 
@@ -265,13 +265,13 @@ struct Residue {
  *  Temperature of measurement (Kelvin)
  */
 struct Relaxation {
-	double field; // in MHz
-	double wr; // in Hz
-	double w1; // in Hz
+	Decimal field; // in MHz
+	Decimal wr; // in Hz
+	Decimal w1; // in Hz
 	int type;
-	double R;
-	double Rerror;
-	double T; // in Kelvin
+	Decimal R;
+	Decimal Rerror;
+	Decimal T; // in Kelvin
 };
 
 /**
@@ -297,7 +297,7 @@ struct rrargs {
 };
 
 
-double sq(double x) {
+Decimal sq(Decimal x) {
 	return x * x;
 }
 
@@ -339,7 +339,7 @@ void calculate_Y2(struct Orient * or) {
 /**
  * Initialises Wigner D matrix in global space. 
  */
-void initialise_dwig(double angle, double Dw[5][5]) {
+void initialise_dwig(Decimal angle, Decimal Dw[5][5]) {
 	// beta taken as pi/2.
 	/* It could be taken as an argument but hopefully
 	 * doing it this way will mean the compiler will fill it out
@@ -354,8 +354,8 @@ void initialise_dwig(double angle, double Dw[5][5]) {
 
 	/* verified against https://link.springer.com/content/pdf/bbm%3A978-1-4684-0208-7%2F1.pdf in rotation_tests.c*/
 
-	double cosp = cosl(angle);
-	double sinp = sinl(angle);
+	Decimal cosp = cosl(angle);
+	Decimal sinp = sinl(angle);
 	Dw[0][0] = powl(cosl(angle/2.), 4); // -2 -2 
 	Dw[1][0] = (-1/2.) * (1 + cosp) * sinp; // -1 -2
 	Dw[2][0] = sqrtl(3/8.) * powl(sinp, 2); // 0 -2
@@ -436,11 +436,11 @@ void free_all(struct Model *m) {
  * @returns Nothing
  *  Modifies orient inline.
  */
-void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
+void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
 	// the idea should be to run calculate_Y2 _first_, and then this function.
 	// it will take the orient and overwrite it with the rotated vectors.
 
-	double Dw[5][5];
+	Decimal Dw[5][5];
 
 	initialise_dwig(beta, Dw); // we initialise Dw[][] with the reduced Wigner matrices.
 
@@ -448,10 +448,10 @@ void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
 	
 	/* the Wigner D-matrix D^j_{m', m} is e^(-i m' alpha) d^j_{m', m} e^(-i m gamma) */
 
-	double complex Y2b[5]; // we store Y2.
+	Complex Y2b[5]; // we store Y2.
 	int i;
-	double complex alpha_m[5]; // precalculation of the exp(-I * mp * alpha) and exp(-I * m * gamma) parts.
-	double complex gamma_m[5];
+	Complex alpha_m[5]; // precalculation of the exp(-I * mp * alpha) and exp(-I * m * gamma) parts.
+	Complex gamma_m[5];
 	for (i = 0; i < 5; i++) {
 		Y2b[i] = or->Y2[i];
 		or->Y2[i] = 0;
@@ -461,7 +461,7 @@ void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
 	}
 
 	int m, mp;
-	double complex Dcomp = 0;
+	Complex Dcomp = 0;
 
 	for (mp = -2; mp <= 2; mp++) {
 		for (m = -2; m <= 2; m++) {

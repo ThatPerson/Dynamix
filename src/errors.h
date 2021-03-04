@@ -1,9 +1,9 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-double uniform_rand(void);
-double norm_rand(double mean, double std);
-void calc_statistics(double * vals, int length, double * mean, double * std);
+Decimal uniform_rand(void);
+Decimal norm_rand(Decimal mean, Decimal std);
+void calc_statistics(Decimal * vals, int length, Decimal * mean, Decimal * std);
 int calc_errors(struct Model *m, int residue);
 
 

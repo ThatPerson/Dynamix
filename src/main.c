@@ -55,9 +55,9 @@ int run_residue(struct Model *m, int residue) {
 	unsigned int params = 0;
 	params = m->params;
 	//printf("%d\n", params);
-	double *opts;
-	opts = (double *) malloc (sizeof(double) * params);
-	resid->parameters = (double *) malloc (sizeof(double) * params);
+	Decimal *opts;
+	opts = (Decimal *) malloc (sizeof(Decimal) * params);
+	resid->parameters = (Decimal *) malloc (sizeof(Decimal) * params);
 	resid->min_val = MIN_VAL;
 
 	for (l = 0; l < m->n_iter; l++) {
@@ -67,7 +67,7 @@ int run_residue(struct Model *m, int residue) {
 			free(opts);
 			return -1;
 		}
-		//double opts[20] = {0, 0};
+		//Decimal opts[20] = {0, 0};
 		
 		/**
 		 * SMF parameters are \n 
@@ -232,7 +232,7 @@ int run_residue(struct Model *m, int residue) {
 		}
 		
 		//printf("%le, %le\n", opts[0], opts[1]);
-		double val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+		Decimal val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
 		if (val >= 1000000 || val < 0) {
 			val = -1;
 			for (k = 0; k < params; k++) {
@@ -359,11 +359,11 @@ int print_gaf(struct Model *m) {
 	}
 	
 	for (l = m->proc_start; l < m->proc_end; l++) {
-		double alpha, beta, gamma;
+		Decimal alpha, beta, gamma;
 		if (m->or_variation == VARIANT_A) {
-			alpha = (double) m->residues[l].parameters[m->params-3];
-			beta = (double) m->residues[l].parameters[m->params-2];
-			gamma = (double) m->residues[l].parameters[m->params-1];
+			alpha = (Decimal) m->residues[l].parameters[m->params-3];
+			beta = (Decimal) m->residues[l].parameters[m->params-2];
+			gamma = (Decimal) m->residues[l].parameters[m->params-1];
 			for (i = 0; i < N_OR; i++) {
 				calculate_Y2(&(m->residues[l].orients[i]));
 				rotate_Y2(&(m->residues[l].orients[i]), alpha, beta, gamma);
@@ -373,12 +373,12 @@ int print_gaf(struct Model *m) {
 		/* I really need to clean this mess up at some point... */
 
 		if ((m->model == MOD_GAF || m->model == MOD_GAFT) && gaf != NULL) {
-			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
-			double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-			double sigf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
+			Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
+			Decimal sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
+			Decimal sigf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
 			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
-			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+			Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+			Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 			
 			GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 			GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
@@ -389,23 +389,23 @@ int print_gaf(struct Model *m) {
 			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 			
-			double taus = m->residues[l].parameters[0];
-			double tauf = m->residues[l].parameters[1];
+			Decimal taus = m->residues[l].parameters[0];
+			Decimal tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_GAFT) {
-				double Eas = m->residues[l].parameters[8];
-				double Eaf = m->residues[l].parameters[9];
+				Decimal Eas = m->residues[l].parameters[8];
+				Decimal Eaf = m->residues[l].parameters[9];
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
 
 			fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
 		} else if ((m->model == MOD_AIMF || m->model == MOD_AIMFT) && gaf != NULL) {
-			double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
-			double Ss[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-			double Sf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
+			Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; 
+			Decimal Ss[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
+			Decimal Sf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
 			struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
-			double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-			double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+			Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+			Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 			
 			AIMF_S2(Ss, Os, S2s, 4);
 			AIMF_S2(Sf, Os, S2f, 4);
@@ -416,22 +416,22 @@ int print_gaf(struct Model *m) {
 			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 
-			double taus = m->residues[l].parameters[0];
-			double tauf = m->residues[l].parameters[1];
+			Decimal taus = m->residues[l].parameters[0];
+			Decimal tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_AIMFT) {
-				double Eas = m->residues[l].parameters[8];
-				double Eaf = m->residues[l].parameters[9];
+				Decimal Eas = m->residues[l].parameters[8];
+				Decimal Eaf = m->residues[l].parameters[9];
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
 
 			fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
 		} else if ((m->model == MOD_EGAF || m->model == MOD_EGAFT) && gaf != NULL) {
-			double S2NHs, S2NHf = (double) m->residues[l].parameters[5];
-			double *S2[] = {&S2NHs};
+			Decimal S2NHs, S2NHf = (Decimal) m->residues[l].parameters[5];
+			Decimal *S2[] = {&S2NHs};
 			/* Approximate as just the S2NHs and S2NHf */
 			struct Orient *As[] = {&(m->residues[l].orients[OR_NH])};
-			double sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
+			Decimal sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
 			GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
 
 
@@ -443,20 +443,20 @@ int print_gaf(struct Model *m) {
 			fprintf(orderparams, "\n");
 
 
-			double taus = m->residues[l].parameters[0];
-			double tauf = m->residues[l].parameters[1];
+			Decimal taus = m->residues[l].parameters[0];
+			Decimal tauf = m->residues[l].parameters[1];
 			if (m->model == MOD_EGAFT) {
-				double Eas = m->residues[l].parameters[6];
-				double Eaf = m->residues[l].parameters[7];
+				Decimal Eas = m->residues[l].parameters[6];
+				Decimal Eaf = m->residues[l].parameters[7];
 				taus *= expl(Eas / (RYD * 300));
 				tauf *= expl(Eaf / (RYD * 300));
 			}
 			fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
 			/* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */
 		} else if (m->model == MOD_DEMF || m->model == MOD_DEMFT) {
-			double S2NHs, S2NHf;
-			S2NHs = (double) m->residues[l].parameters[1];
-			S2NHf = (double) m->residues[l].parameters[3];
+			Decimal S2NHs, S2NHf;
+			S2NHs = (Decimal) m->residues[l].parameters[1];
+			S2NHf = (Decimal) m->residues[l].parameters[3];
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
 			if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
@@ -464,7 +464,7 @@ int print_gaf(struct Model *m) {
 			if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
 			fprintf(orderparams, "\n");
 		} else if (m->model == MOD_SMF || m->model == MOD_SMFT) {
-			double S2 = (double) m->residues[l].parameters[1];
+			Decimal S2 = (Decimal) m->residues[l].parameters[1];
 
 			fprintf(orderparams, "%d\t", l+1);
 			fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);

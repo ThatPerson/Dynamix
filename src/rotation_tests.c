@@ -76,7 +76,7 @@ int main(int argc, char * argv[]) {
 	for (i = 0; i < 5; i++) {
 		printf("\t%d:\t%lf + %lf I\n", i-2, creal(NHv.Y2[i]), cimag(NHv.Y2[i]));
 	}
-	//void rotate_Y2(struct Orient * or, double alpha, double beta, double gamma) {
+	//void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
 	printf("Rotating...\n");
 	rotate_Y2(&CACA, HALF_PI, M_PI, HALF_PI);
 	rotate_Y2(&pp, HALF_PI, M_PI, HALF_PI);

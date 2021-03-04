@@ -6,12 +6,12 @@
 #include <math.h>
 
 /** 
- * Generates uniform random double from 0 to 1 inclusive.
- * @return double
- *  Long double containing uniform random number.
+ * Generates uniform random Decimal from 0 to 1 inclusive.
+ * @return Decimal
+ *  Long Decimal containing uniform random number.
  */
-double uniform_rand(void) {
-	return ((double) rand() + 1.) / ((double) RAND_MAX + 1.);
+Decimal uniform_rand(void) {
+	return ((Decimal) rand() + 1.) / ((Decimal) RAND_MAX + 1.);
 }
 
 /**
@@ -20,15 +20,15 @@ double uniform_rand(void) {
  *  Mean of normal distribution to select random variable from
  * @param std
  *  Standard deviation of normal distribution from which random variable selected
- * @return double
+ * @return Decimal
  *  Returns normally distributed random number
  */
-double norm_rand(double mean, double std) {
+Decimal norm_rand(Decimal mean, Decimal std) {
 	// Box-Muller method
-	double rnd1, rnd2;
-	rnd1 = (double) uniform_rand();
-	rnd2 = (double) uniform_rand();
-	double unadj = sqrt(-2 * log(rnd1)) * cos(2 * M_PI * rnd2);
+	Decimal rnd1, rnd2;
+	rnd1 = (Decimal) uniform_rand();
+	rnd2 = (Decimal) uniform_rand();
+	Decimal unadj = sqrt(-2 * log(rnd1)) * cos(2 * M_PI * rnd2);
 
 	//printf("%lf, %lf, %lf\n", rnd1, rnd2, mean + std*unadj);
 	return mean + std * unadj;
@@ -41,25 +41,25 @@ double norm_rand(double mean, double std) {
  * @param length
  *  Length of vals
  * @param mean
- *  Pointer to double to contain mean
+ *  Pointer to Decimal to contain mean
  * @param std
- *  Pointer to double to contain standard deviation
+ *  Pointer to Decimal to contain standard deviation
  */
-void calc_statistics(double * vals, int length, double * mean, double * std) {
+void calc_statistics(Decimal * vals, int length, Decimal * mean, Decimal * std) {
 	int k;
 	*mean = 0;
-	double m2 = 0;
+	Decimal m2 = 0;
 	for (k = 0; k < length; k++) {
 		*mean += vals[k];
 		m2 += powl(vals[k], 2);
 	}
-	*mean = *mean / ((double) length);
-	m2 = m2 / ((double) length);
-	double mdiff = m2 - powl(*mean, 2.);
+	*mean = *mean / ((Decimal) length);
+	m2 = m2 / ((Decimal) length);
+	Decimal mdiff = m2 - powl(*mean, 2.);
 	if (mdiff < 0 && fabsl(mdiff) < 0.000001) {
 		ERROR("mdiff = %lf, making negative.", mdiff);
 		// then all have converged to the same point and the std is 0. 
-		// but because doubleing points are ew, it will give 'nan' for sqrtl(-0.0000)
+		// but because Decimaling points are ew, it will give 'nan' for sqrtl(-0.0000)
 		// so we just invert the sign. It's not pretty but ah well.
 		mdiff = -mdiff;
 	}
@@ -82,7 +82,7 @@ int calc_errors(struct Model *m, int residue) {
 	char outputdir[255];
 	strcpy(outputdir, m->outputdir);
 
-	//double optim = resid->min_val;
+	//Decimal optim = resid->min_val;
 	//char outputdir[255];
 	//strcpy(outputdir, ((struct rrargs*)input)->outputdir);
 	FILE *errp;
@@ -97,19 +97,19 @@ int calc_errors(struct Model *m, int residue) {
 	unsigned int l, k, params = 0;
 	params = m->params;
 	//printf("%d\n", params);
-	double *opts;
-	opts = (double *) malloc (sizeof(double) * params);
-	resid->errors_mean = (double *) malloc (sizeof(double) * params);
-	resid->errors_std = (double *) malloc(sizeof(double) * params);
-	resid->error_params = (double **) malloc (sizeof(double *) * params);
+	Decimal *opts;
+	opts = (Decimal *) malloc (sizeof(Decimal) * params);
+	resid->errors_mean = (Decimal *) malloc (sizeof(Decimal) * params);
+	resid->errors_std = (Decimal *) malloc(sizeof(Decimal) * params);
+	resid->error_params = (Decimal **) malloc (sizeof(Decimal *) * params);
 	for (k = 0; k < params; k++) {
-		resid->error_params[k] = (double *) malloc (sizeof(double) * m->n_iter);
+		resid->error_params[k] = (Decimal *) malloc (sizeof(Decimal) * m->n_iter);
 	}
 	//resid->min_val = MIN_VAL;*/
-	//double val = 0;
+	//Decimal val = 0;
 	int p = 0;
 	int ignore = -1;
-	double temp_R = 0;
+	Decimal temp_R = 0;
 
 	// make backups of order parameters.
 	resid->S2NHb = resid->S2NH;
@@ -161,10 +161,10 @@ int calc_errors(struct Model *m, int residue) {
 		for (k = 0; k < params; k++) {
 			opts[k] = resid->parameters[k];
 		}
-		double min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+		Decimal min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
 		LOG("%d %d min = %lf; orig = %lf", i, l, min, resid->min_val);
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
-		//resid->error_params[l] = (double *) malloc (sizeof(double) * params);
+		//resid->error_params[l] = (Decimal *) malloc (sizeof(Decimal) * params);
 
 		fprintf(errp, "%d\t%lf", l+1, min);
 		for (k = 0; k < params; k++) {

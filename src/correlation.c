@@ -70,7 +70,7 @@ int read_data_file(char *filename, struct Model * m) {
 		params += 3; // theta, phi
 
 	int res;
-	double S2NH, chisq;
+	Decimal S2NH, chisq;
 	int length = 0;
 	int length_d = 0;
 	unsigned int i;
@@ -81,12 +81,12 @@ int read_data_file(char *filename, struct Model * m) {
 		//3	0.780000	201.669690	1.461383e+01	9.604572e-01	0
 		int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
 		res--;
-		m->residues[res].parameters = (double *) malloc(sizeof(double) * params);
+		m->residues[res].parameters = (Decimal *) malloc(sizeof(Decimal) * params);
 		m->residues[res].ignore = 0;
 		for (i = 0; i < params; i++) {
 			k = sscanf(line + length, "%le\t%n", &(m->residues[res].parameters[i]), &length_d);
 			//printf("%d: %lf\n", i, m->residues[res].parameters[i]);
-			//m->residues[res].parameters[i] = (double) param;
+			//m->residues[res].parameters[i] = (Decimal) param;
 			//printf("K = %d\n", k);
 			//printf("Param = %lf\n", parameters[i]);
 			if (k <= 0) {
@@ -124,8 +124,8 @@ int read_data_file(char *filename, struct Model * m) {
  *  Fast motion order parameter
  * @return 1 on success, -1 on failure
  */
-int write_correlation_function_emf(char * fn, double T, double dT, double taus, double S2s, double tauf, double S2f) {
-	double S2 = S2f * S2s;
+int write_correlation_function_emf(char * fn, Decimal T, Decimal dT, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
+	Decimal S2 = S2f * S2s;
 	FILE * fp;
 
 	fp = fopen(fn, "w");
@@ -134,8 +134,8 @@ int write_correlation_function_emf(char * fn, double T, double dT, double taus, 
 		return -1;
 	}
 
-	double t;
-	double correl = 0;
+	Decimal t;
+	Decimal correl = 0;
 	for (t = 0; t < T; t += dT) {
 		correl = S2;
 		correl += (1 - S2f) * expl(-t / tauf);
@@ -147,7 +147,7 @@ int write_correlation_function_emf(char * fn, double T, double dT, double taus, 
 	return 1;
 }
 
-int write_spectral_density_emf(char *fn, double taus, double S2s, double tauf, double S2f) {
+int write_spectral_density_emf(char *fn, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
 	FILE * fp;
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
@@ -155,31 +155,31 @@ int write_spectral_density_emf(char *fn, double taus, double S2s, double tauf, d
 		return -1;
 	}
 	
-	double w;
-	double v, slow, fast;
+	Decimal w;
+	Decimal v, slow, fast;
 	for (w = pow(10, 1)*T_DOWN; w < pow(10., 10)*T_DOWN; w*=2) {
 		
 		/*v = (((1 - S2f) * tauf) / (1 + (w * tauf * w * tauf)));
 		q = v + ((S2f * (1 - S2s) * taus) / (1 + (w * taus * w * taus)));
 		
 		l =  ( \
-			((((1 - (double) S2f)) * (double) tauf)) \
-			/ (1 + ((double) w * (double) tauf * (double) w * (double) tauf)) \
+			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
+			/ (1 + ((Decimal) w * (Decimal) tauf * (Decimal) w * (Decimal) tauf)) \
 		);
 		p = l +\
 		(\
-			(((double) S2f) * (1 - (double) S2s) * (double) taus)\
-			/ (1 + ((double) w * (double) taus * (double) w * (double) taus))\
+			(((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
+			/ (1 + ((Decimal) w * (Decimal) taus * (Decimal) w * (Decimal) taus))\
 		);*/
 		v = J0_EMF(w, taus, S2s, tauf, S2f);
 		//printf("%lf (%lf, %lf) (%lf, %lf) %lf\n", w, v, l, q, p, rt);
 		fast = ( \
-			((((1 - (double) S2f)) * (double) tauf)) \
-			/ (1 + ((double) w * (double) tauf * (double) w * (double) tauf)) \
+			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
+			/ (1 + ((Decimal) w * (Decimal) tauf * (Decimal) w * (Decimal) tauf)) \
 		);
 		slow = (\
-			(((double) S2f) * (1 - (double) S2s) * (double) taus)\
-			/ (1 + ((double) w * (double) taus * (double) w * (double) taus))\
+			(((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
+			/ (1 + ((Decimal) w * (Decimal) taus * (Decimal) w * (Decimal) taus))\
 		);
 		v *= T_DOWN;
 		slow *= T_DOWN;
@@ -191,7 +191,7 @@ int write_spectral_density_emf(char *fn, double taus, double S2s, double tauf, d
 	return 1;
 }
 
-int write_spectral_density_smf(char *fn, double tau, double S2) {
+int write_spectral_density_smf(char *fn, Decimal tau, Decimal S2) {
 	FILE * fp;
 	fp = fopen(fn, "w");
 	if (fp == NULL) {
@@ -199,8 +199,8 @@ int write_spectral_density_smf(char *fn, double tau, double S2) {
 		return -1;
 	}
 	
-	double w;
-	double v;
+	Decimal w;
+	Decimal v;
 	for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
 		v = J0_SMF(w, tau, S2) * T_DOWN;
 		fprintf(fp, "%lf\t%le\n", w*T_UP, v);
@@ -223,7 +223,7 @@ int write_spectral_density_smf(char *fn, double tau, double S2) {
  *  Motion order parameter
  * @return 1 on success, -1 on failure
  */
-int write_correlation_function_smf(char * fn, double T, double dT, double tau, double S2) {
+int write_correlation_function_smf(char * fn, Decimal T, Decimal dT, Decimal tau, Decimal S2) {
 	FILE * fp;
 
 	fp = fopen(fn, "w");
@@ -232,8 +232,8 @@ int write_correlation_function_smf(char * fn, double T, double dT, double tau, d
 		return -1;
 	}
 
-	double t;
-	double correl = 0;
+	Decimal t;
+	Decimal correl = 0;
 	for (t = 0; t < T; t += dT) {
 		correl = S2;
 		correl += (1 - S2) * expl(-t / tau);
@@ -328,16 +328,16 @@ int main(int argc, char * argv[]) {
 	
 	#pragma omp parallel for 
 	for (i = 0; i <m.n_residues; i++) {
-		double Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
+		Decimal Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
 		struct Residue * resid;
-		double * opts;
+		Decimal * opts;
 		unsigned int j;
-		double S2NH=0, S2CN=0, S2CH=0, S2CC=0;
-		double S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
-		double temp = 300;
-		double T = 200; // 1000
-		double dT = 0.01; // 0.01
-		double alpha, beta, gamma;
+		Decimal S2NH=0, S2CN=0, S2CH=0, S2CC=0;
+		Decimal S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
+		Decimal temp = 300;
+		Decimal T = 200; // 1000
+		Decimal dT = 0.01; // 0.01
+		Decimal alpha, beta, gamma;
 		char fn_NH[355];
 		char fn_CN[355];
 		char fn_CH[355];
@@ -368,9 +368,9 @@ int main(int argc, char * argv[]) {
 			sprintf(sd_CC, "%s/sd_%d_CCAp.dat", output_folder, i+1);
 			printf("Hello\n");
 			if (m.or_variation == VARIANT_A) {
-				alpha = (double) opts[params-3];
-				beta = (double) opts[params-2];
-				gamma = (double) opts[params-1];
+				alpha = (Decimal) opts[params-3];
+				beta = (Decimal) opts[params-2];
+				gamma = (Decimal) opts[params-1];
 				for (j = 0; j < N_OR; j++) {
 					calculate_Y2(&(m.residues[i].orients[j]));
 					rotate_Y2(&(m.residues[i].orients[j]), alpha, beta, gamma);
@@ -379,10 +379,10 @@ int main(int argc, char * argv[]) {
 			printf("Hello2\n");
 			if (m.model == MOD_SMF || m.model == MOD_SMFT) {
 				tau = opts[0];
-				S2NH = (double) opts[1];
-				S2CN = (double) opts[1];
-				S2CH = (double) opts[1];
-				S2CC = (double) opts[1];
+				S2NH = (Decimal) opts[1];
+				S2CN = (Decimal) opts[1];
+				S2CH = (Decimal) opts[1];
+				S2CC = (Decimal) opts[1];
 				if (m.model == MOD_SMFT) {
 					Ea = opts[2];
 					tau *= expl(Ea / (RYD * temp));
@@ -407,22 +407,22 @@ int main(int argc, char * argv[]) {
 				if (m.model == MOD_DEMF || m.model == MOD_DEMFT) {
 					S2f = opts[3];
 				}
-				S2NHs = (double) S2s;
-				S2CHs = (double) S2s;
-				S2CNs = (double) S2s;
-				S2NHf = (double) S2f;
-				S2CHf = (double) S2f;
-				S2CNf = (double) S2f;
-				S2CCs = (double) S2f;
-				S2CCf = (double) S2f;
+				S2NHs = (Decimal) S2s;
+				S2CHs = (Decimal) S2s;
+				S2CNs = (Decimal) S2s;
+				S2NHf = (Decimal) S2f;
+				S2CHf = (Decimal) S2f;
+				S2CNf = (Decimal) S2f;
+				S2CCs = (Decimal) S2f;
+				S2CCf = (Decimal) S2f;
 			} else if (m.model == MOD_GAF || m.model == MOD_GAFT) {
 				printf("In GAF\n");
 				// need to perform reorientation before.
 				taus = opts[0];
 				tauf = opts[1];
 				printf("taus tauf\n");
-				double sigs[3] = {opts[2], opts[3], opts[4]};
-				double sigf[3] = {opts[5], opts[6], opts[7]};
+				Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+				Decimal sigf[3] = {opts[5], opts[6], opts[7]};
 				if (m.model == MOD_GAFT) {
 					Eas = opts[8];
 					Eaf = opts[9];
@@ -431,15 +431,15 @@ int main(int argc, char * argv[]) {
 				}
 				printf("QUe?\n");
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-				double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+				Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+				Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 				GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 				GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 			} else if (m.model == MOD_EGAF || m.model == MOD_EGAFT) {
 				// need to perform reorientation before.
 				taus = opts[0];
 				tauf = opts[1];
-				double sigs[3] = {opts[2], opts[3], opts[4]};
+				Decimal sigs[3] = {opts[2], opts[3], opts[4]};
 				S2f = opts[5];
 				if (m.model == MOD_GAFT) {
 					Eas = opts[6];
@@ -448,12 +448,12 @@ int main(int argc, char * argv[]) {
 					tauf *= expl(Eaf / (RYD * temp));
 				}
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-				double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+				Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
 				GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
-				S2NHf = (double) S2f;
-				S2CNf = (double) S2f;
-				S2CHf = (double) S2f;
-				S2CCf = (double) S2f;
+				S2NHf = (Decimal) S2f;
+				S2CNf = (Decimal) S2f;
+				S2CHf = (Decimal) S2f;
+				S2CCf = (Decimal) S2f;
 			}
 			if (cor_mod == 1) {
 				if (m.model == MOD_SMF || m.model == MOD_SMFT) {
@@ -487,11 +487,11 @@ int main(int argc, char * argv[]) {
 			back_calculate(opts, resid, &m, fn_BC, params);
 
 
-			// int back_calculate(double * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
+			// int back_calculate(Decimal * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {
 
 		}
 	}
-	//int write_correlation_function_smf(char * fn, double T, double dT, double tau, double S2) {
+	//int write_correlation_function_smf(char * fn, Decimal T, Decimal dT, Decimal tau, Decimal S2) {
 
 
 	//fclose(fp);

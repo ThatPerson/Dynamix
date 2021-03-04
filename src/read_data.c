@@ -16,9 +16,9 @@ int read_csa(struct Model *m, char *filename, int dt) {
 		return -1;
 	}
 	int resid;
-	double val;
-	double err;
-	double s11, s22, s33;
+	Decimal val;
+	Decimal err;
+	Decimal s11, s22, s33;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -73,8 +73,8 @@ int read_resid_data(struct Model *m, char *filename, int dt) {
 		return -1;
 	}
 	int resid;
-	double val;
-	double err;
+	Decimal val;
+	Decimal err;
 	
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
@@ -160,8 +160,8 @@ int read_pp(struct Model *m, char *filename, unsigned int orient) {
 		return -1;
 	}
 	int resid;
-	double theta;
-	double phi;
+	Decimal theta;
+	Decimal phi;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -211,14 +211,14 @@ int read_relaxation_data(struct Model *m, char *filename) {
 	int mode = 0;
 	char key[255], val[255];
 	unsigned int i;
-	double field = -1; // in MHz
-	double wr = -1; // in Hz
-	double w1 = -1; // in Hz
+	Decimal field = -1; // in MHz
+	Decimal wr = -1; // in Hz
+	Decimal w1 = -1; // in Hz
 	int type = -1;
-	double T = -1; // in Kelvin
+	Decimal T = -1; // in Kelvin
 	int resid;
 	int rel = -1;
-	double R, Re;
+	Decimal R, Re;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -530,13 +530,13 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
 			} else if (strcmp(key, "W_S2NH") == 0) {
-				m->WS2NH = (double) atof(val);
+				m->WS2NH = (Decimal) atof(val);
 			} else if (strcmp(key, "W_S2CH") == 0) {
-				m->WS2CH = (double) atof(val);
+				m->WS2CH = (Decimal) atof(val);
 			} else if (strcmp(key, "W_S2CN") == 0) {
-				m->WS2CN = (double) atof(val);
+				m->WS2CN = (Decimal) atof(val);
 			} else if (strcmp(key, "W_S2CC") == 0) {
-				m->WS2CC = (double) atof(val);
+				m->WS2CC = (Decimal) atof(val);
 			} else if (strcmp(key, "OR_VARY") == 0) {
 				if (m->or_variation == VARIANT_A)
 					continue;
@@ -644,7 +644,7 @@ int read_system_file(char *filename, struct Model * m) {
 			printf("Residue %d: Only one nuclei measured. CN ratio set to 1.\n", i+1);
 			m->residues[i].cn = 1;
 		} else {
-			m->residues[i].cn = ((double) n_count) / ((double) c_count);
+			m->residues[i].cn = ((Decimal) n_count) / ((Decimal) c_count);
 			//printf("%d, %d -> %lf\n", c_count, n_count, m->residues[i].cn);
 		}
 	}
@@ -708,15 +708,15 @@ int print_system(struct Model *m, char *filename) {
 		fprintf(fp, "\tS2NH = %lf (%lf) \n\tS2CH = %lf (%lf) \n\tS2CC = %lf (%lf) \n\tS2CN = %lf (%lf) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
 		fprintf(fp, "\tCSISON = %lf\n\tCSISOC = %lf\n", m->residues[i].csisoN, m->residues[i].csisoC);
 		fprintf(fp, "\tCSAN: [%lf, %lf, %lf]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
-		double Qcsiso = m->residues[i].csisoN;
-		double Qred_aniso = m->residues[i].csaN[0] - Qcsiso;
-		double Qeta = (m->residues[i].csaN[1] - m->residues[i].csaN[2]) / Qred_aniso;
+		Decimal Qcsiso = m->residues[i].csisoN;
+		Decimal Qred_aniso = m->residues[i].csaN[0] - Qcsiso;
+		Decimal Qeta = (m->residues[i].csaN[1] - m->residues[i].csaN[2]) / Qred_aniso;
 		fprintf(fp, "\t\tCSA: d %lf, n %lf\n", Qred_aniso, Qeta);
 		// z y x
 		fprintf(fp, "\tCSAC: [%lf, %lf, %lf]\n", m->residues[i].csaC[0], m->residues[i].csaC[1], m->residues[i].csaC[2]);
-		double Ccsiso = m->residues[i].csisoC;
-		double Cred_aniso = m->residues[i].csaC[0] - Ccsiso;
-		double Ceta = (m->residues[i].csaC[1] - m->residues[i].csaC[2]) / Cred_aniso;
+		Decimal Ccsiso = m->residues[i].csisoC;
+		Decimal Cred_aniso = m->residues[i].csaC[0] - Ccsiso;
+		Decimal Ceta = (m->residues[i].csaC[1] - m->residues[i].csaC[2]) / Cred_aniso;
 		fprintf(fp, "\t\tCSA: d %lf, n %lf\n", Cred_aniso, Ceta);
 		fprintf(qp, "%d, %lf, %lf, %lf, %lf\n", i+1, Qred_aniso, Qeta, Cred_aniso, Ceta);
 		if (m->cn_ratio == CNRATIO_ON)

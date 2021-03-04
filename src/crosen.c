@@ -54,7 +54,7 @@
  * Implementation of Nelder-Mead Simplex method written by Michael F. Hutt.\n
  * Has been modified to allow for optimization of the optimize_chisq() function directly.\n
  * @param *func
- *  Pointer to function taking arguments (double[], struct Residue*, int) to be optimized (see optimize_chisq())\n
+ *  Pointer to function taking arguments (Decimal[], struct Residue*, int) to be optimized (see optimize_chisq())\n
  * @param start[]
  *  Array of starting parameters
  * @param n
@@ -69,7 +69,7 @@
  *  Model type (MOD_SMF etc)
  * @return Returns minimum of (*func).
  */
-double simplex(double (*func)(double[], struct Residue*, struct Model *, unsigned int), double start[], double EPSILON, double scale, struct Residue * resid, struct Model * mod)
+Decimal simplex(Decimal (*func)(Decimal[], struct Residue*, struct Model *, unsigned int), Decimal start[], Decimal EPSILON, Decimal scale, struct Residue * resid, struct Model * mod)
 {
   //printf("SIMPLEX %le\n", start[2]);
 
@@ -82,33 +82,33 @@ double simplex(double (*func)(double[], struct Residue*, struct Model *, unsigne
   unsigned int k;		/* track the number of function evaluations */
   unsigned int itr;		/* track the number of iterations */
 
-  double **v;           /* holds vertices of simplex */
-  double pn,qn;         /* values used to create initial simplex */
-  double *f;            /* value of function at each vertex */
-  double fr;            /* value of function at reflection point */
-  double fe;            /* value of function at expansion point */
-  double fc;            /* value of function at contraction point */
-  double *vr;           /* reflection - coordinates */
-  double *ve;           /* expansion - coordinates */
-  double *vc;           /* contraction - coordinates */
-  double *vm;           /* centroid - coordinates */
-  double min;
+  Decimal **v;           /* holds vertices of simplex */
+  Decimal pn,qn;         /* values used to create initial simplex */
+  Decimal *f;            /* value of function at each vertex */
+  Decimal fr;            /* value of function at reflection point */
+  Decimal fe;            /* value of function at expansion point */
+  Decimal fc;            /* value of function at contraction point */
+  Decimal *vr;           /* reflection - coordinates */
+  Decimal *ve;           /* expansion - coordinates */
+  Decimal *vc;           /* contraction - coordinates */
+  Decimal *vm;           /* centroid - coordinates */
+  Decimal min;
 
-  double fsum,favg,s,cent;
+  Decimal fsum,favg,s,cent;
 
   /* dynamically allocate arrays */
 
   /* allocate the rows of the arrays */
-  v =  (double **) malloc ((n+1) * sizeof(double *));
-  f =  (double *) malloc ((n+1) * sizeof(double));
-  vr = (double *) malloc (n * sizeof(double));
-  ve = (double *) malloc (n * sizeof(double));
-  vc = (double *) malloc (n * sizeof(double));
-  vm = (double *) malloc (n * sizeof(double));
+  v =  (Decimal **) malloc ((n+1) * sizeof(Decimal *));
+  f =  (Decimal *) malloc ((n+1) * sizeof(Decimal));
+  vr = (Decimal *) malloc (n * sizeof(Decimal));
+  ve = (Decimal *) malloc (n * sizeof(Decimal));
+  vc = (Decimal *) malloc (n * sizeof(Decimal));
+  vm = (Decimal *) malloc (n * sizeof(Decimal));
 
   /* allocate the columns of the arrays */
   for (i=0;i<=n;i++) {
-    v[i] = (double *) malloc (n * sizeof(double));
+    v[i] = (Decimal *) malloc (n * sizeof(Decimal));
   }
 
 
@@ -211,7 +211,7 @@ double simplex(double (*func)(double[], struct Residue*, struct Model *, unsigne
 
       /* by making fe < fr as opposed to fe < f[vs],
 	 Rosenbrocks function takes 63 iterations as opposed
-	 to 64 when using doubles and e = 1.0e-6. */
+	 to 64 when using Decimals and e = 1.0e-6. */
 
       if (fe < fr) {
 	for (j=0;j<=n-1;j++) {
@@ -311,13 +311,13 @@ double simplex(double (*func)(double[], struct Residue*, struct Model *, unsigne
 	free(v[i]);
   }
   free(v);
-  return (double) min;
+  return (Decimal) min;
 }
 /*
 int main()
 {
-  double start[] = {-1.2,1.0};
-  double min;
+  Decimal start[] = {-1.2,1.0};
+  Decimal min;
   int i;
 
   min=simplex(rosen,start,2,1.0e-8,1);

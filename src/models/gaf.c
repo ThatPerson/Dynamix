@@ -16,13 +16,13 @@
  * Equation as 3.28, McConnell1986, only for solid state spins.
  * Kurbanov2011, eq 9 (factor of 1/10 arising from (2/5.) in spectral density and 1/4. in dipolar.
  */
-double GAF_Dipolar_R1(double omega_obs, double omega_neigh, double taus, double S2s, double tauf, double S2f, double D) {
-	double q = (0.1) * sq(D) * ( \
+Decimal GAF_Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal D) {
+	Decimal q = (0.1) * sq(D) * ( \
 		(J0_EMF(omega_neigh - omega_obs, taus, S2s, tauf, S2f)) \
 		 + 3 * (J0_EMF(omega_obs, taus, S2s, tauf, S2f)) \
 		  + 6 * (J0_EMF(omega_neigh + omega_obs, taus, S2s, tauf, S2f)) \
 	  );
-	return (double) q;
+	return (Decimal) q;
 }
     
 
@@ -31,25 +31,25 @@ double GAF_Dipolar_R1(double omega_obs, double omega_neigh, double taus, double 
  * D2 is the squared D22x/D22y/D22xy variable (dependent on CSA)
  * Kurbanov2011, eqs 18-20.
  */
- //double J0_EMF_CC(double omega, double taus, double S2s, double tauf, double S2f) {
+ //Decimal J0_EMF_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
  
-double GAF_CSA_R2(double omega, \
-						 double w1, \
-						 double wr, \
-						 double taus, \
-						 double S2s, \
-						 double tauf, \
-						 double S2f, \
-						 double D2, \
-						 double  (*J_SD)(\
-						 	double,\
-						 	double, \
-						 	double, \
-						 	double, \
-						 	double)\
+Decimal GAF_CSA_R2(Decimal omega, \
+						 Decimal w1, \
+						 Decimal wr, \
+						 Decimal taus, \
+						 Decimal S2s, \
+						 Decimal tauf, \
+						 Decimal S2f, \
+						 Decimal D2, \
+						 Decimal  (*J_SD)(\
+						 	Decimal,\
+						 	Decimal, \
+						 	Decimal, \
+						 	Decimal, \
+						 	Decimal)\
 						) {
-	return (double) ( \
-  		(1/45.) * (double) D2 * ( \
+	return (Decimal) ( \
+  		(1/45.) * (Decimal) D2 * ( \
   			(2/3.) * J_SD(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
   			(2/3.) * J_SD(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
   			(4/3.) * J_SD(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\
@@ -64,8 +64,8 @@ double GAF_CSA_R2(double omega, \
  * Kurbanov2011, for the case where theta_p = 90 such that sin(theta_p) = 1 and so
  * R1p = 0.5*R1 + R1delta
  */
-double GAF_Dipolar_R2(double omega_obs, double omega_neigh, double w1, double wr, double taus, double S2s, double tauf, double S2f, double D) {
-	return (double) (\
+Decimal GAF_Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal D) {
+	return (Decimal) (\
   		(1/20.) * sq(D) * (\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
   			(2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
@@ -100,10 +100,10 @@ double GAF_Dipolar_R2(double omega_obs, double omega_neigh, double w1, double wr
  *  MODE_REAL or MODE_IMAG depending on which result is being returned.
  * @return Returns 1 in all cases.
  */
-int GAF_S2(double sig[3], struct Orient ** A, struct Orient ** B, double * S2[], int length,  int mode) {
+int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  int mode) {
 	int l, m, mp, k, kp, i;
-	double complex * Amp = (double complex *) malloc(sizeof(double complex) * (long unsigned int) length);
-	double complex temp, ttemp;
+	Complex * Amp = (Complex *) malloc(sizeof(Complex) * (long unsigned int) length);
+	Complex temp, ttemp;
 	for (i = 0; i < length; i++) {
 		Amp[i] = 0;
 	}
@@ -111,18 +111,18 @@ int GAF_S2(double sig[3], struct Orient ** A, struct Orient ** B, double * S2[],
 	int ksqsum;
 	int lsqsum;
 	int msqsum;
-	double lexp, kexp, mexp;
+	Decimal lexp, kexp, mexp;
 	for (l = -2; l <= 2; l++) {
 		lsqsum = sq_i(l);
-		lexp = (double) -(sq(sig[1]) * lsqsum);
+		lexp = (Decimal) -(sq(sig[1]) * lsqsum);
 		for (m = -2; m <= 2; m++) {
 			for (mp = -2; mp <= 2; mp++) {
 				msqsum = sq_i(m) + sq_i(mp);
-				mexp = (double) -(sq(sig[2]) * msqsum/2.);
+				mexp = (Decimal) -(sq(sig[2]) * msqsum/2.);
 				for (k = -2; k <= 2; k++) {
 					for (kp = -2; kp <= 2; kp++) {
 						ksqsum = sq_i(k) + sq_i(kp);
-						kexp = (double) -(sq(sig[0]) * ksqsum / 2.);
+						kexp = (Decimal) -(sq(sig[0]) * ksqsum / 2.);
 						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
 						temp = 1;
 						
@@ -167,8 +167,8 @@ int GAF_S2(double sig[3], struct Orient ** A, struct Orient ** B, double * S2[],
 	for (i = 0;i < length; i++) {
 		Amp[i] = Amp[i] * (4 * M_PI / 5.);
 		switch (mode) {
-			case MODE_REAL: *S2[i] = creal((complex double) Amp[i]); break;
-			case MODE_IMAG: *S2[i] = cimag((complex double) Amp[i]); break;
+			case MODE_REAL: *S2[i] = creal((Complex) Amp[i]); break;
+			case MODE_IMAG: *S2[i] = cimag((Complex) Amp[i]); break;
 			default: break;
 		}
 	}
@@ -197,36 +197,36 @@ int GAF_S2(double sig[3], struct Orient ** A, struct Orient ** B, double * S2[],
  * @param sigf
  *  Deflection angles [alpha, beta, gamma] for fast motion
  * @return R1
- *  Returns R1 as double
+ *  Returns R1 as Decimal
  */
-double GAF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double * sigf) {
+Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	double field = relax->field * 1000000; // conversion to Hz
+	Decimal field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
-	double omega_1H = 2 * M_PI * field;
-	double omega_13C, omega_15N;
-	double d2x, d2y, d2xy;
+	Decimal omega_1H = 2 * M_PI * field;
+	Decimal omega_13C, omega_15N;
+	Decimal d2x, d2y, d2xy;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 
-	double *csa;
+	Decimal *csa;
 	csa = res->csaN;
 
-	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
-	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
-	d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
+	d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
+	d2xy= (Decimal) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
-	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
-	double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
+	Decimal S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
+	Decimal S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
 	
-	double *S2s[] = {&S2NHs, &S2NCSAxs, &S2NCSAys, &S2NCSAxys, &S2CNs, &S2CaNs};
-	double *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
+	Decimal *S2s[] = {&S2NHs, &S2NCSAxs, &S2NCSAys, &S2NCSAxys, &S2CNs, &S2CaNs};
+	Decimal *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
 	
 	struct Orient * As[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
@@ -236,8 +236,8 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, dou
 	
 
 	/* N CSA relaxation contribution */
-	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
-	double J1 = 0;
+	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
+	Decimal J1 = 0;
 	
 
 	omega_1H *= T_DOWN;
@@ -264,7 +264,7 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, dou
 	R1CN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CNs, tauf, S2CNf, D_CN);
 	R1CaN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_CaN);
 
-	return (double) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
+	return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
 /**
@@ -283,37 +283,37 @@ double GAF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, dou
  * @param sigf
  *  Deflection angles [alpha, beta, gamma] for fast motion
  * @return R2
- *  Returns R2 as double
+ *  Returns R2 as Decimal
  */
-double GAF_15NR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double * sigf) {
+Decimal GAF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	double field = relax->field * 1000000; // conversion to Hz
-	double w1 = relax->w1, wr = relax->wr;
+	Decimal field = relax->field * 1000000; // conversion to Hz
+	Decimal w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
-	double omega_1H = 2 * M_PI * field;
-	double omega_13C, omega_15N;
-	double d2x, d2y, d2xy;
+	Decimal omega_1H = 2 * M_PI * field;
+	Decimal omega_13C, omega_15N;
+	Decimal d2x, d2y, d2xy;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 
-	double *csa;
+	Decimal *csa;
 	csa = res->csaN;
 
-	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
-	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
-	d2xy= (double) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N);
+	d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
+	d2xy= (Decimal) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 
 	/* Calculate all order parameters */
-	double S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
-	double S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
+	Decimal S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
+	Decimal S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
 	
-	double *S2s[] = {&S2NHs, &S2NCSAxs, &S2NCSAys, &S2NCSAxys, &S2CNs, &S2CaNs};
-	double *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
+	Decimal *S2s[] = {&S2NHs, &S2NCSAxs, &S2NCSAys, &S2NCSAxys, &S2CNs, &S2CaNs};
+	Decimal *S2f[] = {&S2NHf, &S2NCSAxf, &S2NCSAyf, &S2NCSAxyf, &S2CNf, &S2CaNf};
 	
 	struct Orient * As[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
 	struct Orient * Bs[] = {&(res->orients[OR_NH]), &(res->orients[OR_NCSAxx]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_NCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_NCA])};
@@ -322,7 +322,7 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, double taus, dou
 	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 
 	/* N CSA relaxation contribution */
-	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
+	Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
 
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
@@ -365,38 +365,38 @@ double GAF_15NR2(struct Residue *res, struct Relaxation* relax, double taus, dou
  * @param sigf
  *  Deflection angles [alpha, beta, gamma] for fast motion
  * @return R1
- *  Returns R1 as double
+ *  Returns R1 as Decimal
  */
 
-double GAF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double * sigf) {
+Decimal GAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	double field = relax->field * 1000000; // conversion to Hz
+	Decimal field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
-	double omega_1H = 2 * M_PI * field;
-	double omega_13C, omega_15N, wCOCa;
-	double d2x, d2y, d2xy;
+	Decimal omega_1H = 2 * M_PI * field;
+	Decimal omega_13C, omega_15N, wCOCa;
+	Decimal d2x, d2y, d2xy;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 	wCOCa = 120 * omega_13C * 0.000001;
 
-	double *csa;
+	Decimal *csa;
 	csa = res->csaC;
 
-	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
-	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-	d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
+	d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
+	d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
-	double S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
-	double S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
+	Decimal S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
+	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
 	
-	double *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
-	double *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
+	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
+	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
 	
 	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
 	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
@@ -405,8 +405,8 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, dou
 	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
 	
 	/* N CSA relaxation contribution */
-	double R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-	double J1 = 0;
+	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	Decimal J1 = 0;
 
 
 	omega_1H *= T_DOWN;
@@ -429,7 +429,7 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, dou
 	R1CN = GAF_Dipolar_R1(omega_13C, omega_15N, taus, S2CNs, tauf, S2CNf, D_CN);
 	R1CC = GAF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCs, tauf, S2CCf, D_CC);
 
-	return (double) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
+	return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
 }
 
 /**
@@ -448,39 +448,39 @@ double GAF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, dou
  * @param sigf
  *  Deflection angles [alpha, beta, gamma] for fast motion
  * @return R2
- *  Returns R2 as double
+ *  Returns R2 as Decimal
  */
 
-double GAF_13CR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double * sigf) {
+Decimal GAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
-	double field = relax->field * 1000000; // conversion to Hz
-	double w1 = relax->w1, wr = relax->wr;
+	Decimal field = relax->field * 1000000; // conversion to Hz
+	Decimal w1 = relax->w1, wr = relax->wr;
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
 	 * software division) I've predefined it. Bond length taken as 1.02 A */
 
-	double omega_1H = 2 * M_PI * field;
-	double omega_13C, omega_15N, wCOCa;
-	double d2x, d2y, d2xy;
+	Decimal omega_1H = 2 * M_PI * field;
+	Decimal omega_13C, omega_15N, wCOCa;
+	Decimal d2x, d2y, d2xy;
 
 	omega_13C = 2 * M_PI * field / 3.976489314034722;
 	omega_15N = 2 * M_PI * field / 9.869683408806043;
 	wCOCa = 120 * omega_13C * 0.000001;
 
-	double *csa;
+	Decimal *csa;
 	csa = res->csaC;
 
-	d2x = (double) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
-	d2y = (double) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-	d2xy= (double) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+	d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
+	d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
+	d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 
 	/* Calculate all order parameters */
-	double S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
-	double S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
+	Decimal S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
+	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
 
-	double *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
-	double *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
+	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
+	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
 	
 	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
 	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
@@ -490,7 +490,7 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, double taus, dou
 	
 
 	/* CSA relaxation contribution */
-	double R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
+	Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
 	
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
@@ -508,5 +508,5 @@ double GAF_13CR2(struct Residue *res, struct Relaxation* relax, double taus, dou
 	R2CHr = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = GAF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
 	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
-	return (double) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(double)T_DOWN);
+	return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
 }

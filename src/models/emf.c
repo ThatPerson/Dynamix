@@ -11,15 +11,15 @@
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2), 
  *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
  */
-inline double J0_EMF(double omega, double taus, double S2s, double tauf, double S2f) {
+inline Decimal J0_EMF(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
 	return ( \
-			((((1 - (double) S2f)) * (double) tauf)) \
-			/ (1 + ((double) omega * (double) tauf * (double) omega * (double) tauf)) \
+			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
+			/ (1 + ((Decimal) omega * (Decimal) tauf * (Decimal) omega * (Decimal) tauf)) \
 		)\
 		+\
 		(\
-			(((double) S2f) * (1 - (double) S2s) * (double) taus)\
-			/ (1 + ((double) omega * (double) taus * (double) omega * (double) taus))\
+			(((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
+			/ (1 + ((Decimal) omega * (Decimal) taus * (Decimal) omega * (Decimal) taus))\
 		);
 }
 
@@ -27,15 +27,15 @@ inline double J0_EMF(double omega, double taus, double S2s, double tauf, double 
  * Juv(w) = (1-S2f) tf / (1 + (wtf)^2) + (1/P2) S2f (P2 - S2s) (ts / 1+(wts)^2)
  * eq 2
  */
-inline double J0_EMF_CC(double omega, double taus, double S2s, double tauf, double S2f) {
+inline Decimal J0_EMF_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
 	return ( \
-			((((1 - (double) S2f)) * (double) tauf)) \
-			/ (1 + ((double) omega * (double) tauf * (double) omega * (double) tauf)) \
+			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
+			/ (1 + ((Decimal) omega * (Decimal) tauf * (Decimal) omega * (Decimal) tauf)) \
 		)\
 		-\
 		2. * (\
-			(((double) S2f) * (-0.5 - (double) S2s) * (double) taus)\
-			/ (1 + ((double) omega * (double) taus * (double) omega * (double) taus))\
+			(((Decimal) S2f) * (-0.5 - (Decimal) S2s) * (Decimal) taus)\
+			/ (1 + ((Decimal) omega * (Decimal) taus * (Decimal) omega * (Decimal) taus))\
 		);
 }
   
@@ -53,13 +53,13 @@ inline double J0_EMF_CC(double omega, double taus, double S2s, double tauf, doub
  * @param S2
  *  Order parameter of motion.
  */
-double EMF_Dipolar_R1(double omega_X, double omega_Y, double d, double taus, double S2s, double tauf, double S2f) {
+Decimal EMF_Dipolar_R1(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
 	// omega_X is the measured nuclei (eg 15N, 13C), Y is the other (eg 1H)
-	double Jcomp = 0;
+	Decimal Jcomp = 0;
 	Jcomp += J0_EMF(omega_Y - omega_X, taus, S2s, tauf, S2f);
 	Jcomp += 3. * J0_EMF(omega_X, taus, S2s, tauf, S2f);
 	Jcomp += 6. * J0_EMF(omega_Y + omega_X, taus, S2s, tauf, S2f);
-	return (double) (0.1 * d * d * Jcomp);
+	return (Decimal) (0.1 * d * d * Jcomp);
 }
 
 
@@ -78,13 +78,13 @@ double EMF_Dipolar_R1(double omega_X, double omega_Y, double d, double taus, dou
  * @param J0sum
  *  J0sum
  */
-double EMF_Dipolar_R2(double omega_X, double omega_Y, double d, double taus, double S2s, double tauf, double S2f, double J0sum) {
+Decimal EMF_Dipolar_R2(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal J0sum) {
 	// all args should've been T_DOWN'ed
-	double JD = J0sum + 3 * J0_EMF(omega_X, taus, S2s, tauf, S2f);
+	Decimal JD = J0sum + 3 * J0_EMF(omega_X, taus, S2s, tauf, S2f);
 	JD += J0_EMF(omega_Y - omega_X, taus, S2s, tauf, S2f);
 	JD += 6 * J0_EMF(omega_Y, taus, S2s, tauf, S2f);
 	JD += 6 * J0_EMF(omega_Y + omega_X, taus, S2s, tauf, S2f);
-	return (double) ((1/20.) * d * d * JD);
+	return (Decimal) ((1/20.) * d * d * JD);
 }
   
   
@@ -106,24 +106,24 @@ double EMF_Dipolar_R2(double omega_X, double omega_Y, double d, double taus, dou
  * @param mode
  *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
  * @return R1
- *  Returns R1 as double
+ *  Returns R1 as Decimal
  */
-double EMF_R1(struct Residue *res, struct Relaxation* relax, double taus, double S2s, double tauf, double S2f, int mode) {
-	double field = relax->field * 1000000; // conversion to Hz
+Decimal EMF_R1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, int mode) {
+	Decimal field = relax->field * 1000000; // conversion to Hz
 
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
 	 * software division) I've predefined it. */
 
-	double omega_1H = T_DOWN * 2 * M_PI * field;
-	double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
-	double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
-	double wCOCa = 120 * omega_13C * 0.000001;
-	double omega_L;
-	double d2tot;
-	double *csa;
+	Decimal omega_1H = T_DOWN * 2 * M_PI * field;
+	Decimal omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
+	Decimal omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+	Decimal wCOCa = 120 * omega_13C * 0.000001;
+	Decimal omega_L;
+	Decimal d2tot;
+	Decimal *csa;
 	
-	double R1D = 0, R1CSA = 0;
+	Decimal R1D = 0, R1CSA = 0;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -156,7 +156,7 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, double taus, double
 
 	R1D *= T_DOWN;
 	R1CSA *= T_DOWN;
-	return (double) R1D + (double) R1CSA;
+	return (Decimal) R1D + (Decimal) R1CSA;
 }
 
 /**
@@ -177,36 +177,36 @@ double EMF_R1(struct Residue *res, struct Relaxation* relax, double taus, double
  * @param mode
  *  One of MODE_15N or MODE_13C depending on relaxation data type considered.
  * @return R2
- *  Returns R2 as double
+ *  Returns R2 as Decimal
  */
-double EMF_R2(struct Residue *res, struct Relaxation* relax, double taus, double S2s, double tauf, double S2f, int mode) {
+Decimal EMF_R2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, int mode) {
 	//if (d_mode == DIPOLAR) 
 	//	S2f = res->S2_dipolar / S2s;
-	double field = relax->field * 1000000; // conversion to Hz
+	Decimal field = relax->field * 1000000; // conversion to Hz
 	/* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
-	 * Here, because Planck's constant is 10^-34 (which would require a double128, and
+	 * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
 	 * software division) I've predefined it.  */
 
-	double omega_1H = T_DOWN * 2 * M_PI * field;
-	double omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
-	double omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
-	double omega_L;
-	double d2tot;
-	double *csa;
-	double wCOCa = 120 * omega_13C * 0.000001;
+	Decimal omega_1H = T_DOWN * 2 * M_PI * field;
+	Decimal omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
+	Decimal omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+	Decimal omega_L;
+	Decimal d2tot;
+	Decimal *csa;
+	Decimal wCOCa = 120 * omega_13C * 0.000001;
 	
-	double w1 = relax->w1;
-	double wr = relax->wr;
+	Decimal w1 = relax->w1;
+	Decimal wr = relax->wr;
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
 	
-	double J0sum = 0;
+	Decimal J0sum = 0;
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f);
 	J0sum += (2/3.) * J0_EMF(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f);
 
-	double R2D = 0, R2CSA = 0;
+	Decimal R2D = 0, R2CSA = 0;
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;
@@ -237,6 +237,6 @@ double EMF_R2(struct Residue *res, struct Relaxation* relax, double taus, double
 	R2D *= T_DOWN;
 	R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0_EMF(omega_L, taus, S2s, tauf, S2f)) * T_DOWN;
 
-	return (double) R2D + (double) R2CSA;
+	return (Decimal) R2D + (Decimal) R2CSA;
 }
 

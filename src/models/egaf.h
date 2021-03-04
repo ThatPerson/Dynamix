@@ -10,10 +10,10 @@
 #define MOD_EGAF 			9
 #define MOD_EGAFT 			10
 
-double EGAF_15NR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f);
-double EGAF_15NR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f);
-double EGAF_13CR1(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f);
-double EGAF_13CR2(struct Residue *res, struct Relaxation* relax, double taus, double tauf, double * sigs, double S2f);
+Decimal EGAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal S2f);
+Decimal EGAF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal S2f);
+Decimal EGAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal S2f);
+Decimal EGAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal S2f);
 
 #include "egaf.c"
 #endif

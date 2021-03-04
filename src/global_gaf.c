@@ -1,21 +1,21 @@
 
-double optimize_global_chisq(double * opts, struct Residue *r, struct Model * m, unsigned int params) {
+Decimal optimize_global_chisq(Decimal * opts, struct Residue *r, struct Model * m, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
 	 */
 
 	unsigned int l, c = 0;
-	double chisq = 0;
+	Decimal chisq = 0;
 	for (l = 0; l < m->n_residues; l++) {
-	//	double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
+	//	Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m, unsigned int params) {
 		if (m->residues[l].ignore == 1)
 			continue;
 		chisq += optimize_chisq(opts, &(m->residues[l]), m, params);
 		c++;
 	}
 	
-	return (double) (chisq / c); 
+	return (Decimal) (chisq / c); 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
@@ -36,8 +36,8 @@ int run_global_iteration(struct Model *m, int i) {
 	unsigned int params = 0;
 	params = m->params;
 	//printf("%d\n", params);
-	double *opts;
-	opts = (double *) malloc (sizeof(double) * params);
+	Decimal *opts;
+	opts = (Decimal *) malloc (sizeof(Decimal) * params);
 	
 	
 
@@ -47,7 +47,7 @@ int run_global_iteration(struct Model *m, int i) {
 			free(opts);
 			return NULL;
 		}*/
-		//double opts[20] = {0, 0};
+		//Decimal opts[20] = {0, 0};
 		
 		/**
 		 * SMF parameters are \n 
@@ -213,7 +213,7 @@ int run_global_iteration(struct Model *m, int i) {
 	
 
 	//printf("%le, %le\n", opts[0], opts[1]);
-	double val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
+	Decimal val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
 	if (val >= 1000000 || val < 0) {
 		val = -1;
 		for (k = 0; k < m->params; k++) {
@@ -256,12 +256,12 @@ int calc_global_errors(struct Model *m) {
 	
 	unsigned int l, k, i;
 	struct Residue *resid;
-	double *opts;
-	opts = (double *) malloc(sizeof(double) * m->params);
+	Decimal *opts;
+	opts = (Decimal *) malloc(sizeof(Decimal) * m->params);
 	
 	
 	int p = 0;
-	double temp_R = 0;
+	Decimal temp_R = 0;
 	int ignore = -1;
 	
 	for (i = 0; i < m->n_residues; i++) {
@@ -270,11 +270,11 @@ int calc_global_errors(struct Model *m) {
 		resid->S2CHb = resid->S2CH;
 		resid->S2CNb = resid->S2CN;
 		resid->S2CCb = resid->S2CC;
-		resid->errors_mean = (double *) malloc (sizeof(double) * m->params);
-		resid->errors_std = (double *) malloc(sizeof(double) * m->params);
-		resid->error_params = (double **) malloc (sizeof(double *) * m->params);
+		resid->errors_mean = (Decimal *) malloc (sizeof(Decimal) * m->params);
+		resid->errors_std = (Decimal *) malloc(sizeof(Decimal) * m->params);
+		resid->error_params = (Decimal **) malloc (sizeof(Decimal *) * m->params);
 		for (k = 0; k < m->params; k++) {
-			resid->error_params[k] = (double *) malloc (sizeof(double) * m->n_error_iter);
+			resid->error_params[k] = (Decimal *) malloc (sizeof(Decimal) * m->n_error_iter);
 		}
 	}
 	
@@ -310,7 +310,7 @@ int calc_global_errors(struct Model *m) {
 		}
 
 		resid = NULL;
-		double min = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
+		Decimal min = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
 		LOG("%d %d min = %lf", i, l, min);
 		fprintf(errp, "%d\t%lf", l+1, min);
 		for (k = 0; k < m->params; k++) {
@@ -355,7 +355,7 @@ int run_global(struct Model *m) {
 
 	unsigned int l;
 	for (l = 0; l < m->n_residues; l++) {
-		m->residues[l].parameters = (double *) malloc (sizeof(double) * m->params);
+		m->residues[l].parameters = (Decimal *) malloc (sizeof(Decimal) * m->params);
 		m->residues[l].min_val = MIN_VAL;
 	}
 	

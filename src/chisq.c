@@ -21,22 +21,22 @@
  *  Int returning number of violations of constraints (for chisq)
  * @return calculated R value
  */
-double back_calc(double * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
-	double calc_R = 0;
+Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
+	Decimal calc_R = 0;
 	unsigned int i;
 
 	unsigned int model = m->model;
 	if (relax->R <= 0)
 		return -1;
 	
-	double upper_lim_tf = (double) 1 * pow(10, -8 + T_S);
-	double upper_lim_ts = (double) 1 * pow(10, -5 + T_S);
-	double lower_lim_tf = (double) 1 * pow(10, -13 + T_S);
+	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
+	Decimal upper_lim_ts = (Decimal) 1 * pow(10, -5 + T_S);
+	Decimal lower_lim_tf = (Decimal) 1 * pow(10, -13 + T_S);
 	
 	if (model == MOD_SMF || model == MOD_SMFT) {
-		double tau = opts[0];
-		double S2 = opts[1];
-		double tau_eff = 0, Ea = 0;
+		Decimal tau = opts[0];
+		Decimal S2 = opts[1];
+		Decimal tau_eff = 0, Ea = 0;
 		
 		if (tau < 0)
 			(*violations)++;
@@ -69,10 +69,10 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
 				break;
 		}
 	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
-		double taus = opts[0];
-		double S2s = opts[1];
-		double tauf = opts[2];
-		double taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f=resid->S2NH / S2s;
+		Decimal taus = opts[0];
+		Decimal S2s = opts[1];
+		Decimal tauf = opts[2];
+		Decimal taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f=resid->S2NH / S2s;
 
 		if (model == MOD_EMFT) {
 			Eas = opts[3];
@@ -119,11 +119,11 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
 				break;
 		}
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		double taus = opts[0];
-		double tauf = opts[1];
-		double sigs[3] = {opts[2], opts[3], opts[4]};
-		double sigf[3] = {opts[5], opts[6], opts[7]};
-		double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		Decimal taus = opts[0];
+		Decimal tauf = opts[1];
+		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
+		Decimal taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
 		/* WARNING: Need to perform variant orientations before entering back_calc.*/
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
@@ -164,11 +164,11 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
 				break;
 		}
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		double taus = opts[0];
-		double tauf = opts[1];
-		double Ss[3] = {opts[2], opts[3], opts[4]};
-		double Sf[3] = {opts[5], opts[6], opts[7]};
-		double taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		Decimal taus = opts[0];
+		Decimal tauf = opts[1];
+		Decimal Ss[3] = {opts[2], opts[3], opts[4]};
+		Decimal Sf[3] = {opts[5], opts[6], opts[7]};
+		Decimal taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
 		/* WARNING: Need to perform variant orientations before entering back_calc.*/
 		if (model == MOD_AIMFT) {
 			Eas = opts[8];
@@ -209,11 +209,11 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
 				break;
 		}
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
-		double taus = opts[0];
-		double tauf = opts[1];
-		double sigs[3] = {opts[2], opts[3], opts[4]};
-		double S2f = opts[5];
-		double taus_eff = taus, tauf_eff = tauf, Eas=0, Eaf=0;
+		Decimal taus = opts[0];
+		Decimal tauf = opts[1];
+		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+		Decimal S2f = opts[5];
+		Decimal taus_eff = taus, tauf_eff = tauf, Eas=0, Eaf=0;
 		if (model == MOD_EGAFT) {
 			Eas = opts[6];
 			Eaf = opts[7];
@@ -256,7 +256,7 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
 		printf("Model not yet implemented.\n");
 		calc_R = -1;
 	}
-	double papbN=0,papbC=0,kex=0, RDC=0, fm = 1;
+	Decimal papbN=0,papbC=0,kex=0, RDC=0, fm = 1;
 	if (m->rdc == RDC_ON) {
 		if (m->or_variation == VARIANT_A) {
 			papbC = opts[m->params - 6];
@@ -287,7 +287,7 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
 		} else {
 			RDC = 0;
 		}
-		calc_R += (double) RDC;
+		calc_R += (Decimal) RDC;
 	}
 
 	return calc_R;
@@ -304,7 +304,7 @@ double back_calc(double * opts, struct Residue * resid, struct Relaxation * rela
  *  MOD_SMF etc.
  * @return Returns chisq value.
  */
-double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, unsigned int params) {
+Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -312,15 +312,15 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
 
 	unsigned int model = m->model;
 	unsigned int or_variations = m->or_variation;
-	double calc_R = 0;
-	double chisq = 0;
+	Decimal calc_R = 0;
+	Decimal chisq = 0;
 	int violations = 0;
 	unsigned int i;
-	double alpha, beta, gamma;
+	Decimal alpha, beta, gamma;
 	if (or_variations == VARIANT_A) {
-		alpha = (double) opts[params-3];
-		beta = (double) opts[params-2];
-		gamma = (double) opts[params-1];
+		alpha = (Decimal) opts[params-3];
+		beta = (Decimal) opts[params-2];
+		gamma = (Decimal) opts[params-1];
 		if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
 			violations++;
 		for (i = 0; i < N_OR; i++) {
@@ -329,7 +329,7 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
 		}
 	}
 	
-	double mult = 1.;
+	Decimal mult = 1.;
 	omp_set_num_threads(m->nthreads);
 	#pragma omp parallel for reduction(+:chisq)
 	for (i = 0; i < resid->n_relaxation; i++) {
@@ -351,24 +351,24 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
 		LOG("Chisq optimization had %d violations.", violations);
 	}
 	
-	double s2_mult = 100;
+	Decimal s2_mult = 100;
 	
 	if (model == MOD_DEMF || model == MOD_DEMFT) {
-		double S2s = opts[1];
-		double S2f = opts[3];
-		double S2NH = S2s * S2f;
+		Decimal S2s = opts[1];
+		Decimal S2f = opts[3];
+		Decimal S2NH = S2s * S2f;
 		
-		chisq += m->WS2NH * ((pow(resid->S2NH - (double) S2NH, 2.)) / pow(resid->S2NHe, 2.));
+		chisq += m->WS2NH * ((pow(resid->S2NH - (Decimal) S2NH, 2.)) / pow(resid->S2NHe, 2.));
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		double sigs[3] = {opts[2], opts[3], opts[4]};
-		double sigf[3] = {opts[5], opts[6], opts[7]};
+		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
 		
-		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
+		Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
 		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
 		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
 		// CCAp is shorter than CCAc.
-		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+		Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+		Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 		GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 		GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
 		/* 100 weighting for order parameters */
@@ -377,14 +377,14 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
 		if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 		if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		double sigs[3] = {opts[2], opts[3], opts[4]};
-		double sigf[3] = {opts[5], opts[6], opts[7]};
+		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
 		
-		double S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; // S2CCs, S2CCf
+		Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; // S2CCs, S2CCf
 	
 		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-		double *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+		Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+		Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
 		AIMF_S2(sigs, Os, S2s, 4);
 		AIMF_S2(sigf, Os, S2f, 4);
 		/* 100 weighting for order parameters */
@@ -393,13 +393,13 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
 		if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
 		if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
-		double sigs[3] = {opts[2], opts[3], opts[4]};
-		double S2f = (double) opts[5];
+		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+		Decimal S2f = (Decimal) opts[5];
 		
-		double S2NHs, S2CHs, S2CNs, S2CCs; // S2CCs
+		Decimal S2NHs, S2CHs, S2CNs, S2CCs; // S2CCs
 
 		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-		double *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+		Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
 		GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
 		/* 100 weghting for order parameters */
 		chisq += m->WS2NH * ((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
@@ -408,7 +408,7 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
 	//	chisq += 10*((pow(resid->S2CC - (S2CCs * S2f), 2)) / pow(resid->S2CCe, 2));
 	}
 	
-	return (double) (chisq / resid->n_relaxation); 
+	return (Decimal) (chisq / resid->n_relaxation); 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
@@ -425,7 +425,7 @@ double optimize_chisq(double * opts, struct Residue * resid, struct Model * m, u
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(double * opts, struct Residue * resid, struct Model * m, char *filename, unsigned int params) {
+int back_calculate(Decimal * opts, struct Residue * resid, struct Model * m, char *filename, unsigned int params) {
 	/* opts is a pointer to an array containing;
 	 *
 	 *  for SMF, [tau, S2]
@@ -433,7 +433,7 @@ int back_calculate(double * opts, struct Residue * resid, struct Model * m, char
 	//if (opts[0] == -1)
 	//	return -1;
 	unsigned int or_variations = m->or_variation;
-	double calc_R = 0;
+	Decimal calc_R = 0;
 	FILE * fp;
 	fp = fopen(filename, "w");
 	if (fp == NULL) {
@@ -442,11 +442,11 @@ int back_calculate(double * opts, struct Residue * resid, struct Model * m, char
 	}
 	int violations = 0;
 	unsigned int i;
-	double alpha, beta, gamma;
+	Decimal alpha, beta, gamma;
 	if (or_variations == VARIANT_A) {
-		alpha = (double) opts[params-3];
-		beta = (double) opts[params-2];
-		gamma = (double) opts[params-1];
+		alpha = (Decimal) opts[params-3];
+		beta = (Decimal) opts[params-2];
+		gamma = (Decimal) opts[params-1];
 		if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
 			violations++;
 		for (i = 0; i < N_OR; i++) {
