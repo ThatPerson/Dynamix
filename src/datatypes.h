@@ -9,7 +9,6 @@ struct Model;
 struct Orient;
 struct Residue;
 struct Relaxation;
-struct rrargs;
 
 
 void calculate_Y2(struct Orient * or);

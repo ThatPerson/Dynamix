@@ -328,7 +328,7 @@ int main(int argc, char * argv[]) {
 	
 	#pragma omp parallel for 
 	for (i = 0; i <m.n_residues; i++) {
-		Decimal Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;;
+		Decimal Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;
 		struct Residue * resid;
 		Decimal * opts;
 		unsigned int j;

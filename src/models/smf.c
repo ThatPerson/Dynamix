@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <complex.h>
 
 
 /**
@@ -12,7 +11,7 @@
  * Implements J(w) = (1 - S2) tau / (1 + (w tau)^2) as from Lipari1982 eq 35 (assuming no overall tumbling)
  * and the factor of 2/5 has been taken into the summation (see below).
  */
-inline Decimal J0_SMF(Decimal omega, Decimal tau, Decimal S2) {
+Decimal J0_SMF(Decimal omega, Decimal tau, Decimal S2) {
 	return (((1 - S2) * tau)) \
 		/ (1 + (omega * omega * tau * tau));
 }
@@ -97,7 +96,7 @@ Decimal SMF_R1(struct Residue *res, struct Relaxation* relax, Decimal tau, Decim
 	Decimal d2tot;
 	Decimal wCOCa = 120 * omega_13C * 0.000001;
 	Decimal *csa;
-	Decimal R1D = 0, R1CSA = 0;
+	Decimal R1D = 0, R1CSA;
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;
@@ -167,7 +166,7 @@ Decimal SMF_R2(struct Residue *res, struct Relaxation* relax, Decimal tau, Decim
 	Decimal omega_L;
 	Decimal d2tot;
 	Decimal *csa;
-	Decimal R2D = 0, R2CSA = 0;
+	Decimal R2D = 0, R2CSA;
 	Decimal wCOCa = 120 * omega_13C * 0.000001;
 	Decimal w1 = relax->w1;
 	Decimal wr = relax->wr;

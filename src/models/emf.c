@@ -4,14 +4,13 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <complex.h>
-  
+
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2), 
  *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
  */
-inline Decimal J0_EMF(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
+Decimal J0_EMF(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
 	return ( \
 			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
 			/ (1 + ((Decimal) omega * (Decimal) tauf * (Decimal) omega * (Decimal) tauf)) \
@@ -27,7 +26,7 @@ inline Decimal J0_EMF(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, De
  * Juv(w) = (1-S2f) tf / (1 + (wtf)^2) + (1/P2) S2f (P2 - S2s) (ts / 1+(wts)^2)
  * eq 2
  */
-inline Decimal J0_EMF_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
+Decimal J0_EMF_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
 	return ( \
 			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
 			/ (1 + ((Decimal) omega * (Decimal) tauf * (Decimal) omega * (Decimal) tauf)) \
@@ -123,7 +122,7 @@ Decimal EMF_R1(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 	Decimal d2tot;
 	Decimal *csa;
 	
-	Decimal R1D = 0, R1CSA = 0;
+	Decimal R1D = 0, R1CSA;
 
 	if (mode == MODE_15N) {
 		csa = res->csaN;
@@ -206,7 +205,7 @@ Decimal EMF_R2(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f);
 	J0sum += (4/3.) * J0_EMF(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f);
 
-	Decimal R2D = 0, R2CSA = 0;
+	Decimal R2D = 0, R2CSA;
 	if (mode == MODE_15N) {
 		csa = res->csaN;
 		omega_L = 2 * M_PI * field / 9.869683408806043;

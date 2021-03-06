@@ -16,8 +16,6 @@ int read_csa(struct Model *m, char *filename, int dt) {
 		return -1;
 	}
 	int resid;
-	Decimal val;
-	Decimal err;
 	Decimal s11, s22, s33;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
@@ -372,8 +370,6 @@ int read_system_file(char *filename, struct Model * m) {
 	int ig = 0;
 
 	/* Initialise */
-	m->max_func_evals = 20000;
-	m->max_iter = 20000;
 	m->n_iter = 0;
 	m->n_error_iter = 0;
 	m->model = MOD_UNDEFINED;
@@ -550,10 +546,6 @@ int read_system_file(char *filename, struct Model * m) {
 				strcpy(csaN, val);
 			} else if (strcmp(key, "CSAC") == 0) {
 				strcpy(csaC, val);
-			} else if (strcmp(key, "MAXFUNCEVALS") == 0) {
-				m->max_func_evals = (unsigned int) atoi(val);
-			} else if (strcmp(key, "MAXITER") == 0) {
-				m->max_iter = (unsigned int) atoi(val);
 			} else if (strcmp(key, "N_RESIDUES") == 0){
 				m->n_residues = (unsigned int) atoi(val);
 				n_resid = atoi(val);

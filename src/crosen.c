@@ -38,8 +38,6 @@
  * Rosenbrock's function.
  */
 
-
-#include <stdio.h>
 #include <stdlib.h>
 //#include <malloc.h>
 #include <math.h>
@@ -115,8 +113,8 @@ Decimal simplex(Decimal (*func)(Decimal[], struct Residue*, struct Model *, unsi
   /* create the initial simplex */
   /* assume one of the vertices is 0,0 */
 
-  pn = scale*(sqrtl(n+1)-1+n)/(n*sqrtl(2));
-  qn = scale*(sqrtl(n+1)-1)/(n*sqrtl(2));
+  pn = scale*(sqrt(n+1)-1+n)/(n*sqrt(2));
+  qn = scale*(sqrt(n+1)-1)/(n*sqrt(2));
 
   for (i=0;i<n;i++) {
     v[0][i] = start[i];
@@ -276,9 +274,9 @@ Decimal simplex(Decimal (*func)(Decimal[], struct Residue*, struct Model *, unsi
     favg = fsum/(n+1);
     s = 0.0;
     for (j=0;j<=n;j++) {
-      s += powl((f[j]-favg),2.0)/(n);
+      s += pow((f[j]-favg),2.0)/(n);
     }
-    s = sqrtl(s);
+    s = sqrt(s);
     if (s < EPSILON) break;
   }
   /* end main loop of the minimization */
@@ -298,7 +296,7 @@ Decimal simplex(Decimal (*func)(Decimal[], struct Residue*, struct Model *, unsi
 
   }
   min=func(v[vs], resid, mod, n);
-  k++;
+  //k++;
   //printf("%d Function Evaluations\n",k);
   //printf("%d Iterations through program\n",itr);
 

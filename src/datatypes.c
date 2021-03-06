@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
-#include <stdlib.h>
-#include <time.h>    
+#include <time.h>
 //#define LOGGING
 
 time_t start_time;
@@ -76,8 +75,7 @@ time_t start_time;
 #define CNRATIO_OFF		0
 
 #define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
-#define NTHREADS		40						///< Unused
-#define THREAD_STACK	32768*2 				///< Bytes per thread. Raise if stack overflows, lower if insufficient stack for number of workers
+#define THREAD_STACK	(32768*2) 				///< Bytes per thread. Raise if stack overflows, lower if insufficient stack for number of workers
 
 #define GLOBAL			1
 #define LOCAL			0
@@ -100,12 +98,9 @@ time_t start_time;
 
 #define MODE_REAL		0
 #define MODE_IMAG		1
-#define MODE_COMP		2
 
-#define DIPOLAR			1
-#define NODIP			0
 
-#define HALF_PI			M_PI / 2.
+#define HALF_PI			(M_PI / 2.)
 
 #define VERBOSE			1
 
@@ -144,7 +139,7 @@ Decimal Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
    *    1 indicates that errors should be calculated, 0 indicates not.
    */
 struct Model {
-	unsigned int max_func_evals, max_iter, n_iter, n_error_iter;
+	unsigned int n_iter, n_error_iter;
 	char outputdir[255];
 	unsigned int model;
 	unsigned int params;
@@ -156,8 +151,8 @@ struct Model {
 	unsigned int cn_ratio;
 	unsigned int or_variation; // VARIANT_A or INVARIANT_A.
 	int error_mode;
-	int proc_start;
-	int proc_end;
+	unsigned int proc_start;
+	unsigned int proc_end;
 	int myid, numprocs;
 	Decimal WS2NH, WS2CH, WS2CN, WS2CC;
 };
@@ -274,29 +269,6 @@ struct Relaxation {
 	Decimal T; // in Kelvin
 };
 
-/**
- * @struct rrargs
- * Struct containing information relevant to a thread
- * @var rrargs::i
- *  Count variable
- * @var rrargs::resid
- *  Pointer to residue being considered
- * @var rrargs::model
- *  Model type, one of MOD_*
- * @var rrargs::n_iter
- *  Number of iterations
- * @var rrargs::outputdir
- *  Output directory
- */
-struct rrargs {
-	unsigned int i;
-	struct Residue * resid;
-	struct Model * model;
-	unsigned int n_iter;
-	char outputdir[255];
-};
-
-
 Decimal sq(Decimal x) {
 	return x * x;
 }
@@ -332,7 +304,6 @@ void calculate_Y2(struct Orient * or) {
 	or->Y2c[2] = conj(or->Y2[2]);
 	or->Y2c[3] = conj(or->Y2[3]);
 	or->Y2c[4] = conj(or->Y2[4]);
-	return;
 
 }
 
@@ -354,38 +325,37 @@ void initialise_dwig(Decimal angle, Decimal Dw[5][5]) {
 
 	/* verified against https://link.springer.com/content/pdf/bbm%3A978-1-4684-0208-7%2F1.pdf in rotation_tests.c*/
 
-	Decimal cosp = cosl(angle);
-	Decimal sinp = sinl(angle);
-	Dw[0][0] = powl(cosl(angle/2.), 4); // -2 -2 
+	Decimal cosp = cos(angle);
+	Decimal sinp = sin(angle);
+	Dw[0][0] = pow(cos(angle/2.), 4); // -2 -2
 	Dw[1][0] = (-1/2.) * (1 + cosp) * sinp; // -1 -2
-	Dw[2][0] = sqrtl(3/8.) * powl(sinp, 2); // 0 -2
+	Dw[2][0] = sqrt(3/8.) * pow(sinp, 2); // 0 -2
 	Dw[3][0] = (1/2.) * sinp * (cosp - 1); // 1 -2
-	Dw[4][0] = powl(sinl(angle/2.), 4); // 2 -2
+	Dw[4][0] = pow(sin(angle/2.), 4); // 2 -2
 
 	Dw[0][1] = (1/2.) * (1 + cosp) * sinp; // -2 -1
-	Dw[1][1] = powl(cosp, 2.) - (1/2.) * (1 - cosp); // -1 -1
-	Dw[2][1] = -sqrtl(3/8.) * sinl(angle * 2.); // 0 -1
-	Dw[3][1] = (1/2.) * (1 + cosp) - powl(cosp, 2); // 1 -1
+	Dw[1][1] = pow(cosp, 2.) - (1/2.) * (1 - cosp); // -1 -1
+	Dw[2][1] = -sqrt(3/8.) * sin(angle * 2.); // 0 -1
+	Dw[3][1] = (1/2.) * (1 + cosp) - pow(cosp, 2); // 1 -1
 	Dw[4][1] = (1/2.) * (cosp - 1) * sinp; // 2 -1
 
-	Dw[0][2] = sqrtl(3/8.) * powl(sinp, 2); // -2 0
-	Dw[1][2] = sqrtl(3/2.) * sinp * cosp; // -1 0
-	Dw[2][2] = (1/2.) * (3 * powl(cosp, 2) - 1); // 0 0
-	Dw[3][2] = -sqrtl(3/2.) * sinp * cosp; // 1 0
-	Dw[4][2] = sqrtl(3/8.) * powl(sinp, 2);  // 2 0
+	Dw[0][2] = sqrt(3/8.) * pow(sinp, 2); // -2 0
+	Dw[1][2] = sqrt(3/2.) * sinp * cosp; // -1 0
+	Dw[2][2] = (1/2.) * (3 * pow(cosp, 2) - 1); // 0 0
+	Dw[3][2] = -sqrt(3/2.) * sinp * cosp; // 1 0
+	Dw[4][2] = sqrt(3/8.) * pow(sinp, 2);  // 2 0
 
 	Dw[0][3] = -(1/2.) * (cosp - 1) * sinp; // -2 1 
-	Dw[1][3] = (1/2.) * (1 + cosp) - powl(cosp, 2); // -1 1
-	Dw[2][3] = sqrtl(3/8.) * sinl(angle * 2.); // 0 1
-	Dw[3][3] = powl(cosp, 2) - (1/2.)*(1-cosp); // 1 1
+	Dw[1][3] = (1/2.) * (1 + cosp) - pow(cosp, 2); // -1 1
+	Dw[2][3] = sqrt(3/8.) * sin(angle * 2.); // 0 1
+	Dw[3][3] = pow(cosp, 2) - (1/2.)*(1-cosp); // 1 1
 	Dw[4][3] = (-1/2.) * (1 + cosp) * sinp; // 2 1
 
-	Dw[0][4] = powl(sinl(angle/2.), 4); // -2 2
+	Dw[0][4] = pow(sin(angle/2.), 4); // -2 2
 	Dw[1][4] = (-1/2.) * (cosp - 1) * sinp; // -1 2
-	Dw[2][4] = sqrtl(3/8.) * powl(sinp, 2); // 0 2
+	Dw[2][4] = sqrt(3/8.) * pow(sinp, 2); // 0 2
 	Dw[3][4] = (1/2.) * sinp * (cosp + 1); // 1 2  m' = 1, m = 2
-	Dw[4][4] = powl(cosl(angle / 2.), 4); // 2 2
-	return;
+	Dw[4][4] = pow(cos(angle / 2.), 4); // 2 2
 }
 
 /**
@@ -418,7 +388,6 @@ void free_all(struct Model *m) {
 	}
 	free(m->residues);
 
-	return;
 }
 
 /**
@@ -461,7 +430,7 @@ void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
 	}
 
 	int m, mp;
-	Complex Dcomp = 0;
+	Complex Dcomp;
 
 	for (mp = -2; mp <= 2; mp++) {
 		for (m = -2; m <= 2; m++) {
@@ -474,5 +443,4 @@ void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
 		or->Y2c[mp+2] = conj(or->Y2[mp+2]); // and fill conjugate
 	}
 
-	return;
 }

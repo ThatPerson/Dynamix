@@ -6,9 +6,7 @@
  * I may come back to it if I have time.
  */
 
-#include <stdio.h>
 #include <math.h>
-#include <complex.h>
 
 
 /**
@@ -63,7 +61,7 @@ Decimal EGAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 
 	/* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
-	Decimal J1 = 0;
+	Decimal J1;
 	
 
 	omega_1H *= T_DOWN;
@@ -226,7 +224,7 @@ Decimal EGAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	
 	/* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-	Decimal J1 = 0;
+	Decimal J1;
 
 
 	omega_1H *= T_DOWN;

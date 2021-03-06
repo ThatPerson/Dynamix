@@ -6,7 +6,7 @@
 #define MOD_SMF 1
 #define MOD_SMFT 4
 
-inline Decimal J0_SMF(Decimal omega, Decimal tau, Decimal S2);
+Decimal J0_SMF(Decimal omega, Decimal tau, Decimal S2);
 Decimal SMF_Dipolar_R1(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal tau, Decimal S2);
 Decimal SMF_Dipolar_R2(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal tau, Decimal S2, Decimal J0sum);
 

@@ -33,8 +33,7 @@ int run_global_iteration(struct Model *m, int i) {
 	//printf("RESIDUE %d\n", i+1);
 	//printf("Number of relaxations: %d\n", resid->n_relaxation);
 	unsigned int k;
-	unsigned int params = 0;
-	params = m->params;
+	unsigned int params = m->params;
 	//printf("%d\n", params);
 	Decimal *opts;
 	opts = (Decimal *) malloc (sizeof(Decimal) * params);
@@ -107,47 +106,47 @@ int run_global_iteration(struct Model *m, int i) {
 		 */
 	unsigned int model = m->model;
 	if (model == MOD_SMF) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
 		opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 	} else if (model == MOD_EMF) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+		opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 		//printf("RUN: %lf, %le, %le, %le\n", 0.7, opts[0], opts[1], opts[2]);
 	} else if (model == MOD_EMFT) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+		opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 		opts[3] = (rand()%60000)/1.;
 		opts[4] = (rand()%60000)/1.;
 		//printf("RUN: %lf, %le, %le, %le\n", 0.7, opts[0], opts[1], opts[2]);
 	} else if (model == MOD_DEMF) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+		opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 		opts[3] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 	} else if (model == MOD_DEMFT) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
 		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+		opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 		opts[3] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 		opts[4] = (rand()%60000)/1.;
 		opts[5] = (rand()%60000)/1.;
 	} else if (model == MOD_SMFT) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
 		opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 		opts[2] = (rand()%60000)/1.;
 	} else if (model == MOD_GAF) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 		for (k = 2; k <= 7; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
 			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 		}
 	} else if (model == MOD_GAFT) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
-		opts[1] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
+		opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 		for (k = 2; k <= 7; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
@@ -155,23 +154,23 @@ int run_global_iteration(struct Model *m, int i) {
 		opts[8] = (rand()%60000)/1.;
 		opts[9] = (rand()%60000)/1.;
 	} else if (model == MOD_AIMF) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 		for (k = 2; k <= 7; k++) {
 			opts[k] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 		}
 	} else if (model == MOD_AIMFT) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
-		opts[1] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
+		opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 		for (k = 2; k <= 7; k++) {
 			opts[k] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 		}
 		opts[8] = (rand()%60000)/1.;
 		opts[9] = (rand()%60000)/1.;
 	} else if (model == MOD_EGAF) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 		for (k = 2; k <= 4; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
@@ -180,8 +179,8 @@ int run_global_iteration(struct Model *m, int i) {
 		opts[5] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
 		
 	} else if (model == MOD_EGAFT) {
-		opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 		for (k = 2; k <= 4; k++) {
 			// 15 degrees = 0.26180 radians
 			opts[k] = ((rand () % 250)/1000.);
@@ -226,13 +225,13 @@ int run_global_iteration(struct Model *m, int i) {
 		fprintf(fp, "\t%le", opts[k]);
 	}
 	fprintf(fp, "\n");
-
-	for (i = 0; i < m->n_residues; i++) {
-		if (val < m->residues[i].min_val && val != -1) {
+    unsigned int j;
+	for (j = 0; j < m->n_residues; j++) {
+		if (val < m->residues[j].min_val && val != -1) {
 		//printf("New lowest %lf\n", val);	
-			m->residues[i].min_val = val;
+			m->residues[j].min_val = val;
 			for (k = 0; k < params; k++) {
-				m->residues[i].parameters[k] = opts[k];
+				m->residues[j].parameters[k] = opts[k];
 			}
 		}
 	}
@@ -261,7 +260,7 @@ int calc_global_errors(struct Model *m) {
 	
 	
 	int p = 0;
-	Decimal temp_R = 0;
+	Decimal temp_R;
 	int ignore = -1;
 	
 	for (i = 0; i < m->n_residues; i++) {

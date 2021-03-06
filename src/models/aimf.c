@@ -2,9 +2,7 @@
  * @file aimf.c
  */
 
-#include <stdio.h>
 #include <math.h>
-#include <complex.h>
 
 
 
@@ -103,7 +101,7 @@ Decimal AIMF_Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Deci
 int AIMF_S2(Decimal order_params[3], struct Orient ** A, Decimal * S2[], int length) {
 	int i;
 	Decimal ct, st, cp, sp;
-	Decimal S2a = powl(order_params[0], 2.), S2b = powl(order_params[1], 2.), S2c = powl(order_params[2], 2.);
+	Decimal S2a = pow(order_params[0], 2.), S2b = pow(order_params[1], 2.), S2c = pow(order_params[2], 2.);
 	Decimal SaSbSc = S2a * S2b * S2c;
 	Decimal denom;
 	for (i = 0; i < length; i++) {
@@ -115,11 +113,11 @@ int AIMF_S2(Decimal order_params[3], struct Orient ** A, Decimal * S2[], int len
 		sp = sin(A[i]->phi);
 		
 		denom = 0;
-		denom += S2b * S2c * powl(st * sp, 2.);
-		denom += S2a * S2c * powl(st * cp, 2.);
-		denom += S2a * S2b * powl(ct, 2.);
+		denom += S2b * S2c * pow(st * sp, 2.);
+		denom += S2a * S2c * pow(st * cp, 2.);
+		denom += S2a * S2b * pow(ct, 2.);
 		
-		*S2[i] = sqrtl(SaSbSc / denom);
+		*S2[i] = sqrt(SaSbSc / denom);
 		
 	}
 	return 1;
@@ -183,7 +181,7 @@ Decimal AIMF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 
 	/* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
-	Decimal J1 = 0;
+	Decimal J1;
 	
 
 	omega_1H *= T_DOWN;
@@ -351,7 +349,7 @@ Decimal AIMF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	
 	/* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-	Decimal J1 = 0;
+	Decimal J1;
 
 
 	omega_1H *= T_DOWN;

@@ -133,10 +133,10 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 							if (cimag(A[i]->Y2[m+2]) < 0.00001 && cimag(B[i]->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
 								/* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
 								* If mode is MODE_REAL, then, we may safely ignore any case in which
-								*  cpowl(-1*I, k-kp)
+								*  cpow(-1*I, k-kp)
 								* is imaginary (as this will give only an imaginary component to the Amp).
 								* This is the case for any (k-kp)%2 != 0.
-								* In this case, if (k-kp)%4 == 0 the cpowl function gives 1, else -1.
+								* In this case, if (k-kp)%4 == 0 the cpow function gives 1, else -1.
 								*/
 								if ((k-kp)%2 != 0)
 									continue;
@@ -237,7 +237,7 @@ Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 
 	/* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
-	Decimal J1 = 0;
+	Decimal J1;
 	
 
 	omega_1H *= T_DOWN;
@@ -406,7 +406,7 @@ Decimal GAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	
 	/* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-	Decimal J1 = 0;
+	Decimal J1;
 
 
 	omega_1H *= T_DOWN;

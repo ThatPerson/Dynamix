@@ -51,19 +51,19 @@ void calc_statistics(Decimal * vals, int length, Decimal * mean, Decimal * std) 
 	Decimal m2 = 0;
 	for (k = 0; k < length; k++) {
 		*mean += vals[k];
-		m2 += powl(vals[k], 2);
+		m2 += pow(vals[k], 2);
 	}
 	*mean = *mean / ((Decimal) length);
 	m2 = m2 / ((Decimal) length);
-	Decimal mdiff = m2 - powl(*mean, 2.);
+	Decimal mdiff = m2 - pow(*mean, 2.);
 	if (mdiff < 0 && fabsl(mdiff) < 0.000001) {
 		ERROR("mdiff = %lf, making negative.", mdiff);
 		// then all have converged to the same point and the std is 0. 
-		// but because Decimaling points are ew, it will give 'nan' for sqrtl(-0.0000)
+		// but because Decimaling points are ew, it will give 'nan' for sqrt(-0.0000)
 		// so we just invert the sign. It's not pretty but ah well.
 		mdiff = -mdiff;
 	}
-	*std = sqrtl(mdiff);
+	*std = sqrt(mdiff);
 
 }
 
@@ -75,7 +75,7 @@ void calc_statistics(Decimal * vals, int length, Decimal * mean, Decimal * std) 
  * @param input
  *  rrarg struct containing the residue under consideration.
  */
-int calc_errors(struct Model *m, int residue) {
+int calc_errors(struct Model *m, unsigned int residue) {
 	struct Residue *resid = &(m->residues[residue]);
 	
 
@@ -94,7 +94,7 @@ int calc_errors(struct Model *m, int residue) {
 		return -1;
 	}
 
-	unsigned int l, k, params = 0;
+	unsigned int l, k, params;
 	params = m->params;
 	//printf("%d\n", params);
 	Decimal *opts;
@@ -109,7 +109,7 @@ int calc_errors(struct Model *m, int residue) {
 	//Decimal val = 0;
 	int p = 0;
 	int ignore = -1;
-	Decimal temp_R = 0;
+	Decimal temp_R;
 
 	// make backups of order parameters.
 	resid->S2NHb = resid->S2NH;

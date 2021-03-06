@@ -33,7 +33,7 @@
  * @param input
  *  Pointer to rrarg containing thread information
  */
-int run_residue(struct Model *m, int residue) {
+int run_residue(struct Model *m, unsigned int residue) {
 	struct Residue * resid = &(m->residues[residue]);
 
 
@@ -52,8 +52,7 @@ int run_residue(struct Model *m, int residue) {
 	//printf("RESIDUE %d\n", i+1);
 	//printf("Number of relaxations: %d\n", resid->n_relaxation);
 	unsigned int l, k;
-	unsigned int params = 0;
-	params = m->params;
+	unsigned int params = m->params;
 	//printf("%d\n", params);
 	Decimal *opts;
 	opts = (Decimal *) malloc (sizeof(Decimal) * params);
@@ -126,47 +125,47 @@ int run_residue(struct Model *m, int residue) {
 		 *   [7] activation energy for fast motion\n 
 		 */
 		if (model == MOD_SMF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 		} else if (model == MOD_EMF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-			opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 			//printf("RUN: %lf, %le, %le, %le\n", resid->S2NH, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_EMFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-			opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+			opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 			opts[3] = (rand()%60000)/1.;
 			opts[4] = (rand()%60000)/1.;
 			//printf("RUN: %lf, %le, %le, %le\n", resid->S2NH, opts[0], opts[1], opts[2]);
 		} else if (model == MOD_DEMF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-			opts[2] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 			opts[3] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 		} else if (model == MOD_DEMFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
 			opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-			opts[2] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+			opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 			opts[3] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 			opts[4] = (rand()%60000)/1.;
 			opts[5] = (rand()%60000)/1.;
 		} else if (model == MOD_SMFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
 			opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
 			opts[2] = (rand()%60000)/1.;
 		} else if (model == MOD_GAF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 			for (k = 2; k <= 7; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
 				//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 			}
 		} else if (model == MOD_GAFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
-			opts[1] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
+			opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 			for (k = 2; k <= 7; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
@@ -174,23 +173,23 @@ int run_residue(struct Model *m, int residue) {
 			opts[8] = (rand()%60000)/1.;
 			opts[9] = (rand()%60000)/1.;
 		} else if (model == MOD_AIMF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 			for (k = 2; k <= 7; k++) {
 				opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 				//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
 			}
 		} else if (model == MOD_AIMFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -15 + T_S);
-			opts[1] = ((rand() % 100)/100.) * powl(10, -20 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
+			opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
 			for (k = 2; k <= 7; k++) {
 				opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 			}
 			opts[8] = (rand()%60000)/1.;
 			opts[9] = (rand()%60000)/1.;
 		} else if (model == MOD_EGAF) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 			for (k = 2; k <= 4; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
@@ -199,8 +198,8 @@ int run_residue(struct Model *m, int residue) {
 			opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
 			
 		} else if (model == MOD_EGAFT) {
-			opts[0] = ((rand() % 100)/100.) * powl(10, -8 + T_S);
-			opts[1] = ((rand() % 100)/100.) * powl(10, -11 + T_S);
+			opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
+			opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
 			for (k = 2; k <= 4; k++) {
 				// 15 degrees = 0.26180 radians
 				opts[k] = ((rand () % 250)/1000.);
@@ -259,7 +258,7 @@ int run_residue(struct Model *m, int residue) {
 }
 
 int run_fitting(struct Model *m) {
-	int i;
+	unsigned int i;
 	for (i = m->proc_start; i < m->proc_end; i++) {
 		printf("\tWorker %d/%d: Residue %d.\n", m->myid + 1, m->numprocs, i + 1);
 		run_residue(m, i);
@@ -268,13 +267,11 @@ int run_fitting(struct Model *m) {
 }
 
 int run_errors(struct Model *m) {
-	int i;
+	unsigned int i;
 	for (i = m->proc_start; i < m->proc_end; i++) {
 		printf("\tWorker %d/%d: Residue %d (errors).\n", m->myid + 1, m->numprocs, i+1);
 		calc_errors(m, i);
 	}
-	return 1;
-	
 	return 1;
 }
 
@@ -489,12 +486,12 @@ int print_backcalcs(struct Model *m) {
 	return 1;
 }
 
-int determine_residues(struct Model *m, int myid, int numprocs, int *start, int *end) {
+int determine_residues(struct Model *m, int myid, int numprocs, unsigned int *start, unsigned int *end) {
 	// we have m->n_residues split over numprocs. 
 	// so 
 
 
-	int res_per_proc = ((int) m->n_residues / numprocs);
+	unsigned int res_per_proc = (m->n_residues / numprocs);
 	if (m->n_residues % numprocs != 0)
 		res_per_proc++;
 	*start = res_per_proc * myid;
@@ -551,7 +548,6 @@ int main(int argc, char * argv[]) {
 	m.numprocs = numprocs;
 	//printf("%d params.\n", m.params);
 	//exit(-1);
-	int s, e;
 	determine_residues(&m, myid, numprocs, &(m.proc_start), &(m.proc_end));
 	printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
 	omp_set_num_threads(m.nthreads);
