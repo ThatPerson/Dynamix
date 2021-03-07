@@ -31,10 +31,10 @@ double GAF_S2_current(long double sig[3], struct Orient * A, struct Orient * B, 
 						if (cimag(A->Y2[m+2]) < 0.00001 && cimag(B->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
 							/* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
 							 * If mode is MODE_REAL, then, we may safely ignore any case in which
-							 *  cpowl(-1*I, k-kp)
+							 *  cpow(-1*I, k-kp)
 							 * is imaginary (as this will give only an imaginary component to the Amp).
 							 * This is the case for any (k-kp)%2 != 0.
-							 * In this case, if (k-kp)%4 == 0 the cpowl function gives 1, else -1.
+							 * In this case, if (k-kp)%4 == 0 the cpow function gives 1, else -1.
 							 */
 							if ((k-kp)%2 != 0)
 								continue;
@@ -98,10 +98,10 @@ int GAF_S2_new(long double sig[3], struct Orient ** A, struct Orient ** B, doubl
 							if (cimag(A[i]->Y2[m+2]) < 0.00001 && cimag(B[i]->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
 								/* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
 								* If mode is MODE_REAL, then, we may safely ignore any case in which
-								*  cpowl(-1*I, k-kp)
+								*  cpow(-1*I, k-kp)
 								* is imaginary (as this will give only an imaginary component to the Amp).
 								* This is the case for any (k-kp)%2 != 0.
-								* In this case, if (k-kp)%4 == 0 the cpowl function gives 1, else -1.
+								* In this case, if (k-kp)%4 == 0 the cpow function gives 1, else -1.
 								*/
 								if ((k-kp)%2 != 0)
 									continue;
@@ -227,8 +227,8 @@ int main(int argc, char * argv[]) {
 	
     /*for (s = 0.1; s <= 0.3; s += 0.1) {
         for (f = 0.1; f <= 0.3; f += 0.1) {
-            taus = s * powl(10, -8);
-            tauf = f * powl(10, -11);
+            taus = s * pow(10, -8);
+            tauf = f * pow(10, -11);
             for (sigs[0] = 0.05; sigs[0] <= 0.1; sigs[0] += 0.05) {
                 for (sigs[1] = 0.05; sigs[1] <= 0.1; sigs[1] += 0.05) {
                     for (sigs[2] = 0.05; sigs[2] <= 0.1; sigs[2] += 0.05) {

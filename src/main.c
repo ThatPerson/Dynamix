@@ -544,6 +544,12 @@ int main(int argc, char * argv[]) {
 
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
+    if (ret == -1) {
+        printf("Error found, crashing peacefully...\n");
+        free_all(&m);
+        MPI_Finalize();
+        exit(-1);
+    }
 	m.myid = myid;
 	m.numprocs = numprocs;
 	//printf("%d params.\n", m.params);
@@ -563,10 +569,7 @@ int main(int argc, char * argv[]) {
 		ret = -1;
 	}
 
-	if (ret == -1) {
-		printf("Error found, crashing peacefully...\n");
-		exit(-1);
-	}
+
 
 
 	//printf("%d\n", ret);
