@@ -166,6 +166,19 @@ int calc_errors(struct Model *m, unsigned int residue) {
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (Decimal *) malloc (sizeof(Decimal) * params);
 
+        /* Return our pointers to how they were before... */
+        free(resid->relaxation);
+        resid->relaxation = NULL;
+        resid->relaxation = resid->temp_relaxation;
+        resid->temp_relaxation = NULL;
+
+
+        if (min > 100 * resid->min_val) {
+            // did not converge.
+            ERROR("Error iteration %d for residue %d gave min_val = %lf (base mod = %lf), indicating no convergence. Rerunning iteration.\n", l+1, residue, min, resid->min_val);
+            l--;
+            continue;
+        }
 		fprintf(errp, "%d\t%lf", l+1, min);
 		for (k = 0; k < params; k++) {
 			resid->error_params[k][p] = opts[k];
@@ -175,11 +188,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
 		p++;
 
 
-		/* Return our pointers to how they were before... */
-		free(resid->relaxation);
-		resid->relaxation = NULL;
-		resid->relaxation = resid->temp_relaxation;
-		resid->temp_relaxation = NULL;
+
 	}
 
 	// restore of order parameters.
