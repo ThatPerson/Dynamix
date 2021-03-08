@@ -104,6 +104,8 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 	int l, m, mp, k, kp, i;
 	Complex * Amp = (Complex *) malloc(sizeof(Complex) * (long unsigned int) length);
 	Complex temp, ttemp;
+
+
 	for (i = 0; i < length; i++) {
 		Amp[i] = 0;
 	}
@@ -151,9 +153,9 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 							}
 							
 							
-							
 							ttemp *= A[i]->Y2[m+2] * B[i]->Y2c[mp+2];
-							Amp[i] += ttemp;
+
+                            Amp[i] += ttemp;
 							//printf("Amp %d %lf\n", i, Amp[i]);
 						}
 						//temp *= A->Y2[m+2] * B->Y2c[mp+2];

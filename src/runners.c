@@ -367,8 +367,8 @@ int print_gaf(struct Model *m) {
             if (m->model == MOD_GAFT) {
                 Decimal Eas = m->residues[l].parameters[8];
                 Decimal Eaf = m->residues[l].parameters[9];
-                taus *= expl(Eas / (RYD * 300));
-                tauf *= expl(Eaf / (RYD * 300));
+                taus = temp_tau(taus, Eas, 300);
+                tauf = temp_tau(tauf, Eaf, 300);
             }
 
             fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
@@ -394,8 +394,8 @@ int print_gaf(struct Model *m) {
             if (m->model == MOD_AIMFT) {
                 Decimal Eas = m->residues[l].parameters[8];
                 Decimal Eaf = m->residues[l].parameters[9];
-                taus *= expl(Eas / (RYD * 300));
-                tauf *= expl(Eaf / (RYD * 300));
+                taus = temp_tau(taus, Eas, 300);
+                tauf = temp_tau(tauf, Eaf, 300);
             }
 
             fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
@@ -421,8 +421,8 @@ int print_gaf(struct Model *m) {
             if (m->model == MOD_EGAFT) {
                 Decimal Eas = m->residues[l].parameters[6];
                 Decimal Eaf = m->residues[l].parameters[7];
-                taus *= expl(Eas / (RYD * 300));
-                tauf *= expl(Eaf / (RYD * 300));
+                taus = temp_tau(taus, Eas, 300);
+                tauf = temp_tau(tauf, Eaf, 300);
             }
             fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
             /* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */

@@ -45,7 +45,7 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 		
 		if (model == MOD_SMFT) {
 			Ea = opts[2];
-			tau_eff = tau * exp(Ea / (RYD * relax->T));
+            tau_eff = temp_tau(tau, Ea, relax->T);
 		} else {
 			tau_eff = tau;			
 		}
@@ -82,8 +82,8 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 			Eaf = opts[5];
 		}
 		if (model == MOD_EMFT || model == MOD_DEMFT) {
-			taus_eff = taus * exp(Eas / (RYD * relax->T));
-			tauf_eff = tauf * exp(Eaf / (RYD * relax->T));
+            taus_eff = temp_tau(taus, Eas, relax->T);
+            tauf_eff = temp_tau(tauf, Eaf, relax->T);
 		} else {
 			taus_eff = taus;
 			tauf_eff = tauf;
@@ -128,8 +128,8 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
 			Eaf = opts[9];
-			taus_eff *= expl(Eas / (RYD * relax->T));
-			tauf_eff *= expl(Eaf / (RYD * relax->T));
+            taus_eff = temp_tau(taus, Eas, relax->T);
+            tauf_eff = temp_tau(tauf, Eaf, relax->T);
 		}
 		
 		if (taus < 0 || tauf < 0)
@@ -173,8 +173,9 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 		if (model == MOD_AIMFT) {
 			Eas = opts[8];
 			Eaf = opts[9];
-			taus_eff *= exp(Eas / (RYD * relax->T));
-			tauf_eff *= exp(Eaf / (RYD * relax->T));
+            taus_eff = temp_tau(taus_eff, Eas, relax->T);
+            tauf_eff = temp_tau(tauf_eff, Eaf, relax->T);
+
 		}
 		
 		if (taus < 0 || tauf < 0)
@@ -217,8 +218,8 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 		if (model == MOD_EGAFT) {
 			Eas = opts[6];
 			Eaf = opts[7];
-			taus_eff *= exp(Eas / (RYD * relax->T));
-			tauf_eff *= exp(Eaf / (RYD * relax->T));
+            taus_eff = temp_tau(taus_eff, Eas, relax->T);
+            tauf_eff = temp_tau(tauf_eff, Eaf, relax->T);
 		}
 		
 		if (taus < 0 || tauf < 0)

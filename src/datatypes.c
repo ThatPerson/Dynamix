@@ -277,6 +277,10 @@ int sq_i(int x) {
 	return x * x;
 }
 
+Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp) {
+    return tau0 * exp(Ea / (RYD * temp));
+}
+
 /**
  * Populates the second order spherical harmonics for orientation vector passed as pointer.
  * @param or

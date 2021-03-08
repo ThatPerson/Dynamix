@@ -385,7 +385,7 @@ int main(int argc, char * argv[]) {
 				S2CC = (Decimal) opts[1];
 				if (m.model == MOD_SMFT) {
 					Ea = opts[2];
-					tau *= expl(Ea / (RYD * temp));
+                    tau = temp_tau(tau, Ea, temp);
 				}
 				if (S2NH < 0 || tau < 0)
 					continue;
@@ -402,8 +402,9 @@ int main(int argc, char * argv[]) {
 					Eas = opts[4];
 					Eaf = opts[5];
 				}
-				taus *= expl(Eas / (RYD * temp));
-				tauf *= expl(Eaf / (RYD * temp));
+                taus = temp_tau(taus, Eas, temp);
+                tauf = temp_tau(tauf, Eaf, temp);
+
 				if (m.model == MOD_DEMF || m.model == MOD_DEMFT) {
 					S2f = opts[3];
 				}
@@ -426,8 +427,9 @@ int main(int argc, char * argv[]) {
 				if (m.model == MOD_GAFT) {
 					Eas = opts[8];
 					Eaf = opts[9];
-					taus *= expl(Eas / (RYD * temp));
-					tauf *= expl(Eaf / (RYD * temp));
+                    taus = temp_tau(taus, Eas, temp);
+                    tauf = temp_tau(tauf, Eaf, temp);
+
 				}
 				printf("QUe?\n");
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
@@ -444,8 +446,8 @@ int main(int argc, char * argv[]) {
 				if (m.model == MOD_GAFT) {
 					Eas = opts[6];
 					Eaf = opts[7];
-					taus *= expl(Eas / (RYD * temp));
-					tauf *= expl(Eaf / (RYD * temp));
+                    taus = temp_tau(taus, Eas, temp);
+                    tauf = temp_tau(tauf, Eaf, temp);
 				}
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
 				Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
