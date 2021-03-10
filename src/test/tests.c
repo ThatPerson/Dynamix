@@ -22,6 +22,8 @@
 #include "../models/aimf.h"
 #include "../chisq.h"
 #include "../crosen.h" // implementation of Nelder-Mead simplex algorithm
+#include "anneal.h" // simulated annealing algorithm
+
 #include "../errors.h"
 #include "../global_gaf.h"
 #include "../verification.h"
@@ -230,7 +232,7 @@ static void test_crosen_backcalc(void **state) {
     m.residues[0].csisoN = 109.21;
     m.residues[0].csisoC = 176.72;
     m.residues[0].cn = 1.047619;
-    m.residues[0].S2NHe = 0.05;
+    m.residues[0].S2NHe = 0.01;
     m.residues[0].S2CNe = 0.05;
     m.residues[0].S2CHe = 0.05;
     m.residues[0].S2CCe = 0.05;
@@ -286,18 +288,45 @@ static void test_crosen_backcalc(void **state) {
     Decimal opts[6]; // = {5e-04, 0.82, 0.43e-03, 0.99, 2e+03, 5e+04};
     Decimal min = 1000000;
     int kl = 0;
-    while (min > 2) {
-        opts[0] = ((rand() % 100) / 100.) * pow(10, -15 + T_S);
-        opts[1] = resid->S2NH + (1 - resid->S2NH) * ((rand() % 100) / 100.); // random number from s2 dipolar to 1
-        opts[2] = ((rand() % 100) / 100.) * pow(10, -20 + T_S);
-        opts[3] = resid->S2NH + (1 - resid->S2NH) * ((rand() % 100) / 100.);
-        opts[4] = (rand() % 60000) / 1.;
-        opts[5] = (rand() % 6000) / 1.;
 
-        printf("(%d\t%lf %lf %lf %lf %lf %lf\n", kl, opts[0], opts[1], opts[2], opts[3], opts[4], opts[5]);
+
+
+    const Decimal minv[] = {0.00001,
+                            resid->S2NH,
+                            0.0001,
+                            resid->S2NH,
+                            0,
+                            0};
+    const Decimal maxv[] = {0.001,
+                            1,
+                            0.01,
+                            1,
+                            60000,
+                            60000};
+
+    while (min > 2 && kl < 1) {
+
+        /* Decimal anneal(
+                  Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned int),
+                  Decimal parms[],
+                  const Decimal min[],
+                  const Decimal max[],
+                  unsigned int n_pars,
+                  Decimal T,
+                  unsigned int n_iter,
+                  Decimal wobble,
+                  Decimal thermostat,
+                  Decimal restart_prob,
+                  char filename[255],
+                  unsigned int mode,
+                  struct Residue *r,
+                  struct Model *m
+          )*/
+        min = anneal(optimize_chisq, opts, minv, maxv, 6, 600000, 1000000, 0.4, 1.02, 0.2, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, &m);
+        //printf("(%d\t%lf %lf %lf %lf %lf %lf\n", kl, opts[0], opts[1], opts[2], opts[3], opts[4], opts[5]);
         // TODO: Get it to actually find the minima!
-        min = simplex(optimize_chisq, opts, 1.0e-16, 2, resid, &m);
-        printf(   "\t%lf %lf %lf %lf %lf %lf (%lf)\n\n", opts[0], opts[1], opts[2], opts[3], opts[4], opts[5], min);
+        //min = simplex(optimize_chisq, opts, 1.0e-16, 2, resid, &m);
+        printf(   "%d :: %lf %lf %lf %lf %lf %lf (%lf)\n\n", kl, opts[0], opts[1], opts[2], opts[3], opts[4], opts[5], min);
         kl++;
 
     }
