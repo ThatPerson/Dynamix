@@ -17,6 +17,7 @@
 #include "models/aimf.h"
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
+#include "anneal.h" // simulated annealing algorithm
 #include "errors.h"
 #include "global_gaf.h"
 

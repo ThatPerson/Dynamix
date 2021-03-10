@@ -4,47 +4,102 @@
 
 //#include "runners.h"
 
-/**
- * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.
- * @param input
- *  Pointer to rrarg containing thread information
- */
-int run_residue(struct Model *m, unsigned int residue) {
-    struct Residue * resid = &(m->residues[residue]);
+void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal * maxv) {
+    unsigned int k;
+    for (k = 0; k < m->params; k++)
+        minv[k] = 0;
 
-
-    unsigned int model = m->model;
-    char outputdir[255];
-    strcpy(outputdir, m->outputdir);
-    FILE *fp;
-    char filename[300];
-    sprintf(filename, "%s/residue_%d.dat", outputdir, residue+1);
-    fp = fopen(filename, "w");
-    if (fp == NULL) {
-        printf("%s not found.\n", filename);
-        return -1;
+    switch (m->model) {
+        case MOD_SMF:
+            maxv[0] = 10; maxv[1] = 1;
+            break;
+        case MOD_SMFT:
+            maxv[0] = 1; maxv[1] = 1; maxv[2] = 60000;
+            break;
+        case MOD_EMF:
+            minv[0] = 0.1; minv[1] = r->S2NH;
+            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
+            break;
+        case MOD_EMFT:
+            minv[0] = pow(10, -7); minv[1] = r->S2NH;
+            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 60000, maxv[4] = 60000;
+            break;
+        case MOD_DEMF:
+            minv[0] = 0.1; minv[1] = r->S2NH; minv[3] = r->S2NH;
+            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
+            break;
+        case MOD_DEMFT:
+            minv[0] = pow(10, -7); minv[1] = r->S2NH; minv[3] = r->S2NH;
+            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
+            break;
+        case MOD_GAF:
+            minv[0] = 0.1;
+            maxv[0] = 10; maxv[1] = 1;
+            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
+            break;
+        case MOD_GAFT:
+            minv[0] = pow(10, -7);
+            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
+            maxv[8] = 60000; maxv[9] = 60000;
+            break;
+        case MOD_AIMF:
+            minv[0] = 0.1;
+            maxv[0] = 10; maxv[1] = 1;
+            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
+            break;
+        case MOD_AIMFT:
+            minv[0] = pow(10, -7);
+            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
+            maxv[8] = 60000; maxv[9] = 60000;
+            break;
+        case MOD_EGAF:
+            minv[0] = 0.1;
+            maxv[0] = 10; maxv[1] = 1;
+            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
+            minv[5] = r->S2NH; maxv[5] = 1;
+            break;
+        case MOD_EGAFT:
+            minv[0] = pow(10, -7);
+            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
+            minv[5] = r->S2NH; maxv[5] = 1;
+            maxv[6] = 60000; maxv[7] = 60000;
+            break;
     }
-
-    //printf("RESIDUE %d\n", i+1);
-    //printf("Number of relaxations: %d\n", resid->n_relaxation);
-    unsigned int l, k;
-    unsigned int params = m->params;
-    //printf("%d\n", params);
-    Decimal *opts;
-    opts = (Decimal *) malloc (sizeof(Decimal) * params);
-    resid->parameters = (Decimal *) malloc (sizeof(Decimal) * params);
-    resid->min_val = MIN_VAL;
-
-    for (l = 0; l < m->n_iter; l++) {
-        if (resid->ignore == 1) {
-            fprintf(fp, "%d, %lf, -1, -1\n", residue+1, 1000.);
-            fclose(fp);
-            free(opts);
-            return -1;
-        }
-        //Decimal opts[20] = {0, 0};
-
-        /**
+    if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
+        /* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
+         * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
+         */
+        minv[m->params - 6] = 0; // papbC
+        minv[m->params - 5] = 0; // papbN
+        minv[m->params - 4] = (rand() % 20000) / 1.; // kex
+        minv[m->params - 3] = 0; // alpha
+        minv[m->params - 2] = 0; // beta
+        minv[m->params - 1] = 0; // gamma
+        maxv[m->params - 6] = 0; // papbC
+        maxv[m->params - 5] = 0; // papbN
+        maxv[m->params - 4] = (rand() % 20000) / 1.; // kex
+        maxv[m->params - 3] = 0; // alpha
+        maxv[m->params - 2] = 0; // beta
+        maxv[m->params - 1] = 0; // gamma
+    } else if (m->or_variation == VARIANT_A) {
+        minv[m->params - 3] = 0; // alpha
+        minv[m->params - 2] = 0; // beta
+        minv[m->params - 1] = 0; // gamma
+        maxv[m->params - 3] = 0; // alpha
+        maxv[m->params - 2] = 0; // beta
+        maxv[m->params - 1] = 0; // gamma
+    } else if (m->rdc == RDC_ON) {
+        minv[m->params - 3] = 0; // papbC
+        minv[m->params - 2] = 0; // papbN
+        minv[m->params - 1] = (rand() % 20000) / 1.; // kex#
+        maxv[m->params - 3] = 0; // papbC
+        maxv[m->params - 2] = 0; // papbN
+        maxv[m->params - 1] = (rand() % 20000) / 1.; // kex
+    }
+/**
          * SMF parameters are \n
          *   [0] tau\n
          *   [1] S2\n
@@ -100,114 +155,59 @@ int run_residue(struct Model *m, unsigned int residue) {
          *   [6] activation energy for slow motion\n
          *   [7] activation energy for fast motion\n
          */
-        if (model == MOD_SMF) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
-        } else if (model == MOD_EMF) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-            opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-            //printf("RUN: %lf, %le, %le, %le\n", resid->S2NH, opts[0], opts[1], opts[2]);
-        } else if (model == MOD_EMFT) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-            opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-            opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-            opts[3] = (rand()%60000)/1.;
-            opts[4] = (rand()%60000)/1.;
-            //printf("RUN: %lf, %le, %le, %le\n", resid->S2NH, opts[0], opts[1], opts[2]);
-        } else if (model == MOD_DEMF) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-            opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-            opts[3] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
-        } else if (model == MOD_DEMFT) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-            opts[1] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-            opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-            opts[3] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
-            opts[4] = (rand()%60000)/1.;
-            opts[5] = (rand()%60000)/1.;
-        } else if (model == MOD_SMFT) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-            opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
-            opts[2] = (rand()%60000)/1.;
-        } else if (model == MOD_GAF) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-            for (k = 2; k <= 7; k++) {
-                // 15 degrees = 0.26180 radians
-                opts[k] = ((rand () % 250)/1000.);
-                //printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-            }
-        } else if (model == MOD_GAFT) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-            opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-            for (k = 2; k <= 7; k++) {
-                // 15 degrees = 0.26180 radians
-                opts[k] = ((rand () % 250)/1000.);
-            }
-            opts[8] = (rand()%60000)/1.;
-            opts[9] = (rand()%60000)/1.;
-        } else if (model == MOD_AIMF) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-            for (k = 2; k <= 7; k++) {
-                opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
-                //printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-            }
-        } else if (model == MOD_AIMFT) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-            opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-            for (k = 2; k <= 7; k++) {
-                opts[k] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
-            }
-            opts[8] = (rand()%60000)/1.;
-            opts[9] = (rand()%60000)/1.;
-        } else if (model == MOD_EGAF) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-            for (k = 2; k <= 4; k++) {
-                // 15 degrees = 0.26180 radians
-                opts[k] = ((rand () % 250)/1000.);
-                //printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-            }
-            opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
+}
 
-        } else if (model == MOD_EGAFT) {
-            opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-            opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-            for (k = 2; k <= 4; k++) {
-                // 15 degrees = 0.26180 radians
-                opts[k] = ((rand () % 250)/1000.);
-                //printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-            }
-            opts[5] = resid->S2NH + (1 - resid->S2NH)*((rand() % 100) / 100.);
-            opts[6] = (rand()%60000)/1.;
-            opts[7] = (rand()%60000)/1.;
+
+
+/**
+ * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.
+ * @param input
+ *  Pointer to rrarg containing thread information
+ */
+int run_residue(struct Model *m, unsigned int residue) {
+    struct Residue * resid = &(m->residues[residue]);
+
+
+    unsigned int model = m->model;
+    char outputdir[255];
+    strcpy(outputdir, m->outputdir);
+    FILE *fp;
+    char filename[300];
+
+    sprintf(filename, "%s/residue_%d.dat", outputdir, residue+1);
+    fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("%s not found.\n", filename);
+        return -1;
+    }
+
+    //printf("RESIDUE %d\n", i+1);
+    //printf("Number of relaxations: %d\n", resid->n_relaxation);
+    unsigned int l, k;
+    unsigned int params = m->params;
+    //printf("%d\n", params);
+    Decimal *opts;
+    opts = (Decimal *) malloc (sizeof(Decimal) * params);
+    resid->parameters = (Decimal *) malloc (sizeof(Decimal) * params);
+    resid->min_val = MIN_VAL;
+
+    Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
+    Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
+
+    setup_paramlims(m, resid, minv, maxv);
+
+    for (l = 0; l < m->n_iter; l++) {
+        if (resid->ignore == 1) {
+            fprintf(fp, "%d, %lf, -1, -1\n", residue+1, 1000.);
+            fclose(fp);
+            free(opts);
+            return -1;
         }
+        //Decimal opts[20] = {0, 0};
 
-        if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
-            /* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
-             * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
-             */
-            opts[params - 6] = 0; // papbC
-            opts[params - 5] = 0; // papbN
-            opts[params - 4] = (rand() % 20000) / 1.; // kex
-            opts[params - 3] = 0; // alpha
-            opts[params - 2] = 0; // beta
-            opts[params - 1] = 0; // gamma
-        } else if (m->or_variation == VARIANT_A) {
-            opts[params - 3] = 0; // alpha
-            opts[params - 2] = 0; // beta
-            opts[params - 1] = 0; // gamma
-        } else if (m->rdc == RDC_ON) {
-            opts[params - 3] = 0; // papbC
-            opts[params - 2] = 0; // papbN
-            opts[params - 1] = (rand() % 20000) / 1.; // kex
-        }
-
+        Decimal val = anneal(optimize_chisq, opts, minv, maxv, params, 600000, 10000, 0.4, 1.02, 0.2, NULL, MODE_RANDOM_START +MODE_RANDOM_RESTART, resid, m);
         //printf("%le, %le\n", opts[0], opts[1]);
-        Decimal val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+       // Decimal val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
         if (val >= 1000000 || val < 0) {
             val = -1;
             for (k = 0; k < params; k++) {
