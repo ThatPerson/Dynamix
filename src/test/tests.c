@@ -41,9 +41,11 @@ static void test_determine_residues(void **state) {
     assert_int_equal(start, 35);
     assert_int_equal(end, 42);
     k = determine_residues(&m, 3, 4, &start, &end);
+    assert_int_equal(k, 1);
     assert_int_equal(start, 42);
     assert_int_equal(end,56 );
     k = determine_residues(&m, 2, 3, &start, &end);
+    assert_int_equal(k, 1);
     assert_int_equal(start, 38);
     assert_int_equal(end, 56);
 }
@@ -192,6 +194,123 @@ static void test_statistics(void **state) {
 
 }
 
+static void test_crosen_backcalc(void **state) {
+    (void) state;
+    struct Model m;
+    //Decimal min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+
+    // initialize a basic relaxation set from known parameters. Then backcalculate rates, and then fit those. Assert that the input is equal to the output
+
+    m.model = MOD_DEMFT;
+    m.params = 6;
+    m.n_residues = 1;
+    m.rdc = RDC_OFF;
+    m.nthreads = 1;
+    m.global = LOCAL;
+    m.cn_ratio = CNRATIO_OFF;
+    m.or_variation = INVARIANT_A;
+    m.error_mode = 0;
+    m.proc_start = 0;
+    m.proc_end = 1;
+    m.myid = 0;
+    m.numprocs = 1;
+    m.WS2NH = 1;
+    m.WS2CC = 0;
+    m.WS2CN = 0;
+    m.WS2CH = 0;
+
+    /* Taken from GB1 Residue 44 */
+
+    m.residues = (struct Residue *) malloc(sizeof(struct Residue) * 1);
+    if (m.residues == NULL) goto fail;
+    m.residues[0].S2NH = 0.8;
+    m.residues[0].S2CH = 0.832;
+    m.residues[0].S2CC = 0.975;
+    m.residues[0].S2CN = 0.906;
+    m.residues[0].csisoN = 109.21;
+    m.residues[0].csisoC = 176.72;
+    m.residues[0].cn = 1.047619;
+    m.residues[0].S2NHe = 0.05;
+    m.residues[0].S2CNe = 0.05;
+    m.residues[0].S2CHe = 0.05;
+    m.residues[0].S2CCe = 0.05;
+    m.residues[0].ignore = 0;
+    m.residues[0].parameters = (Decimal *) malloc(sizeof(Decimal) * 6);
+    if (m.residues[0].parameters == NULL) goto fail;
+    unsigned int i;
+    Decimal parms[] = {1e-04, 0.84211, 1e-03, 0.95, 3e+04, 4e+03};
+    Decimal parms_err[] = {1e-05, 0.01, 1e-04, 0.01, 1e+03, 1e+02};
+    for (i = 0 ; i < 6; i++)
+        m.residues[0].parameters[i] = parms[i];
+
+    int ignore = -1;
+
+    Decimal fields[] = {600, 800, 1000};
+    Decimal spin_rates[] = {50000};
+    Decimal nut_freq[] = {10000, 20000};
+    Decimal temps[] = {250, 300, 350};
+    unsigned int n_f, n_sr, n_nf, n_T, n_t;
+    unsigned int N_f = 3, N_sr = 1, N_nf = 2, N_T = 3, N_t = 4;
+    unsigned int N_rates = N_f * N_sr * N_nf * N_T * N_t;
+    m.residues[0].relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * N_rates);
+    m.residues[0].lim_relaxation = N_rates;
+    m.residues[0].n_relaxation = N_rates;
+    if (m.residues[0].relaxation == NULL)
+        goto fail;
+    unsigned int k = 0;
+    struct Relaxation *r;
+    struct Residue *resid = &(m.residues[0]);
+    for (n_f = 0; n_f < N_f; n_f++) {
+        for (n_sr = 0; n_sr < N_sr; n_sr++) {
+            for (n_nf = 0; n_nf < N_nf; n_nf++) {
+                for (n_T = 0; n_T < N_T; n_T++) {
+                    for (n_t = 0; n_t < N_t; n_t++) {
+                        r = &(m.residues[0].relaxation[k]);
+                        r->field = fields[n_f];
+                        r->wr = spin_rates[n_sr];
+                        r->w1 = nut_freq[n_nf];
+                        r->T = temps[n_T];
+                        r->type = n_t;
+                        r->R = 1;
+                        r->R = back_calc(resid->parameters, resid, r, &m, &ignore);
+                        r->Rerror = 0.1;
+                        k++;
+                    }
+                }
+            }
+        }
+    }
+
+    Decimal opts[6];
+    for (k = 0; k < 6; k++) {
+        opts[k] = resid->parameters[k];
+    }
+
+    Decimal min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, &m);
+    assert_float_equal(min, 0, 1);
+
+    for (k = 0; k < 6; k++) {
+        assert_float_equal(opts[k], resid->parameters[k], parms_err[k]);
+    }
+    Decimal temp_R;
+    for (k = 0; k < N_rates; k++) {
+        r = &(m.residues[0].relaxation[k]);
+        temp_R = back_calc(opts, resid, r, &m, &ignore);
+        assert_float_equal(temp_R, r->R, r->Rerror);
+    }
+
+
+    // TODO: Write a program to perform phase cycling
+    free(m.residues[0].relaxation);
+    free(m.residues[0].parameters);
+    free(m.residues);
+    return;
+    fail:
+        assert_int_equal(1, 0);
+
+
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
             cmocka_unit_test(test_determine_residues),
@@ -200,7 +319,8 @@ int main(void) {
             cmocka_unit_test(test_sphericals),
             cmocka_unit_test(test_rotations),
             cmocka_unit_test(test_gaf),
-            cmocka_unit_test(test_statistics)
+            cmocka_unit_test(test_statistics),
+            cmocka_unit_test(test_crosen_backcalc)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

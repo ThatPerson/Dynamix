@@ -52,7 +52,7 @@ int read_data_file(char *filename, struct Model * m) {
 		return -1;
 	}
 
-	unsigned int params = 0;
+	unsigned int params;
 	switch (m->model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
@@ -79,7 +79,7 @@ int read_data_file(char *filename, struct Model * m) {
 	while(fgets(line, len, fp)) {
 
 		//3	0.780000	201.669690	1.461383e+01	9.604572e-01	0
-		int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
+		//int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
 		res--;
 		m->residues[res].parameters = (Decimal *) malloc(sizeof(Decimal) * params);
 		m->residues[res].ignore = 0;
@@ -135,8 +135,12 @@ int write_correlation_function_emf(char * fn, Decimal T, Decimal dT, Decimal tau
 	}
 
 	Decimal t;
-	Decimal correl = 0;
-	for (t = 0; t < T; t += dT) {
+	Decimal correl;
+	int t_count;
+	int t_count_max = (int) (T / dT);
+	//for (t = 0; t < T; t += dT) {
+	for (t_count = 0; t_count < t_count_max; t_count++) {
+	    t = (Decimal) t_count * dT;
 		correl = S2;
 		correl += (1 - S2f) * expl(-t / tauf);
 		correl += (S2f - S2) * expl(-t / taus);
@@ -157,8 +161,14 @@ int write_spectral_density_emf(char *fn, Decimal taus, Decimal S2s, Decimal tauf
 	
 	Decimal w;
 	Decimal v, slow, fast;
-	for (w = pow(10, 1)*T_DOWN; w < pow(10., 10)*T_DOWN; w*=2) {
-		
+	Decimal w_start = 10 * T_DOWN;
+	Decimal w_end = pow(10., 10) * T_DOWN;
+	int n_steps = log(w_end / w_start) / log(2);
+	int n;
+	w = w_start;
+	//for (w = pow(10, 1)*T_DOWN; w < pow(10., 10)*T_DOWN; w*=2) {
+	for (n = 0; n < n_steps; n++) {
+	    w = w * 2;
 		/*v = (((1 - S2f) * tauf) / (1 + (w * tauf * w * tauf)));
 		q = v + ((S2f * (1 - S2s) * taus) / (1 + (w * taus * w * taus)));
 		
@@ -201,7 +211,14 @@ int write_spectral_density_smf(char *fn, Decimal tau, Decimal S2) {
 	
 	Decimal w;
 	Decimal v;
-	for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
+	Decimal w_start = pow(10, -6) * T_DOWN;
+	Decimal w_end = pow(10, 6) * T_DOWN;
+	int n_steps = (int) (log(w_end / w_start) / log(2));
+	int n;
+	w = w_start;
+	for (n = 0; n < n_steps; n++) {
+	//for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
+	    w *= 2;
 		v = J0_SMF(w, tau, S2) * T_DOWN;
 		fprintf(fp, "%lf\t%le\n", w*T_UP, v);
 	}
@@ -233,8 +250,12 @@ int write_correlation_function_smf(char * fn, Decimal T, Decimal dT, Decimal tau
 	}
 
 	Decimal t;
-	Decimal correl = 0;
-	for (t = 0; t < T; t += dT) {
+	Decimal correl;
+	int n, n_steps;
+	n_steps = (int) (T / dT);
+	for (n = 0; n < n_steps; n++) {
+	//for (t = 0; t < T; t += dT) {
+	    t = n * dT;
 		correl = S2;
 		correl += (1 - S2) * expl(-t / tau);
 		fprintf(fp, "%lf\t%lf\n", t, correl);
@@ -306,7 +327,7 @@ int main(int argc, char * argv[]) {
 
 	ret = read_data_file(data_file, &m);
 	printf("Ret: %d\n", ret);
-	unsigned int params = 0;
+	unsigned int params;
 	switch (m.model) {
 		case MOD_SMF: params = 2; break;
 		case MOD_EMF: params = 3; break;
@@ -328,13 +349,13 @@ int main(int argc, char * argv[]) {
 	
 	#pragma omp parallel for 
 	for (i = 0; i <m.n_residues; i++) {
-		Decimal Ea=0,Eas=0,Eaf=0, tauf=0,taus=0, tau=0, S2s=0, S2f=0;
+		Decimal Ea,Eas,Eaf, tauf,taus, tau, S2s, S2f;
 		struct Residue * resid;
 		Decimal * opts;
 		unsigned int j;
-		Decimal S2NH=0, S2CN=0, S2CH=0, S2CC=0;
+		Decimal S2NH, S2CN, S2CH, S2CC;
 		Decimal S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
-		Decimal temp = 300;
+		Decimal temp;
 		Decimal T = 200; // 1000
 		Decimal dT = 0.01; // 0.01
 		Decimal alpha, beta, gamma;
@@ -351,7 +372,7 @@ int main(int argc, char * argv[]) {
 		printf("%d: %d\n", i, m.residues[i].ignore);
 		if (m.residues[i].ignore == 1)
 			continue;
-		printf("Hola. %d\n", sizeof(m.residues[i].parameters));
+		//printf("Hola. %d\n", sizeof(m.residues[i].parameters));
 		for (j = 0; j < params; j++) {
 			printf("%d %d %lf\n", i, j, m.residues[i].parameters[j]);
 		}

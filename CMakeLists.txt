@@ -18,9 +18,13 @@ add_executable(dynamix src/main.c)
 
 add_executable(tests src/test/tests.c)
 
+
+add_executable(correl src/correlation.c)
+
 target_link_libraries(dynamix ${MPI_LIBRARIES})
 target_link_libraries(dynamix m)
 target_link_libraries(tests m)
+target_link_libraries(correl m)
 target_link_libraries(tests cmocka)
 
 set(CMAKE_C_FLAGS "-O3 -Wall -Wextra -fopenmp ")
