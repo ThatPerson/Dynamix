@@ -64,20 +64,61 @@ $$ Y^{m'}_{l} (r') = \sum_{m=-l}{l} [D_{m'm}^{(l)}(R)]^* Y_{l}^{m}(r) $$
 
 The initial orientation of the X, Y, Z axis has Z aligned along CA-CA, with the CA-N positive relative to CA-C. X is roughly parallel to the C-O bond (C->O positive) and Y is perpendicular to X and Z such that the standard X, Y, Z convention is retained (eg $Y = Z \times X$). These variable models are generally termed `VGAF`, `VGAFT`, `VEGAF`, `VEGAFT`.
 
-For each of these models, Dynamix will perform a user specified number of optimizations with random starting points using the Nelder-Mead simplex method to find an optimum. Each optimum is output into a `residue_N.dat` file. Once complete, it will perform back calculations for each relaxation data point, outputting these into `backcalc_N.dat` files. If one of the GAF modes is used, it will calculate effective S$^{2}_{\text{NH}}$ order parameters and output these into `gaf.dat`.
+For each model, Dynamix will attempt to optimize the model parameters to best fit the data provided. This is done by performing a simulated annealing and Nelder-Mead simplex optimization. Two steps of optimization are used, as from experience these fit better on different scales. Simulated annealing is used to identify the region near to the global minima. Parameters relating to this annealing will be outlined later. This annealing process is by default optimized to be rather coarse. Once this has found a minimum, Dynamix will then perform iterations of Nelder-Mead fitting in order to locate the true minimum near to this. Each optimum is output into a `residue_N.dat` file. Once complete, it will perform back calculations for each relaxation data point, outputting these into `backcalc_N.dat` files. If one of the GAF modes is used, it will calculate effective S$^{2}_{\text{NH}}$ order parameters and output these into `gaf.dat`.
 
-If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. Back calculated relaxation rates are then varied within experimental error, and optimization performed. The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values[^1].
+If error mode is enabled, it will perform a further set of optimizations where the starting point is set to the optimized parameters. Back calculated relaxation rates are then varied within experimental error, and optimization performed using the Nelder-Mead simplex algorithm (without an annealing step). The new optimum points for each repeat in the error calculations are then used to determine standard deviations for the optimized values[^1]. If the new optimization is found to have a chisq more than 1000 times the original minimum, Dynamix will identify that this has not converged and so will repeat the fit. 
 
 [^1]: Note that the output will have the minimum optimized points and two standard deviations for the errors; it will not output the mean of the error calculations (unless you explicitly change the code to do so - at the moment this is line 408 of main.c, in which you should change `m.residues[l].parameters[i]` to `m.residues[l].errors_mean[i]`.
 
 Compilation
 -----------
 
-To compile the program from source on Karplus, navigate to the directory above src/ and run
+To compile the program from source on Karplus;
 
-    gcc src/main.c -lm -pthread -o dynamix -O3
+    mkdir build
+    cd build
+    cmake ..
+    make dynamix
 
-This will pull in all other required C files in the src/ directory, load the math(s) and pthread libraries, using optimization level 3, and output the program into *dynamix*. Also contained in the src/ directory is documentation (build using `doxygen Doxyfile` if not up to date) and test programs to verify the model against the MATLAB scripts.
+In order to run the unit tests you can do
+
+    make tests
+
+And run these as `./tests`.
+
+Dependencies
+------------
+
+Dynamix required an MPI implementation, OpenMP, and the standard math library. To run the unit tests, the CMocka library is needed.
+
+Unit Tests
+----------
+
+There are two ways to get the program to validate itself. The automated way is to make use of the CMocka testing suite. 
+
+    mkdir build && cd build
+    cmake ..
+    make tests
+    ./tests
+
+This will iterate over a number of tests. As of the 11th March 2021, these are
+
+* *test_determine_residues*: tests that the division of residues between processes is working correctly.
+* *test_temp_tau*: tests that variable temperature timescale calculation is working.
+* *temp_dwig*: tests that generation of Wigner D matrices is correct.
+* *temp_sphericals*: tests that spherical harmonics are generated properly.
+* *test_gaf*: tests that GAF order parameters are being calculated correctly.
+* *test_statistics*: tests the error statistics calculations by generating 200,000 normally distributed random numbers with known mean and standard deviation, then calculating statistics for these and testing that they are correct.
+* *test_crosen_backcalc*: tests that the optimisation, backcalculation, and generation routines are working. This is done by creating a model system of known parameters, backcalculating relaxation rates, and then performing system minimization on these and testing that the new modefit parameters are approximately correct.
+* *test_rotations*: test that the rotations used in orientation variation are working correctly.
+
+If any of these tests fail you may have a problem.
+
+The other way, which does not require CMocka, is to run
+
+    ./dynamix verify
+
+This will output a number of randomly calculated parameters along with code to verify using other programs. This should give verbose output which will take you through the verification step.
 
 Data Formats
 ------------
@@ -103,9 +144,16 @@ The keys are all upper case, and there must be spaces on either side of the equa
 |S2CN|File containing dipolar order parameters for C-N|
 |CSISON|File containing isotropic chemical shifts for $^{15}$N|
 |CSISOC|File containing isotropic chemical shifts for $^{13}$C|
+|CSAC|File containing anisotropic chemical shift parameters for $^{13}C$ (override the linear fit ones)|
+|CSAN|File containing anisotropic chemical shift parameters for $^{15}N$ (override the linear fit ones)|
 |N_RESIDUES|Number of residues - **must** be the same as the number of lines in each input file (or bad things may happen)|
 |OUTPUT|Directory (eg `output/`) to place output files into|
-|N_ITER|Number of iterations for optimization|
+|N_ANNEAL_ITER|Number of annealing optimizations to perform|
+|N_NM_ITER|Number of Nelder Mead optimization iterations per annealing|
+|ANNEAL_TEMP|Initial temperature of annealing (default 6000, may vary depending on number of params)|
+|ANNEAL_WOBB|Amount of wobble inherent in annealing step. 0.2 indicates it may go $\pm 20$\%|
+|ANNEAL_THERM|Annealing thermostat. $T_{i+1} = T_{i} / \text{therm}$|
+|ANNEAL_RESTART|Likelihood that the annealing will restart somewhere else (0-1)|
 |N_ERROR_ITER| Number of iterations to perform for error calculation|
 |IGNORE|Residue to ignore; each residue to ignore should have its own line|
 |OR_NH|N-H orientations|
@@ -117,8 +165,10 @@ The keys are all upper case, and there must be spaces on either side of the equa
 |OR_CN|C-N orientation|
 |OR_CNH|C-amide proton orientation|
 |OR_CCSAxx/yy/zz|Carbon chemical shift anisotropy orientations|
-|NTHREADS|Number of threads to run; generally, set to the number of processors you want to run it on|
+|NTHREADS|Number of OpenMP threads to run.|
 |OR_VARY|Whether or not the orientation of the GAF axes relative to the peptide plane should be allowed to vary.|
+|GLOBAL|Enables GLOBAL GAF (note that you will need new orientations; in `utils/global` there are scripts to generate these)|
+|CNCOMP|If enabled will compensate for different quantities of $^{13}$C and $^{15}$N relaxation rates.|
 
 For example
 
@@ -198,11 +248,11 @@ Running The Model
 
 Once the file is setup, the model may be run as;
 
-    ./dynamix {path to .dx file}
+    ./mpirun -np N dynamix {path to .dx file}
     
-This will output the various threads being spawned as the program operates. Passing the `-e` option;
+Where $N$ is the number of processes (or nodes, if on a HPC). This will output the various threads being spawned as the program operates. Passing the `-e` option;
 
-    ./dynamix {path to .dx file} -e
+    ./mpirun -np N dynamix {path to .dx file} -e
     
 Will enable error calculation. 
 
