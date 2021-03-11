@@ -5,14 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 
-/** 
- * Generates uniform random Decimal from 0 to 1 inclusive.
- * @return Decimal
- *  Long Decimal containing uniform random number.
- */
-Decimal uniform_rand(void) {
-	return ((Decimal) rand() + 1.) / ((Decimal) RAND_MAX + 1.);
-}
+
 
 /**
  * Uses Box-Muller method to generate a normally distributed random number.
@@ -103,7 +96,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
 	resid->errors_std = (Decimal *) malloc(sizeof(Decimal) * params);
 	resid->error_params = (Decimal **) malloc (sizeof(Decimal *) * params);
 	for (k = 0; k < params; k++) {
-		resid->error_params[k] = (Decimal *) malloc (sizeof(Decimal) * m->n_iter);
+		resid->error_params[k] = (Decimal *) malloc (sizeof(Decimal) * m->n_error_iter);
 	}
 	//resid->min_val = MIN_VAL;*/
 	//Decimal val = 0;
@@ -116,8 +109,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
 	resid->S2CHb = resid->S2CH;
 	resid->S2CNb = resid->S2CN;
 	resid->S2CCb = resid->S2CC;
-
-	for (l = 0; l < m->n_iter; l++) {
+	for (l = 0; l < m->n_error_iter; l++) {
 		if (resid->ignore == 1) {
 			return -1;
 		}
@@ -173,7 +165,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
         resid->temp_relaxation = NULL;
 
 
-        if (min > 100 * resid->min_val) {
+        if (min > 1000 * resid->min_val) {
             // did not converge.
             ERROR("Error iteration %d for residue %d gave min_val = %lf (base mod = %lf), indicating no convergence. Rerunning iteration.\n", l+1, residue, min, resid->min_val);
             l--;

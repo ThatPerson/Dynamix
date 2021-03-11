@@ -139,7 +139,7 @@ Decimal Dwig[5][5]; 						///< 5x5 array containing Wigner components for pi/2
    *    1 indicates that errors should be calculated, 0 indicates not.
    */
 struct Model {
-	unsigned int n_iter, n_error_iter;
+	unsigned int n_nm_iter, n_anneal_iter, n_error_iter;
 	char outputdir[255];
 	unsigned int model;
 	unsigned int params;
@@ -155,6 +155,11 @@ struct Model {
 	unsigned int proc_end;
 	int myid, numprocs;
 	Decimal WS2NH, WS2CH, WS2CN, WS2CC;
+
+	double anneal_temp;
+	double anneal_wobb;
+	double anneal_therm;
+	double anneal_restart;
 };
 
 /** @struct Orient
@@ -448,3 +453,172 @@ void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
 	}
 
 }
+
+/**
+ * Generates uniform random Decimal from 0 to 1 inclusive.
+ * @return Decimal
+ *  Long Decimal containing uniform random number.
+ */
+Decimal uniform_rand(void) {
+    return ((Decimal) rand() + 1.) / ((Decimal) RAND_MAX + 1.);
+}
+
+void gen_params(Decimal *minv, Decimal *maxv, Decimal *pars, unsigned int n_pars) {
+    unsigned int k;
+    for (k = 0; k < n_pars; k++)
+        pars[k] = minv[k] + (uniform_rand() * (maxv[k] - minv[k]));
+}
+
+void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal * maxv) {
+    unsigned int k;
+    for (k = 0; k < m->params; k++)
+        minv[k] = 0;
+
+    switch (m->model) {
+        case MOD_SMF:
+            maxv[0] = 10; maxv[1] = 1;
+            break;
+        case MOD_SMFT:
+            maxv[0] = 1; maxv[1] = 1; maxv[2] = 60000;
+            break;
+        case MOD_EMF:
+            minv[0] = 0.1; minv[1] = r->S2NH;
+            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
+            break;
+        case MOD_EMFT:
+            minv[0] = pow(10, -7); minv[1] = r->S2NH;
+            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 60000, maxv[4] = 60000;
+            break;
+        case MOD_DEMF:
+            minv[0] = 0.1; minv[1] = r->S2NH; minv[3] = r->S2NH;
+            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
+            break;
+        case MOD_DEMFT:
+            minv[0] = pow(10, -7); minv[1] = r->S2NH; minv[3] = r->S2NH;
+            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
+            break;
+        case MOD_GAF:
+            minv[0] = 0.1;
+            maxv[0] = 10; maxv[1] = 1;
+            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
+            break;
+        case MOD_GAFT:
+            minv[0] = pow(10, -7);
+            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
+            maxv[8] = 60000; maxv[9] = 60000;
+            break;
+        case MOD_AIMF:
+            minv[0] = 0.1;
+            maxv[0] = 10; maxv[1] = 1;
+            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
+            break;
+        case MOD_AIMFT:
+            minv[0] = pow(10, -7);
+            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
+            maxv[8] = 60000; maxv[9] = 60000;
+            break;
+        case MOD_EGAF:
+            minv[0] = 0.1;
+            maxv[0] = 10; maxv[1] = 1;
+            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
+            minv[5] = r->S2NH; maxv[5] = 1;
+            break;
+        case MOD_EGAFT:
+            minv[0] = pow(10, -7);
+            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
+            minv[5] = r->S2NH; maxv[5] = 1;
+            maxv[6] = 60000; maxv[7] = 60000;
+            break;
+    }
+    if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
+        /* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
+         * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
+         */
+        minv[m->params - 6] = 0; // papbC
+        minv[m->params - 5] = 0; // papbN
+        minv[m->params - 4] = (rand() % 20000) / 1.; // kex
+        minv[m->params - 3] = 0; // alpha
+        minv[m->params - 2] = 0; // beta
+        minv[m->params - 1] = 0; // gamma
+        maxv[m->params - 6] = 0; // papbC
+        maxv[m->params - 5] = 0; // papbN
+        maxv[m->params - 4] = (rand() % 20000) / 1.; // kex
+        maxv[m->params - 3] = 0; // alpha
+        maxv[m->params - 2] = 0; // beta
+        maxv[m->params - 1] = 0; // gamma
+    } else if (m->or_variation == VARIANT_A) {
+        minv[m->params - 3] = 0; // alpha
+        minv[m->params - 2] = 0; // beta
+        minv[m->params - 1] = 0; // gamma
+        maxv[m->params - 3] = 0; // alpha
+        maxv[m->params - 2] = 0; // beta
+        maxv[m->params - 1] = 0; // gamma
+    } else if (m->rdc == RDC_ON) {
+        minv[m->params - 3] = 0; // papbC
+        minv[m->params - 2] = 0; // papbN
+        minv[m->params - 1] = (rand() % 20000) / 1.; // kex#
+        maxv[m->params - 3] = 0; // papbC
+        maxv[m->params - 2] = 0; // papbN
+        maxv[m->params - 1] = (rand() % 20000) / 1.; // kex
+    }
+/**
+         * SMF parameters are \n
+         *   [0] tau\n
+         *   [1] S2\n
+         * SMFT parameters;\n
+         *   [0] tau\n
+         *   [1] S2\n
+         *   [2] Ea\n
+         * EMF parameters\n
+         *   [0] tau slow\n
+         *   [1] S2 slow\n
+         *   [2] tau fast\n
+         *   NOTE: The fast order parameter is calculated as S2NH/S2s\n
+         * EMFT parameters\n
+         *   [0] tau slow\n
+         *   [1] S2 slow\n
+         *   [2] tau fast\n
+         *   [3] activation energy for slow motion\n
+         *   [4] activation energy for fast motion\n
+         * DEMF parameters\n
+         *   [0] tau slow\n
+         *   [1] S2 slow\n
+         *   [2] tau fast\n
+         *   [3] S2 fast\n
+         * DEMFT parameters\n
+         *   [0] tau slow\n
+         *   [1] S2 slow\n
+         *   [2] tau fast\n
+         *   [3] S2 fast\n
+         *   [4] activation energy for slow motion\n
+         *   [5] activation energy for fast motion\n
+         * GAF parameters\n
+         *   [0] tau slow\n
+         *   [1] tau fast\n
+         *   [2-4] alpha, beta, gamma deflections for slow motions\n
+         *   [5-7] alpha, beta, gamma deflections for fast motions\n
+         * GAFT parameters\n
+         *   [0] tau slow\n
+         *   [1] tau fast\n
+         *   [2-4] alpha, beta, gamma deflections for slow motions\n
+         *   [5-7] alpha, beta, gamma deflections for fast motions\n
+         *   [8] activation energy for slow motion\n
+         *   [9] activation energy for fast motion\n
+         * EGAF parameters\n
+         *   [0] tau slow\n
+         *   [1] tau fast\n
+         *   [2-4] alpha, beta, gamma deflections for slow motions\n
+         *   [5] fast motion order parameter\n
+         * EGAFT parameters\n
+         *   [0] tau slow\n
+         *   [1] tau fast\n
+         *   [2-4] alpha, beta, gamma deflections for slow motions\n
+         *   [5] order parameter for fast motions\n
+         *   [6] activation energy for slow motion\n
+         *   [7] activation energy for fast motion\n
+         */
+}
+

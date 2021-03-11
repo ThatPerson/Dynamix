@@ -283,7 +283,6 @@ static void test_crosen_backcalc(void **state) {
         }
     }
 
-    printf("K: %d\n", k);
 
     Decimal opts[6]; // = {5e-04, 0.82, 0.43e-03, 0.99, 2e+03, 5e+04};
     Decimal min = 1000000;
@@ -304,43 +303,18 @@ static void test_crosen_backcalc(void **state) {
                             60000,
                             60000};
 
-    while (min > 2 && kl < 1) {
 
-        /* Decimal anneal(
-                  Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned int),
-                  Decimal parms[],
-                  const Decimal min[],
-                  const Decimal max[],
-                  unsigned int n_pars,
-                  Decimal T,
-                  unsigned int n_iter,
-                  Decimal wobble,
-                  Decimal thermostat,
-                  Decimal restart_prob,
-                  char filename[255],
-                  unsigned int mode,
-                  struct Residue *r,
-                  struct Model *m
-          )*/
-        min = anneal(optimize_chisq, opts, minv, maxv, 6, 600000, 1000000, 0.4, 1.02, 0.2, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, &m);
-        //printf("(%d\t%lf %lf %lf %lf %lf %lf\n", kl, opts[0], opts[1], opts[2], opts[3], opts[4], opts[5]);
-        // TODO: Get it to actually find the minima!
-        //min = simplex(optimize_chisq, opts, 1.0e-16, 2, resid, &m);
-        printf(   "%d :: %lf %lf %lf %lf %lf %lf (%lf)\n\n", kl, opts[0], opts[1], opts[2], opts[3], opts[4], opts[5], min);
-        kl++;
 
-    }
-    //assert_float_equal(min, 0, 1);
-    printf("min: %lf\n", min);
-    for (k = 0; k < 6; k++) {
-        printf("%lf :: %lf\n", opts[k], resid->parameters[k]);
-        //assert_float_equal(opts[k], resid->parameters[k], parms_err[k]);
-    }
+    min = anneal(optimize_chisq, opts, minv, maxv, 6, 6000, 10000, 0.05, 1.1, 0.01, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, &m);
+    min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, &m);
+
+
+    assert_float_equal(min, 0, 3);
+
     Decimal temp_R;
     for (k = 0; k < N_rates; k++) {
         r = &(m.residues[0].relaxation[k]);
         temp_R = back_calc(opts, resid, r, &m, &ignore);
-        printf("%lf // %lf :: %lf\n", r->R, temp_R, r->Rerror);
         assert_float_equal(temp_R, r->R, 4*r->Rerror);
     }
 
@@ -351,6 +325,9 @@ static void test_crosen_backcalc(void **state) {
     free(m.residues);
     return;
     fail:
+        free(m.residues[0].relaxation);
+        free(m.residues[0].parameters);
+        free(m.residues);
         assert_int_equal(1, 0);
 
 

@@ -365,12 +365,10 @@ int read_system_file(char *filename, struct Model * m) {
 		strcpy(pp_orient[i], "");
 	}
 	strcpy(m->outputdir, "./");
-	m->n_iter = 1;
 	unsigned int to_ignore[50];
 	int ig = 0;
 
 	/* Initialise */
-	m->n_iter = 0;
 	m->n_error_iter = 0;
 	m->model = MOD_UNDEFINED;
 	m->or_variation = INVARIANT_A;
@@ -380,12 +378,20 @@ int read_system_file(char *filename, struct Model * m) {
 	m->rdc = RDC_OFF;
 	m->cn_ratio = CNRATIO_OFF;
 	m->global = LOCAL;
-	
+
+	m->n_anneal_iter = 1;
+	m->n_nm_iter = 1;
+
 	m->WS2NH = 1;
 	m->WS2CH = 1;
 	m->WS2CN = 1;
 	m->WS2CC = 1;
-	
+
+	m->anneal_restart = 0.01;
+	m->anneal_wobb = 0.05;
+	m->anneal_temp = 6000;
+	m->anneal_therm = 1.1;
+
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -549,8 +555,18 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "N_RESIDUES") == 0){
 				m->n_residues = (unsigned int) atoi(val);
 				n_resid = atoi(val);
-			} else if (strcmp(key, "N_ITER") == 0) {
-				m->n_iter = (unsigned int) atoi(val);
+			} else if (strcmp(key, "N_NM_ITER") == 0) {
+                m->n_nm_iter = (unsigned int) atoi(val);
+            } else if (strcmp(key, "N_ANNEAL_ITER") == 0) {
+                m->n_anneal_iter = (unsigned int) atoi(val);
+            } else if (strcmp(key, "ANNEAL_TEMP") == 0) {
+                m->anneal_temp = (double) atof(val);
+            } else if (strcmp(key, "ANNEAL_WOBB") == 0) {
+                m->anneal_wobb = (double) atof(val);
+            } else if (strcmp(key, "ANNEAL_THERM") == 0) {
+                m->anneal_therm = (double) atof(val);
+            } else if (strcmp(key, "ANNEAL_RESTART") == 0) {
+			    m->anneal_restart = (double) atof(val);
 			} else if (strcmp(key, "OUTPUT") == 0) {
 				strcpy(m->outputdir, val);
 			} else if (strcmp(key, "IGNORE") == 0) {
@@ -643,8 +659,8 @@ int read_system_file(char *filename, struct Model * m) {
 	fclose(fp);
 
 	/*Check requirements */
-	if (m->n_iter == 0) {
-		ERROR("Please provide N_ITER");
+	if (m->n_nm_iter == 0 || m->n_anneal_iter == 0) {
+		ERROR("Please provide N_NM_ITER and N_ANNEAL_ITER");
 		return -1;
 	}
 	if (m->model == MOD_UNDEFINED) {

@@ -359,7 +359,7 @@ int run_global(struct Model *m) {
 	}
 	
 	// launch
-	for (l = 0; l < m->n_iter; l++) {
+	for (l = 0; l < m->n_anneal_iter; l++) {
 		printf("\tRunning iteration %d\n", l);
 		run_global_iteration(m, l);
 	}

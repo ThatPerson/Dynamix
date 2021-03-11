@@ -4,159 +4,6 @@
 
 //#include "runners.h"
 
-void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal * maxv) {
-    unsigned int k;
-    for (k = 0; k < m->params; k++)
-        minv[k] = 0;
-
-    switch (m->model) {
-        case MOD_SMF:
-            maxv[0] = 10; maxv[1] = 1;
-            break;
-        case MOD_SMFT:
-            maxv[0] = 1; maxv[1] = 1; maxv[2] = 60000;
-            break;
-        case MOD_EMF:
-            minv[0] = 0.1; minv[1] = r->S2NH;
-            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
-            break;
-        case MOD_EMFT:
-            minv[0] = pow(10, -7); minv[1] = r->S2NH;
-            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 60000, maxv[4] = 60000;
-            break;
-        case MOD_DEMF:
-            minv[0] = 0.1; minv[1] = r->S2NH; minv[3] = r->S2NH;
-            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
-            break;
-        case MOD_DEMFT:
-            minv[0] = pow(10, -7); minv[1] = r->S2NH; minv[3] = r->S2NH;
-            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
-            break;
-        case MOD_GAF:
-            minv[0] = 0.1;
-            maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
-            break;
-        case MOD_GAFT:
-            minv[0] = pow(10, -7);
-            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
-            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
-            maxv[8] = 60000; maxv[9] = 60000;
-            break;
-        case MOD_AIMF:
-            minv[0] = 0.1;
-            maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
-            break;
-        case MOD_AIMFT:
-            minv[0] = pow(10, -7);
-            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
-            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
-            maxv[8] = 60000; maxv[9] = 60000;
-            break;
-        case MOD_EGAF:
-            minv[0] = 0.1;
-            maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
-            minv[5] = r->S2NH; maxv[5] = 1;
-            break;
-        case MOD_EGAFT:
-            minv[0] = pow(10, -7);
-            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
-            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
-            minv[5] = r->S2NH; maxv[5] = 1;
-            maxv[6] = 60000; maxv[7] = 60000;
-            break;
-    }
-    if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
-        /* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
-         * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
-         */
-        minv[m->params - 6] = 0; // papbC
-        minv[m->params - 5] = 0; // papbN
-        minv[m->params - 4] = (rand() % 20000) / 1.; // kex
-        minv[m->params - 3] = 0; // alpha
-        minv[m->params - 2] = 0; // beta
-        minv[m->params - 1] = 0; // gamma
-        maxv[m->params - 6] = 0; // papbC
-        maxv[m->params - 5] = 0; // papbN
-        maxv[m->params - 4] = (rand() % 20000) / 1.; // kex
-        maxv[m->params - 3] = 0; // alpha
-        maxv[m->params - 2] = 0; // beta
-        maxv[m->params - 1] = 0; // gamma
-    } else if (m->or_variation == VARIANT_A) {
-        minv[m->params - 3] = 0; // alpha
-        minv[m->params - 2] = 0; // beta
-        minv[m->params - 1] = 0; // gamma
-        maxv[m->params - 3] = 0; // alpha
-        maxv[m->params - 2] = 0; // beta
-        maxv[m->params - 1] = 0; // gamma
-    } else if (m->rdc == RDC_ON) {
-        minv[m->params - 3] = 0; // papbC
-        minv[m->params - 2] = 0; // papbN
-        minv[m->params - 1] = (rand() % 20000) / 1.; // kex#
-        maxv[m->params - 3] = 0; // papbC
-        maxv[m->params - 2] = 0; // papbN
-        maxv[m->params - 1] = (rand() % 20000) / 1.; // kex
-    }
-/**
-         * SMF parameters are \n
-         *   [0] tau\n
-         *   [1] S2\n
-         * SMFT parameters;\n
-         *   [0] tau\n
-         *   [1] S2\n
-         *   [2] Ea\n
-         * EMF parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   NOTE: The fast order parameter is calculated as S2NH/S2s\n
-         * EMFT parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   [3] activation energy for slow motion\n
-         *   [4] activation energy for fast motion\n
-         * DEMF parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   [3] S2 fast\n
-         * DEMFT parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   [3] S2 fast\n
-         *   [4] activation energy for slow motion\n
-         *   [5] activation energy for fast motion\n
-         * GAF parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5-7] alpha, beta, gamma deflections for fast motions\n
-         * GAFT parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5-7] alpha, beta, gamma deflections for fast motions\n
-         *   [8] activation energy for slow motion\n
-         *   [9] activation energy for fast motion\n
-         * EGAF parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5] fast motion order parameter\n
-         * EGAFT parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5] order parameter for fast motions\n
-         *   [6] activation energy for slow motion\n
-         *   [7] activation energy for fast motion\n
-         */
-}
-
 
 
 /**
@@ -166,6 +13,7 @@ void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal
  */
 int run_residue(struct Model *m, unsigned int residue) {
     struct Residue * resid = &(m->residues[residue]);
+
 
 
     unsigned int model = m->model;
@@ -181,53 +29,68 @@ int run_residue(struct Model *m, unsigned int residue) {
         return -1;
     }
 
+
     //printf("RESIDUE %d\n", i+1);
     //printf("Number of relaxations: %d\n", resid->n_relaxation);
-    unsigned int l, k;
+    unsigned int l, k, q;
     unsigned int params = m->params;
     //printf("%d\n", params);
     Decimal *opts;
     opts = (Decimal *) malloc (sizeof(Decimal) * params);
+    Decimal *anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
     resid->parameters = (Decimal *) malloc (sizeof(Decimal) * params);
+    if (resid->parameters == NULL || opts == NULL) {
+        printf("Allocation failed.\n");
+    }
     resid->min_val = MIN_VAL;
 
     Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
     Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
 
     setup_paramlims(m, resid, minv, maxv);
+    Decimal val;
 
-    for (l = 0; l < m->n_iter; l++) {
-        if (resid->ignore == 1) {
-            fprintf(fp, "%d, %lf, -1, -1\n", residue+1, 1000.);
-            fclose(fp);
-            free(opts);
-            return -1;
-        }
-        //Decimal opts[20] = {0, 0};
-
-        Decimal val = anneal(optimize_chisq, opts, minv, maxv, params, 600000, 10000, 0.4, 1.02, 0.2, NULL, MODE_RANDOM_START +MODE_RANDOM_RESTART, resid, m);
-        //printf("%le, %le\n", opts[0], opts[1]);
-       // Decimal val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
-        if (val >= 1000000 || val < 0) {
-            val = -1;
-            for (k = 0; k < params; k++) {
-                opts[k] = -1;
-            }
-        }
-        fprintf(fp, "%d\t%lf", residue+1, val);
-        for (k = 0; k < params; k++) {
-            fprintf(fp, "\t%le", opts[k]);
-        }
-
-        if (val < resid->min_val && val != -1) {
-            //printf("New lowest %lf\n", val);
-            resid->min_val = val;
-            for (k = 0; k < params; k++) {
-                resid->parameters[k] = opts[k];
-            }
-        }
-        fprintf(fp, "\n");
+    if (resid->ignore == 1) {
+        free(minv);
+        free(maxv);
+        free(anneal_pars);
+        free(opts);
+        fprintf(fp, "%d, %lf, -1, -1\n", residue + 1, 1000.);
+        fclose(fp);
+        return -1;
     }
+
+    for (l = 0; l < m->n_anneal_iter; l++) {
+        val = anneal(optimize_chisq, anneal_pars, minv, maxv, params, m->anneal_temp, 1000, m->anneal_wobb, m->anneal_therm, m->anneal_restart, NULL, MODE_RANDOM_START +MODE_RANDOM_RESTART, resid, m);
+        for (q = 0; q < m->n_nm_iter; q++) {
+            for (k = 0; k < params; k++) {
+                opts[k] = anneal_pars[k];
+            }
+            Decimal val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+            if (val >= 1000000 || val < 0) {
+                val = -1;
+                for (k = 0; k < params; k++) {
+                    opts[k] = -1;
+                }
+            }
+            fprintf(fp, "%d\t%lf", residue + 1, val);
+            for (k = 0; k < params; k++) {
+                fprintf(fp, "\t%le", opts[k]);
+            }
+
+            if (val < resid->min_val && val != -1) {
+                //printf("New lowest %lf\n", val);
+                resid->min_val = val;
+                for (k = 0; k < params; k++) {
+                    resid->parameters[k] = opts[k];
+                }
+            }
+            fprintf(fp, "\n");
+        }
+    }
+    free(minv);
+    free(maxv);
+    free(anneal_pars);
     free(opts);
     fclose(fp);
     return 0;
