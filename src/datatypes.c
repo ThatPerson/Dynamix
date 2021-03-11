@@ -469,7 +469,7 @@ void gen_params(Decimal *minv, Decimal *maxv, Decimal *pars, unsigned int n_pars
         pars[k] = minv[k] + (uniform_rand() * (maxv[k] - minv[k]));
 }
 
-void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal * maxv) {
+void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * maxv) {
     unsigned int k;
     for (k = 0; k < m->params; k++)
         minv[k] = 0;
@@ -482,19 +482,19 @@ void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal
             maxv[0] = 1; maxv[1] = 1; maxv[2] = 60000;
             break;
         case MOD_EMF:
-            minv[0] = 0.1; minv[1] = r->S2NH;
+            minv[0] = 0.1; minv[1] = S2NH;
             maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
             break;
         case MOD_EMFT:
-            minv[0] = pow(10, -7); minv[1] = r->S2NH;
+            minv[0] = pow(10, -7); minv[1] = S2NH;
             maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 60000, maxv[4] = 60000;
             break;
         case MOD_DEMF:
-            minv[0] = 0.1; minv[1] = r->S2NH; minv[3] = r->S2NH;
+            minv[0] = 0.1; minv[1] = S2NH; minv[3] = S2NH;
             maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
             break;
         case MOD_DEMFT:
-            minv[0] = pow(10, -7); minv[1] = r->S2NH; minv[3] = r->S2NH;
+            minv[0] = pow(10, -7); minv[1] = S2NH; minv[3] = S2NH;
             maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
             break;
         case MOD_GAF:
@@ -511,25 +511,25 @@ void setup_paramlims(struct Model *m, struct Residue *r, Decimal * minv, Decimal
         case MOD_AIMF:
             minv[0] = 0.1;
             maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
+            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
             break;
         case MOD_AIMFT:
             minv[0] = pow(10, -7);
             maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
-            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = r->S2NH; }
+            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
             maxv[8] = 60000; maxv[9] = 60000;
             break;
         case MOD_EGAF:
             minv[0] = 0.1;
             maxv[0] = 10; maxv[1] = 1;
             for (k = 2; k <= 4; k++) maxv[k] = 0.25;
-            minv[5] = r->S2NH; maxv[5] = 1;
+            minv[5] = S2NH; maxv[5] = 1;
             break;
         case MOD_EGAFT:
             minv[0] = pow(10, -7);
             maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
             for (k = 2; k <= 4; k++) maxv[k] = 0.25;
-            minv[5] = r->S2NH; maxv[5] = 1;
+            minv[5] = S2NH; maxv[5] = 1;
             maxv[6] = 60000; maxv[7] = 60000;
             break;
     }

@@ -16,7 +16,6 @@ int run_residue(struct Model *m, unsigned int residue) {
 
 
 
-    unsigned int model = m->model;
     char outputdir[255];
     strcpy(outputdir, m->outputdir);
     FILE *fp;
@@ -47,7 +46,7 @@ int run_residue(struct Model *m, unsigned int residue) {
     Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
     Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
 
-    setup_paramlims(m, resid, minv, maxv);
+    setup_paramlims(m, resid->S2NH, minv, maxv);
     Decimal val;
 
     if (resid->ignore == 1) {
@@ -66,7 +65,7 @@ int run_residue(struct Model *m, unsigned int residue) {
             for (k = 0; k < params; k++) {
                 opts[k] = anneal_pars[k];
             }
-            Decimal val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+            val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
             if (val >= 1000000 || val < 0) {
                 val = -1;
                 for (k = 0; k < params; k++) {

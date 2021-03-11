@@ -4,7 +4,7 @@ Decimal optimize_global_chisq(Decimal * opts, struct Residue *r, struct Model * 
 	 *
 	 *  for SMF, [tau, S2]
 	 */
-
+    (void) r;
 	unsigned int l, c = 0;
 	Decimal chisq = 0;
 	for (l = 0; l < m->n_residues; l++) {
@@ -37,205 +37,57 @@ int run_global_iteration(struct Model *m, int i) {
 	//printf("%d\n", params);
 	Decimal *opts;
 	opts = (Decimal *) malloc (sizeof(Decimal) * params);
-	
-	
+    Decimal *anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
+    Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
+    Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
 
-		/*if (resid->ignore == 1) {
-			fprintf(fp, "%d, %lf, -1, -1\n", i+1, 1000.);
-			fclose(fp);
-			free(opts);
-			return NULL;
-		}*/
-		//Decimal opts[20] = {0, 0};
-		
-		/**
-		 * SMF parameters are \n 
-		 *   [0] tau\n 
-		 *   [1] S2\n 
-		 * SMFT parameters;\n 
-		 *   [0] tau\n 
-		 *   [1] S2\n 
-		 *   [2] Ea\n 
-		 * EMF parameters\n 
-		 *   [0] tau slow\n 
-		 *   [1] S2 slow\n 
-		 *   [2] tau fast\n 
-		 *   NOTE: The fast order parameter is calculated as S2NH/S2s\n 
-		 * EMFT parameters\n 
-		 *   [0] tau slow\n 
-		 *   [1] S2 slow\n 
-		 *   [2] tau fast\n 
-		 *   [3] activation energy for slow motion\n 
-		 *   [4] activation energy for fast motion\n 
-		 * DEMF parameters\n
-		 *   [0] tau slow\n
-		 *   [1] S2 slow\n
-		 *   [2] tau fast\n
-		 *   [3] S2 fast\n
-		 * DEMFT parameters\n
-		 *   [0] tau slow\n
-		 *   [1] S2 slow\n
-		 *   [2] tau fast\n
-		 *   [3] S2 fast\n
-		 *   [4] activation energy for slow motion\n
-		 *   [5] activation energy for fast motion\n
-		 * GAF parameters\n 
-		 *   [0] tau slow\n 
-		 *   [1] tau fast\n 
-		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
-		 *   [5-7] alpha, beta, gamma deflections for fast motions\n 
-		 * GAFT parameters\n 
-		 *   [0] tau slow\n 
-		 *   [1] tau fast\n 
-		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
-		 *   [5-7] alpha, beta, gamma deflections for fast motions\n 
-		 *   [8] activation energy for slow motion\n 
-		 *   [9] activation energy for fast motion\n 
-		 * EGAF parameters\n 
-		 *   [0] tau slow\n 
-		 *   [1] tau fast\n 
-		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
-		 *   [5] fast motion order parameter\n
-		 * EGAFT parameters\n 
-		 *   [0] tau slow\n 
-		 *   [1] tau fast\n 
-		 *   [2-4] alpha, beta, gamma deflections for slow motions\n 
-		 *   [5] order parameter for fast motions\n 
-		 *   [6] activation energy for slow motion\n 
-		 *   [7] activation energy for fast motion\n 
-		 */
-	unsigned int model = m->model;
-	if (model == MOD_SMF) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
-	} else if (model == MOD_EMF) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-		//printf("RUN: %lf, %le, %le, %le\n", 0.7, opts[0], opts[1], opts[2]);
-	} else if (model == MOD_EMFT) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-		opts[3] = (rand()%60000)/1.;
-		opts[4] = (rand()%60000)/1.;
-		//printf("RUN: %lf, %le, %le, %le\n", 0.7, opts[0], opts[1], opts[2]);
-	} else if (model == MOD_DEMF) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-		opts[3] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-	} else if (model == MOD_DEMFT) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-		opts[1] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.); // random number from s2 dipolar to 1
-		opts[2] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-		opts[3] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-		opts[4] = (rand()%60000)/1.;
-		opts[5] = (rand()%60000)/1.;
-	} else if (model == MOD_SMFT) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-		opts[1] = 0.5 + ((rand() % 100) / 200.); // random number from 0.5 to 1
-		opts[2] = (rand()%60000)/1.;
-	} else if (model == MOD_GAF) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-		for (k = 2; k <= 7; k++) {
-			// 15 degrees = 0.26180 radians
-			opts[k] = ((rand () % 250)/1000.);
-			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-		}
-	} else if (model == MOD_GAFT) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-		opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-		for (k = 2; k <= 7; k++) {
-			// 15 degrees = 0.26180 radians
-			opts[k] = ((rand () % 250)/1000.);
-		}
-		opts[8] = (rand()%60000)/1.;
-		opts[9] = (rand()%60000)/1.;
-	} else if (model == MOD_AIMF) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-		for (k = 2; k <= 7; k++) {
-			opts[k] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-		}
-	} else if (model == MOD_AIMFT) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -15 + T_S);
-		opts[1] = ((rand() % 100)/100.) * pow(10, -20 + T_S);
-		for (k = 2; k <= 7; k++) {
-			opts[k] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-		}
-		opts[8] = (rand()%60000)/1.;
-		opts[9] = (rand()%60000)/1.;
-	} else if (model == MOD_EGAF) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-		for (k = 2; k <= 4; k++) {
-			// 15 degrees = 0.26180 radians
-			opts[k] = ((rand () % 250)/1000.);
-			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-		}
-		opts[5] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-		
-	} else if (model == MOD_EGAFT) {
-		opts[0] = ((rand() % 100)/100.) * pow(10, -8 + T_S);
-		opts[1] = ((rand() % 100)/100.) * pow(10, -11 + T_S);
-		for (k = 2; k <= 4; k++) {
-			// 15 degrees = 0.26180 radians
-			opts[k] = ((rand () % 250)/1000.);
-			//printf("%d %lf\n", k, opts[k] * (180. / M_PI));
-		}
-		opts[5] = 0.7 + (1 - 0.7)*((rand() % 100) / 100.);
-		opts[6] = (rand()%60000)/1.;
-		opts[7] = (rand()%60000)/1.;
-	}
-		if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
-		/* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put
-		 * alpha in opts[params-3] and beta in opts[params-2] and gamma in opts[params-1];
-		 */
-		opts[params - 6] = 0; // papbC
-		opts[params - 5] = 0; // papbN
-		opts[params - 4] = (rand() % 20000) / 1.; // kex
-		opts[params - 3] = 0; // alpha
-		opts[params - 2] = 0; // beta
-		opts[params - 1] = 0; // gamma
-	} else if (m->or_variation == VARIANT_A) {
-		opts[params - 3] = 0; // alpha
-		opts[params - 2] = 0; // beta
-		opts[params - 1] = 0; // gamma
-	} else if (m->rdc == RDC_ON) {
-		opts[params - 3] = 0; // papbC
-		opts[params - 2] = 0; // papbN
-		opts[params - 1] = (rand() % 20000) / 1.; // kex
-	}
-	
+    setup_paramlims(m, resid->S2NH, minv, maxv);
+
+    if (resid->ignore == 1) {
+        free(minv);
+        free(maxv);
+        free(anneal_pars);
+        free(opts);
+        fprintf(fp, "%d, %lf, -1, -1\n", i + 1, 1000.);
+        fclose(fp);
+        return -1;
+    }
+
+    unsigned int q;
+    Decimal val;
+    anneal(optimize_global_chisq, anneal_pars, minv, maxv, m->params, m->anneal_temp, 1000, m->anneal_wobb, m->anneal_therm, m->anneal_restart, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, m);
 
 	//printf("%le, %le\n", opts[0], opts[1]);
-	Decimal val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
-	if (val >= 1000000 || val < 0) {
-		val = -1;
-		for (k = 0; k < m->params; k++) {
-			opts[k] = -1;
-		}
-	}
+	for (q = 0; q < m->n_nm_iter; q++) {
+	    for (k = 0; k < m->params; k++) {
+	        opts[k] = anneal_pars[k];
+	    }
+        val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
+        if (val >= 1000000 || val < 0) {
+            val = -1;
+            for (k = 0; k < m->params; k++) {
+                opts[k] = -1;
+            }
+        }
 
-	fprintf(fp, "%d\t%lf", i+1, val);
-	for (k = 0; k < params; k++) {
-		fprintf(fp, "\t%le", opts[k]);
-	}
-	fprintf(fp, "\n");
-    unsigned int j;
-	for (j = 0; j < m->n_residues; j++) {
-		if (val < m->residues[j].min_val && val != -1) {
-		//printf("New lowest %lf\n", val);	
-			m->residues[j].min_val = val;
-			for (k = 0; k < params; k++) {
-				m->residues[j].parameters[k] = opts[k];
-			}
-		}
-	}
-
+        fprintf(fp, "%d\t%lf", i + 1, val);
+        for (k = 0; k < params; k++) {
+            fprintf(fp, "\t%le", opts[k]);
+        }
+        fprintf(fp, "\n");
+        unsigned int j;
+        for (j = 0; j < m->n_residues; j++) {
+            if (val < m->residues[j].min_val && val != -1) {
+                //printf("New lowest %lf\n", val);
+                m->residues[j].min_val = val;
+                for (k = 0; k < params; k++) {
+                    m->residues[j].parameters[k] = opts[k];
+                }
+            }
+        }
+    }
+	free(minv);
+	free(maxv);
 
 
 	free(opts);
