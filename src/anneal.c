@@ -43,10 +43,10 @@ Decimal anneal(
             file_open = 1;
     }
     unsigned int k;
+    if ((mode & MODE_RANDOM_START) != 0)
+        gen_params(min, max, parms, n_pars);
+
     for (k = 0; k < n_pars; k++) {
-        if ((mode & MODE_RANDOM_START) != 0) {
-            parms[k] = min[k] + (uniform_rand() * (max[k] - min[k]));
-        }
         best[k] = parms[k];
         curr[k] = parms[k];
     }
@@ -88,8 +88,8 @@ Decimal anneal(
 
         if ((mode & MODE_RANDOM_RESTART) != 0) {
             if (restart_prob > uniform_rand()) {
-                for (k = 0; k < n_pars; k++)
-                    curr[k] = min[k] + (uniform_rand() * (max[k] - min[k]));
+                gen_params(min, max, curr, n_pars);
+
                 cost_curr = func(curr, r, m, n_pars);
             }
 

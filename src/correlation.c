@@ -70,9 +70,9 @@ int read_data_file(char *filename, struct Model * m) {
 		params += 3; // theta, phi
 
 	int res;
-	Decimal S2NH, chisq;
+
 	int length = 0;
-	int length_d = 0;
+	unsigned int length_d = 0;
 	unsigned int i;
 
 
@@ -163,7 +163,7 @@ int write_spectral_density_emf(char *fn, Decimal taus, Decimal S2s, Decimal tauf
 	Decimal v, slow, fast;
 	Decimal w_start = 10 * T_DOWN;
 	Decimal w_end = pow(10., 10) * T_DOWN;
-	int n_steps = log(w_end / w_start) / log(2);
+	int n_steps = (int) (log(w_end / w_start) / log(2));
 	int n;
 	w = w_start;
 	//for (w = pow(10, 1)*T_DOWN; w < pow(10., 10)*T_DOWN; w*=2) {
@@ -454,10 +454,10 @@ int main(int argc, char * argv[]) {
 				}
 				printf("QUe?\n");
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-				Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-				Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
-				GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
-				GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
+				Decimal *S2sl[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+				Decimal *S2fl[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+				GAF_S2(sigs, Os, Os, S2sl, 4, MODE_REAL);
+				GAF_S2(sigf, Os, Os, S2fl, 4, MODE_REAL);
 			} else if (m.model == MOD_EGAF || m.model == MOD_EGAFT) {
 				// need to perform reorientation before.
 				taus = opts[0];
@@ -471,8 +471,8 @@ int main(int argc, char * argv[]) {
                     tauf = temp_tau(tauf, Eaf, temp);
 				}
 				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-				Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-				GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
+				Decimal *S2sl[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
+				GAF_S2(sigs, Os, Os, S2sl, 4, MODE_REAL);
 				S2NHf = (Decimal) S2f;
 				S2CNf = (Decimal) S2f;
 				S2CHf = (Decimal) S2f;

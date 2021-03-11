@@ -463,7 +463,7 @@ Decimal uniform_rand(void) {
     return ((Decimal) rand() + 1.) / ((Decimal) RAND_MAX + 1.);
 }
 
-void gen_params(Decimal *minv, Decimal *maxv, Decimal *pars, unsigned int n_pars) {
+void gen_params(const Decimal *minv, const Decimal *maxv, Decimal *pars, unsigned int n_pars) {
     unsigned int k;
     for (k = 0; k < n_pars; k++)
         pars[k] = minv[k] + (uniform_rand() * (maxv[k] - minv[k]));
@@ -532,6 +532,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             minv[5] = S2NH; maxv[5] = 1;
             maxv[6] = 60000; maxv[7] = 60000;
             break;
+        default: break;
     }
     if (m->or_variation == VARIANT_A && m->rdc == RDC_ON) {
         /* eg for MOD_GAF, params = 8 + 3. opts[7] is full, so we want to put

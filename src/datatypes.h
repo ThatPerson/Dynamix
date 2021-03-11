@@ -18,7 +18,7 @@ Decimal sq(Decimal x);
 int sq_i(int x);
 void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma);
 Decimal uniform_rand(void);
-void gen_params(Decimal *minv, Decimal *maxv, Decimal *pars, unsigned int n_pars);
+void gen_params(const Decimal *minv, const Decimal *maxv, Decimal *pars, unsigned int n_pars);
 void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * maxv);
 
 #include "datatypes.c"

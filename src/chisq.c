@@ -22,7 +22,7 @@
  * @return calculated R value
  */
 Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
-	Decimal calc_R = 0;
+	Decimal calc_R;
 	unsigned int i;
 
 	unsigned int model = m->model;
@@ -36,7 +36,7 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 	if (model == MOD_SMF || model == MOD_SMFT) {
 		Decimal tau = opts[0];
 		Decimal S2 = opts[1];
-		Decimal tau_eff = 0, Ea = 0;
+		Decimal tau_eff, Ea;
 		
 		if (tau < 0)
 			(*violations)++;
@@ -66,13 +66,13 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 			default:
 				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
-				break;
+
 		}
 	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
 		Decimal taus = opts[0];
 		Decimal S2s = opts[1];
 		Decimal tauf = opts[2];
-		Decimal taus_eff=0, tauf_eff=0, Eas=0, Eaf=0, S2f=resid->S2NH / S2s;
+		Decimal taus_eff, tauf_eff, Eas, Eaf, S2f=resid->S2NH / S2s;
 
 		if (model == MOD_EMFT) {
 			Eas = opts[3];
@@ -116,14 +116,14 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 			default:
 				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
-				break;
+
 		}
 	} else if (model == MOD_GAF || model == MOD_GAFT) {
 		Decimal taus = opts[0];
 		Decimal tauf = opts[1];
 		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
 		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-		Decimal taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		Decimal taus_eff=taus, tauf_eff=tauf, Eas, Eaf;
 		/* WARNING: Need to perform variant orientations before entering back_calc.*/
 		if (model == MOD_GAFT) {
 			Eas = opts[8];
@@ -161,14 +161,14 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 			default:
 				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
-				break;
+
 		}
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
 		Decimal taus = opts[0];
 		Decimal tauf = opts[1];
 		Decimal Ss[3] = {opts[2], opts[3], opts[4]};
 		Decimal Sf[3] = {opts[5], opts[6], opts[7]};
-		Decimal taus_eff=taus, tauf_eff=tauf, Eas=0, Eaf=0;
+		Decimal taus_eff=taus, tauf_eff=tauf, Eas, Eaf;
 		/* WARNING: Need to perform variant orientations before entering back_calc.*/
 		if (model == MOD_AIMFT) {
 			Eas = opts[8];
@@ -207,14 +207,14 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 			default:
 				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
-				break;
+
 		}
 	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
 		Decimal taus = opts[0];
 		Decimal tauf = opts[1];
 		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
 		Decimal S2f = opts[5];
-		Decimal taus_eff = taus, tauf_eff = tauf, Eas=0, Eaf=0;
+		Decimal taus_eff = taus, tauf_eff = tauf, Eas, Eaf;
 		if (model == MOD_EGAFT) {
 			Eas = opts[6];
 			Eaf = opts[7];
@@ -251,13 +251,13 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 			default:
 				ERROR("Unknown relaxation type: %d", relax->type);
 				exit(0);
-				break;
+
 		}
 	} else {
 		printf("Model not yet implemented.\n");
 		calc_R = -1;
 	}
-	Decimal papbN=0,papbC=0,kex=0, RDC=0, fm;
+	Decimal papbN,papbC,kex, RDC, fm;
 	if (m->rdc == RDC_ON) {
 		if (m->or_variation == VARIANT_A) {
 			papbC = opts[m->params - 6];
@@ -313,7 +313,7 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 
 	unsigned int model = m->model;
 	unsigned int or_variations = m->or_variation;
-	Decimal calc_R = 0;
+	Decimal calc_R;
 	Decimal chisq = 0;
 	int violations = 0;
 	unsigned int i;
@@ -434,7 +434,7 @@ int back_calculate(Decimal * opts, struct Residue * resid, struct Model * m, cha
 	//if (opts[0] == -1)
 	//	return -1;
 	unsigned int or_variations = m->or_variation;
-	Decimal calc_R = 0;
+	Decimal calc_R;
 	FILE * fp;
 	fp = fopen(filename, "w");
 	if (fp == NULL) {

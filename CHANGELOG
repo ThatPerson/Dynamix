@@ -1,3 +1,10 @@
+2021-03-11
+ * Added simulated annealing as an optimization method.
+ * Nelder-Mead method is good at optimizing within a minima, but it appears the system here has a LOT of local minima.
+ * So for Nelder-Mead, a large number of random starting points are needed and even then I'm not sure it necessarily finds the true global minima.
+ * Simulated annealing, at least as done here, is worse at finding true minima of minima, but is much better at finding global minima.
+ * So by running searches for global minima with simulated annealing, and then using simplex to find true minima seems to work better.
+
 2021-02-06
  * Removed pthread parallelisation and replaced with MPI/OpenMP parallelisation.
    * Can give ~2x speed up depending on model.

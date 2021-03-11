@@ -99,7 +99,10 @@ int main(int argc, char * argv[]) {
 		ret = -1;
 	}
 
-
+    if (ret == -1) {
+        free_all(&m);
+        MPI_Finalize();
+    }
 
 
 	//printf("%d\n", ret);
