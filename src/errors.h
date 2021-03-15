@@ -6,5 +6,4 @@ void calc_statistics(Decimal * vals, int length, Decimal * mean, Decimal * std);
 int calc_errors(struct Model *m, unsigned int residue);
 
 
-#include "errors.c"
 #endif

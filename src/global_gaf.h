@@ -6,5 +6,4 @@ int run_global_iteration(struct Model *m, int i);
 int calc_global_errors(struct Model *m);
 int run_global(struct Model *m);
 
-#include "global_gaf.c"
 #endif

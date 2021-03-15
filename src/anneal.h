@@ -27,5 +27,4 @@ Decimal anneal(
         struct Model *m
 );
 
-#include "anneal.c"
 #endif //DYNAMIX_ANNEAL_H

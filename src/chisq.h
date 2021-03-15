@@ -5,5 +5,4 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m, unsigned int params);
 int back_calculate(Decimal * opts, struct Residue * resid, struct Model * m, char *filename, unsigned int params);
 
-#include "chisq.c"
 #endif

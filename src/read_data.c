@@ -1,10 +1,12 @@
 /**
  * @file read_data.c
  */
-
 #include <stdio.h>
-#include <string.h>
+#include <time.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "datatypes.h"
 
 int read_csa(struct Model *m, char *filename, int dt) {
 	FILE *fp;
@@ -691,6 +693,9 @@ int print_system(struct Model *m, char *filename) {
 	}
 	
 	FILE * qp;
+
+	// TODO: Remove vals.dat
+	// TODO: APM24
 	qp = fopen("vals.dat", "w");
 	if (qp == NULL) {
 		ERROR("%s not found.", "vals.dat");

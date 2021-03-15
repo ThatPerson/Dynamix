@@ -3,8 +3,8 @@
  */
 
 #include <stdio.h>
-#include <math.h>
-
+#include "../datatypes.h"
+#include "smf.h"
 
 /**
  * Calculates spectral density function for given frequency (omega) according to simple model free analysis.

@@ -6,5 +6,4 @@ int write_correlation_function_emf(char * fn, Decimal T, Decimal dT, Decimal tau
 int write_correlation_function_smf(char * fn, Decimal T, Decimal dT, Decimal tau, Decimal S2);
 int main(int argc, char * argv[]);
 
-#include "correlation.c"
 #endif

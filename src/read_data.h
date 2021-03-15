@@ -7,5 +7,4 @@ int read_relaxation_data(struct Model *m, char *filename);
 int read_system_file(char *filename, struct Model * m);
 int print_system(struct Model *m, char *filename);
 
-#include "read_data.c"
 #endif

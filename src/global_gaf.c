@@ -1,3 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "datatypes.h"
+#include "chisq.h"
+#include "anneal.h"
+#include "crosen.h"
+#include "errors.h"
 
 Decimal optimize_global_chisq(Decimal * opts, struct Residue *r, struct Model * m, unsigned int params) {
 	/* opts is a pointer to an array containing;

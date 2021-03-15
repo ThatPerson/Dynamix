@@ -33,5 +33,4 @@ Decimal GAF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 Decimal GAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf);
 Decimal GAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf);
 
-#include "gaf.c"
 #endif

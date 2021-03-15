@@ -4,9 +4,12 @@
 
 #include "tests.h"
 #include <stdio.h>
+#include <stdlib.h>
+
 #include <time.h>
 #include <omp.h>
 #include <mpi.h>
+#include <complex.h>
 
 #include <stddef.h>
 #include <setjmp.h>
@@ -241,7 +244,6 @@ static void test_crosen_backcalc(void **state) {
     if (m.residues[0].parameters == NULL) goto fail;
     unsigned int i;
     Decimal parms[] = {1e-04, 0.84211, 1e-03, 0.95, 3e+04, 4e+03};
-    Decimal parms_err[] = {1e-05, 0.01, 1e-04, 0.01, 1e+03, 1e+02};
     for (i = 0 ; i < 6; i++)
         m.residues[0].parameters[i] = parms[i];
 
@@ -275,7 +277,7 @@ static void test_crosen_backcalc(void **state) {
                         r->type = n_t;
                         r->R = 1;
                         r->R = back_calc(resid->parameters, resid, r, &m, &ignore);
-                        r->Rerror = 0.1 * r->R;
+                        r->Rerror = 0.2 * r->R;
                         k++;
                     }
                 }
@@ -283,10 +285,9 @@ static void test_crosen_backcalc(void **state) {
         }
     }
 
-
+    assert_int_equal(k, N_rates);
     Decimal opts[6]; // = {5e-04, 0.82, 0.43e-03, 0.99, 2e+03, 5e+04};
     Decimal min = 1000000;
-    int kl = 0;
 
 
 
@@ -315,7 +316,7 @@ static void test_crosen_backcalc(void **state) {
     for (k = 0; k < N_rates; k++) {
         r = &(m.residues[0].relaxation[k]);
         temp_R = back_calc(opts, resid, r, &m, &ignore);
-        assert_float_equal(temp_R, r->R, 4*r->Rerror);
+        assert_float_equal(temp_R, r->R, r->Rerror);
     }
 
 

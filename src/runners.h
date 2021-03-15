@@ -13,5 +13,4 @@ int print_residues(struct Model *m);
 int print_errors(struct Model *m);
 int determine_residues(struct Model *m, int myid, int numprocs, unsigned int *start, unsigned int *end);
 
-#include "runners.c"
 #endif //DYNAMIX_RUNNERS_H

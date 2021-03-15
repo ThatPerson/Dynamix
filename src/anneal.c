@@ -2,8 +2,10 @@
 // Created by ben on 10/03/2021.
 //
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "datatypes.h"
-#include "errors.h"
+#include "anneal.h"
 
 Decimal propose(Decimal v, Decimal wobble) {
     Decimal rn = (Decimal) ((rand() % 100) - 50.) / 50.; // random number from -1. to +1.
@@ -65,7 +67,8 @@ Decimal anneal(
         temp /= thermostat;
         //temp = T * (1.*(n_iter - itr) / (1.*n_iter));
         cost_prop = func(prop, r, m, n_pars);
-        rnv = exp(1.*(cost_curr - cost_prop) / temp);
+
+
         urand = uniform_rand();
         if (cost_prop < cost_curr) {
             cost_curr = cost_prop;
@@ -78,11 +81,15 @@ Decimal anneal(
                     best[k] = prop[k];
                 }
             }
-        } else if (rnv > urand) {
-            jump = 1;
-            cost_curr = cost_prop;
-            for (k = 0; k < n_pars; k++) {
-                curr[k] = prop[k];
+        } else if (temp > 1e-10) {
+
+            rnv = exp(1.*(cost_curr - cost_prop) / temp);
+            if (rnv > urand) {
+                jump = 1;
+                cost_curr = cost_prop;
+                for (k = 0; k < n_pars; k++) {
+                    curr[k] = prop[k];
+                }
             }
         }
 

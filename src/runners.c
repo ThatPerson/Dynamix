@@ -4,7 +4,17 @@
 
 //#include "runners.h"
 
-
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "datatypes.h"
+#include "anneal.h"
+#include "chisq.h"
+#include "crosen.h"
+#include "errors.h"
+#include "runners.h"
+#include "models/gaf.h"
+#include "models/aimf.h"
 
 /**
  * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.

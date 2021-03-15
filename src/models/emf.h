@@ -1,6 +1,8 @@
 #ifndef EMF_H
 #define EMF_H
 
+
+
 #undef MOD_EMF
 #undef MOD_EMFT
 #undef MOD_DEMF
@@ -17,5 +19,4 @@ Decimal EMF_Dipolar_R2(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal taus
 Decimal EMF_R1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, int mode);
 Decimal EMF_R2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, int mode);
 
-#include "emf.c"
 #endif

@@ -15,5 +15,4 @@ Decimal EGAF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 Decimal EGAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal S2f);
 Decimal EGAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal S2f);
 
-#include "egaf.c"
 #endif

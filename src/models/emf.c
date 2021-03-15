@@ -3,8 +3,8 @@
  */
 
 #include <stdio.h>
-#include <math.h>
-
+#include "../datatypes.h"
+#include "emf.h"
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2), 

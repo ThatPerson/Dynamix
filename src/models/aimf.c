@@ -2,9 +2,10 @@
  * @file aimf.c
  */
 
-#include <math.h>
 
-
+#include "../datatypes.h"
+#include "emf.h"
+#include "aimf.h"
 
   
 /** 

@@ -33,5 +33,4 @@ Decimal AIMF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 Decimal AIMF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf);
 Decimal AIMF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf);
 
-#include "aimf.c"
 #endif

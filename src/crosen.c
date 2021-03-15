@@ -2,6 +2,7 @@
  * @file crosen.c
  */
 
+#include "datatypes.h"
 
 /* Adapted from below */
 
@@ -38,9 +39,6 @@
  * Rosenbrock's function.
  */
 
-#include <stdlib.h>
-//#include <malloc.h>
-#include <math.h>
 
 #define MAX_IT      1000      ///< maximum number of iterations
 #define ALPHA       1.0       ///< reflection coefficient

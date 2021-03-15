@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include <complex.h>
 #include "datatypes.h"
 #include "read_data.h"
 #include <omp.h>
@@ -15,8 +16,9 @@
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
-#include <stdlib.h>  
-#include <time.h>   
+#include <stdlib.h>
+#include <time.h>
+
 
 #include "verification.h"
 

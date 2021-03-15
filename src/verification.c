@@ -2,15 +2,18 @@
  * @file verification.c
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "datatypes.h"
 
 
 
 //__func__,__FILE__, __LINE__
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <complex.h>
 
+#include "datatypes.h"
+#include "errors.h"
+#include "models/gaf.h"
 
 
 #define N_BINS 10

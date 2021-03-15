@@ -13,5 +13,4 @@ Decimal SMF_Dipolar_R2(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal tau,
 Decimal SMF_R1(struct Residue *res, struct Relaxation* relax, Decimal tau, Decimal S2, unsigned int mode);
 Decimal SMF_R2(struct Residue *res, struct Relaxation* relax, Decimal tau, Decimal S2, unsigned int mode);
 
-#include "smf.c"
 #endif

@@ -2,9 +2,17 @@
  * @file chisq.c
  */
 
-#include <stdio.h>
 #include <math.h>
-#include <omp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "datatypes.h"
+#include "models/smf.h"
+#include "models/emf.h"
+#include "models/aimf.h"
+#include "models/egaf.h"
+#include "models/gaf.h"
+
+// TODO: Write file descriptors for each file.
 
 /**
  * Relaxation back calculation. Takes parameters, residue and relaxation and returns
@@ -26,6 +34,7 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 	unsigned int i;
 
 	unsigned int model = m->model;
+
 	if (relax->R <= 0)
 		return -1;
 	
@@ -331,7 +340,6 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	}
 	
 	Decimal mult = 1.;
-	omp_set_num_threads(m->nthreads);
 	#pragma omp parallel for reduction(+:chisq)
 	for (i = 0; i < resid->n_relaxation; i++) {
 		if (resid->relaxation[i].R == -1)

@@ -3,5 +3,4 @@
 
 Decimal simplex(Decimal (*func)(Decimal[], struct Residue*, struct Model *, unsigned int), Decimal start[], Decimal EPSILON, Decimal scale, struct Residue * resid, struct Model * mod);
 
-#include "crosen.c"
 #endif

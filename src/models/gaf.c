@@ -2,12 +2,12 @@
  * @file gaf.c
  */
 
-#include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
 #include <complex.h>
 
-
-
+#include "../datatypes.h"
+#include "emf.h"
+#include "gaf.h"
   
 /** 
  * Calculates R1 contribution under GAF model for Dipolar interaction between two atoms.
