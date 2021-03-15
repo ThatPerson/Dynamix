@@ -718,16 +718,7 @@ int print_system(struct Model *m, char *filename) {
 		ERROR("%s not found.", filename);
 		return -1;
 	}
-	
-	FILE * qp;
 
-	// TODO: Remove vals.dat
-	// TODO: APM24
-	qp = fopen("vals.dat", "w");
-	if (qp == NULL) {
-		ERROR("%s not found.", "vals.dat");
-		return -1;
-	}
 	
 	//fprintf(fp, "MFE: %d\nMI:  %d\n", m->max_func_evals, m->max_iter);
 	fprintf(fp, "Model: %d\nN_Residues: %d\n", m->model, m->n_residues);
@@ -758,7 +749,6 @@ int print_system(struct Model *m, char *filename) {
 		Decimal Cred_aniso = m->residues[i].csaC[0] - Ccsiso;
 		Decimal Ceta = (m->residues[i].csaC[1] - m->residues[i].csaC[2]) / Cred_aniso;
 		fprintf(fp, "\t\tCSA: d %lf, n %lf\n", Cred_aniso, Ceta);
-		fprintf(qp, "%d, %lf, %lf, %lf, %lf\n", i+1, Qred_aniso, Qeta, Cred_aniso, Ceta);
 		if (m->cn_ratio == CNRATIO_ON)
 			fprintf(fp, "\tCNRATIO: %lf\n", m->residues[i].cn);
 		else
@@ -774,7 +764,6 @@ int print_system(struct Model *m, char *filename) {
 			fprintf(fp, "\t\t%d: %d [%lf, %lf, %lf, %lf] %lf +- %lf\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R, r->Rerror);
 		}
 	}
-	fclose(qp);
 	fclose(fp);
 	return 1;
 

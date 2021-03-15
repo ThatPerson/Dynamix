@@ -5,6 +5,7 @@
  * Provides Nelder-Mead simplex algorithm for local optimization of chisq function.
  */
 
+#include <stdlib.h>
 #include "datatypes.h"
 
 /* Adapted from below
