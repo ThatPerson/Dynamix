@@ -1,10 +1,15 @@
-/**
- * @file crosen.c
+
+/*
+ * crosen.c
+ *
+ * Provides Nelder-Mead simplex algorithm for local optimization of chisq function.
  */
 
 #include "datatypes.h"
 
-/* Adapted from below */
+/* Adapted from below
+ * Ben Tatman, 2021
+ */
 
 /*
  * Program: rosen.c

@@ -1,6 +1,31 @@
-//
-// Created by ben on 08/03/2021.
-//
+/*
+ * Copyright (c) 2021 Ben Tatman, University of Warwick
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Sosftware
+ * is furnished to do so, subject to the following conditions:
+ *
+ * - The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software
+ * - Any academic work deriving from the Software shall cite [CITATION].
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUR OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/*
+ * tests.c
+ *
+ * Unit testing using CMocka library.
+ */
 
 #include "tests.h"
 #include <stdio.h>
@@ -316,11 +341,9 @@ static void test_crosen_backcalc(void **state) {
     for (k = 0; k < N_rates; k++) {
         r = &(m.residues[0].relaxation[k]);
         temp_R = back_calc(opts, resid, r, &m, &ignore);
-        assert_float_equal(temp_R, r->R, r->Rerror);
+        assert_float_equal(temp_R, r->R, 2*r->Rerror);
     }
 
-
-    // TODO: Write a program to perform phase cycling
     free(m.residues[0].relaxation);
     free(m.residues[0].parameters);
     free(m.residues);
