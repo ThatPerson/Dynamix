@@ -138,18 +138,37 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 	int ksqsum;
 	int lsqsum;
 	int msqsum;
+
+    Decimal sqsigs[3] = {sq(sig[0]), sq(sig[1]), sq(sig[2])};
+
+    /* sq_s is an array where sq_s[i+2] = i^2 */
+    int sq_s[5] = {4, 1, 0, 1, 4};
+
+    /* sq_d is an array where sq_d[i+2][j+2] = (i^2 + j^2) / 2
+     * This speeds precalculates loop values */
+    Decimal sq_d[5][5] = {
+            {4.0, 2.5, 2.0, 2.5, 4.0},
+            {2.5, 1.0, 0.5, 1.0, 2.5},
+            {2.0, 0.5, 0.0, 0.5, 2.0},
+            {2.5, 1.0, 0.5, 1.0, 2.5},
+            {4.0, 2.5, 2.0, 2.5, 4.0}
+    };
+
 	Decimal lexp, kexp, mexp;
 	for (l = -2; l <= 2; l++) {
-		lsqsum = sq_i(l);
-		lexp = (Decimal) -(sq(sig[1]) * lsqsum);
+		//lsqsum = sq_i(l);
+		//lexp = (Decimal) -(sq(sig[1]) * lsqsum);
+		lexp = -(sqsigs[1] * sq_s[l+2]);
 		for (m = -2; m <= 2; m++) {
 			for (mp = -2; mp <= 2; mp++) {
-				msqsum = sq_i(m) + sq_i(mp);
-				mexp = (Decimal) -(sq(sig[2]) * msqsum/2.);
+				//msqsum = sq_i(m) + sq_i(mp);
+				//mexp = (Decimal) -(sq(sig[2]) * msqsum/2.);
+				mexp = -(sqsigs[2] * sq_d[m+2][mp+2]);
 				for (k = -2; k <= 2; k++) {
 					for (kp = -2; kp <= 2; kp++) {
-						ksqsum = sq_i(k) + sq_i(kp);
-						kexp = (Decimal) -(sq(sig[0]) * ksqsum / 2.);
+						//ksqsum = sq_i(k) + sq_i(kp);
+						//kexp = (Decimal) -(sq(sig[0]) * ksqsum / 2.);
+						kexp = -(sqsigs[0] * sq_d[k+2][kp+2]);
 						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
 						temp = 1;
 						

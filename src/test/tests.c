@@ -357,6 +357,42 @@ static void test_crosen_backcalc(void **state) {
 
 }
 
+void speedy_gaf(void) {
+    clock_t begin = clock();
+
+    //   int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  int mode) {
+    int i;
+    Decimal S1q = 0, S2q = 0, S3q = 0;
+    Decimal *S2[] = {&S1q, &S2q, &S3q};
+    Decimal sig[3];
+    struct Orient A;
+    A.theta = 1.768019;
+    A.phi = 3.141593;
+    calculate_Y2(&A);
+
+    struct Orient *a[] = {&A, &A, &A};
+    Decimal S2sum[3] = {0, 0, 0};
+    for (i = 0; i < 10000; i++) {
+        sig[0] = (rand() % 100) / 100.;
+        sig[1] = (rand() % 100) / 100.;
+        sig[2] = (rand() % 100) / 100.;
+        GAF_S2(sig, a, a, S2, 3, MODE_REAL);
+        S2sum[0] += S1q;
+        S2sum[1] += S2q;
+        S2sum[2] += S3q;
+
+    }
+
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("%lf :: %lf, %lf, %lf\n", time_spent, S2sum[0], S2sum[1], S2sum[2]);
+
+
+    /* naieve 3.102058 s; */
+    /* lookup: 2.141635 s; */
+
+}
+
 int main(void) {
     srand(time(NULL));
     const struct CMUnitTest tests[] = {
@@ -370,4 +406,5 @@ int main(void) {
             cmocka_unit_test(test_crosen_backcalc)
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
+    //speedy_gaf();
 }
