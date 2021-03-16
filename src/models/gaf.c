@@ -155,6 +155,34 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
     };
 
 	Decimal lexp, kexp, mexp;
+
+	/*
+	 * The GAF order parameter equation is composed of four main parts. These are
+	 *  1. Imaginary power of k-kp
+	 *  2. Exponential of angular deflections with (m^2 + mp^2) etc
+	 *  3. Product of Wigner matrices
+	 *  4. Product of Spherical Harmonics
+	 * As this is a nested sum it can be quite slow. In order to speed it up, a number of optimizations have been made.
+	 *
+	 *  1. If we are considering only real order parameters, then given spherical harmonics with
+	 *     no imaginary component it can be shown that any imaginary part of the i^(k-kp) is ignored.
+	 *     As (k-kp) is an integer, i^(k-kp) goes (0) 1, (1) i, (2) -1, (3) -i, (4) 1 and so on.
+	 *     So creal(i^(k)) is 0 for any odd k, and so these cases may be ignored.
+	 *     If k is divisible by 4, then this factor is 1, and if not, it is -1.
+	 *     This avoids the need for calling cpow() on each iteration, which is a hard operation.
+	 *     In the case that the spherical harmonics have an imaginary part, however, this must be done.
+	 *  2. The component for each of alpha, beta, and gamma is done at their section in the loop. This means
+	 *     that the beta component is only calculated 5 times, the gamma component 125 times, and the alpha
+	 *     3125 times.
+	 *     The sigma values are presquared in sqsigs. While squaring is easy, doing this so many times can slow
+	 *     down the iteration. Additionally, the summed squares of the indices is precalculated (sq_s, sq_d).
+	 *     It has been considered to precalculate the sigma exponentials and then take these to the power of the
+	 *     sum of squares. This doesn't lead to a significant speed bump, but does make the code more complicated.
+	 *  3. The product of Wigner matrices over k, kp, l, m, mp and exponentiation is done once and this is then
+	 *     used for all S2 parameters being calculated.
+	 *  4. No optimization is done to the products of spherical harmonics.
+	 */
+
 	for (l = -2; l <= 2; l++) {
 		//lsqsum = sq_i(l);
 		//lexp = (Decimal) -(sq(sig[1]) * lsqsum);

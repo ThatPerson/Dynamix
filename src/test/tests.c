@@ -181,6 +181,29 @@ static void test_rotations(void **state) {
 
 }
 
+static void single_gaf(Decimal sa, Decimal sb, Decimal sg, Decimal Atheta, Decimal Aphi, Decimal Btheta, Decimal Bphi, Decimal SAAr, Decimal SBBr, Decimal SABr) {
+    Decimal epsilon = 0.0001;
+    struct Orient A, B;
+    A.theta = Atheta;
+    A.phi = Aphi;
+    B.theta = Btheta;
+    B.phi = Bphi;
+    calculate_Y2(&A);
+    calculate_Y2(&B);
+    struct Orient *set1[] = {&A, &B, &A};
+    struct Orient *set2[] = {&A, &B, &B};
+    Decimal SAA, SBB, SAB;
+    Decimal *S2[] = {&SAA, &SBB, &SAB};
+    Decimal sigs[] = {sa, sb, sg};
+    GAF_S2(sigs, set1, set2, S2, 3, MODE_REAL);
+    int i;
+    assert_float_equal(SAA, SAAr, epsilon);
+    assert_float_equal(SBB, SBBr, epsilon);
+    assert_float_equal(SAB, SABr, epsilon);
+
+    return;
+}
+
 static void test_gaf(void **state) {
     (void) state;
     initialise_dwig(HALF_PI, Dwig);
@@ -205,6 +228,11 @@ static void test_gaf(void **state) {
     assert_float_equal(SAA, .279796, epsilon);
     assert_float_equal(SBB, .311143, epsilon);
     assert_float_equal(SAB, -0.218714, epsilon);
+
+  //  static void single_gaf(Decimal sa, Decimal sb, Decimal sg, Decimal Atheta, Decimal Aphi, Decimal Btheta, Decimal Bphi, Decimal SAAr, Decimal SBBr, Decimal SABr)
+    single_gaf(0.08, 0.41, 0.80, 2.03, 1.64, 4.07, 1.84, 0.279796, 0.311143,-0.218714);
+    single_gaf(0.88, 0.02, 0.08, 4.79, M_PI, 3.35, M_PI, 0.970387, 0.277148, -0.448971);
+    single_gaf(0.12, 0.98, 0.60, 5.62, HALF_PI, 1.34, HALF_PI, 0.187247, 0.332697, -0.121306);
 }
 
 static void test_statistics(void **state) {
@@ -405,6 +433,7 @@ int main(void) {
             cmocka_unit_test(test_statistics),
             cmocka_unit_test(test_crosen_backcalc)
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
     //speedy_gaf();
+    return cmocka_run_group_tests(tests, NULL, NULL);
+
 }
