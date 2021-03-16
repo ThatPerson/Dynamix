@@ -328,6 +328,8 @@ Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * re
 	return calc_R;
 }
 
+int calculate_anisotropic_S2(Decimal *sigs, Decimal *sigf, )
+
 /**
  * Optimization function. Loops over all relaxation measurements and predicts using models.\n
  * Calculates (real - calc)^2 / (error^2) over all relaxation measurements and returns.\n

@@ -295,6 +295,10 @@ Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N);
 	d2xy= (Decimal) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
+	// TODO: Bundle calculating order parameters into backcalc script, then pass as argument to the GAF function
+	//       e.g. don't calculate the same thing for every relaxation rate.
+
+
 	/* Calculate all order parameters */
 	Decimal S2NHs, S2NCSAxs, S2NCSAys, S2NCSAxys, S2CNs, S2CaNs;
 	Decimal S2NHf, S2NCSAxf, S2NCSAyf, S2NCSAxyf, S2CNf, S2CaNf;
