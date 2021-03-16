@@ -135,9 +135,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 		Amp[i] = 0;
 	}
 	
-	int ksqsum;
-	int lsqsum;
-	int msqsum;
+
 
     Decimal sqsigs[3] = {sq(sig[0]), sq(sig[1]), sq(sig[2])};
 

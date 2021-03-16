@@ -35,6 +35,7 @@
 #include <stdlib.h>
 
 #include "datatypes.h"
+#include "model.h"
 #include "chisq.h"
 #include "anneal.h"
 #include "crosen.h"
@@ -169,16 +170,21 @@ int calc_global_errors(struct Model *m) {
 			resid->error_params[k] = (Decimal *) malloc (sizeof(Decimal) * m->n_error_iter);
 		}
 	}
-	
 
-	
-	for (l = 0; l < m->n_error_iter; l++) {
+
+    struct BCParameters pars;
+
+    for (l = 0; l < m->n_error_iter; l++) {
 		printf("Iteration %d.\n", l);
 		for (i = 0; i < m->n_residues; i++) {
 			resid = &(m->residues[i]);
 			resid->temp_relaxation = (resid->relaxation);
 			resid->relaxation = NULL;
 			resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
+
+            int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
+            if (otb != 0)
+                return -1;
 
 			for (k = 0; k < resid->n_relaxation; k++) {
 				resid->relaxation[k].field = resid->temp_relaxation[k].field;
@@ -187,7 +193,7 @@ int calc_global_errors(struct Model *m) {
 				resid->relaxation[k].type = resid->temp_relaxation[k].type;
 				resid->relaxation[k].T = resid->temp_relaxation[k].T;
 				
-				temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), m, &ignore);
+				temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars);
 				resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));
 				LOG("%d %d %d prior: %lf, backcalc: %lf, new: %lf, error: %lf", i, l, k, resid->temp_relaxation[k].R, temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror/2.);
 				resid->relaxation[k].Rerror = resid->temp_relaxation[k].Rerror;

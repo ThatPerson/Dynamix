@@ -225,122 +225,38 @@ int print_gaf(struct Model *m) {
         free_all(m);
         return -1;
     }
-
+    int ignore = -1;
     for (l = m->proc_start; l < m->proc_end; l++) {
         Decimal alpha, beta, gamma;
         if (m->or_variation == VARIANT_A) {
-            alpha = (Decimal) m->residues[l].parameters[m->params-3];
-            beta = (Decimal) m->residues[l].parameters[m->params-2];
-            gamma = (Decimal) m->residues[l].parameters[m->params-1];
+            alpha = (Decimal) m->residues[l].parameters[m->params - 3];
+            beta = (Decimal) m->residues[l].parameters[m->params - 2];
+            gamma = (Decimal) m->residues[l].parameters[m->params - 1];
             for (i = 0; i < N_OR; i++) {
                 calculate_Y2(&(m->residues[l].orients[i]));
                 rotate_Y2(&(m->residues[l].orients[i]), alpha, beta, gamma);
             }
         }
 
-        /* I really need to clean this mess up at some point... */
+        struct BCParameters pars;
+        int otb = opts_to_bcpars(m->residues[l].parameters, &pars, m->model, &(m->residues[l]), &ignore);
+        if (otb != 0)
+            return -1;
 
-        if ((m->model == MOD_GAF || m->model == MOD_GAFT) && gaf != NULL) {
-            Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
-            Decimal sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-            Decimal sigf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
-            struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
-            Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-            Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
+        double S2NH, S2CH, S2CC, S2CN;
+        S2NH = pars.S2NHs * pars.S2NHf;
+        S2CH = pars.S2CHs * pars.S2CHf;
+        S2CC = pars.S2CCs * pars.S2CCf;
+        S2CN = pars.S2CNs * pars.S2CNf;
 
-            GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
-            GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
-            fprintf(orderparams, "%d\t", l+1);
-            fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-            if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-            if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
-            if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
-            fprintf(orderparams, "\n");
+        fprintf(orderparams, "%d\t", l + 1);
+        fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NH, m->residues[l].S2NH, m->residues[l].S2NHe);
+        fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CH, m->residues[l].S2CH, m->residues[l].S2CHe);
+        fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CN, m->residues[l].S2CN, m->residues[l].S2CNe);
+        fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CC, m->residues[l].S2CC, m->residues[l].S2CCe);
+        fprintf(orderparams, "\n");
 
-            Decimal taus = m->residues[l].parameters[0];
-            Decimal tauf = m->residues[l].parameters[1];
-            if (m->model == MOD_GAFT) {
-                Decimal Eas = m->residues[l].parameters[8];
-                Decimal Eaf = m->residues[l].parameters[9];
-                taus = temp_tau(taus, Eas, 300);
-                tauf = temp_tau(tauf, Eaf, 300);
-            }
-
-            fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
-        } else if ((m->model == MOD_AIMF || m->model == MOD_AIMFT) && gaf != NULL) {
-            Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
-            Decimal Ss[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-            Decimal Sf[3] = {m->residues[l].parameters[5], m->residues[l].parameters[6], m->residues[l].parameters[7]};
-            struct Orient *Os[] = {&(m->residues[l].orients[OR_NH]), &(m->residues[l].orients[OR_CNH]), &(m->residues[l].orients[OR_CN]), &(m->residues[l].orients[OR_CCAp])};
-            Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-            Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
-
-            AIMF_S2(Ss, Os, S2s, 4);
-            AIMF_S2(Sf, Os, S2f, 4);
-            fprintf(orderparams, "%d\t", l+1);
-            fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-            if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CHs*S2CHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-            if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CNs*S2CNf, m->residues[l].S2CN, m->residues[l].S2CNe);
-            if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2CCs*S2CCf, m->residues[l].S2CC, m->residues[l].S2CCe);
-            fprintf(orderparams, "\n");
-
-            Decimal taus = m->residues[l].parameters[0];
-            Decimal tauf = m->residues[l].parameters[1];
-            if (m->model == MOD_AIMFT) {
-                Decimal Eas = m->residues[l].parameters[8];
-                Decimal Eaf = m->residues[l].parameters[9];
-                taus = temp_tau(taus, Eas, 300);
-                tauf = temp_tau(tauf, Eaf, 300);
-            }
-
-            fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
-        } else if ((m->model == MOD_EGAF || m->model == MOD_EGAFT) && gaf != NULL) {
-            Decimal S2NHs, S2NHf = (Decimal) m->residues[l].parameters[5];
-            Decimal *S2[] = {&S2NHs};
-            /* Approximate as just the S2NHs and S2NHf */
-            struct Orient *As[] = {&(m->residues[l].orients[OR_NH])};
-            Decimal sigs[3] = {m->residues[l].parameters[2], m->residues[l].parameters[3], m->residues[l].parameters[4]};
-            GAF_S2(sigs, As, As, S2, 1, MODE_REAL);
-
-
-            fprintf(orderparams, "%d\t", l+1);
-            fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-            if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-            if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
-            if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
-            fprintf(orderparams, "\n");
-
-
-            Decimal taus = m->residues[l].parameters[0];
-            Decimal tauf = m->residues[l].parameters[1];
-            if (m->model == MOD_EGAFT) {
-                Decimal Eas = m->residues[l].parameters[6];
-                Decimal Eaf = m->residues[l].parameters[7];
-                taus = temp_tau(taus, Eas, 300);
-                tauf = temp_tau(tauf, Eaf, 300);
-            }
-            fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l+1, taus, S2NHs, tauf, S2NHf);
-            /* This gives rise to an uninitialized warning, but this is initialized on line 445 inside another if so it should be fine. */
-        } else if (m->model == MOD_DEMF || m->model == MOD_DEMFT) {
-            Decimal S2NHs, S2NHf;
-            S2NHs = (Decimal) m->residues[l].parameters[1];
-            S2NHf = (Decimal) m->residues[l].parameters[3];
-            fprintf(orderparams, "%d\t", l+1);
-            fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2NH, m->residues[l].S2NHe);
-            if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CH, m->residues[l].S2CHe);
-            if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CN, m->residues[l].S2CNe);
-            if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NHs*S2NHf, m->residues[l].S2CC, m->residues[l].S2CCe);
-            fprintf(orderparams, "\n");
-        } else if (m->model == MOD_SMF || m->model == MOD_SMFT) {
-            Decimal S2 = (Decimal) m->residues[l].parameters[1];
-
-            fprintf(orderparams, "%d\t", l+1);
-            fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2NH, m->residues[l].S2NHe);
-            if (m->WS2CH != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2CH, m->residues[l].S2CHe);
-            if (m->WS2CN != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2CN, m->residues[l].S2CNe);
-            if (m->WS2CC != 0) fprintf(orderparams, "%lf\t%lf\t%lf\t", S2, m->residues[l].S2CC, m->residues[l].S2CCe);
-            fprintf(orderparams, "\n");
-        }
+        fprintf(gaf, "%d\t%le\t%lf\t%le\t%lf\n", l + 1, pars.taus, pars.S2NHs, pars.tauf, pars.S2NHf);
     }
     fclose(gaf);
     fclose(orderparams);

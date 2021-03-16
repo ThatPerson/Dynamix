@@ -196,12 +196,9 @@ static void single_gaf(Decimal sa, Decimal sb, Decimal sg, Decimal Atheta, Decim
     Decimal *S2[] = {&SAA, &SBB, &SAB};
     Decimal sigs[] = {sa, sb, sg};
     GAF_S2(sigs, set1, set2, S2, 3, MODE_REAL);
-    int i;
     assert_float_equal(SAA, SAAr, epsilon);
     assert_float_equal(SBB, SBBr, epsilon);
     assert_float_equal(SAB, SABr, epsilon);
-
-    return;
 }
 
 static void test_gaf(void **state) {
@@ -317,6 +314,11 @@ static void test_crosen_backcalc(void **state) {
     unsigned int k = 0;
     struct Relaxation *r;
     struct Residue *resid = &(m.residues[0]);
+
+    struct BCParameters pars;
+    int otb = opts_to_bcpars(resid->parameters, &pars, m.model, resid, &ignore);
+    assert_int_equal(otb, 0);
+
     for (n_f = 0; n_f < N_f; n_f++) {
         for (n_sr = 0; n_sr < N_sr; n_sr++) {
             for (n_nf = 0; n_nf < N_nf; n_nf++) {
@@ -327,9 +329,9 @@ static void test_crosen_backcalc(void **state) {
                         r->wr = spin_rates[n_sr];
                         r->w1 = nut_freq[n_nf];
                         r->T = temps[n_T];
-                        r->type = n_t;
+                        r->type = (int) n_t;
                         r->R = 1;
-                        r->R = back_calc(resid->parameters, resid, r, &m, &ignore);
+                        r->R = back_calc(resid, r, &m, &ignore, &pars);
                         r->Rerror = 0.2 * r->R;
                         k++;
                     }
@@ -359,16 +361,20 @@ static void test_crosen_backcalc(void **state) {
 
 
 
-    min = anneal(optimize_chisq, opts, minv, maxv, 6, 6000, 10000, 0.05, 1.1, 0.01, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, &m);
+    anneal(optimize_chisq, opts, minv, maxv, 6, 6000, 10000, 0.05, 1.1, 0.01, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, &m);
     min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, &m);
 
 
     assert_float_equal(min, 0, 3);
 
     Decimal temp_R;
+
+    otb = opts_to_bcpars(opts, &pars, m.model, resid, &ignore);
+    assert_int_equal(otb, 0);
+
     for (k = 0; k < N_rates; k++) {
         r = &(m.residues[0].relaxation[k]);
-        temp_R = back_calc(opts, resid, r, &m, &ignore);
+        temp_R = back_calc(resid, r, &m, &ignore, &pars);
         assert_float_equal(temp_R, r->R, 2*r->Rerror);
     }
 

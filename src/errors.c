@@ -139,6 +139,13 @@ int calc_errors(struct Model *m, unsigned int residue) {
 	resid->S2CHb = resid->S2CH;
 	resid->S2CNb = resid->S2CN;
 	resid->S2CCb = resid->S2CC;
+
+	struct BCParameters pars;
+    int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
+    if (otb != 0) {
+        return -1;
+    }
+
 	for (l = 0; l < m->n_error_iter; l++) {
 		if (resid->ignore == 1) {
 			return -1;
@@ -161,7 +168,9 @@ int calc_errors(struct Model *m, unsigned int residue) {
 			resid->relaxation[k].type = resid->temp_relaxation[k].type;
 			resid->relaxation[k].T = resid->temp_relaxation[k].T;
 
-			temp_R = back_calc(resid->parameters, resid, &(resid->temp_relaxation[k]), m, &ignore);
+
+
+			temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars);
 			//if (i == 2 && k == 2)
 			//	printf("Iteration %d, R = %lf\n", l, temp_R); // should be the same each time
 			resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror/2.));

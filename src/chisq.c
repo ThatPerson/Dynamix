@@ -37,6 +37,187 @@
 #include "models/aimf.h"
 #include "models/egaf.h"
 #include "models/gaf.h"
+#include "models/model.h"
+
+int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
+    pars->taus = 0;
+    pars->tauf = 0;
+    pars->Eas = -1;
+    pars->Eaf = -1;
+    pars->S2NHs = slow;
+    pars->S2NHf = fast;
+    pars->S2NCSAxs = slow;
+    pars->S2NCSAxf = fast;
+    pars->S2NCSAys = slow;
+    pars->S2NCSAyf = fast;
+    pars->S2NCSAxys = slow;
+    pars->S2NCSAxyf = fast;
+    pars->S2CSAxs = slow;
+    pars->S2CSAxf = fast;
+    pars->S2CSAys = slow;
+    pars->S2CSAyf = fast;
+    pars->S2CSAxys = slow;
+    pars->S2CSAxyf = fast;
+    pars->S2CNs = slow;
+    pars->S2CNf = fast;
+    pars->S2CaNs = slow;
+    pars->S2CaNf = fast;
+    pars->S2CHs = slow;
+    pars->S2CHf = fast;
+    pars->S2CCs = slow;
+    pars->S2CCf = fast;
+    return 0;
+}
+
+int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model, struct Residue *resid, int *violations) {
+    Decimal S2s, S2f;
+    int i;
+    Decimal *S2sP[] = {&(pars->S2NHs),
+                      &(pars->S2NCSAxs),
+                      &(pars->S2NCSAys),
+                      &(pars->S2NCSAxys),
+                      &(pars->S2CSAxs),
+                      &(pars->S2CSAys),
+                      &(pars->S2CSAxys),
+                      &(pars->S2CNs),
+                      &(pars->S2CaNs),
+                      &(pars->S2CHs),
+                      &(pars->S2CCs)
+    };
+    Decimal *S2fP[] = {&(pars->S2NHf),
+                      &(pars->S2NCSAxf),
+                      &(pars->S2NCSAyf),
+                      &(pars->S2NCSAxyf),
+                      &(pars->S2CSAxf),
+                      &(pars->S2CSAyf),
+                      &(pars->S2CSAxyf),
+                      &(pars->S2CNf),
+                      &(pars->S2CaNf),
+                      &(pars->S2CHf),
+                      &(pars->S2CCf)
+    };
+    struct Orient *As[] = {
+            &(resid->orients[OR_NH]),
+            &(resid->orients[OR_NCSAxx]),
+            &(resid->orients[OR_NCSAyy]),
+            &(resid->orients[OR_NCSAxx]),
+            &(resid->orients[OR_CCSAxx]),
+            &(resid->orients[OR_CCSAyy]),
+            &(resid->orients[OR_CCSAxx]),
+            &(resid->orients[OR_CN]),
+            &(resid->orients[OR_NCA]),
+            &(resid->orients[OR_CNH]),
+            &(resid->orients[OR_CCAp])
+    };
+    struct Orient *Bs[] = {
+            &(resid->orients[OR_NH]),
+            &(resid->orients[OR_NCSAxx]),
+            &(resid->orients[OR_NCSAyy]),
+            &(resid->orients[OR_NCSAyy]),
+            &(resid->orients[OR_CCSAxx]),
+            &(resid->orients[OR_CCSAyy]),
+            &(resid->orients[OR_CCSAyy]),
+            &(resid->orients[OR_CN]),
+            &(resid->orients[OR_NCA]),
+            &(resid->orients[OR_CNH]),
+            &(resid->orients[OR_CCAp])
+    };
+    if (model == MOD_SMF || model == MOD_SMFT) {
+        // tau, S2, [Ea]
+        bcpars_init(pars, opts[1], 0);
+        pars->taus = opts[0];
+        if (model == MOD_SMFT)
+            pars->Eas = opts[2];
+    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT){
+        S2s = opts[1];
+        S2f = resid->S2NH / S2s;
+        if (model == MOD_DEMFT || model == MOD_DEMF) {
+            S2f = opts[3];
+        }
+        bcpars_init(pars, S2s, S2f);
+
+        pars->taus = opts[0];
+        pars->tauf = opts[2];
+        if (model == MOD_DEMFT) {
+            pars->Eas = opts[4];
+            pars->Eaf = opts[5];
+        } else if (model == MOD_EMFT) {
+            pars->Eas = opts[3];
+            pars->Eaf = opts[4];
+        }
+    } else if (model == MOD_GAF || model == MOD_GAFT) {
+        bcpars_init(pars, 0, 0);
+        pars->taus = opts[0];
+        pars->tauf = opts[1];
+        Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+        Decimal sigf[3] = {opts[5], opts[6], opts[7]};
+        for (i = 0; i < 3; i++) {
+            if (sigs[i] < 0 || sigs[i] > 0.52360)
+                (*violations)++;
+            if (sigf[i] < 0 || sigf[i] > 0.52360)
+                (*violations)++;
+        }
+        GAF_S2(sigs, As, Bs, S2sP, 11, MODE_REAL);
+        GAF_S2(sigf, As, Bs, S2fP, 11, MODE_REAL);
+        if (model == MOD_GAFT) {
+            pars->Eas = opts[8];
+            pars->Eaf = opts[9];
+        }
+    } else if (model == MOD_EGAF || model == MOD_EGAFT) {
+        Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+        S2f = opts[5];
+        for (i = 0; i < 3; i++) {
+            if (sigs[i] < 0 || sigs[i] > 0.52360)
+                (*violations)++;
+        }
+        bcpars_init(pars, 0, S2f);
+        GAF_S2(sigs, As, Bs, S2sP, 11, MODE_REAL);
+        pars->taus = opts[0];
+        pars->tauf = opts[1];
+        if (model == MOD_EGAFT) {
+            pars->Eas = opts[6];
+            pars->Eaf = opts[7];
+        }
+    } else if (model == MOD_AIMF || model == MOD_AIMFT) {
+        bcpars_init(pars, 0, 0);
+        pars->taus = opts[0];
+        pars->tauf = opts[1];
+        Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+        Decimal sigf[3] = {opts[5], opts[6], opts[7]};
+        AIMF_S2(sigs, As, S2sP, 11);
+        AIMF_S2(sigf, As, S2fP, 11);
+        if (model == MOD_AIMFT) {
+            pars->Eas = opts[8];
+            pars->Eaf = opts[9];
+        }
+
+    } else {
+        ERROR("Model %d does not exist.\n", model);
+        return 1;
+    }
+
+    Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
+    Decimal upper_lim_ts = (Decimal) 1 * pow(10, -5 + T_S);
+    Decimal lower_lim_tf = (Decimal) 1 * pow(10, -13 + T_S);
+
+    Decimal ttaus = pars->taus, ttauf = pars->tauf;
+    if (pars->Eas != -1) {
+        ttaus = temp_tau(pars->taus, pars->Eas, 300);
+        ttauf = temp_tau(pars->tauf, pars->Eaf, 300);
+    }
+
+    if (ttaus > upper_lim_ts)
+        (*violations)++;
+    if (ttauf > upper_lim_tf)
+        (*violations)++;
+    if (ttauf < lower_lim_tf)
+        (*violations)++;
+    for (i = 0; i < 11; i++) {
+        if (*(S2sP[0]) > 1 || (*S2sP[0]) < 0)
+            (*violations)++;
+    }
+    return 0;
+}
 
 
 /**
@@ -54,281 +235,21 @@
  *  Int returning number of violations of constraints (for chisq)
  * @return calculated R value
  */
-Decimal back_calc(Decimal * opts, struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations) {
+Decimal back_calc(struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations, struct BCParameters *pars) {
 	Decimal calc_R;
-	unsigned int i;
-
-	unsigned int model = m->model;
-
+    (void) violations;
 	if (relax->R <= 0)
 		return -1;
-	
-	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
-	Decimal upper_lim_ts = (Decimal) 1 * pow(10, -5 + T_S);
-	Decimal lower_lim_tf = (Decimal) 1 * pow(10, -13 + T_S);
-	
-	if (model == MOD_SMF || model == MOD_SMFT) {
-		Decimal tau = opts[0];
-		Decimal S2 = opts[1];
-		Decimal tau_eff, Ea;
-		
-		if (tau < 0)
-			(*violations)++;
-		if (S2 < 0 || S2 > 1)
-			(*violations)++;
-		
-		if (model == MOD_SMFT) {
-			Ea = opts[2];
-            tau_eff = temp_tau(tau, Ea, relax->T);
-		} else {
-			tau_eff = tau;			
-		}
-		
-		switch (relax->type) {
-			case R_15NR1:
-				calc_R = SMF_R1(resid, relax, tau_eff, S2, MODE_15N);
-				break;
-			case R_15NR1p:
-				calc_R = SMF_R2(resid, relax, tau_eff, S2, MODE_15N);
-				break;
-			case R_13CR1:
-				calc_R = SMF_R1(resid, relax, tau_eff, S2, MODE_13C);
-				break;
-			case R_13CR1p:
-				calc_R = SMF_R2(resid, relax, tau_eff, S2, MODE_13C);
-				break;
-			default:
-				ERROR("Unknown relaxation type: %d", relax->type);
-				exit(0);
 
-		}
-	} else if (model == MOD_EMF || model == MOD_EMFT || model == MOD_DEMF || model == MOD_DEMFT) {
-		Decimal taus = opts[0];
-		Decimal S2s = opts[1];
-		Decimal tauf = opts[2];
-		Decimal taus_eff, tauf_eff, Eas, Eaf, S2f=resid->S2NH / S2s;
-
-		if (model == MOD_EMFT) {
-			Eas = opts[3];
-			Eaf = opts[4];
-		} else if (model == MOD_DEMFT) {
-			Eas = opts[4];
-			Eaf = opts[5];
-		}
-		if (model == MOD_EMFT || model == MOD_DEMFT) {
-            taus_eff = temp_tau(taus, Eas, relax->T);
-            tauf_eff = temp_tau(tauf, Eaf, relax->T);
-		} else {
-			taus_eff = taus;
-			tauf_eff = tauf;
-		}
-		if (model == MOD_DEMF || model == MOD_DEMFT)
-			S2f = opts[3];
-		
-		if (taus < 0 || tauf < 0)
-			(*violations)++;
-		if (S2s < resid->S2NH || S2f < resid->S2NH || S2s > 1 || S2f > 1)
-			(*violations)++;
-		if (tauf_eff > taus_eff)
-			(*violations)++;
-		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			(*violations)++;
-		
-		switch (relax->type) {
-			case R_15NR1:
-				calc_R = EMF_R1(resid, relax, taus_eff, S2s, tauf_eff, S2f, MODE_15N);
-				break;
-			case R_15NR1p:
-				calc_R = EMF_R2(resid, relax, taus_eff, S2s, tauf_eff, S2f, MODE_15N);
-				break;
-			case R_13CR1:
-				calc_R = EMF_R1(resid, relax, taus_eff, S2s, tauf_eff, S2f, MODE_13C);
-				break;
-			case R_13CR1p:
-				calc_R = EMF_R2(resid, relax, taus_eff, S2s, tauf_eff, S2f, MODE_13C);
-				break;
-			default:
-				ERROR("Unknown relaxation type: %d", relax->type);
-				exit(0);
-
-		}
-	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		Decimal taus = opts[0];
-		Decimal tauf = opts[1];
-		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-		Decimal taus_eff=taus, tauf_eff=tauf, Eas, Eaf;
-		/* WARNING: Need to perform variant orientations before entering back_calc.*/
-		if (model == MOD_GAFT) {
-			Eas = opts[8];
-			Eaf = opts[9];
-            taus_eff = temp_tau(taus, Eas, relax->T);
-            tauf_eff = temp_tau(tauf, Eaf, relax->T);
-		}
-		
-		if (taus < 0 || tauf < 0)
-			(*violations)++;
-		if (tauf_eff > taus_eff)
-			(*violations)++;
-		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			(*violations)++;
-		for (i = 0; i < 3; i++) {
-			if (sigs[i] < 0 || sigs[i] > 0.52360)
-				(*violations)++;
-			if (sigf[i] < 0 || sigf[i] > 0.52360)
-				(*violations)++;
-		}
-		
-		switch (relax->type) {
-			case R_15NR1:
-				calc_R = GAF_15NR1(resid, relax, taus_eff, tauf_eff, sigs, sigf);
-				break;
-			case R_15NR1p:
-				calc_R = GAF_15NR2(resid, relax, taus_eff, tauf_eff, sigs, sigf);
-				break;
-			case R_13CR1:
-				calc_R = GAF_13CR1(resid, relax, taus_eff, tauf_eff, sigs, sigf);
-				break;
-			case R_13CR1p:
-				calc_R = GAF_13CR2(resid, relax, taus_eff, tauf_eff, sigs, sigf);
-				break;
-			default:
-				ERROR("Unknown relaxation type: %d", relax->type);
-				exit(0);
-
-		}
-	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		Decimal taus = opts[0];
-		Decimal tauf = opts[1];
-		Decimal Ss[3] = {opts[2], opts[3], opts[4]};
-		Decimal Sf[3] = {opts[5], opts[6], opts[7]};
-		Decimal taus_eff=taus, tauf_eff=tauf, Eas, Eaf;
-		/* WARNING: Need to perform variant orientations before entering back_calc.*/
-		if (model == MOD_AIMFT) {
-			Eas = opts[8];
-			Eaf = opts[9];
-            taus_eff = temp_tau(taus_eff, Eas, relax->T);
-            tauf_eff = temp_tau(tauf_eff, Eaf, relax->T);
-
-		}
-		
-		if (taus < 0 || tauf < 0)
-			(*violations)++;
-		if (tauf_eff > taus_eff)
-			(*violations)++;
-		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			(*violations)++;
-		for (i = 0; i < 3; i++) {
-			if (Ss[i] < 0 || Ss[i] > 1)
-				(*violations)++;
-			if (Sf[i] < 0 || Sf[i] > 1)
-				(*violations)++;
-		}
-		
-		switch (relax->type) {
-			case R_15NR1:
-				calc_R = AIMF_15NR1(resid, relax, taus_eff, tauf_eff, Ss, Sf);
-				break;
-			case R_15NR1p:
-				calc_R = AIMF_15NR2(resid, relax, taus_eff, tauf_eff, Ss, Sf);
-				break;
-			case R_13CR1:
-				calc_R = AIMF_13CR1(resid, relax, taus_eff, tauf_eff, Ss, Sf);
-				break;
-			case R_13CR1p:
-				calc_R = AIMF_13CR2(resid, relax, taus_eff, tauf_eff, Ss, Sf);
-				break;
-			default:
-				ERROR("Unknown relaxation type: %d", relax->type);
-				exit(0);
-
-		}
-	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
-		Decimal taus = opts[0];
-		Decimal tauf = opts[1];
-		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-		Decimal S2f = opts[5];
-		Decimal taus_eff = taus, tauf_eff = tauf, Eas, Eaf;
-		if (model == MOD_EGAFT) {
-			Eas = opts[6];
-			Eaf = opts[7];
-            taus_eff = temp_tau(taus_eff, Eas, relax->T);
-            tauf_eff = temp_tau(tauf_eff, Eaf, relax->T);
-		}
-		
-		if (taus < 0 || tauf < 0)
-			(*violations)++;
-		if (tauf_eff > taus_eff)
-			(*violations)++;
-		if (tauf_eff > upper_lim_tf || taus_eff > upper_lim_ts || tauf_eff < lower_lim_tf)
-			(*violations)++;
-		for (i = 0; i < 3; i++) {
-			if (sigs[i] < 0 || sigs[i] > 0.52360)
-				(*violations)++;
-		}
-		if (S2f < resid->S2NH || S2f > 1)
-			(*violations)++;
-		
-		switch (relax->type) {
-			case R_15NR1:
-				calc_R = EGAF_15NR1(resid, relax, taus_eff, tauf_eff, sigs, S2f);
-				break;
-			case R_15NR1p:
-				calc_R = EGAF_15NR2(resid, relax, taus_eff, tauf_eff, sigs, S2f);
-				break;
-			case R_13CR1:
-				calc_R = EGAF_13CR1(resid, relax, taus_eff, tauf_eff, sigs, S2f);
-				break;
-			case R_13CR1p:
-				calc_R = EGAF_13CR2(resid, relax, taus_eff, tauf_eff, sigs, S2f);
-				break;
-			default:
-				ERROR("Unknown relaxation type: %d", relax->type);
-				exit(0);
-
-		}
-	} else {
-		printf("Model not yet implemented.\n");
-		calc_R = -1;
-	}
-	Decimal papbN,papbC,kex, RDC, fm;
-	if (m->rdc == RDC_ON) {
-		if (m->or_variation == VARIANT_A) {
-			papbC = opts[m->params - 6];
-			papbN = opts[m->params - 5];
-			kex  = opts[m->params - 4];
-		} else {
-			papbC = opts[m->params - 3];
-			papbN = opts[m->params - 2];
-			kex  = opts[m->params - 1];
-		}
-
-		if (papbC < 0)
-			(*violations)++;
-		if (papbN < 0)
-			(*violations)++;
-		if (kex < 0)
-			(*violations)++;
-		
-		fm = relax->field / 700.;
-		if (relax->type == R_13CR1p) {
-			fm *= 9.869683408806043/3.976489314034722;
-			RDC = papbC * sq(fm) * kex;
-			RDC /= (sq(relax->w1) + sq(kex));
-		} else if (relax->type == R_15NR1p) {
-			fm *= 1;
-			RDC = papbN * sq(fm) * kex;
-			RDC /= (sq(relax->w1) + sq(kex));
-		} else {
-			RDC = 0;
-		}
-		calc_R += (Decimal) RDC;
-	}
+    switch (relax->type) {
+        case R_15NR1:  calc_R = Calc_15NR1(resid, relax, pars); break;
+        case R_15NR1p: calc_R = Calc_15NR2(resid, relax, pars); break;
+        case R_13CR1:  calc_R = Calc_13CR1(resid, relax, pars); break;
+        case R_13CR1p: calc_R = Calc_13CR2(resid, relax, pars); break;
+    }
 
 	return calc_R;
 }
-
-int calculate_anisotropic_S2(Decimal *sigs, Decimal *sigf, )
 
 /**
  * Optimization function. Loops over all relaxation measurements and predicts using models.\n
@@ -367,11 +288,15 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	}
 	
 	Decimal mult = 1.;
-	#pragma omp parallel for reduction(+:chisq)
+	struct BCParameters pars;
+    int k = opts_to_bcpars(opts, &pars, model, resid, &violations);
+    if (k != 0)
+        return -1;
+#pragma omp parallel for reduction(+:chisq)
 	for (i = 0; i < resid->n_relaxation; i++) {
 		if (resid->relaxation[i].R == -1)
 			continue;
-		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
+		calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &pars);
 		if (m->cn_ratio == CNRATIO_ON) {
 			mult = 1;
 			if (resid->relaxation[i].type == R_13CR1 && resid->relaxation[i].type == R_13CR1p)
@@ -387,64 +312,19 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 		LOG("Chisq optimization had %d violations.", violations);
 	}
 	
-	Decimal s2_mult = 100;
-	
-	if (model == MOD_DEMF || model == MOD_DEMFT) {
-		Decimal S2s = opts[1];
-		Decimal S2f = opts[3];
-		Decimal S2NH = S2s * S2f;
-		
-		chisq += m->WS2NH * ((pow(resid->S2NH - (Decimal) S2NH, 2.)) / pow(resid->S2NHe, 2.));
-	} else if (model == MOD_GAF || model == MOD_GAFT) {
-		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-		
-		Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf;
-		/** I'm unsure if the CC here is forward or backward so for now I have ignored it. */
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-		// CCAp is shorter than CCAc.
-		Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-		Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
-		GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
-		GAF_S2(sigf, Os, Os, S2f, 4, MODE_REAL);
-		/* 100 weighting for order parameters */
-		chisq += m->WS2NH * ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
-		if (m->WS2CH != 0) chisq += m->WS2CH * ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
-		if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
-		if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
-	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-		
-		Decimal S2NHs, S2NHf, S2CHs, S2CHf, S2CNs, S2CNf, S2CCs, S2CCf; // S2CCs, S2CCf
-	
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-		Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-		Decimal *S2f[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
-		AIMF_S2(sigs, Os, S2s, 4);
-		AIMF_S2(sigf, Os, S2f, 4);
-		/* 100 weighting for order parameters */
-		chisq += s2_mult * ((pow(resid->S2NH - (S2NHs * S2NHf), 2)) / pow(resid->S2NHe, 2));
-		if (m->WS2CH != 0) chisq += m->WS2CH * ((pow(resid->S2CH - (S2CHs * S2CHf), 2)) / pow(resid->S2CHe, 2));
-		if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - (S2CNs * S2CNf), 2)) / pow(resid->S2CNe, 2));
-		if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - (S2CCs * S2CCf), 2)) / pow(resid->S2CCe, 2));
-	} else if (model == MOD_EGAF || model == MOD_EGAFT) {
-		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-		Decimal S2f = (Decimal) opts[5];
-		
-		Decimal S2NHs, S2CHs, S2CNs, S2CCs; // S2CCs
+    Decimal S2NH, S2CH, S2CN, S2CC;
+	S2NH = pars.S2NHs * pars.S2NHf;
+	S2CH = pars.S2CHs * pars.S2CHf;
+	S2CN = pars.S2CNs * pars.S2CNf;
+	S2CC = pars.S2CCs * pars.S2CCf;
 
-		struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-		Decimal *S2s[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-		GAF_S2(sigs, Os, Os, S2s, 4, MODE_REAL);
-		/* 100 weghting for order parameters */
-		chisq += m->WS2NH * ((pow(resid->S2NH - (S2NHs * S2f), 2)) / pow(resid->S2NHe, 2));
-	//	chisq += 10*((pow(resid->S2CH - (S2CHs * S2f), 2)) / pow(resid->S2CHe, 2));
-	//	chisq += 10*((pow(resid->S2CN - (S2CNs * S2f), 2)) / pow(resid->S2CNe, 2));
-	//	chisq += 10*((pow(resid->S2CC - (S2CCs * S2f), 2)) / pow(resid->S2CCe, 2));
-	}
-	
-	return (Decimal) (chisq / resid->n_relaxation); 
+    chisq += m->WS2NH * ((pow(resid->S2NH - S2NH, 2.)) / pow(resid->S2NHe, 2.));
+    chisq += m->WS2CH * ((pow(resid->S2CH - S2CH, 2.)) / pow(resid->S2CHe, 2.));
+    chisq += m->WS2CN * ((pow(resid->S2CN - S2CN, 2.)) / pow(resid->S2CNe, 2.));
+    chisq += m->WS2CC * ((pow(resid->S2CC - S2CC, 2.)) / pow(resid->S2CCe, 2.));
+    int div = resid->n_relaxation + m->WS2CC + m->WS2CH + m->WS2CN + m->WS2NH;
+
+	return (Decimal) (chisq / div);
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
@@ -490,9 +370,13 @@ int back_calculate(Decimal * opts, struct Residue * resid, struct Model * m, cha
 			rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
 		}
 	}
-	
+    struct BCParameters pars;
+    int k = opts_to_bcpars(opts, &pars, m->model, resid, &violations);
+    if (k != 0) {
+        return -1;
+    }
 	for (i = 0; i < resid->n_relaxation; i++) {
-		calc_R = back_calc(opts, resid, &(resid->relaxation[i]), m, &violations);
+		calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &pars);
 
 		fprintf(fp, "%d\t%lf\t%lf\t%lf", i, (calc_R<0?-1.:calc_R), resid->relaxation[i].R, resid->relaxation[i].Rerror);
 
