@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <complex.h>
 #include "model.h"
-#include "../datatypes.h"
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2),
@@ -98,9 +97,8 @@ Decimal CSA_R2(Decimal omega, \
   	);
 }
 
-#include <stdio.h>
 
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, int model) {
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, unsigned int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
@@ -159,7 +157,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model) {
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal w1 = relax->w1, wr = relax->wr;
@@ -231,7 +229,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN)*T_DOWN;
 }
 
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model) {
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
@@ -296,7 +294,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
     return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
 }
 
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model) {
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal w1 = relax->w1, wr = relax->wr;
@@ -386,7 +384,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
  *  MODE_REAL or MODE_IMAG depending on which result is being returned.
  * @return Returns 1 in all cases.
  */
-int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  int mode) {
+int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  unsigned int mode) {
     int l, m, mp, k, kp, i;
     Complex * Amp = (Complex *) malloc(sizeof(Complex) * (long unsigned int) length);
     Complex temp, ttemp;
@@ -442,6 +440,8 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
      *  4. No optimization is done to the products of spherical harmonics.
      */
 
+    Decimal im = 1 * I;
+
     for (l = -2; l <= 2; l++) {
         //lsqsum = sq_i(l);
         //lexp = (Decimal) -(sq(sig[1]) * lsqsum);
@@ -480,7 +480,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
                             } else {
                                 //printf("Going long route...\n");
                                 /* Other wise we have to go the long route... */
-                                ttemp *= cpow(-1 * I, k - kp);
+                                ttemp *= cpow(-im, k - kp);
                             }
 
 

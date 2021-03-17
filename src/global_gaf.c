@@ -61,7 +61,7 @@ Decimal optimize_global_chisq(Decimal * opts, struct Residue *r, struct Model * 
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }
 
-int run_global_iteration(struct Model *m, int i) {
+int run_global_iteration(struct Model *m, unsigned int i) {
 	struct Residue *resid = NULL;
 	FILE *fp;
 	char filename[300];

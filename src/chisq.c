@@ -30,7 +30,6 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "datatypes.h"
 #include "models/model.h"
 
@@ -233,7 +232,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
  *  Int returning number of violations of constraints (for chisq)
  * @return calculated R value
  */
-Decimal back_calc(struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations, struct BCParameters *pars) {
+Decimal back_calc(struct Residue * resid, struct Relaxation * relax, struct Model * m, const int *violations, struct BCParameters *pars) {
 	Decimal calc_R = -1;
     (void) violations;
     (void) m;
@@ -322,7 +321,7 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
     chisq += m->WS2CH * ((pow(resid->S2CH - S2CH, 2.)) / pow(resid->S2CHe, 2.));
     chisq += m->WS2CN * ((pow(resid->S2CN - S2CN, 2.)) / pow(resid->S2CNe, 2.));
     chisq += m->WS2CC * ((pow(resid->S2CC - S2CC, 2.)) / pow(resid->S2CCe, 2.));
-    int div = resid->n_relaxation + m->WS2CC + m->WS2CH + m->WS2CN + m->WS2NH;
+    unsigned int div = resid->n_relaxation + m->WS2CC + m->WS2CH + m->WS2CN + m->WS2NH;
 
 	return (Decimal) (chisq / div);
 	/* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */

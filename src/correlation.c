@@ -30,20 +30,15 @@
  */
 
 #include <stdio.h>
-#include <complex.h>
 #include "datatypes.h"
 #include "read_data.h"
-#include <omp.h>
 #include "models/model.h"
 #include "chisq.h"
-#include "crosen.h" // implementation of Nelder-Mead simplex algorithm
-#include "errors.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 
-#include "verification.h"
 
 
 /**
@@ -96,7 +91,7 @@ int read_data_file(char *filename, struct Model * m) {
 
 	int res;
 
-	int length = 0;
+	unsigned int length = 0;
 	unsigned int length_d = 0;
 	unsigned int i;
 
@@ -104,7 +99,10 @@ int read_data_file(char *filename, struct Model * m) {
 	while(fgets(line, len, fp)) {
 
 		//3	0.780000	201.669690	1.461383e+01	9.604572e-01	0
-		int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
+		k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
+		if (k != 4)
+		    continue;
+
 		res--;
 		m->residues[res].parameters = (Decimal *) malloc(sizeof(Decimal) * params);
 		m->residues[res].ignore = 0;
@@ -372,7 +370,7 @@ int main(int argc, char * argv[]) {
 
 	
 	int ignore = -1;
-	#pragma omp parallel for 
+	#pragma omp parallel default(shared) for
 	for (i = 0; i <m.n_residues; i++) {
 //		Decimal Ea,Eas,Eaf, tauf,taus, tau, S2s, S2f;
 		struct Residue * resid;
@@ -429,10 +427,13 @@ int main(int argc, char * argv[]) {
             if (obts != 0)
                 ERROR("Error converting opts to bcpars\n");
 
-			Decimal taus = pars.taus, tauf = pars.tauf;
+			Decimal taus, tauf;
 			if (pars.Eas != -1 && pars.Eaf != -1) {
 			    taus = temp_tau(pars.taus, pars.Eas, 300);
 			    tauf = temp_tau(pars.tauf, pars.Eaf, 300);
+			} else {
+			    taus = pars.taus;
+			    tauf = pars.tauf;
 			}
 			if (cor_mod == 1) {
 				if (m.model == MOD_SMF || m.model == MOD_SMFT) {

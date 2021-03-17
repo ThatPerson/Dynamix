@@ -42,10 +42,6 @@ Decimal sq(Decimal x) {
 	return x * x;
 }
 
-int sq_i(int x) {
-	return x * x;
-}
-
 Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp) {
     return tau0 * exp(Ea / (RYD * temp));
 }
@@ -66,11 +62,11 @@ void calculate_Y2(struct Orient * or) {
 	/* as given https://mathworld.wolfram.com/SphericalHarmonic.html*/
 	/* Y2[0] is Y2 -2*/
 
-	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(2 * I * or->phi);
-	or->Y2[3] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(I * or->phi);
+	or->Y2[4] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(2 * or->phi * I);
+	or->Y2[3] = (-1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(or->phi * I);
 	or->Y2[2] = (1/4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(or->theta), 2) - 1);
-	or->Y2[1] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(-I * or->phi);
-	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(-2 * I * or->phi);
+	or->Y2[1] = (1/2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(-or->phi * I);
+	or->Y2[0] = (1/4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(-2 * or->phi * I);
 
 	or->Y2c[0] = conj(or->Y2[0]);
 	or->Y2c[1] = conj(or->Y2[1]);
@@ -198,8 +194,8 @@ void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
 		Y2b[i] = or->Y2[i];
 		or->Y2[i] = 0;
 		or->Y2c[i] = 0;
-		alpha_m[i] = cexp(-I * (i - 2) * alpha);
-		gamma_m[i] = cexp(-I * (i - 2) * gamma);
+		alpha_m[i] = cexp(-(i - 2) * alpha * I);
+		gamma_m[i] = cexp(-(i - 2) * gamma * I);
 	}
 
 	int m, mp;

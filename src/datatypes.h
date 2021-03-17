@@ -10,7 +10,7 @@ typedef double _Complex Complex;
 #ifdef LOGGING
 #define LOG(a, args...) printf("LOG   %s(%s:%d %d) " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
 #else
-#define LOG(a, args...)
+#define LOG(a, args...) /* nothing */
 #endif
 
 #define ERROR(a, args...) printf("ERROR %s(%s:%d %d) " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
@@ -70,7 +70,6 @@ typedef double _Complex Complex;
 #define CNRATIO_OFF		0
 
 #define N_RELAXATION	150						///< Approximate number of relaxation measurements; will dynamically allocate if overflows.
-#define THREAD_STACK	(32768*2) 				///< Bytes per thread. Raise if stack overflows, lower if insufficient stack for number of workers
 
 #define GLOBAL			1
 #define LOCAL			0
@@ -275,7 +274,6 @@ void calculate_Y2(struct Orient * or);
 void initialise_dwig(Decimal angle, Decimal Dw[5][5]);
 void free_all(struct Model *m);
 Decimal sq(Decimal x);
-int sq_i(int x);
 void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma);
 Decimal uniform_rand(void);
 void gen_params(const Decimal *minv, const Decimal *maxv, Decimal *pars, unsigned int n_pars);

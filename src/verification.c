@@ -216,7 +216,6 @@ void verify_rotations(void) {
 	}
 
 
-	return;
 }
 
 void verify_GAF(void) {
@@ -252,7 +251,6 @@ void verify_GAF(void) {
 
 	fclose(fp);
 
-	return;
 }
 
 void verify_stats(void) {
@@ -294,5 +292,4 @@ void verify_all(void) {
 	verify_rotations();
 	verify_GAF();
 	verify_stats();
-	return;
 }

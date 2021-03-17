@@ -561,13 +561,13 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
 			} else if (strcmp(key, "W_S2NH") == 0) {
-				m->WS2NH = (Decimal) atoi(val);
+				m->WS2NH = atoi(val);
 			} else if (strcmp(key, "W_S2CH") == 0) {
-				m->WS2CH = (Decimal) atoi(val);
+				m->WS2CH = atoi(val);
 			} else if (strcmp(key, "W_S2CN") == 0) {
-				m->WS2CN = (Decimal) atoi(val);
+				m->WS2CN = atoi(val);
 			} else if (strcmp(key, "W_S2CC") == 0) {
-				m->WS2CC = (Decimal) atoi(val);
+				m->WS2CC = atoi(val);
 			} else if (strcmp(key, "OR_VARY") == 0) {
 				if (m->or_variation == VARIANT_A)
 					continue;
@@ -589,13 +589,13 @@ int read_system_file(char *filename, struct Model * m) {
             } else if (strcmp(key, "N_ANNEAL_ITER") == 0) {
                 m->n_anneal_iter = (unsigned int) atoi(val);
             } else if (strcmp(key, "ANNEAL_TEMP") == 0) {
-                m->anneal_temp = (double) atof(val);
+                m->anneal_temp = atof(val);
             } else if (strcmp(key, "ANNEAL_WOBB") == 0) {
-                m->anneal_wobb = (double) atof(val);
+                m->anneal_wobb = atof(val);
             } else if (strcmp(key, "ANNEAL_THERM") == 0) {
-                m->anneal_therm = (double) atof(val);
+                m->anneal_therm = atof(val);
             } else if (strcmp(key, "ANNEAL_RESTART") == 0) {
-			    m->anneal_restart = (double) atof(val);
+			    m->anneal_restart = atof(val);
 			} else if (strcmp(key, "OUTPUT") == 0) {
 				strcpy(m->outputdir, val);
 			} else if (strcmp(key, "IGNORE") == 0) {
@@ -668,13 +668,9 @@ int read_system_file(char *filename, struct Model * m) {
 		c_count = 0;
 		n_count = 0;
 		for (k = 0; k < m->residues[i].n_relaxation; k++) {
-			if (m->residues[i].relaxation[k].type == R_13CR1)
+			if (m->residues[i].relaxation[k].type == R_13CR1 || m->residues[i].relaxation[k].type == R_13CR1p)
 				c_count++;
-			else if (m->residues[i].relaxation[k].type == R_13CR1p)
-				c_count++;
-			else if (m->residues[i].relaxation[k].type == R_15NR1)
-				n_count++;
-			else if (m->residues[i].relaxation[k].type == R_15NR1p)
+			else if (m->residues[i].relaxation[k].type == R_15NR1 || m->residues[i].relaxation[k].type == R_15NR1p)
 				n_count++;
 		}
 		if (n_count == 0 || c_count == 0) {
