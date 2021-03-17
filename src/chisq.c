@@ -196,10 +196,12 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
     Decimal lower_lim_tf = (Decimal) 1 * pow(10, -13 + T_S);
 
     Decimal ttaus = pars->taus, ttauf = pars->tauf;
-    if (pars->Eas != -1) {
+    if (pars->Eas != -1 || pars->Eaf != -1) {
         ttaus = temp_tau(pars->taus, pars->Eas, 300);
         ttauf = temp_tau(pars->tauf, pars->Eaf, 300);
     }
+
+   // printf("Pars %lf (%lf)\n", ttaus, upper_lim_ts);
 
     if (ttaus > upper_lim_ts)
         (*violations)++;

@@ -285,6 +285,66 @@ void setup_res(struct Residue *res) {
     res->csaC[2] = 96.500;
 }
 
+
+static void test_bcpars(void **state) {
+    struct Residue res;
+    setup_res(&res);
+
+    Decimal slow = (rand() % 100)/100.;
+    Decimal fast = (rand() % 100)/100.;
+    struct BCParameters pars;
+    bcpars_init(&pars, slow, fast);
+    assert_float_equal(pars.taus, 0, 0.001);
+    assert_float_equal(pars.tauf, 0, 0.001);
+    assert_float_equal(pars.Eas, -1, 0.001);
+    assert_float_equal(pars.Eaf, -1, 0.001);
+    assert_float_equal(pars.S2NHs, slow, 0.001);
+    assert_float_equal(pars.S2CHs, slow, 0.001);
+    assert_float_equal(pars.S2CCs, slow, 0.001);
+    assert_float_equal(pars.S2CNs, slow, 0.001);
+    assert_float_equal(pars.S2CaNs, slow, 0.001);
+    assert_float_equal(pars.S2NCSAxs, slow, 0.001);
+    assert_float_equal(pars.S2NCSAys, slow, 0.001);
+    assert_float_equal(pars.S2NCSAxys, slow, 0.001);
+    assert_float_equal(pars.S2NHf, fast, 0.001);
+    assert_float_equal(pars.S2CHf, fast, 0.001);
+    assert_float_equal(pars.S2CCf, fast, 0.001);
+    assert_float_equal(pars.S2CNf, fast, 0.001);
+    assert_float_equal(pars.S2CaNf, fast, 0.001);
+    assert_float_equal(pars.S2NCSAxf, fast, 0.001);
+    assert_float_equal(pars.S2NCSAyf, fast, 0.001);
+    assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
+
+    Decimal opts_smft[] = {0.01, 0.9, 3000};
+    int vio = 0;
+    opts_to_bcpars(&opts_smft, &pars, MOD_SMFT, &res, &vio);
+    assert_float_equal(pars.taus, 0, 0.0001);
+    assert_float_equal(pars.tauf, 0.01, 0.0001);
+    assert_float_equal(pars.S2NHf, 0.9, 0.0001);
+    assert_float_not_equal(pars.S2NHs, 0.9, 0.0001);
+    assert_float_equal(pars.Eas, -1, 0.0001);
+    assert_float_equal(pars.Eaf, 3000, 0.0001);
+
+    Decimal opts_demf[] = {0.1, 0.9, 0.01, 0.8};
+    opts_to_bcpars(&opts_demf, &pars, MOD_DEMF, &res, &vio);
+    assert_float_equal(pars.taus, 0.1, 0.0001);
+    assert_float_equal(pars.tauf, 0.01, 0.0001);
+    assert_float_equal(pars.S2NHs, 0.9, 0.0001);
+    assert_float_equal(pars.S2NHf, 0.8, 0.0001);
+
+    Decimal opts_viol_demf[] = {100000, 0.9, 0.01, 0.8};
+    vio = 0;
+    opts_to_bcpars(&opts_viol_demf, &pars, MOD_DEMF, &res, &vio);
+    assert_int_not_equal(vio, 0);
+
+    Decimal opts_viol_gaf[] = {0.1, 0.01, 1, 1, 1, 1, 1, 1};
+    vio = 0;
+    opts_to_bcpars(&opts_viol_gaf, &pars, MOD_GAF, &res, &vio);
+    assert_int_not_equal(vio, 0);
+
+    free(res.relaxation);
+}
+
 static void test_relaxation_smf(void **state) {
     (void) state;
 
@@ -588,11 +648,12 @@ int main(void) {
             cmocka_unit_test(test_rotations),
             cmocka_unit_test(test_gaf),
             cmocka_unit_test(test_statistics),
-          //  cmocka_unit_test(test_crosen_backcalc),
+            cmocka_unit_test(test_crosen_backcalc),
             cmocka_unit_test(test_relaxation_gaf),
             cmocka_unit_test(test_relaxation_egaf),
             cmocka_unit_test(test_relaxation_smf),
-            cmocka_unit_test(test_relaxation_emf)
+            cmocka_unit_test(test_relaxation_emf),
+            cmocka_unit_test(test_bcpars)
     };
     //speedy_gaf();
     return cmocka_run_group_tests(tests, NULL, NULL);

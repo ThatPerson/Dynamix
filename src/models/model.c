@@ -109,7 +109,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
      * software division) I've predefined it. Bond length taken as 1.02 A */
 
     Decimal taus, tauf;
-    if (pars->Eas != -1) {
+    if (pars->Eas != -1 || pars->Eaf != -1) {
         taus = temp_tau(pars->taus, pars->Eas, relax->T);
         tauf = temp_tau(pars->tauf, pars->Eaf, relax->T);
     } else {
@@ -166,7 +166,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
      * software division) I've predefined it. Bond length taken as 1.02 A */
 
     Decimal taus, tauf;
-    if (pars->Eas != -1) {
+    if (pars->Eas != -1 || pars->Eaf != -1) {
         taus = temp_tau(pars->taus, pars->Eas, relax->T);
         tauf = temp_tau(pars->tauf, pars->Eaf, relax->T);
     } else {
@@ -238,7 +238,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
      * software division) I've predefined it. Bond length taken as 1.02 A */
 
     Decimal taus, tauf;
-    if (pars->Eas != -1) {
+    if (pars->Eas != -1 || pars->Eaf != -1) {
         taus = temp_tau(pars->taus, pars->Eas, relax->T);
         tauf = temp_tau(pars->tauf, pars->Eaf, relax->T);
     } else {
@@ -302,7 +302,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
      * software division) I've predefined it. Bond length taken as 1.02 A */
 
     Decimal taus, tauf;
-    if (pars->Eas != -1) {
+    if (pars->Eas != -1 || pars->Eaf != -1) {
         taus = temp_tau(pars->taus, pars->Eas, relax->T);
         tauf = temp_tau(pars->tauf, pars->Eaf, relax->T);
     } else {
