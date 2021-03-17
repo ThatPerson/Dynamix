@@ -202,7 +202,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
     }
 
    // printf("Pars %lf (%lf)\n", ttaus, upper_lim_ts);
-
+    if (ttaus < ttauf)
+        (*violations)++;
     if (ttaus > upper_lim_ts)
         (*violations)++;
     if (ttauf > upper_lim_tf)
