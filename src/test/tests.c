@@ -474,7 +474,6 @@ static void test_crosen_backcalc(void **state) {
     m.model = MOD_DEMFT;
     m.params = 6;
     m.n_residues = 1;
-    m.rdc = RDC_OFF;
     m.nthreads = 1;
     m.global = LOCAL;
     m.cn_ratio = CNRATIO_OFF;

@@ -102,9 +102,6 @@ typedef double _Complex Complex;
 #define T_UP			1000000000
 #define T_S				9
 
-#define RDC_ON			1
-#define RDC_OFF			0
-
 
 
 extern time_t start_time;
@@ -140,7 +137,6 @@ struct Model {
     unsigned int params;
     struct Residue * residues;
     unsigned int n_residues;
-    unsigned int rdc;
     unsigned int nthreads;
     unsigned int global;
     unsigned int cn_ratio;
