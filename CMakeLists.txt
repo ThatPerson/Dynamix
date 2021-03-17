@@ -14,9 +14,49 @@ include_directories(./src/models)
 
 find_package(OpenMP)
 
-add_executable(dynamix src/main.c src/runners.c src/errors.c src/read_data.c src/global_gaf.c src/datatypes.c src/verification.c src/chisq.c src/crosen.c src/anneal.c src/models/model.c)
-add_executable(tests src/test/tests.c src/runners.c src/errors.c src/read_data.c src/global_gaf.c src/datatypes.c src/verification.c src/chisq.c src/crosen.c src/anneal.c src/models/model.c)
-add_executable(correl src/correlation.c src/runners.c src/errors.c src/read_data.c src/global_gaf.c src/datatypes.c src/verification.c src/chisq.c src/crosen.c src/anneal.c src/models/model.c)
+add_executable(dynamix
+        src/main.c
+        src/runners.c
+        src/errors.c
+        src/read_data.c
+        src/global_gaf.c
+        src/datatypes.c
+        src/verification.c
+        src/chisq.c
+        src/crosen.c
+        src/anneal.c
+        src/models/model.c)
+
+add_executable(tests
+        src/test/tests.c
+        src/runners.c
+        src/errors.c
+        src/read_data.c
+        src/global_gaf.c
+        src/datatypes.c
+        src/verification.c
+        src/chisq.c
+        src/crosen.c
+        src/anneal.c
+        src/models/model.c
+        src/test/old_model/smf.c
+        src/test/old_model/emf.c
+        src/test/old_model/aimf.c
+        src/test/old_model/egaf.c
+        src/test/old_model/gaf.c )
+
+add_executable(correl
+        src/correlation.c
+        src/runners.c
+        src/errors.c
+        src/read_data.c
+        src/global_gaf.c
+        src/datatypes.c
+        src/verification.c
+        src/chisq.c
+        src/crosen.c
+        src/anneal.c
+        src/models/model.c)
 
 target_link_libraries(dynamix ${MPI_LIBRARIES})
 target_link_libraries(dynamix m)

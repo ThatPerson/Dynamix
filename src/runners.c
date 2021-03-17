@@ -36,8 +36,7 @@
 #include "crosen.h"
 #include "errors.h"
 #include "runners.h"
-#include "models/gaf.h"
-#include "models/aimf.h"
+#include "models/model.h"
 
 /**
  * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.

@@ -34,15 +34,12 @@
 #include "datatypes.h"
 #include "read_data.h"
 #include <omp.h>
-#include "models/smf.h"
-#include "models/emf.h"
-#include "models/gaf.h"
-#include "models/egaf.h"
-#include "models/aimf.h"
+#include "models/model.h"
 #include "chisq.h"
 #include "crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "errors.h"
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 
@@ -209,7 +206,7 @@ int write_spectral_density_emf(char *fn, Decimal taus, Decimal S2s, Decimal tauf
 			(((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
 			/ (1 + ((Decimal) w * (Decimal) taus * (Decimal) w * (Decimal) taus))\
 		);*/
-		v = J0_EMF(w, taus, S2s, tauf, S2f);
+		v = J0(w, taus, S2s, tauf, S2f);
 		//printf("%lf (%lf, %lf) (%lf, %lf) %lf\n", w, v, l, q, p, rt);
 		fast = ( \
 			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
@@ -374,7 +371,7 @@ int main(int argc, char * argv[]) {
 
 
 	
-	
+	int ignore = -1;
 	#pragma omp parallel for 
 	for (i = 0; i <m.n_residues; i++) {
 		Decimal Ea,Eas,Eaf, tauf,taus, tau, S2s, S2f;
@@ -425,111 +422,40 @@ int main(int argc, char * argv[]) {
 					rotate_Y2(&(m.residues[i].orients[j]), alpha, beta, gamma);
 				}
 			}
-			printf("Hello2\n");
-			if (m.model == MOD_SMF || m.model == MOD_SMFT) {
-				tau = opts[0];
-				S2NH = (Decimal) opts[1];
-				S2CN = (Decimal) opts[1];
-				S2CH = (Decimal) opts[1];
-				S2CC = (Decimal) opts[1];
-				if (m.model == MOD_SMFT) {
-					Ea = opts[2];
-                    tau = temp_tau(tau, Ea, temp);
-				}
-				if (S2NH < 0 || tau < 0)
-					continue;
-				
-			} else if (m.model == MOD_EMF || m.model == MOD_EMFT || m.model == MOD_DEMF || m.model == MOD_DEMFT) {
-				taus = opts[0];
-				S2s = opts[1];
-				tauf = opts[2];
-				S2f = m.residues[i].S2NH / S2s;
-				if (m.model == MOD_EMFT) {
-					Eas = opts[3];
-					Eaf = opts[4];
-				}  else if (m.model == MOD_DEMFT) {
-					Eas = opts[4];
-					Eaf = opts[5];
-				}
-                taus = temp_tau(taus, Eas, temp);
-                tauf = temp_tau(tauf, Eaf, temp);
 
-				if (m.model == MOD_DEMF || m.model == MOD_DEMFT) {
-					S2f = opts[3];
-				}
-				S2NHs = (Decimal) S2s;
-				S2CHs = (Decimal) S2s;
-				S2CNs = (Decimal) S2s;
-				S2NHf = (Decimal) S2f;
-				S2CHf = (Decimal) S2f;
-				S2CNf = (Decimal) S2f;
-				S2CCs = (Decimal) S2f;
-				S2CCf = (Decimal) S2f;
-			} else if (m.model == MOD_GAF || m.model == MOD_GAFT) {
-				printf("In GAF\n");
-				// need to perform reorientation before.
-				taus = opts[0];
-				tauf = opts[1];
-				printf("taus tauf\n");
-				Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-				Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-				if (m.model == MOD_GAFT) {
-					Eas = opts[8];
-					Eaf = opts[9];
-                    taus = temp_tau(taus, Eas, temp);
-                    tauf = temp_tau(tauf, Eaf, temp);
+			int obts;
+			struct BCParameters pars;
+			obts = opts_to_bcpars(opts, &pars, m.model, &(m.residues[i]), &ignore);
 
-				}
-				printf("QUe?\n");
-				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-				Decimal *S2sl[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-				Decimal *S2fl[] = {&S2NHf, &S2CHf, &S2CNf, &S2CCf};
-				GAF_S2(sigs, Os, Os, S2sl, 4, MODE_REAL);
-				GAF_S2(sigf, Os, Os, S2fl, 4, MODE_REAL);
-			} else if (m.model == MOD_EGAF || m.model == MOD_EGAFT) {
-				// need to perform reorientation before.
-				taus = opts[0];
-				tauf = opts[1];
-				Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-				S2f = opts[5];
-				if (m.model == MOD_GAFT) {
-					Eas = opts[6];
-					Eaf = opts[7];
-                    taus = temp_tau(taus, Eas, temp);
-                    tauf = temp_tau(tauf, Eaf, temp);
-				}
-				struct Orient *Os[] = {&(resid->orients[OR_NH]), &(resid->orients[OR_CNH]), &(resid->orients[OR_CN]), &(resid->orients[OR_CCAp])};
-				Decimal *S2sl[] = {&S2NHs, &S2CHs, &S2CNs, &S2CCs};
-				GAF_S2(sigs, Os, Os, S2sl, 4, MODE_REAL);
-				S2NHf = (Decimal) S2f;
-				S2CNf = (Decimal) S2f;
-				S2CHf = (Decimal) S2f;
-				S2CCf = (Decimal) S2f;
+			Decimal taus = pars.taus, tauf = pars.tauf;
+			if (pars.Eas != -1 && pars.Eaf != -1) {
+			    taus = temp_tau(pars.taus, pars.Eas, 300);
+			    tauf = temp_tau(pars.tauf, pars.Eaf, 300);
 			}
 			if (cor_mod == 1) {
 				if (m.model == MOD_SMF || m.model == MOD_SMFT) {
-					write_correlation_function_smf(fn_NH, T, dT, tau, S2NH);
-					write_correlation_function_smf(fn_CH, T, dT, tau, S2CH);
-					write_correlation_function_smf(fn_CN, T, dT, tau, S2CN);
-					write_correlation_function_smf(fn_CC, T, dT, tau, S2CC);
+					write_correlation_function_smf(fn_NH, T, dT, tauf, pars.S2NHs * pars.S2NHf);
+					write_correlation_function_smf(fn_CH, T, dT, tauf, pars.S2CHs * pars.S2CHf);
+					write_correlation_function_smf(fn_CN, T, dT, tauf, pars.S2CNs * pars.S2CNf);
+					write_correlation_function_smf(fn_CC, T, dT, tauf, pars.S2CCs * pars.S2CCf);
 				} else {
-					write_correlation_function_emf(fn_NH, T, dT, taus, S2NHs, tauf, S2NHf);
-					write_correlation_function_emf(fn_CH, T, dT, taus, S2CHs, tauf, S2CHf);
-					write_correlation_function_emf(fn_CN, T, dT, taus, S2CNs, tauf, S2CNf);
-					write_correlation_function_emf(fn_CC, T, dT, taus, S2CCs, tauf, S2CCf);
+					write_correlation_function_emf(fn_NH, T, dT, taus, pars.S2NHs, tauf, pars.S2NHf);
+					write_correlation_function_emf(fn_CH, T, dT, taus, pars.S2CHs, tauf, pars.S2CHf);
+					write_correlation_function_emf(fn_CN, T, dT, taus, pars.S2CNs, tauf, pars.S2CNf);
+					write_correlation_function_emf(fn_CC, T, dT, taus, pars.S2CCs, tauf, pars.S2CCf);
 				}
 			}
 			if (sd_mod == 1) {
 				if (m.model == MOD_SMF || m.model == MOD_SMFT) {
-					write_spectral_density_smf(sd_NH, tau, S2NH);
-					write_spectral_density_smf(sd_CH, tau, S2CH);
-					write_spectral_density_smf(sd_CN, tau, S2CN);
-					write_spectral_density_smf(sd_CC, tau, S2CC);
+					write_spectral_density_smf(sd_NH, tauf, pars.S2NHs * pars.S2NHf);
+					write_spectral_density_smf(sd_CH, tauf, pars.S2CHs * pars.S2CHf);
+					write_spectral_density_smf(sd_CN, tauf, pars.S2CNs * pars.S2CNf);
+					write_spectral_density_smf(sd_CC, tauf, pars.S2CCs * pars.S2CCf);
 				} else {
-					write_spectral_density_emf(sd_NH, taus, S2NHs, tauf, S2NHf);
-					write_spectral_density_emf(sd_CH, taus, S2CHs, tauf, S2CHf);
-					write_spectral_density_emf(sd_CN, taus, S2CNs, tauf, S2CNf);
-					write_spectral_density_emf(sd_CC, taus, S2CCs, tauf, S2CCf);
+					write_spectral_density_emf(sd_NH, taus, pars.S2NHs, tauf, pars.S2NHf);
+					write_spectral_density_emf(sd_CH, taus, pars.S2CHs, tauf, pars.S2CHf);
+					write_spectral_density_emf(sd_CN, taus, pars.S2CNs, tauf, pars.S2CNf);
+					write_spectral_density_emf(sd_CC, taus, pars.S2CCs, tauf, pars.S2CCf);
 				}
 			}
 		}

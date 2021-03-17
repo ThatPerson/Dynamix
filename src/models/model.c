@@ -98,9 +98,9 @@ Decimal CSA_R2(Decimal omega, \
   	);
 }
 
+#include <stdio.h>
 
-
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars) {
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
@@ -117,47 +117,47 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
         tauf = pars->tauf;
     }
 
-    Decimal omega_1H = 2 * M_PI * field;
-    Decimal omega_13C, omega_15N;
-    Decimal d2x, d2y, d2xy;
-
-    omega_13C = 2 * M_PI * field / 3.976489314034722;
-    omega_15N = 2 * M_PI * field / 9.869683408806043;
+    Decimal omega_1H = T_DOWN * 2 * M_PI * field;
+    Decimal omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
+    Decimal omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+    Decimal d2x, d2y, d2xy, d2tot;
 
     Decimal *csa;
     csa = res->csaN;
-
-    omega_1H *= T_DOWN;
-    omega_13C *= T_DOWN;
-    omega_15N *= T_DOWN;
 
     /* N CSA relaxation contribution */
     Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
     Decimal J1;
 
-    d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N * T_UP);
-    d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N * T_UP);
-    d2xy= (Decimal) sq(0.000001 * omega_15N * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+        d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N * T_UP);
+        d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N * T_UP);
+        d2xy = (Decimal) sq(0.000001 * omega_15N * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-    J1 = J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
-    R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
-    J1 = J0(omega_15N, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf);
-    R1CSAy = (1/15.) * d2y * J1;
-    J1 = J0_CC(omega_15N, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf);
-    R1CSAxy = (1/15.) * d2xy * J1;
-    /** Eq A30, Bremi1997 */
-    R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
+        J1 = J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+        R1CSAx = (1 / 15.) * d2x * J1; // from Bremi1997
+        J1 = J0(omega_15N, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf);
+        R1CSAy = (1 / 15.) * d2y * J1;
+        J1 = J0_CC(omega_15N, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf);
+        R1CSAxy = (1 / 15.) * d2xy * J1;
+        /** Eq A30, Bremi1997 */
+        R1CSA = R1CSAx + R1CSAy + 2. * R1CSAxy;
+    } else {
+        d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
+        d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
+        d2tot*=sq(0.000001 * omega_15N * T_UP);
+        R1CSA = (2/15.) * d2tot * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+    }
 
     /* N Dipolar Interactions Contributions */
     R1NH = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHs, tauf, pars->S2NHf, D_NH);
     R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2CNs, tauf, pars->S2CNf, D_HNr);
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_CaN);
-
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars) {
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal w1 = relax->w1, wr = relax->wr;
@@ -176,7 +176,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 
     Decimal omega_1H = 2 * M_PI * field;
     Decimal omega_13C, omega_15N;
-    Decimal d2x, d2y, d2xy;
+    Decimal d2x, d2y, d2xy, d2tot;
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
@@ -197,13 +197,29 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
 
-    R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, d2x, J0);
-    R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, d2y, J0);
-    R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, d2xy, J0_CC);
-    /**
-     * Equation for spectral density for xy taken from Manuscript
-     */
-    R2CSA = R2CSAx + R2CSAy + 2.* R2CSAxy;
+    Decimal J0sum = 0;
+
+
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+        R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, d2x, J0);
+        R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, d2y, J0);
+        R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, d2xy, J0_CC);
+        /**
+         * Equation for spectral density for xy taken from Manuscript
+         */
+        R2CSA = R2CSAx + R2CSAy + 2. * R2CSAxy;
+    } else {
+        J0sum += (2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+        J0sum += (2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+        J0sum += (4/3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+        J0sum += (4/3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+
+        d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
+        d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
+        d2tot*=sq(0.000001 * omega_15N * T_UP);
+        R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf));
+
+    }
 
     /* N Dipolar Interactions Contributions */
     R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHs, tauf, pars->S2NHf, D_NH);
@@ -213,7 +229,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN)*T_DOWN;
 }
 
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars) {
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
@@ -232,35 +248,39 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
 
     Decimal omega_1H = 2 * M_PI * field;
     Decimal omega_13C, omega_15N, wCOCa;
-    Decimal d2x, d2y, d2xy;
+    Decimal d2x, d2y, d2xy, d2tot;
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
-    wCOCa = 120 * omega_13C * 0.000001;
-
-    Decimal *csa;
-    csa = res->csaC;
-
-    d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
-    d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-    d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
-
-    /* N CSA relaxation contribution */
-    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
-    Decimal J1;
-
+    wCOCa = 120 * omega_13C * 0.000001 * T_DOWN;
 
     omega_1H *= T_DOWN;
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
 
-    J1 = J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
-    R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
-    J1 = J0(omega_13C, taus, pars->S2CSAys, tauf, pars->S2CSAyf);
-    R1CSAy = (1/15.) * d2y * J1;
-    J1 = J0_CC(omega_13C, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf);
-    R1CSAxy = (1/15.) * d2xy * J1;
-    R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
+    Decimal *csa;
+    csa = res->csaC;
+
+/* N CSA relaxation contribution */
+    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+    Decimal J1;
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+        d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
+        d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
+        d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+        J1 = J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+        R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
+        J1 = J0(omega_13C, taus, pars->S2CSAys, tauf, pars->S2CSAyf);
+        R1CSAy = (1/15.) * d2y * J1;
+        J1 = J0_CC(omega_13C, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf);
+        R1CSAxy = (1/15.) * d2xy * J1;
+        R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
+    } else {
+        d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
+        d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
+        d2tot*=sq(0.000001 * omega_13C * T_UP);
+        R1CSA = (2/15.) * d2tot * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+    }
 
 
 
@@ -273,7 +293,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
     return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
 }
 
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars) {
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal w1 = relax->w1, wr = relax->wr;
@@ -292,33 +312,46 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 
     Decimal omega_1H = 2 * M_PI * field;
     Decimal omega_13C, omega_15N, wCOCa;
-    Decimal d2x, d2y, d2xy;
+    Decimal d2x, d2y, d2xy, d2tot;
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
     wCOCa = 120 * omega_13C * 0.000001;
-
-    Decimal *csa;
-    csa = res->csaC;
-
-    d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C);
-    d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C);
-    d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
-
-    /* CSA relaxation contribution */
-    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
 
     w1 *= T_DOWN;
     wr *= T_DOWN;
     omega_1H *= T_DOWN;
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
+    wCOCa *= T_DOWN;
 
-    R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, d2x, J0);
-    R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, d2y, J0);
-    R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, d2xy, J0_CC);
-    R2CSA = R2CSAx + R2CSAy + 2.*R2CSAxy;
+    Decimal *csa;
+    csa = res->csaC;
 
+    /* CSA relaxation contribution */
+    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
+    Decimal J0sum = 0;
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+        d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
+        d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
+        d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+
+        R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, d2x, J0);
+        R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, d2y, J0);
+        R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, d2xy, J0_CC);
+        R2CSA = R2CSAx + R2CSAy + 2.*R2CSAxy;
+    } else {
+        J0sum += (2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+        J0sum += (2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+        J0sum += (4/3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+        J0sum += (4/3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+
+        d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
+        d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
+        d2tot*=sq(0.000001 * omega_13C * T_UP);
+        R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf));
+
+    }
     /* N Dipolar Interactions Contributions */
     R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHs, tauf, pars->S2CHf, D_CH);
     R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CHr);

@@ -33,20 +33,9 @@
 #include <mpi.h>
 #include <stdlib.h>
 #include <string.h>
-#include <complex.h>
-
 #include "datatypes.h"
 #include "read_data.h"
 
-#include "models/smf.h"
-#include "models/emf.h"
-#include "models/gaf.h"
-#include "models/egaf.h"
-#include "models/aimf.h"
-#include "chisq.h"
-#include "crosen.h" // implementation of Nelder-Mead simplex algorithm
-#include "anneal.h" // simulated annealing algorithm
-#include "errors.h"
 #include "global_gaf.h"
 #include "runners.h"
 

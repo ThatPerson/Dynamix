@@ -43,11 +43,11 @@
 
 #include "../datatypes.h"
 #include "../read_data.h"
-#include "../models/smf.h"
-#include "../models/emf.h"
-#include "../models/gaf.h"
-#include "../models/egaf.h"
-#include "../models/aimf.h"
+#include "test/old_model/smf.h"
+#include "test/old_model/emf.h"
+#include "test/old_model/gaf.h"
+#include "test/old_model/egaf.h"
+#include "test/old_model/aimf.h"
 #include "../chisq.h"
 #include "../crosen.h" // implementation of Nelder-Mead simplex algorithm
 #include "anneal.h" // simulated annealing algorithm
@@ -249,6 +249,157 @@ static void test_statistics(void **state) {
 
 }
 
+void setup_res(struct Residue *res) {
+    res->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * 4);
+    res->relaxation[0].field = 600;
+    res->relaxation[0].w1 = 0;
+    res->relaxation[0].wr = 60000;
+    res->relaxation[0].R = -1;
+    res->relaxation[0].Rerror = -1;
+    res->relaxation[0].type = R_15NR1;
+    res->relaxation[1].field = 600;
+    res->relaxation[1].w1 = 10000;
+    res->relaxation[1].wr = 60000;
+    res->relaxation[1].R = -1;
+    res->relaxation[1].Rerror = -1;
+    res->relaxation[1].type = R_15NR1p;
+    res->relaxation[2].field = 600;
+    res->relaxation[2].w1 = 0;
+    res->relaxation[2].wr = 60000;
+    res->relaxation[2].R = -1;
+    res->relaxation[2].Rerror = -1;
+    res->relaxation[2].type = R_13CR1;
+    res->relaxation[3].field = 600;
+    res->relaxation[3].w1 = 10000;
+    res->relaxation[3].wr = 60000;
+    res->relaxation[3].R = -1;
+    res->relaxation[3].Rerror = -1;
+    res->relaxation[3].type = R_13CR1p;
+    res->csisoC = 171.876;
+    res->csisoN = 118.430;
+    res->csaN[0] = 227.395;
+    res->csaN[1] = 76.973;
+    res->csaN[2] = 50.922;
+    res->csaC[0] = 241.250;
+    res->csaC[1] = 179.690;
+    res->csaC[2] = 96.500;
+}
+
+static void test_relaxation_smf(void **state) {
+    (void) state;
+
+    struct Residue res;
+    setup_res(&res);
+
+    Decimal tau = 0.1;
+    Decimal S2 = 0.9;
+    struct BCParameters pars;
+    bcpars_init(&pars, 1, S2);
+    pars.tauf = tau;
+    Decimal oSMF_NR1 = SMF_R1(&res, &(res.relaxation[0]), tau, S2, MODE_15N);
+    Decimal nSMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, MOD_SMF);
+    Decimal oSMF_NR2 = SMF_R2(&res, &(res.relaxation[1]), tau, S2, MODE_15N);
+    Decimal nSMF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, MOD_SMF);
+    Decimal oSMF_CR1 = SMF_R1(&res, &(res.relaxation[2]), tau, S2, MODE_13C);
+    Decimal nSMF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, MOD_SMF);
+    Decimal oSMF_CR2 = SMF_R2(&res, &(res.relaxation[3]), tau, S2, MODE_13C);
+    Decimal nSMF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, MOD_SMF);
+    assert_float_equal(oSMF_NR1, nSMF_NR1, 0.0001);
+    assert_float_equal(oSMF_NR2, nSMF_NR2, 0.0001);
+    assert_float_equal(oSMF_CR1, nSMF_CR1, 0.0001);
+    assert_float_equal(oSMF_CR2, nSMF_CR2, 0.0001);
+
+    free(res.relaxation);
+}
+
+static void test_relaxation_emf(void **state) {
+    (void) state;
+
+    struct Residue res;
+    setup_res(&res);
+
+    Decimal taus = 1;
+    Decimal tauf = 0.01;
+    Decimal S2s = 0.8;
+    Decimal S2f = 0.95;
+    struct BCParameters pars;
+    bcpars_init(&pars, S2s, S2f);
+    pars.taus = taus;
+    pars.tauf = tauf;
+    Decimal oEMF_NR1 = EMF_R1(&res, &(res.relaxation[0]), taus, S2s, tauf, S2f, MODE_15N);
+    Decimal nEMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, MOD_EMF);
+    Decimal oEMF_NR2 = EMF_R2(&res, &(res.relaxation[1]), taus, S2s, tauf, S2f, MODE_15N);
+    Decimal nEMF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, MOD_EMF);
+    Decimal oEMF_CR1 = EMF_R1(&res, &(res.relaxation[2]), taus, S2s, tauf, S2f, MODE_13C);
+    Decimal nEMF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, MOD_EMF);
+    Decimal oEMF_CR2 = EMF_R2(&res, &(res.relaxation[3]), taus, S2s, tauf, S2f, MODE_13C);
+    Decimal nEMF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, MOD_EMF);
+    assert_float_equal(oEMF_NR1, nEMF_NR1, 0.0001); //fails
+    assert_float_equal(oEMF_NR2, nEMF_NR2, 0.0001); //fails
+    assert_float_equal(oEMF_CR1, nEMF_CR1, 0.0001); //fails
+    assert_float_equal(oEMF_CR2, nEMF_CR2, 0.0001); //fails
+
+    free(res.relaxation);
+}
+
+static void test_relaxation_gaf(void **state) {
+    (void) state;
+
+    struct Residue res;
+    setup_res(&res);
+    int ignore = -1;
+    struct BCParameters pars;
+    Decimal sigs[] = {0.1, 0.05, 0.15};
+    Decimal sigf[] = {0.1, 0.02, 0.03};
+    Decimal opts[] = {1, 0.01, 0.1, 0.05, 0.15, 0.1, 0.02, 0.03};
+    opts_to_bcpars(&opts, &pars, MOD_GAF, &res, &ignore);
+
+    //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
+    Decimal oGAF_NR1 = GAF_15NR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, &sigf);
+    Decimal nGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, MOD_GAF);
+    Decimal oGAF_NR2 = GAF_15NR2(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, &sigf);
+    Decimal nGAF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, MOD_GAF);
+    Decimal oGAF_CR1 = GAF_13CR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, &sigf);
+    Decimal nGAF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, MOD_GAF);
+    Decimal oGAF_CR2 = GAF_13CR2(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, &sigf);
+    Decimal nGAF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, MOD_GAF);
+    assert_float_equal(oGAF_NR1, nGAF_NR1, 0.0001);
+    assert_float_equal(oGAF_NR2, nGAF_NR2, 0.0001);
+    assert_float_equal(oGAF_CR1, nGAF_CR1, 0.0001);
+    assert_float_equal(oGAF_CR2, nGAF_CR2, 0.0001);
+
+    free(res.relaxation);
+}
+
+static void test_relaxation_egaf(void **state) {
+    (void) state;
+
+    struct Residue res;
+    setup_res(&res);
+    int ignore = -1;
+    struct BCParameters pars;
+    Decimal sigs[] = {0.1, 0.05, 0.15};
+    Decimal S2f = 0.8;
+    Decimal opts[] = {1, 0.01, 0.1, 0.05, 0.15, S2f};
+    opts_to_bcpars(&opts, &pars, MOD_GAF, &res, &ignore);
+
+    //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
+    Decimal oEGAF_NR1 = EGAF_15NR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, S2f);
+    Decimal nEGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, MOD_EGAF);
+    Decimal oEGAF_NR2 = EGAF_15NR2(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, S2f);
+    Decimal nEGAF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, MOD_EGAF);
+    Decimal oEGAF_CR1 = EGAF_13CR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, S2f);
+    Decimal nEGAF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, MOD_EGAF);
+    Decimal oEGAF_CR2 = EGAF_13CR2(&res, &(res.relaxation[0]), pars.taus, pars.tauf, &sigs, S2f);
+    Decimal nEGAF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, MOD_EGAF);
+    assert_float_equal(oEGAF_NR1, nEGAF_NR1, 0.0001);
+    assert_float_equal(oEGAF_NR2, nEGAF_NR2, 0.0001);
+    assert_float_equal(oEGAF_CR1, nEGAF_CR1, 0.0001);
+    assert_float_equal(oEGAF_CR2, nEGAF_CR2, 0.0001);
+
+    free(res.relaxation);
+}
+
 static void test_crosen_backcalc(void **state) {
     (void) state;
     struct Model m;
@@ -437,7 +588,11 @@ int main(void) {
             cmocka_unit_test(test_rotations),
             cmocka_unit_test(test_gaf),
             cmocka_unit_test(test_statistics),
-            cmocka_unit_test(test_crosen_backcalc)
+          //  cmocka_unit_test(test_crosen_backcalc),
+            cmocka_unit_test(test_relaxation_gaf),
+            cmocka_unit_test(test_relaxation_egaf),
+            cmocka_unit_test(test_relaxation_smf),
+            cmocka_unit_test(test_relaxation_emf)
     };
     //speedy_gaf();
     return cmocka_run_group_tests(tests, NULL, NULL);

@@ -39,7 +39,7 @@
 
 #include "datatypes.h"
 #include "errors.h"
-#include "models/gaf.h"
+#include "models/model.h"
 
 
 #define N_BINS 10

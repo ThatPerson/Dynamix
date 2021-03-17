@@ -28,7 +28,7 @@
  */
 
 #include <stdio.h>
-#include "../datatypes.h"
+#include "datatypes.h"
 #include "emf.h"
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
@@ -177,7 +177,6 @@ Decimal EMF_R1(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 	omega_L *= T_DOWN;
 
 	R1CSA = (2/15.) * d2tot * J0_EMF(omega_L, taus, S2s, tauf, S2f);
-
 	R1D *= T_DOWN;
 	R1CSA *= T_DOWN;
 	return (Decimal) R1D + (Decimal) R1CSA;

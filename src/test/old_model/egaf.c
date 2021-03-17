@@ -30,7 +30,7 @@
  * I may come back to it if I have time.
  */
 
-#include "../datatypes.h"
+#include "datatypes.h"
 #include "emf.h"
 #include "gaf.h"
 #include "egaf.h"

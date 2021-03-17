@@ -32,11 +32,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "datatypes.h"
-#include "models/smf.h"
-#include "models/emf.h"
-#include "models/aimf.h"
-#include "models/egaf.h"
-#include "models/gaf.h"
 #include "models/model.h"
 
 int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
@@ -124,10 +119,10 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
     };
     if (model == MOD_SMF || model == MOD_SMFT) {
         // tau, S2, [Ea]
-        bcpars_init(pars, opts[1], 0);
-        pars->taus = opts[0];
+        bcpars_init(pars, 1, opts[1]);
+        pars->tauf = opts[0];
         if (model == MOD_SMFT)
-            pars->Eas = opts[2];
+            pars->Eaf = opts[2];
     } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT){
         S2s = opts[1];
         S2f = resid->S2NH / S2s;
@@ -236,16 +231,18 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
  * @return calculated R value
  */
 Decimal back_calc(struct Residue * resid, struct Relaxation * relax, struct Model * m, int *violations, struct BCParameters *pars) {
-	Decimal calc_R;
+	Decimal calc_R = -1;
     (void) violations;
+    (void) m;
 	if (relax->R <= 0)
 		return -1;
 
     switch (relax->type) {
-        case R_15NR1:  calc_R = Calc_15NR1(resid, relax, pars); break;
-        case R_15NR1p: calc_R = Calc_15NR2(resid, relax, pars); break;
-        case R_13CR1:  calc_R = Calc_13CR1(resid, relax, pars); break;
-        case R_13CR1p: calc_R = Calc_13CR2(resid, relax, pars); break;
+        case R_15NR1:  calc_R = Calc_15NR1(resid, relax, pars, m->model); break;
+        case R_15NR1p: calc_R = Calc_15NR2(resid, relax, pars, m->model); break;
+        case R_13CR1:  calc_R = Calc_13CR1(resid, relax, pars, m->model); break;
+        case R_13CR1p: calc_R = Calc_13CR2(resid, relax, pars, m->model); break;
+        default: ERROR("Relaxation type %d unknown\n", relax->type); break;
     }
 
 	return calc_R;

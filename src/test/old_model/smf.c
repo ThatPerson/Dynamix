@@ -28,7 +28,7 @@
  */
 
 #include <stdio.h>
-#include "../datatypes.h"
+#include "datatypes.h"
 #include "smf.h"
 
 /**

@@ -42,9 +42,11 @@ Decimal CSA_R2(Decimal omega, \
 						 	Decimal)\
 						);
 
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars);
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars);
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars);
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars);
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, int model);
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model);
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model);
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, int model);
+int AIMF_S2(Decimal order_params[3], struct Orient ** A, Decimal * S2[], int length);
+int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  int mode);
 
 #endif //DYNAMIX_MODEL_H

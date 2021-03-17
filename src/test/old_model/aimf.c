@@ -28,7 +28,7 @@
  */
 
 
-#include "../datatypes.h"
+#include "datatypes.h"
 #include "emf.h"
 #include "aimf.h"
 
@@ -102,53 +102,6 @@ Decimal AIMF_Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Deci
   		)\
   	);
 }
-
-
-/**
- * Calculates the order parameter for anisotropic model free motion. Essentially, the order_params define an ellipsoid.
- * The order parameter for a given theta, phi is the radius of the ellipsoid in that direction. eg;
- *   Let Sa, Sb, Sc be the squared order parameters along the following directions;
- *     Sa - CaCa axis (eg the axis with gamma deflections about it)
- *     Sb - ~N-H axis (eg the axis with alpha deflections about it)
- *     Sc - perpendicular to plane axis (eg beta).
- *   Then the equation for an ellipsoid is;
- *    (sin(theta)^2 sin(phi)^2 / Sa^2 + sin(theta)^2 cos(phi)^2 / Sb^2 + cos(theta)^2 / Sc^2 = 1 / r^2
- *   Evaluating this for r for a given theta, phi gives us the amplitude of order parameter in that orientation.
- * @param order_params
- *  Array containing [Sa, Sb, Sc] squared order parameters
- * @param A
- *  Array containing pointers to orientation vectors for 'A' for each S2 being calculated.
- * @param S2
- *  Array containing pointers to S2 values - this is where output will be put.
- * @param length
- *  Number of S2 values being calculated (eg length of S2)
- * @return Returns 1 in all cases.
- */
-int AIMF_S2(Decimal order_params[3], struct Orient ** A, Decimal * S2[], int length) {
-	int i;
-	Decimal ct, st, cp, sp;
-	Decimal S2a = pow(order_params[0], 2.), S2b = pow(order_params[1], 2.), S2c = pow(order_params[2], 2.);
-	Decimal SaSbSc = S2a * S2b * S2c;
-	Decimal denom;
-	for (i = 0; i < length; i++) {
-		// A[i].theta, A[i].phi
-		// order_params[0], [1], [2] (x, y, z)
-		ct = cos(A[i]->theta);
-		st = sin(A[i]->theta);
-		cp = cos(A[i]->phi);
-		sp = sin(A[i]->phi);
-		
-		denom = 0;
-		denom += S2b * S2c * pow(st * sp, 2.);
-		denom += S2a * S2c * pow(st * cp, 2.);
-		denom += S2a * S2b * pow(ct, 2.);
-		
-		*S2[i] = sqrt(SaSbSc / denom);
-		
-	}
-	return 1;
-}
-
 
 
 
