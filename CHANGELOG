@@ -1,9 +1,21 @@
+2021-03-17
+ * CMocka Unit tests now have 53% coverage by lines. In important functions this is near 100% - models is 93%, anneal is 90%, chisq 72% etc.
+ * Uprooted and completely rewrote relaxation fitting models (eg models/). Instead of having ~5 separate R1 and R2 generators, there is now a single one.
+ * Calculation of GAF order parameters is now done once per iteration, instead of once per relaxation measurement. This gives a massive speed improvement.
+ * GAF_S2 code optimized, with simple squaring predone. ~30% speed improvement.
+ * Combination of these has given ~240x speed increase on old models. Unit testing used to verify model against previous implementation and all pass.
+
+
 2021-03-11
  * Added simulated annealing as an optimization method.
  * Nelder-Mead method is good at optimizing within a minima, but it appears the system here has a LOT of local minima.
  * So for Nelder-Mead, a large number of random starting points are needed and even then I'm not sure it necessarily finds the true global minima.
  * Simulated annealing, at least as done here, is worse at finding true minima of minima, but is much better at finding global minima.
  * So by running searches for global minima with simulated annealing, and then using simplex to find true minima seems to work better.
+
+2021-03-08
+ * Added unit tests.
+ * CMocka based unit tests to check the majority of functions.
 
 2021-02-06
  * Removed pthread parallelisation and replaced with MPI/OpenMP parallelisation.
