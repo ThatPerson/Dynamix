@@ -57,6 +57,8 @@
  */
 int main(int argc, char * argv[]) {
 	MPI_Init( &argc, &argv );
+    clock_t begin = clock();
+
 	int numprocs, myid;
 	MPI_Comm_size( MPI_COMM_WORLD, &numprocs ); 
 	MPI_Comm_rank( MPI_COMM_WORLD, &myid );
@@ -152,9 +154,13 @@ int main(int argc, char * argv[]) {
 	print_gaf(&m);
 	print_backcalcs(&m);
 	
+    clock_t end = clock();
 
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-	free_all(&m);
+    printf("Worker %d Finished (%lf seconds elapsed)\n", m.myid+1, time_spent);
+
+    free_all(&m);
 	MPI_Finalize();
 	return 0;
 }
