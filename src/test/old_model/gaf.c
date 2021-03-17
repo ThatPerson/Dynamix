@@ -107,7 +107,7 @@ Decimal GAF_Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decim
 
 
 
-
+#include <stdio.h>
 
 
 /**
@@ -197,7 +197,6 @@ Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	R1NHr = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2CNs, tauf, S2CNf, D_HNr);
 	R1CN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CNs, tauf, S2CNf, D_CN);
 	R1CaN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_CaN);
-
 	return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
@@ -346,6 +345,7 @@ Decimal GAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	omega_1H *= T_DOWN;
 	omega_13C *= T_DOWN;
 	omega_15N *= T_DOWN;
+	wCOCa *= T_DOWN;
 	
 	J1 = J0_EMF(omega_13C, taus, S2CSAxs, tauf, S2CSAxf);
 	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
@@ -431,6 +431,7 @@ Decimal GAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	omega_1H *= T_DOWN;
 	omega_13C *= T_DOWN;
 	omega_15N *= T_DOWN;
+	wCOCa *= T_DOWN;
 	
 	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2CSAxf, d2x, J0_EMF);
 	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2CSAyf, d2y, J0_EMF);
@@ -442,5 +443,6 @@ Decimal GAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	R2CHr = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = GAF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
 	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
-	return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
+
+    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
 }

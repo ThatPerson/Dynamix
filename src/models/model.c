@@ -154,6 +154,8 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2CNs, tauf, pars->S2CNf, D_HNr);
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_CaN);
+
+
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
@@ -252,11 +254,12 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
-    wCOCa = 120 * omega_13C * 0.000001 * T_DOWN;
+    wCOCa = 120 * omega_13C * 0.000001;
 
     omega_1H *= T_DOWN;
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
+    wCOCa *= T_DOWN;
 
     Decimal *csa;
     csa = res->csaC;
@@ -267,7 +270,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
-        d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
+        d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
         J1 = J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
         R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
         J1 = J0(omega_13C, taus, pars->S2CSAys, tauf, pars->S2CSAyf);
@@ -357,6 +360,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CHr);
     R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
     R2CC = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCs, tauf, pars->S2CCf, D_CC);
+
     return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
 }
 

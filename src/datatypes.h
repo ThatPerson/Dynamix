@@ -150,7 +150,7 @@ struct Model {
     unsigned int proc_start;
     unsigned int proc_end;
     int myid, numprocs;
-    Decimal WS2NH, WS2CH, WS2CN, WS2CC;
+    int WS2NH, WS2CH, WS2CN, WS2CC;
 
     double anneal_temp;
     double anneal_wobb;

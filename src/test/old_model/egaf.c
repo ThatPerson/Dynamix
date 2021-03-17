@@ -35,7 +35,7 @@
 #include "gaf.h"
 #include "egaf.h"
 #include "model.h"
-
+#include <stdio.h>
 /**
  * Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations for slow motions, and order parameter for fast motions.
  * @warning Has not been verified against MATLAB model as there isn't really an equivalent to it that I have set up.
@@ -257,6 +257,7 @@ Decimal EGAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	omega_1H *= T_DOWN;
 	omega_13C *= T_DOWN;
 	omega_15N *= T_DOWN;
+	wCOCa *= T_DOWN;
 	
 	J1 = J0_EMF(omega_13C, taus, S2CSAxs, tauf, S2f);
 	R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
@@ -339,6 +340,7 @@ Decimal EGAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	omega_1H *= T_DOWN;
 	omega_13C *= T_DOWN;
 	omega_15N *= T_DOWN;
+	wCOCa *= T_DOWN;
 	
 	R2CSAx = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAxs, tauf, S2f, d2x, J0_EMF);
 	R2CSAy = GAF_CSA_R2(omega_13C, w1, wr, taus, S2CSAys, tauf, S2f, d2y, J0_EMF);

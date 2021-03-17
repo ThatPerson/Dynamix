@@ -561,13 +561,13 @@ int read_system_file(char *filename, struct Model * m) {
 			} else if (strcmp(key, "S2CN") == 0) {
 				strcpy(s2cn, val);
 			} else if (strcmp(key, "W_S2NH") == 0) {
-				m->WS2NH = (Decimal) atof(val);
+				m->WS2NH = (Decimal) atoi(val);
 			} else if (strcmp(key, "W_S2CH") == 0) {
-				m->WS2CH = (Decimal) atof(val);
+				m->WS2CH = (Decimal) atoi(val);
 			} else if (strcmp(key, "W_S2CN") == 0) {
-				m->WS2CN = (Decimal) atof(val);
+				m->WS2CN = (Decimal) atoi(val);
 			} else if (strcmp(key, "W_S2CC") == 0) {
-				m->WS2CC = (Decimal) atof(val);
+				m->WS2CC = (Decimal) atoi(val);
 			} else if (strcmp(key, "OR_VARY") == 0) {
 				if (m->or_variation == VARIANT_A)
 					continue;
@@ -736,7 +736,7 @@ int print_system(struct Model *m, char *filename) {
 		if (m->residues[i].ignore == 1)
 			fprintf(fp, "--- IGNORING ---\n");
 
-		fprintf(fp, "\tS2NH = %lf (%lf) \n\tS2CH = %lf (%lf) \n\tS2CC = %lf (%lf) \n\tS2CN = %lf (%lf) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
+		fprintf(fp, "\tS2NH = %lf (%d) \n\tS2CH = %lf (%d) \n\tS2CC = %lf (%d) \n\tS2CN = %lf (%d) \n", m->residues[i].S2NH, m->WS2NH, m->residues[i].S2CH, m->WS2CH, m->residues[i].S2CC, m->WS2CC, m->residues[i].S2CN, m->WS2CN);
 		fprintf(fp, "\tCSISON = %lf\n\tCSISOC = %lf\n", m->residues[i].csisoN, m->residues[i].csisoC);
 		fprintf(fp, "\tCSAN: [%lf, %lf, %lf]\n", m->residues[i].csaN[0], m->residues[i].csaN[1], m->residues[i].csaN[2]);
 		Decimal Qcsiso = m->residues[i].csisoN;

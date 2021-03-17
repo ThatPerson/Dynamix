@@ -100,11 +100,11 @@ int read_data_file(char *filename, struct Model * m) {
 	unsigned int length_d = 0;
 	unsigned int i;
 
-
+    Decimal S2NH, chisq;
 	while(fgets(line, len, fp)) {
 
 		//3	0.780000	201.669690	1.461383e+01	9.604572e-01	0
-		//int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
+		int k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
 		res--;
 		m->residues[res].parameters = (Decimal *) malloc(sizeof(Decimal) * params);
 		m->residues[res].ignore = 0;
