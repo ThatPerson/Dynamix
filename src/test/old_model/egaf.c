@@ -34,6 +34,7 @@
 #include "emf.h"
 #include "gaf.h"
 #include "egaf.h"
+#include "model.h"
 
 /**
  * Calculates R1 relaxation rate for 15N nucleus under gaussian axial fluctuations for slow motions, and order parameter for fast motions.

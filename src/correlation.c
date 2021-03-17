@@ -244,7 +244,7 @@ int write_spectral_density_smf(char *fn, Decimal tau, Decimal S2) {
 	for (n = 0; n < n_steps; n++) {
 	//for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
 	    w *= 2;
-		v = J0_SMF(w, tau, S2) * T_DOWN;
+		v = J0(w, 0, 0, tau, S2) * T_DOWN;
 		fprintf(fp, "%lf\t%le\n", w*T_UP, v);
 	}
 	fclose(fp);
@@ -374,13 +374,13 @@ int main(int argc, char * argv[]) {
 	int ignore = -1;
 	#pragma omp parallel for 
 	for (i = 0; i <m.n_residues; i++) {
-		Decimal Ea,Eas,Eaf, tauf,taus, tau, S2s, S2f;
+//		Decimal Ea,Eas,Eaf, tauf,taus, tau, S2s, S2f;
 		struct Residue * resid;
 		Decimal * opts;
 		unsigned int j;
-		Decimal S2NH, S2CN, S2CH, S2CC;
-		Decimal S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
-		Decimal temp;
+//		Decimal S2NH, S2CN, S2CH, S2CC;
+//		Decimal S2NHs, S2CNs, S2CHs, S2NHf, S2CHf, S2CNf, S2CCs, S2CCf;
+//		Decimal temp;
 		Decimal T = 200; // 1000
 		Decimal dT = 0.01; // 0.01
 		Decimal alpha, beta, gamma;
@@ -426,6 +426,8 @@ int main(int argc, char * argv[]) {
 			int obts;
 			struct BCParameters pars;
 			obts = opts_to_bcpars(opts, &pars, m.model, &(m.residues[i]), &ignore);
+            if (obts != 0)
+                ERROR("Error converting opts to bcpars\n");
 
 			Decimal taus = pars.taus, tauf = pars.tauf;
 			if (pars.Eas != -1 && pars.Eaf != -1) {

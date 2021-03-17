@@ -31,6 +31,7 @@
 #include "datatypes.h"
 #include "emf.h"
 #include "aimf.h"
+#include "model.h"
 
   
 /** 

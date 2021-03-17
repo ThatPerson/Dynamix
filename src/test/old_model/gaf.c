@@ -31,6 +31,7 @@
 #include <complex.h>
 
 #include "datatypes.h"
+#include "model.h"
 #include "emf.h"
 #include "gaf.h"
   
