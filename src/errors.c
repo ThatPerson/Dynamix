@@ -145,7 +145,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
     if (otb != 0) {
         return -1;
     }
-
+    int retries = 0;
 	for (l = 0; l < m->n_error_iter; l++) {
 		if (resid->ignore == 1) {
 			return -1;
@@ -204,8 +204,9 @@ int calc_errors(struct Model *m, unsigned int residue) {
         resid->temp_relaxation = NULL;
 
 
-        if (min > 1000 * resid->min_val) {
+        if (min > 1000 * resid->min_val && retries < 1000) {
             // did not converge.
+            retries++;
             ERROR("Error iteration %d for residue %d gave min_val = %lf (base mod = %lf), indicating no convergence. Rerunning iteration.\n", l+1, residue, min, resid->min_val);
             l--;
             continue;
