@@ -82,10 +82,11 @@ int run_global_iteration(struct Model *m, unsigned int i) {
     Decimal *anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
     Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
     Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
+    if (maxv == NULL || minv == NULL)
+        printf("Malloc failed.\n");
+    setup_paramlims(m, 0.7, minv, maxv);
 
-    setup_paramlims(m, resid->S2NH, minv, maxv);
-
-    if (resid->ignore == 1) {
+    /*if (resid->ignore == 1) {
         free(minv);
         free(maxv);
         free(anneal_pars);
@@ -93,7 +94,7 @@ int run_global_iteration(struct Model *m, unsigned int i) {
         fprintf(fp, "%d, %lf, -1, -1\n", i + 1, 1000.);
         fclose(fp);
         return -1;
-    }
+    }*/
 
     unsigned int q;
     Decimal val;
