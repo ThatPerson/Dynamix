@@ -194,9 +194,9 @@ Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 
 	/* N Dipolar Interactions Contributions */
 	R1NH = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2NHs, tauf, S2NHf, D_NH);
-	R1NHr = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2CNs, tauf, S2CNf, D_HNr);
+	R1NHr = GAF_Dipolar_R1(omega_15N, omega_1H, taus, S2CNs, tauf, S2CNf, D_NHr);
 	R1CN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CNs, tauf, S2CNf, D_CN);
-	R1CaN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_CaN);
+	R1CaN = GAF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_NCA);
 	return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
@@ -273,9 +273,9 @@ Decimal GAF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 
 	/* N Dipolar Interactions Contributions */
 	R2NH = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2NHs, tauf, S2NHf, D_NH);
-	R2NHr = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_HNr);
+	R2NHr = GAF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_NHr);
 	R2CN = GAF_Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
-	R2CaN = GAF_Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, S2CaNs, tauf, S2CaNf, D_CaN);
+	R2CaN = GAF_Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, S2CaNs, tauf, S2CaNf, D_NCA);
 	return (R2CSA + R2NH + R2NHr + R2CN + R2CaN)*T_DOWN;
 }
 
@@ -325,20 +325,20 @@ Decimal GAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
-	Decimal S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
-	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
+	Decimal S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCAps, S2CCAcs;
+	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCApf, S2CCAcf;
 	
-	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
-	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
+	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCAps, &S2CCAcs};
+	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCApf, &S2CCAcf};
 	
-	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
-	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
+	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp]), &(res->orients[OR_CCAc])};
+	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp]), &(res->orients[OR_CCAc])};
 	
-	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
-	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
+	GAF_S2(sigs, As, Bs, S2s, 7, MODE_REAL);
+	GAF_S2(sigf, As, Bs, S2f, 7, MODE_REAL);
 	
 	/* N CSA relaxation contribution */
-	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAp, R1CCAc;
 	Decimal J1;
 
 
@@ -361,9 +361,10 @@ Decimal GAF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	R1CH = GAF_Dipolar_R1(omega_13C, omega_1H, taus, S2CHs, tauf, S2CHf, D_CH);
 	R1CHr = GAF_Dipolar_R1(omega_13C, omega_1H, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R1CN = GAF_Dipolar_R1(omega_13C, omega_15N, taus, S2CNs, tauf, S2CNf, D_CN);
-	R1CC = GAF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCs, tauf, S2CCf, D_CC);
+	R1CCAp = GAF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCAps, tauf, S2CCApf, D_CCAp);
+	R1CCAc = GAF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCAcs, tauf, S2CCAcf, D_CCAc);
 
-	return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
+	return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc)*T_DOWN;
 }
 
 /**
@@ -410,21 +411,21 @@ Decimal GAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 
 
 	/* Calculate all order parameters */
-	Decimal S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCs;
-	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCf;
+	Decimal S2CHs, S2CSAxs, S2CSAys, S2CSAxys, S2CNs, S2CCAcs, S2CCAps;
+	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CSAxyf, S2CNf, S2CCAcf, S2CCApf;
 
-	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCs};
-	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCf};
+	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CSAxys, &S2CNs, &S2CCAps, &S2CCAcs};
+	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CSAxyf, &S2CNf, &S2CCApf, &S2CCAcf};
 	
-	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
-	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
+	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp]), &(res->orients[OR_CCAc])};
+	struct Orient * Bs[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp]), &(res->orients[OR_CCAc])};
 	
-	GAF_S2(sigs, As, Bs, S2s, 6, MODE_REAL);
-	GAF_S2(sigf, As, Bs, S2f, 6, MODE_REAL);
+	GAF_S2(sigs, As, Bs, S2s, 7, MODE_REAL);
+	GAF_S2(sigf, As, Bs, S2f, 7, MODE_REAL);
 	
 
 	/* CSA relaxation contribution */
-	Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
+	Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAp, R2CCAc;
 	
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
@@ -442,7 +443,8 @@ Decimal GAF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, D
 	R2CH = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CHs, tauf, S2CHf, D_CH);
 	R2CHr = GAF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = GAF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
-	R2CC = GAF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
+    R2CCAp = GAF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCAps, tauf, S2CCApf, D_CCAp);
+    R2CCAc = GAF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCAcs, tauf, S2CCAcf, D_CCAc);
 
-    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
+    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAc + R2CCAp)*(Decimal)T_DOWN);
 }

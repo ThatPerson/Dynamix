@@ -58,8 +58,14 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->S2CaNf = fast;
     pars->S2CHs = slow;
     pars->S2CHf = fast;
-    pars->S2CCs = slow;
-    pars->S2CCf = fast;
+    pars->S2CCAps = slow;
+    pars->S2CCApf = fast;
+    pars->S2CCAcs = slow;
+    pars->S2CCAcf = fast;
+    pars->S2NHrs = slow;
+    pars->S2NHrf = fast;
+    pars->S2CHrs = slow;
+    pars->S2CHrf = fast;
     return 0;
 }
 
@@ -76,7 +82,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
                       &(pars->S2CNs),
                       &(pars->S2CaNs),
                       &(pars->S2CHs),
-                      &(pars->S2CCs)
+                      &(pars->S2CCAcs),
+                      &(pars->S2CCAps)
     };
     Decimal *S2fP[] = {&(pars->S2NHf),
                       &(pars->S2NCSAxf),
@@ -88,7 +95,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
                       &(pars->S2CNf),
                       &(pars->S2CaNf),
                       &(pars->S2CHf),
-                      &(pars->S2CCf)
+                      &(pars->S2CCAcf),
+                      &(pars->S2CCApf)
     };
     struct Orient *As[] = {
             &(resid->orients[OR_NH]),
@@ -101,6 +109,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
             &(resid->orients[OR_CN]),
             &(resid->orients[OR_NCA]),
             &(resid->orients[OR_CNH]),
+            &(resid->orients[OR_CCAc]),
             &(resid->orients[OR_CCAp])
     };
     struct Orient *Bs[] = {
@@ -114,6 +123,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
             &(resid->orients[OR_CN]),
             &(resid->orients[OR_NCA]),
             &(resid->orients[OR_CNH]),
+            &(resid->orients[OR_CCAc]),
             &(resid->orients[OR_CCAp])
     };
     if (model == MOD_SMF || model == MOD_SMFT) {
@@ -151,12 +161,13 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
             if (sigf[i] < 0 || sigf[i] > 0.52360)
                 (*violations)++;
         }
-        GAF_S2(sigs, As, Bs, S2sP, 11, MODE_REAL);
-        GAF_S2(sigf, As, Bs, S2fP, 11, MODE_REAL);
+        GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
+        GAF_S2(sigf, As, Bs, S2fP, 12, MODE_REAL);
         if (model == MOD_GAFT) {
             pars->Eas = opts[8];
             pars->Eaf = opts[9];
         }
+        pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
     } else if (model == MOD_EGAF || model == MOD_EGAFT) {
         Decimal sigs[3] = {opts[2], opts[3], opts[4]};
         S2f = opts[5];
@@ -165,26 +176,27 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
                 (*violations)++;
         }
         bcpars_init(pars, 0, S2f);
-        GAF_S2(sigs, As, Bs, S2sP, 11, MODE_REAL);
+        GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
         pars->taus = opts[0];
         pars->tauf = opts[1];
         if (model == MOD_EGAFT) {
             pars->Eas = opts[6];
             pars->Eaf = opts[7];
         }
+        pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
     } else if (model == MOD_AIMF || model == MOD_AIMFT) {
         bcpars_init(pars, 0, 0);
         pars->taus = opts[0];
         pars->tauf = opts[1];
         Decimal sigs[3] = {opts[2], opts[3], opts[4]};
         Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-        AIMF_S2(sigs, As, S2sP, 11);
-        AIMF_S2(sigf, As, S2fP, 11);
+        AIMF_S2(sigs, As, S2sP, 12);
+        AIMF_S2(sigf, As, S2fP, 12);
         if (model == MOD_AIMFT) {
             pars->Eas = opts[8];
             pars->Eaf = opts[9];
         }
-
+        pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
     } else {
         ERROR("Model %d does not exist.\n", model);
         return 1;
@@ -240,10 +252,10 @@ Decimal back_calc(struct Residue * resid, struct Relaxation * relax, struct Mode
 		return -1;
 
     switch (relax->type) {
-        case R_15NR1:  calc_R = Calc_15NR1(resid, relax, pars, m->model); break;
-        case R_15NR1p: calc_R = Calc_15NR2(resid, relax, pars, m->model); break;
-        case R_13CR1:  calc_R = Calc_13CR1(resid, relax, pars, m->model); break;
-        case R_13CR1p: calc_R = Calc_13CR2(resid, relax, pars, m->model); break;
+        case R_15NR1:  calc_R = Calc_15NR1(resid, relax, pars, m); break;
+        case R_15NR1p: calc_R = Calc_15NR2(resid, relax, pars, m); break;
+        case R_13CR1:  calc_R = Calc_13CR1(resid, relax, pars, m); break;
+        case R_13CR1p: calc_R = Calc_13CR2(resid, relax, pars, m); break;
         default: ERROR("Relaxation type %d unknown\n", relax->type); break;
     }
 
@@ -315,7 +327,7 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	S2NH = pars.S2NHs * pars.S2NHf;
 	S2CH = pars.S2CHs * pars.S2CHf;
 	S2CN = pars.S2CNs * pars.S2CNf;
-	S2CC = pars.S2CCs * pars.S2CCf;
+	S2CC = pars.S2CCAps * pars.S2CCApf;
 
     chisq += m->WS2NH * ((pow(resid->S2NH - S2NH, 2.)) / pow(resid->S2NHe, 2.));
     chisq += m->WS2CH * ((pow(resid->S2CH - S2CH, 2.)) / pow(resid->S2CHe, 2.));

@@ -184,9 +184,9 @@ Decimal AIMF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 
 	/* N Dipolar Interactions Contributions */
 	R1NH = AIMF_Dipolar_R1(omega_15N, omega_1H, taus, S2NHs, tauf, S2NHf, D_NH);
-	R1NHr = AIMF_Dipolar_R1(omega_15N, omega_1H, taus, S2CNs, tauf, S2CNf, D_HNr);
+	R1NHr = AIMF_Dipolar_R1(omega_15N, omega_1H, taus, S2CNs, tauf, S2CNf, D_NHr);
 	R1CN = AIMF_Dipolar_R1(omega_15N, omega_13C, taus, S2CNs, tauf, S2CNf, D_CN);
-	R1CaN = AIMF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_CaN);
+	R1CaN = AIMF_Dipolar_R1(omega_15N, omega_13C, taus, S2CaNs, tauf, S2CaNf, D_NCA);
 
 	return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
@@ -264,9 +264,9 @@ Decimal AIMF_15NR2(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 
 	/* N Dipolar Interactions Contributions */
 	R2NH = AIMF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2NHs, tauf, S2NHf, D_NH);
-	R2NHr = AIMF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_HNr);
+	R2NHr = AIMF_Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_NHr);
 	R2CN = AIMF_Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
-	R2CaN = AIMF_Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, S2CaNs, tauf, S2CaNf, D_CaN);
+	R2CaN = AIMF_Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, S2CaNs, tauf, S2CaNf, D_NCA);
 	return (R2CSA + R2NH + R2NHr + R2CN + R2CaN)*T_DOWN;
 }
 
@@ -316,19 +316,19 @@ Decimal AIMF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	//d2xy= (Decimal) sq(0.000001 * omega_13C) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
 	/* Calculate all order parameters */
-	Decimal S2CHs, S2CSAxs, S2CSAys, S2CNs, S2CCs;
-	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CNf, S2CCf;
+	Decimal S2CHs, S2CSAxs, S2CSAys, S2CNs, S2CCAcs, S2CCAps;
+	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CNf, S2CCAcf, S2CCApf;
 	
-	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CNs, &S2CCs};
-	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CNf, &S2CCf};
+	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CNs, &S2CCAps, &S2CCAcs};
+	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CNf, &S2CCApf, &S2CCAcf};
 	
-	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
+	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp]), &(res->orients[OR_CCAc])};
 	
-	AIMF_S2(Ss, As, S2s, 5);
-	AIMF_S2(Sf, As, S2f, 5);
+	AIMF_S2(Ss, As, S2s, 6);
+	AIMF_S2(Sf, As, S2f, 6);
 	
 	/* N CSA relaxation contribution */
-	Decimal R1CSAx, R1CSAy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+	Decimal R1CSAx, R1CSAy, R1CSA, R1CH, R1CHr, R1CN, R1CCAp, R1CCAc;
 	Decimal J1;
 
 
@@ -350,9 +350,10 @@ Decimal AIMF_13CR1(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	R1CH = AIMF_Dipolar_R1(omega_13C, omega_1H, taus, S2CHs, tauf, S2CHf, D_CH);
 	R1CHr = AIMF_Dipolar_R1(omega_13C, omega_1H, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R1CN = AIMF_Dipolar_R1(omega_13C, omega_15N, taus, S2CNs, tauf, S2CNf, D_CN);
-	R1CC = AIMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCs, tauf, S2CCf, D_CC);
+	R1CCAc = AIMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCAcs, tauf, S2CCAcf, D_CCAc);
+    R1CCAp = AIMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, S2CCAps, tauf, S2CCApf, D_CCAp);
 
-	return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
+	return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAc + R1CCAp)*T_DOWN;
 }
 
 /**
@@ -399,20 +400,20 @@ Decimal AIMF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 
 
 	/* Calculate all order parameters */
-	Decimal S2CHs, S2CSAxs, S2CSAys, S2CNs, S2CCs;
-	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CNf, S2CCf;
+	Decimal S2CHs, S2CSAxs, S2CSAys, S2CNs, S2CCAps, S2CCAcs;
+	Decimal S2CHf, S2CSAxf, S2CSAyf, S2CNf, S2CCApf, S2CCAcf;
 
-	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CNs, &S2CCs};
-	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CNf, &S2CCf};
+	Decimal *S2s[] = {&S2CHs, &S2CSAxs, &S2CSAys, &S2CNs, &S2CCAps, &S2CCAcs};
+	Decimal *S2f[] = {&S2CHf, &S2CSAxf, &S2CSAyf, &S2CNf, &S2CCApf, &S2CCAcf};
 	
-	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp])};
+	struct Orient * As[] = {&(res->orients[OR_CNH]), &(res->orients[OR_CCSAxx]), &(res->orients[OR_CCSAyy]), &(res->orients[OR_CN]), &(res->orients[OR_CCAp]),  &(res->orients[OR_CCAc])};
 	
-	AIMF_S2(Ss, As, S2s, 5);
-	AIMF_S2(Sf, As, S2f, 5);
+	AIMF_S2(Ss, As, S2s, 6);
+	AIMF_S2(Sf, As, S2f, 6);
 	
 
 	/* CSA relaxation contribution */
-	Decimal R2CSAx, R2CSAy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
+	Decimal R2CSAx, R2CSAy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp;
 	
 	w1 *= T_DOWN;
 	wr *= T_DOWN;
@@ -429,8 +430,9 @@ Decimal AIMF_13CR2(struct Residue *res, struct Relaxation* relax, Decimal taus, 
 	R2CH = AIMF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CHs, tauf, S2CHf, D_CH);
 	R2CHr = AIMF_Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, S2CNs, tauf, S2CNf, D_CHr);
 	R2CN = AIMF_Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, S2CNs, tauf, S2CNf, D_CN);
-	R2CC = AIMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCs, tauf, S2CCf, D_CC);
-	return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
+    R2CCAc = AIMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCAcs, tauf, S2CCAcf, D_CCAc);
+    R2CCAp = AIMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, S2CCAps, tauf, S2CCApf, D_CCAp);
+	return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAc + R2CCAp)*(Decimal)T_DOWN);
 }
 
 

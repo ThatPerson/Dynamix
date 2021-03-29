@@ -98,14 +98,15 @@ Decimal CSA_R2(Decimal omega, \
 }
 
 
-
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, unsigned int model) {
+#include <stdio.h>
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
     /* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
      * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
      * software division) I've predefined it. Bond length taken as 1.02 A */
+    unsigned int model = m->model;
 
     Decimal taus, tauf;
     if (pars->Eas != -1 || pars->Eaf != -1) {
@@ -147,24 +148,24 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
         d2tot*=sq(0.000001 * omega_15N * T_UP);
         R1CSA = (2/15.) * d2tot * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
     }
-
     /* N Dipolar Interactions Contributions */
     R1NH = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHs, tauf, pars->S2NHf, D_NH);
-    R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2CNs, tauf, pars->S2CNf, D_HNr);
+    R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHrs, tauf, pars->S2NHrf, D_NHr);
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-    R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_CaN);
+    R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_NCA);
 
 
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model) {
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal w1 = relax->w1, wr = relax->wr;
     /* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
      * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
      * software division) I've predefined it. Bond length taken as 1.02 A */
+    unsigned int model = m->model;
 
     Decimal taus, tauf;
     if (pars->Eas != -1 || pars->Eaf != -1) {
@@ -224,19 +225,20 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 
     /* N Dipolar Interactions Contributions */
     R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHs, tauf, pars->S2NHf, D_NH);
-    R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_HNr);
+    R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, D_NHr);
     R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-    R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_CaN);
+    R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_NCA);
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN)*T_DOWN;
 }
 
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model) {
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
     /* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
      * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
      * software division) I've predefined it. Bond length taken as 1.02 A */
+    unsigned int model = m->model;
 
     Decimal taus, tauf;
     if (pars->Eas != -1 || pars->Eaf != -1) {
@@ -264,7 +266,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
     csa = res->csaC;
 
 /* N CSA relaxation contribution */
-    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CC;
+    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAc, R1CCAp;
     Decimal J1;
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
@@ -288,21 +290,22 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
 
     /* N Dipolar Interactions Contributions */
     R1CH = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHs, tauf, pars->S2CHf, D_CH);
-    R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CNs, tauf, pars->S2CNf, D_CHr);
+    R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHrs, tauf, pars->S2CHrf, D_CHr);
     R1CN = Dipolar_R1(omega_13C, omega_15N, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-    R1CC = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCs, tauf, pars->S2CCf, D_CC);
+    R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAps, tauf, pars->S2CCApf, D_CCAp);
+    R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, D_CCAc);
 
-    return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CC)*T_DOWN;
+    return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc)*T_DOWN;
 }
 
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model) {
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal w1 = relax->w1, wr = relax->wr;
     /* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
      * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
      * software division) I've predefined it. Bond length taken as 1.02 A */
-
+    unsigned int model = m->model;
     Decimal taus, tauf;
     if (pars->Eas != -1 || pars->Eaf != -1) {
         taus = temp_tau(pars->taus, pars->Eas, relax->T);
@@ -331,7 +334,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     csa = res->csaC;
 
     /* CSA relaxation contribution */
-    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CC;
+    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp;
     Decimal J0sum = 0;
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
@@ -356,11 +359,12 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     }
     /* N Dipolar Interactions Contributions */
     R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHs, tauf, pars->S2CHf, D_CH);
-    R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CHr);
+    R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHrs, tauf, pars->S2CHrf, D_CHr);
     R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-    R2CC = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCs, tauf, pars->S2CCf, D_CC);
+    R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAps, tauf, pars->S2CCApf, D_CCAp);
+    R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, D_CCAc);
 
-    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CC)*(Decimal)T_DOWN);
+    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc)*(Decimal)T_DOWN);
 }
 
 

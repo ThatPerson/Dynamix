@@ -19,7 +19,10 @@ struct BCParameters {
     Decimal taus, tauf;
     Decimal Eas, Eaf;
     Decimal S2CHs, S2CHf;
-    Decimal S2CCs, S2CCf;
+    Decimal S2CCAcs, S2CCAcf;
+    Decimal S2CCAps, S2CCApf;
+    Decimal S2NHrs, S2NHrf;
+    Decimal S2CHrs, S2CHrf;
 };
 
 Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f);
@@ -42,10 +45,10 @@ Decimal CSA_R2(Decimal omega, \
 						 	Decimal)\
 						);
 
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, unsigned int model);
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model);
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model);
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, unsigned int model);
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m);
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m);
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m);
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m);
 int AIMF_S2(Decimal order_params[3], struct Orient ** A, Decimal * S2[], int length);
 int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  unsigned int mode);
 

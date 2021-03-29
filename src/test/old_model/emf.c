@@ -154,9 +154,9 @@ Decimal EMF_R1(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 		omega_L = 2 * M_PI * field / 9.869683408806043;
 		//d = -D_NH;
 		R1D += EMF_Dipolar_R1(omega_15N, omega_1H, -D_NH, taus, S2s, tauf, S2f); // N-H
-		R1D += EMF_Dipolar_R1(omega_15N, omega_1H, -D_HNr, taus, S2s, tauf, S2f); // N-Hr
+		R1D += EMF_Dipolar_R1(omega_15N, omega_1H, -D_NHr, taus, S2s, tauf, S2f); // N-Hr
 		R1D += EMF_Dipolar_R1(omega_15N, omega_13C, -D_CN, taus, S2s, tauf, S2f); // N-C
-		R1D += EMF_Dipolar_R1(omega_15N, omega_13C, -D_CaN, taus, S2s, tauf, S2f); // N-Ca	
+		R1D += EMF_Dipolar_R1(omega_15N, omega_13C, -D_NCA, taus, S2s, tauf, S2f); // N-Ca
 	} else if (mode == MODE_13C) {
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
@@ -164,7 +164,8 @@ Decimal EMF_R1(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 		R1D += EMF_Dipolar_R1(omega_13C, omega_1H, -D_CH, taus, S2s, tauf, S2f); // C-H
 		R1D += EMF_Dipolar_R1(omega_13C, omega_1H, -D_CHr, taus, S2s, tauf, S2f); // C-Hr
 		R1D += EMF_Dipolar_R1(omega_13C, omega_15N, -D_CN, taus, S2s, tauf, S2f); // C-N
-		R1D += EMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CC, taus, S2s, tauf, S2f); // C-C
+        R1D += EMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CCAp, taus, S2s, tauf, S2f); // C-C
+        R1D += EMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CCAc, taus, S2s, tauf, S2f); // C-C
 	} else {
 		ERROR("Incorrect mode.");
 		return -1;
@@ -235,9 +236,9 @@ Decimal EMF_R2(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 		omega_L = 2 * M_PI * field / 9.869683408806043;
 		//d = -D_NH;
 		R2D += EMF_Dipolar_R2(omega_15N, omega_1H, -D_NH, taus, S2s, tauf, S2f, J0sum); // N-H
-		R2D += EMF_Dipolar_R2(omega_15N, omega_1H, -D_HNr, taus, S2s, tauf, S2f, J0sum); // N-Hr
+		R2D += EMF_Dipolar_R2(omega_15N, omega_1H, -D_NHr, taus, S2s, tauf, S2f, J0sum); // N-Hr
 		R2D += EMF_Dipolar_R2(omega_15N, omega_13C, -D_CN, taus, S2s, tauf, S2f, J0sum); // N-C
-		R2D += EMF_Dipolar_R2(omega_15N, omega_13C, -D_CaN, taus, S2s, tauf, S2f, J0sum); // N-Ca	
+		R2D += EMF_Dipolar_R2(omega_15N, omega_13C, -D_NCA, taus, S2s, tauf, S2f, J0sum); // N-Ca
 	} else if (mode == MODE_13C) {
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
@@ -245,7 +246,8 @@ Decimal EMF_R2(struct Residue *res, struct Relaxation* relax, Decimal taus, Deci
 		R2D += EMF_Dipolar_R2(omega_13C, omega_1H, -D_CH, taus, S2s, tauf, S2f, J0sum); // C-H
 		R2D += EMF_Dipolar_R2(omega_13C, omega_1H, -D_CHr, taus, S2s, tauf, S2f, J0sum); // C-Hr
 		R2D += EMF_Dipolar_R2(omega_13C, omega_15N, -D_CN, taus, S2s, tauf, S2f, J0sum); // C-N
-		R2D += EMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CC, taus, S2s, tauf, S2f, J0sum); // C-C
+        R2D += EMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CCAc, taus, S2s, tauf, S2f, J0sum); // C-C
+        R2D += EMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CCAp, taus, S2s, tauf, S2f, J0sum); // C-C
 	} else {
 		ERROR("Incorrect mode.");
 		return -1;

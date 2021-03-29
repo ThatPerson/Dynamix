@@ -245,7 +245,7 @@ int print_gaf(struct Model *m) {
         double S2NH, S2CH, S2CC, S2CN;
         S2NH = pars.S2NHs * pars.S2NHf;
         S2CH = pars.S2CHs * pars.S2CHf;
-        S2CC = pars.S2CCs * pars.S2CCf;
+        S2CC = pars.S2CCAps * pars.S2CCApf;
         S2CN = pars.S2CNs * pars.S2CNf;
 
         fprintf(orderparams, "%d\t", l + 1);

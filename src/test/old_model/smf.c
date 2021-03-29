@@ -128,17 +128,18 @@ Decimal SMF_R1(struct Residue *res, struct Relaxation* relax, Decimal tau, Decim
 		//d = -D_NH;
 		// Decimal SMF_Dipolar_R1(Decimal omega_X, Decimal omega_Y, Decimal d, Decimal tau, Decimal S2) {
 		R1D += SMF_Dipolar_R1(omega_15N, omega_1H, -D_NH, tau, S2); // N-H
-		R1D += SMF_Dipolar_R1(omega_15N, omega_1H, -D_HNr, tau, S2); // N-Hr
+		R1D += SMF_Dipolar_R1(omega_15N, omega_1H, -D_NHr, tau, S2); // N-Hr
 		R1D += SMF_Dipolar_R1(omega_15N, omega_13C, -D_CN, tau, S2); // N-C
-		R1D += SMF_Dipolar_R1(omega_15N, omega_13C, -D_CaN, tau, S2); // N-Ca		
+		R1D += SMF_Dipolar_R1(omega_15N, omega_13C, -D_NCA, tau, S2); // N-Ca
 	} else if (mode == MODE_13C) {
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
 		R1D += SMF_Dipolar_R1(omega_13C, omega_1H, -D_CH, tau, S2); // C-H
 		R1D += SMF_Dipolar_R1(omega_13C, omega_1H, -D_CHr, tau, S2); // C-Hr
 		R1D += SMF_Dipolar_R1(omega_13C, omega_15N, -D_CN, tau, S2); // C-N
-		R1D += SMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CC, tau, S2); // C-C
-		//d = -D_CH;
+		R1D += SMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CCAc, tau, S2); // C-C
+        R1D += SMF_Dipolar_R1(omega_13C, omega_13C - wCOCa, -D_CCAp, tau, S2); // C-C
+        //d = -D_CH;
 	} else {
 		ERROR("Incorrect mode.");
 		return -1;
@@ -209,16 +210,18 @@ Decimal SMF_R2(struct Residue *res, struct Relaxation* relax, Decimal tau, Decim
 		omega_L = 2 * M_PI * field / 9.869683408806043;
 		//d = -D_NH;
 		R2D += SMF_Dipolar_R2(omega_15N, omega_1H, -D_NH, tau, S2, J0sum); // N-H
-		R2D += SMF_Dipolar_R2(omega_15N, omega_1H, -D_HNr, tau, S2, J0sum); // N-Hr
+		R2D += SMF_Dipolar_R2(omega_15N, omega_1H, -D_NHr, tau, S2, J0sum); // N-Hr
 		R2D += SMF_Dipolar_R2(omega_15N, omega_13C, -D_CN, tau, S2, J0sum); // N-C
-		R2D += SMF_Dipolar_R2(omega_15N, omega_13C, -D_CaN, tau, S2, J0sum); // N-Ca	
+		R2D += SMF_Dipolar_R2(omega_15N, omega_13C, -D_NCA, tau, S2, J0sum); // N-Ca
 	} else if (mode == MODE_13C) {
 		csa = res->csaC;
 		omega_L = 2 * M_PI * field / 3.976489314034722;
 		R2D += SMF_Dipolar_R2(omega_13C, omega_1H, -D_CH, tau, S2, J0sum); // C-H
 		R2D += SMF_Dipolar_R2(omega_13C, omega_1H, -D_CHr, tau, S2, J0sum); // C-Hr
 		R2D += SMF_Dipolar_R2(omega_13C, omega_15N, -D_CN, tau, S2, J0sum); // C-N
-		R2D += SMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CC, tau, S2, J0sum); // C-C
+		R2D += SMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CCAp, tau, S2, J0sum); // C-C
+        R2D += SMF_Dipolar_R2(omega_13C, omega_13C - wCOCa, -D_CCAc, tau, S2, J0sum); // C-C
+
 		//d = -D_CH;
 	} else {
 		ERROR("Incorrect mode.");

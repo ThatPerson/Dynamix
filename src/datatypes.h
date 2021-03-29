@@ -78,14 +78,21 @@ typedef double _Complex Complex;
 
 #define RYD 			8.3144621 				///< Rydberg Constant in JK-1mol-1
 
-/* These constants are extracted from NHCO_3GAFSquaredEa, using the bond lengths defined in there */
-#define D_NH			72038.41107 			///< Dipolar couplings taken from NHCO_3GAFSquaredEa for amide N-H
-#define D_CC			13467.66052 			///< Dipolar couplings taken from NHCO_3GAFSquaredEa for alphatic C-Calpha
-#define D_CH			22362.47724 			///< Dipolar couplings taken from NHCO_3GAFSquaredEa for C-H
-#define D_CHr			31491.71046 			///< Dipolar couplings taken from NHCO_3GAFSquaredEa for C-Hrest
-#define D_CN			8175.2 					///< Dipolar couplings taken from NHCO_3GAFSquaredEa for C-N
-#define D_CaN			6180.1 					///< Dipolar couplings taken from NHCO_3GAFSquaredEa for amide N - aliphatic C
-#define D_HNr			13108.32273 			///< Dipolar couplings taken from NHCO_3GAFSquaredEa for amide N-Hrest
+/* Dipolar couplings are calculated using
+ * D = (10^-7 * gammaX * gammaY * (h/(2pi))) / (r^3)
+ * where gammaX, gammaY are in units of rad / s T
+ *   and r in units of Angstroms.
+ * See utils/calc_D.py
+ */
+#define D_NH	72038.411068
+#define D_NC	8175.249117
+#define D_NCA	6180.126304
+#define D_CCAp	13467.660521
+#define D_CCAc	3093.881320
+#define D_CN	8175.249117
+#define D_CH	22362.477236
+#define D_NHr	13108.322725
+#define D_CHr	31491.710460
 
 #define MODE_15N		0
 #define MODE_13C		1
