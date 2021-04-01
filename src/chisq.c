@@ -69,6 +69,25 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     return 0;
 }
 
+void check_S2_violations(struct BCParameters *pars, int *violations) {
+    if (pars->S2NHs > 1 || pars->S2NHs < 0)
+        (*violations)++;
+    if (pars->S2NHf > 1 || pars->S2NHf < 0)
+        (*violations)++;
+    if (pars->S2CCAps > 1 || pars->S2CCAps < 0)
+        (*violations)++;
+    if (pars->S2CCApf > 1 || pars->S2CCApf < 0)
+        (*violations)++;
+    if (pars->S2CHs > 1 || pars->S2CHs < 0)
+        (*violations)++;
+    if (pars->S2CHf > 1 || pars->S2CHf < 0)
+        (*violations)++;
+    if (pars->S2CNs > 1 || pars->S2CNs < 0)
+        (*violations)++;
+    if (pars->S2CNf > 1 || pars->S2CNf < 0)
+        (*violations)++;
+}
+
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model, struct Residue *resid, int *violations) {
     Decimal S2s, S2f;
     int i;
@@ -211,6 +230,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
         ttaus = temp_tau(pars->taus, pars->Eas, 300);
         ttauf = temp_tau(pars->tauf, pars->Eaf, 300);
     }
+
+    check_S2_violations(pars, violations);
 
    // printf("Pars %lf (%lf)\n", ttaus, upper_lim_ts);
     if (ttaus < ttauf)

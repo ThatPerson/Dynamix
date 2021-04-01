@@ -445,8 +445,6 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
      *  4. No optimization is done to the products of spherical harmonics.
      */
 
-    Decimal im = 1 * I;
-
     for (l = -2; l <= 2; l++) {
         //lsqsum = sq_i(l);
         //lexp = (Decimal) -(sq(sig[1]) * lsqsum);
@@ -485,7 +483,8 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
                             } else {
                                 //printf("Going long route...\n");
                                 /* Other wise we have to go the long route... */
-                                ttemp *= cpow(-im, k - kp);
+                                Complex multip = cpow(-1 * I, k-kp);
+                                ttemp *= multip;
                             }
 
 
