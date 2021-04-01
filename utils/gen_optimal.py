@@ -20,7 +20,11 @@ try:
 except IndexError:
 	print("Insufficient arguments. Should be python gen_optimal.py <IC file> <mode> <output>")
 	exit()
-	
+
+v = np.loadtxt(ic_file, delimiter=",", usecols=[0], skiprows=1)
+k = np.shape(v)
+nres = k[0]
+
 try:
 	def_file = sys.argv[5]
 	residue_inc = []
@@ -47,52 +51,57 @@ except IndexError:
 ## load in atomic coordinates from PDB file.
 traj = pt.load(pdb_file)
 min_v = 1
-max_v = 56
+max_v = nres
 N_coords = traj[:, ':%d-%d@N' % (min_v + 1, max_v)]
 O_coords = traj[:, ':%d-%d@O' % (min_v, max_v)]
 C_coords = traj[:, ':%d-%d@C' % (min_v, max_v)]
 CA_coords = traj[:, ':%d-%d@CA' % (min_v, max_v)]
 
-pp = np.zeros((58, 4, 3))
+pp = np.zeros((nres+2, 4, 3))
 
-midpoints = np.zeros((58, 3))
+midpoints = np.zeros((nres+2, 3))
 
-for peptide_plane in range(2, 57):
+for peptide_plane in range(2, nres+1):
 	pp[peptide_plane, 0] = N_coords[0, peptide_plane-2]
 	pp[peptide_plane, 1] = O_coords[0, peptide_plane-2]
 	pp[peptide_plane, 2] = C_coords[0, peptide_plane-2]
 	pp[peptide_plane, 3] = CA_coords[0, peptide_plane-2]
 	midpoints[peptide_plane] = np.mean(pp[peptide_plane, :], axis=0)
 
-pp[57, 1] = O_coords[0, 55]
-pp[57, 2] = C_coords[0, 55]
-pp[57, 3] = CA_coords[0, 55]
+pp[57, 1] = O_coords[0, nres-1]
+pp[57, 2] = C_coords[0, nres-1]
+pp[57, 3] = CA_coords[0, nres-1]
 
-vectors = np.zeros((57, 3, 3))
-basis_set = np.zeros((57, 3, 3)) 
-centers = np.zeros((57, 3))
+vectors = np.zeros((nres+1, 3, 3))
+basis_set = np.zeros((nres+1, 3, 3))
+centers = np.zeros((nres+1, 3))
 
 
-for peptide_plane in range(2, 57):
-	Z = pp[peptide_plane + 1, 3] - pp[peptide_plane, 3] # CA-CA, this is Z
-	D = pp[peptide_plane, 1] - pp[peptide_plane, 2] # C-O axis
-	Y = np.cross(Z, D) # perpendicular to peptide plane  
-	X = np.cross(Y, Z) # approximately aligned with CO axis
-	# I'm not sure if these have the correct sign... (eg up or down).
+for peptide_plane in range(2, nres+1):
+	if ("global" in mode):
+		x = [1,0,0]
+		y = [0,1,0]
+		z = [0,0,1]
+	else:
+		Z = pp[peptide_plane + 1, 3] - pp[peptide_plane, 3] # CA-CA, this is Z
+		D = pp[peptide_plane, 1] - pp[peptide_plane, 2] # C-O axis
+		Y = np.cross(Z, D) # perpendicular to peptide plane
+		X = np.cross(Y, Z) # approximately aligned with CO axis
+		# I'm not sure if these have the correct sign... (eg up or down).
 
-	# In Lienin, the Gamma axis is shown aligned along Calpha_i, Calpha_i-1. I think this
-	# is taken as the z axis, hence Calpha_i+1 - Calpha_i (my numbers are one above). 
-	# Y is perpendicular to the plane, which is shown in rotation_tests.c. I think this is therefore the same as beta
-	# (as I'm using the same theta and phi). Unfortunately l=2 spherical harmonics are invariant under inversion
-	# so I can't think how to directly test this. X is then perpendicular and to maintain the
-	#	   Z	 axis, X must be aligned along alpha.
-	#	   |	 Which kind of makes sense that they would be aligned in the same sense,
-	#	  / \	but I'm still skeptical.
-	#	 X   Y
+		# In Lienin, the Gamma axis is shown aligned along Calpha_i, Calpha_i-1. I think this
+		# is taken as the z axis, hence Calpha_i+1 - Calpha_i (my numbers are one above).
+		# Y is perpendicular to the plane, which is shown in rotation_tests.c. I think this is therefore the same as beta
+		# (as I'm using the same theta and phi). Unfortunately l=2 spherical harmonics are invariant under inversion
+		# so I can't think how to directly test this. X is then perpendicular and to maintain the
+		#	   Z	 axis, X must be aligned along alpha.
+		#	   |	 Which kind of makes sense that they would be aligned in the same sense,
+		#	  / \	but I'm still skeptical.
+		#	 X   Y
 
-	x = X / np.linalg.norm(X)
-	y = Y / np.linalg.norm(Y)
-	z = Z / np.linalg.norm(Z)
+		x = X / np.linalg.norm(X)
+		y = Y / np.linalg.norm(Y)
+		z = Z / np.linalg.norm(Z)
 	vectors[peptide_plane, :, 0] = x
 	vectors[peptide_plane, :, 1] = y
 	vectors[peptide_plane, :, 2] = z
@@ -218,10 +227,10 @@ def generate_aimf(parms, residue, mode, min_tau, max_tau, min_mag, max_mag):
 	st = ""
 	tau = 0
 	mags = []
-	if (mode == "slow"):
+	if ("slow" in mode):
 		tau = np.log(parms["taus"])
 		mags = parms["mags"]
-	elif (mode == "fast"):
+	elif ("fast" in mode):
 		tau = np.log(parms["tauf"])
 		mags = parms["magf"]
 	else:
@@ -280,14 +289,14 @@ def generate_mf(parms, residue, mode, min_tau, max_tau):
 	st = ""
 	tau = 0
 	mag = 0
-	if (mode == "slow"):
+	if ("slow" in mode):
 		try:
 			tau = np.log(parms["taus"])
 			mag = parms["S2s"]
 		except RuntimeWarning:
 			tau = np.log(parms["tau"])
 			mag = parms["S2"]
-	elif (mode == "fast"):
+	elif ("fast" in mode):
 		try:
 			tau = np.log(parms["tauf"])
 			mag = parms["S2f"]
@@ -335,10 +344,10 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 	st = ""
 	tau = 0
 	sigs = []
-	if (mode == "slow"):
+	if ("slow" in mode):
 		tau = np.log(parms["taus"])
 		sigs = parms["slow"]
-	elif (mode == "fast"):
+	elif ("fast" in mode):
 		tau = np.log(parms["tauf"])
 		sigs = parms["fast"]
 	else:
@@ -439,7 +448,7 @@ with open(output_file, "w") as of:
 			print(models[l["model"]][l["residue"]])
 			st = generate_gaf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
 		elif (l["model"] in slow_gaf):
-			if (mode == "slow"):
+			if ("slow" in mode):
 				st = generate_gaf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
 			else:
 				st = generate_mf(models[l["model"]][l["residue"]], l["residue"], mode, min_tau, max_tau)
