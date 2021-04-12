@@ -125,8 +125,8 @@ for model in sys.argv[1:]:
 			ctmp = np.power(exp - calc, 2.) / np.power(err, 2.)
 			chisq += s2weight * ctmp
 
-		
-		df = 3 + len(calc_R) - params - 1
+		N_meas = max_op + len(calc_R)
+		df = N_meas - params - 1
 		if (df <= 0 or chisq == 0 or ign == 1):
 			AIC = 1e9
 			BIC = 1e9
@@ -135,7 +135,7 @@ for model in sys.argv[1:]:
 			continue
 
 		AIC = chisq + 2 * params
-		BIC = chisq + params * np.log(len(calc_R))
+		BIC = chisq + params * np.log(N_meas)
 		AICc = AIC + ((2 * params * (params + 1)) / df)
 
 		## errors are 2sigma (2 standard deviations). So sigma is err_R/2

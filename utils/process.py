@@ -369,7 +369,7 @@ class Results:
 	def read_results(self, fn = ""):
 		if (fn == ""):
 			fn = self.system["OUTPUT"]
-
+		self.res = fn
 		self.errors = True
 		if (len(glob.glob(fn + "/errors*")) == 0):
 			self.errors = False
@@ -377,7 +377,7 @@ class Results:
 			self.combine_output(fn)
 		
 		self.final_dat = np.loadtxt(fn+"/final.dat")
-		self.errors_dat = np.loadtxt(fn+"/errors.dat")
+		if (self.errors != False): self.errors_dat = np.loadtxt(fn+"/errors.dat")
 		self.gaf_dat = np.loadtxt(fn+"/gaf.dat")
 		self.op_dat = np.loadtxt(fn+"/orderparams.dat")
 		
@@ -547,6 +547,7 @@ class Results:
 		print(x)
 	
 	def read_system(self, fn):
+		self.fn = fn
 		mode = 0
 		self.system = {}
 		self.relax_files = []
@@ -765,33 +766,34 @@ class Simulation:
 		
 	def read_spreadsheet(self, fn, fr, to):
 		return 1
-		
-k = Simulation()
-k.prompt()
 
-exit(-1)
-pdb = Pdb("../global/2GI9_H.pdb", 56)
-pdb.get_pp()
-pdb.gen_local("local")
-#pdb.gen_global("global")
+if (__name__ == "__main__"):	
+	k = Simulation()
+	k.prompt()
 
-res = Results("../../2021system/gaft.dx")
-res.read_results("../../APMs/APM27/gaft")
+	exit(-1)
+	pdb = Pdb("../global/2GI9_H.pdb", 56)
+	pdb.get_pp()
+	pdb.gen_local("local")
+	#pdb.gen_global("global")
 
-#
-#print(res.gen_mf(20, "slow", pdb))
+	res = Results("../../2021system/gaft.dx")
+	res.read_results("../../APMs/APM27/gaft")
 
-#def gen_self(self, k, pdb, fn, mode):
+	#
+	#print(res.gen_mf(20, "slow", pdb))
 
-k = np.arange(1, 56)
-res.gen_self(k, pdb, "test.bild", "slow")
+	#def gen_self(self, k, pdb, fn, mode):
 
-#res.plot_relax("file.eps")
-#res.plot_bc("bc.eps")
-exit(-1)
-#print(res.get_npars())
-print(res.calc_IC())
-res2 = Results("2021system/gaft.dx")
-res2.read_results()
-#print(res.get_npars())
-compare_IC([res, res2], "AIC", "test.csv")
+	k = np.arange(1, 56)
+	res.gen_self(k, pdb, "test.bild", "slow")
+
+	#res.plot_relax("file.eps")
+	#res.plot_bc("bc.eps")
+	exit(-1)
+	#print(res.get_npars())
+	print(res.calc_IC())
+	res2 = Results("2021system/gaft.dx")
+	res2.read_results()
+	#print(res.get_npars())
+	compare_IC([res, res2], "AIC", "test.csv")

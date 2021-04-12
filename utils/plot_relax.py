@@ -17,7 +17,12 @@ def run_plot(folder):
 		for l in f:
 			n = n + 1
 	print(n)
-	k = np.loadtxt("%s/backcalc_2.dat" % (folder))
+	for i in range(1, n+1):
+		try:
+			k = np.loadtxt("%s/backcalc_%d.dat" % (folder, i))
+			break
+		except OSError:
+			continue
 	lk = (np.shape(k))
 
 	n_relax = lk[0]
@@ -32,7 +37,10 @@ def run_plot(folder):
 	curr_y = 0
 
 	for i in range(1, n+1):
-		data[i, :, :] = np.loadtxt("%s/backcalc_%d.dat" % (folder, i))
+		try:
+			data[i, :, :] = np.loadtxt("%s/backcalc_%d.dat" % (folder, i))
+		except OSError:
+			continue
 
 	x = np.arange(1, n+2)
 

@@ -137,25 +137,37 @@ void free_all(struct Model *m) {
 	unsigned int params = m->params;
 
 	for (res = 0; res < m->n_residues; res++) {
-		if (m->residues[res].relaxation != NULL)
-			free(m->residues[res].relaxation);
-		if (m->residues[res].parameters != NULL)
-			free(m->residues[res].parameters);
+        if (m->residues[res].relaxation != NULL) {
+            free(m->residues[res].relaxation);
+            m->residues[res].relaxation = NULL;
+        }
+        if (m->residues[res].parameters != NULL) {
+            free(m->residues[res].parameters);
+            m->residues[res].parameters = NULL;
+        }
 		if (m->error_mode == 1) {
 			if (m->residues[res].error_params != NULL) {
 				for (k = 0; k < params; k++) {
-					if (m->residues[res].error_params[k] != NULL)
-						free(m->residues[res].error_params[k]);
+					if (m->residues[res].error_params[k] != NULL) {
+                        free(m->residues[res].error_params[k]);
+                        m->residues[res].error_params[k] = NULL;
+                    }
 				}
 				free(m->residues[res].error_params);
+				m->residues[res].error_params = NULL;
 			}
-			if (m->residues[res].errors_mean != NULL)
-				free(m->residues[res].errors_mean);
-			if (m->residues[res].errors_std != NULL)
-				free(m->residues[res].errors_std);
+			if (m->residues[res].errors_mean != NULL) {
+                free(m->residues[res].errors_mean);
+                m->residues[res].errors_mean = NULL;
+            }
+			if (m->residues[res].errors_std != NULL) {
+                free(m->residues[res].errors_std);
+                m->residues[res].errors_std = NULL;
+            }
 		}
 	}
 	free(m->residues);
+	m->residues = NULL;
 
 }
 
