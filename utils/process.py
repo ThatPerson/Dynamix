@@ -5,10 +5,28 @@ import calc
 import sys
 import glob
 import matplotlib.pyplot as plt
+import math
 
 def xyz(f):
 	return "%f %f %f" % (f[0], f[1], f[2])
 
+## from https://stackoverflow.com/questions/2413522/weighted-standard-deviation-in-numpy
+def weighted_avg_and_std(values, weights):
+    """
+    Return the weighted average and standard deviation.
+
+    values, weights -- Numpy ndarrays with the same shape.
+    """
+    indices = ~np.isnan(values)
+    values = values[indices]
+    weights = weights[indices]
+    indices = ~np.isnan(weights)
+    values = values[indices]
+    weights = weights[indices]
+    average = np.average(values, weights=weights)
+    # Fast and numerically precise:
+    variance = np.average((values-average)**2, weights=weights)
+    return (average, math.sqrt(variance))
 
 class Pdb:
 	def get_pp(self):
@@ -448,6 +466,39 @@ class Results:
 			IC[i, 0] = i + 1
 		return IC
 		
+	def summarystats(self, units):
+		self.get_npars()
+		pars = models.mds[self.type]["p"]
+		# data is arranged as self.errors_dat[RESIDUE, 3 + (i*2)]
+		# and errors are      self.errors_dat[RESIDUE, 4 + (i*2)]
+		if (self.errors == False):
+			print("Only works with errors")
+			return 1
+			
+		ret_data = {}
+		for unit in units:
+			# unit should be a list of residues to be included
+			ret_data[unit] = {}
+			print(unit)
+			dat = self.errors_dat[np.isin(self.errors_dat[:, 0], units[unit]), :]
+			k = np.shape(dat)
+			for i in range(0, k[1]):
+				print("%d: %s" % (i, ' '.join([str(pl) for pl in dat[:, i]])))
+			print("\n\n\n")
+			for i in range(0, len(pars)):
+				vals = dat[:, 3 + (i * 2)]
+				errs = dat[:, 4 + (i * 2)]
+				print("%d (%d): %s" % (i, 3 + (2 * i), ' '.join([str(pl) for pl in vals])))
+				if (len(vals) == 0 or len(errs) == 0):
+					ret_data[unit][pars[i]] = {"val": -1, "std": 0}
+					continue
+				errs[errs == 0] = np.nan
+				weight = 1/errs
+				avg, std = weighted_avg_and_std(vals, weight)
+				ret_data[unit][pars[i]] = {"val": avg, "std": std}
+		return ret_data
+
+		
 	def plot(self, fn):
 		self.get_npars()
 		pars = models.mds[self.type]["p"]
@@ -662,6 +713,7 @@ class Simulation:
 			except ValueError:
 				print("Please enter integer")
 		return val
+	
 	
 	def read_orderparams(self, typ, v):
 		k = ""

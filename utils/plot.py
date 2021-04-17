@@ -98,7 +98,15 @@ def run_plot(folder):
 		axs[xd].set(xlabel='residue', ylabel=mod['p'][pl])
 		if ("tau" in mod['p'][pl]):
 			axs[xd].set_yscale("log")
-			if ('taus' in mod['p'][pl] and 't' in model):
+			if ('taus' in mod['p'][pl]):
+				# temperature dependent
+				axs[xd].set_ylim(bottom=1e-9, top=1e-7)
+			elif ('tauf' in mod['p'][pl]):
+				# temperature dependent
+				axs[xd].set_ylim(bottom=1e-13, top=1e-9)
+			elif ('tau' in mod['p'][pl]):
+				axs[xd].set_ylim(bottom=1e-13, top=1e-7)
+			'''if ('taus' in mod['p'][pl] and 't' in model):
 				# temperature dependent
 				axs[xd].set_ylim(bottom=1e-18, top=1e-8)
 			elif ('tauf' in mod['p'][pl] and 't' in model):
@@ -115,7 +123,7 @@ def run_plot(folder):
 				axs[xd].set_ylim(bottom=1e-12, top=1e-8)
 			elif ('tau' in mod['p'][pl] and 't' not in model):
 				# temperature independent
-				axs[xd].set_ylim(bottom=1e-9, top=1e-6)
+				axs[xd].set_ylim(bottom=1e-9, top=1e-6)'''
 
 		if ("Ea" in mod['p'][pl]):
 			axs[xd].set_ylim(bottom=0, top = 60000)

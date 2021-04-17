@@ -86,7 +86,7 @@ static void test_temp_tau(void ** state) {
     Decimal epsilon = 0.0001;
     assert_float_equal(temp_tau(tau0, 0, 200), tau0, epsilon);
     assert_float_equal(temp_tau(tau0, 10, 200), 0.0001, epsilon); // small activation energy
-    assert_float_equal(temp_tau(tau0, 10000, 200), 0.040896, epsilon);
+    assert_float_equal(temp_tau(tau0, 10000, 200), 0.00074227, epsilon);
 
 }
 

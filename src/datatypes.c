@@ -43,7 +43,8 @@ Decimal sq(Decimal x) {
 }
 
 Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp) {
-    return tau0 * exp(Ea / (RYD * temp));
+    Decimal tfactor = (300. - temp) / (temp * 300.);
+    return tau0 * exp((Ea / RYD) * tfactor); // tau0 now at 300 K.
 }
 
 /**
@@ -251,23 +252,23 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             maxv[0] = 10; maxv[1] = 1;
             break;
         case MOD_SMFT:
-            maxv[0] = 1; maxv[1] = 1; maxv[2] = 60000;
+            maxv[0] = 100; maxv[1] = 1; maxv[2] = 60000;
             break;
         case MOD_EMF:
             minv[0] = 0.1; minv[1] = S2NH;
             maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
             break;
         case MOD_EMFT:
-            minv[0] = pow(10, -7); minv[1] = S2NH;
-            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 60000, maxv[4] = 60000;
+            minv[0] = pow(10, -2); minv[1] = S2NH;
+            maxv[0] = pow(10, 2); maxv[1] = 1; maxv[2] = pow(10, -1); maxv[3] = 60000, maxv[4] = 60000;
             break;
         case MOD_DEMF:
             minv[0] = 0.1; minv[1] = S2NH; minv[3] = S2NH;
             maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
             break;
         case MOD_DEMFT:
-            minv[0] = pow(10, -7); minv[1] = S2NH; minv[3] = S2NH;
-            maxv[0] = pow(10, -4); maxv[1] = 1; maxv[2] = pow(10, -7); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
+            minv[0] = pow(10, -2); minv[1] = S2NH; minv[3] = S2NH;
+            maxv[0] = pow(10, 2); maxv[1] = 1; maxv[2] = pow(10, -1); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
             break;
         case MOD_GAF:
             minv[0] = 0.1;
@@ -275,8 +276,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             for (k = 2; k <= 7; k++) maxv[k] = 0.25;
             break;
         case MOD_GAFT:
-            minv[0] = pow(10, -7);
-            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            minv[0] = pow(10, -2);
+            maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
             for (k = 2; k <= 7; k++) maxv[k] = 0.25;
             maxv[8] = 60000; maxv[9] = 60000;
             break;
@@ -286,8 +287,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
             break;
         case MOD_AIMFT:
-            minv[0] = pow(10, -7);
-            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            minv[0] = pow(10, -2);
+            maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
             for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
             maxv[8] = 60000; maxv[9] = 60000;
             break;
@@ -298,8 +299,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             minv[5] = S2NH; maxv[5] = 1;
             break;
         case MOD_EGAFT:
-            minv[0] = pow(10, -7);
-            maxv[0] = pow(10, -4); maxv[1] = pow(10, -7);
+            minv[0] = pow(10, -2);
+            maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
             for (k = 2; k <= 4; k++) maxv[k] = 0.25;
             minv[5] = S2NH; maxv[5] = 1;
             maxv[6] = 60000; maxv[7] = 60000;
@@ -307,7 +308,6 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
         default: break;
     }
 
-    // TODO: Remove RDC
     if (m->or_variation == VARIANT_A) {
         minv[m->params - 3] = 0; // alpha
         minv[m->params - 2] = 0; // beta
