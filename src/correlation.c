@@ -370,7 +370,7 @@ int main(int argc, char * argv[]) {
 
 	
 	int ignore = -1;
-	#pragma omp parallel default(shared) for
+	#pragma omp parallel for
 	for (i = 0; i <m.n_residues; i++) {
 //		Decimal Ea,Eas,Eaf, tauf,taus, tau, S2s, S2f;
 		struct Residue * resid;
@@ -440,12 +440,12 @@ int main(int argc, char * argv[]) {
 					write_correlation_function_smf(fn_NH, T, dT, tauf, pars.S2NHs * pars.S2NHf);
 					write_correlation_function_smf(fn_CH, T, dT, tauf, pars.S2CHs * pars.S2CHf);
 					write_correlation_function_smf(fn_CN, T, dT, tauf, pars.S2CNs * pars.S2CNf);
-					write_correlation_function_smf(fn_CC, T, dT, tauf, pars.S2CCs * pars.S2CCf);
+					write_correlation_function_smf(fn_CC, T, dT, tauf, pars.S2CCAps * pars.S2CCApf);
 				} else {
 					write_correlation_function_emf(fn_NH, T, dT, taus, pars.S2NHs, tauf, pars.S2NHf);
 					write_correlation_function_emf(fn_CH, T, dT, taus, pars.S2CHs, tauf, pars.S2CHf);
 					write_correlation_function_emf(fn_CN, T, dT, taus, pars.S2CNs, tauf, pars.S2CNf);
-					write_correlation_function_emf(fn_CC, T, dT, taus, pars.S2CCs, tauf, pars.S2CCf);
+					write_correlation_function_emf(fn_CC, T, dT, taus, pars.S2CCAps, tauf, pars.S2CCApf);
 				}
 			}
 			if (sd_mod == 1) {
@@ -453,12 +453,12 @@ int main(int argc, char * argv[]) {
 					write_spectral_density_smf(sd_NH, tauf, pars.S2NHs * pars.S2NHf);
 					write_spectral_density_smf(sd_CH, tauf, pars.S2CHs * pars.S2CHf);
 					write_spectral_density_smf(sd_CN, tauf, pars.S2CNs * pars.S2CNf);
-					write_spectral_density_smf(sd_CC, tauf, pars.S2CCs * pars.S2CCf);
+					write_spectral_density_smf(sd_CC, tauf, pars.S2CCAps * pars.S2CCApf);
 				} else {
 					write_spectral_density_emf(sd_NH, taus, pars.S2NHs, tauf, pars.S2NHf);
 					write_spectral_density_emf(sd_CH, taus, pars.S2CHs, tauf, pars.S2CHf);
 					write_spectral_density_emf(sd_CN, taus, pars.S2CNs, tauf, pars.S2CNf);
-					write_spectral_density_emf(sd_CC, taus, pars.S2CCs, tauf, pars.S2CCf);
+					write_spectral_density_emf(sd_CC, taus, pars.S2CCAps, tauf, pars.S2CCApf);
 				}
 			}
 		}
