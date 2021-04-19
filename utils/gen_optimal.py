@@ -6,8 +6,8 @@
 
 import numpy as np
 import sys
-import pytraj as pt
 import calc
+import process
 
 RYD = 8.3145
 
@@ -49,29 +49,13 @@ except IndexError:
 	max_mag = 1.0
 
 ## load in atomic coordinates from PDB file.
-traj = pt.load(pdb_file)
+pdb = process.Pdb(pdb_file, nres)
+pdb.get_pp()
+#traj = pt.load(pdb_file)
 min_v = 1
 max_v = nres
-N_coords = traj[:, ':%d-%d@N' % (min_v + 1, max_v)]
-O_coords = traj[:, ':%d-%d@O' % (min_v, max_v)]
-C_coords = traj[:, ':%d-%d@C' % (min_v, max_v)]
-CA_coords = traj[:, ':%d-%d@CA' % (min_v, max_v)]
-
-pp = np.zeros((nres+2, 4, 3))
 
 midpoints = np.zeros((nres+2, 3))
-
-for peptide_plane in range(2, nres+1):
-	pp[peptide_plane, 0] = N_coords[0, peptide_plane-2]
-	pp[peptide_plane, 1] = O_coords[0, peptide_plane-2]
-	pp[peptide_plane, 2] = C_coords[0, peptide_plane-2]
-	pp[peptide_plane, 3] = CA_coords[0, peptide_plane-2]
-	midpoints[peptide_plane] = np.mean(pp[peptide_plane, :], axis=0)
-
-pp[57, 1] = O_coords[0, nres-1]
-pp[57, 2] = C_coords[0, nres-1]
-pp[57, 3] = CA_coords[0, nres-1]
-
 vectors = np.zeros((nres+1, 3, 3))
 basis_set = np.zeros((nres+1, 3, 3))
 centers = np.zeros((nres+1, 3))
@@ -83,29 +67,15 @@ for peptide_plane in range(2, nres+1):
 		y = [0,1,0]
 		z = [0,0,1]
 	else:
-		Z = pp[peptide_plane + 1, 3] - pp[peptide_plane, 3] # CA-CA, this is Z
-		D = pp[peptide_plane, 1] - pp[peptide_plane, 2] # C-O axis
-		Y = np.cross(Z, D) # perpendicular to peptide plane
-		X = np.cross(Y, Z) # approximately aligned with CO axis
-		# I'm not sure if these have the correct sign... (eg up or down).
+		x = pdb.alpha(peptide_plane)
+		y = pdb.beta(peptide_plane)
+		z = pdb.gamma(peptide_plane)
 
-		# In Lienin, the Gamma axis is shown aligned along Calpha_i, Calpha_i-1. I think this
-		# is taken as the z axis, hence Calpha_i+1 - Calpha_i (my numbers are one above).
-		# Y is perpendicular to the plane, which is shown in rotation_tests.c. I think this is therefore the same as beta
-		# (as I'm using the same theta and phi). Unfortunately l=2 spherical harmonics are invariant under inversion
-		# so I can't think how to directly test this. X is then perpendicular and to maintain the
-		#	   Z	 axis, X must be aligned along alpha.
-		#	   |	 Which kind of makes sense that they would be aligned in the same sense,
-		#	  / \	but I'm still skeptical.
-		#	 X   Y
-
-		x = X / np.linalg.norm(X)
-		y = Y / np.linalg.norm(Y)
-		z = Z / np.linalg.norm(Z)
 	vectors[peptide_plane, :, 0] = x
 	vectors[peptide_plane, :, 1] = y
 	vectors[peptide_plane, :, 2] = z
-	centers[peptide_plane, :] = (pp[peptide_plane, 3] + pp[peptide_plane + 1, 3]) / 2.
+	centers[peptide_plane, :] = pdb.center(peptide_plane)
+	midpoints[peptide_plane, :] = pdb.center(peptide_plane)
 
 
 def read_file(fn):
@@ -337,8 +307,104 @@ def generate_pp(residue):
 	st += ".transparency 0\n"
 	return st
 
+def gen_rot_pp(residue, rot, axis):
+	#def vrot(A, B, C, theta, r):
+	Gamma = vectors[residue, :, 2]
+	Beta = vectors[residue, :, 1]
+	Alpha = vectors[residue, :, 0]
+	
+	if (axis == 0):
+		rax = Alpha
+	elif (axis == 1):
+		rax = Beta
+	elif (axis == 2):
+		rax = Gamma
+		
+	Alphan, Betan, Gamman = calc.vrot(Alpha, Beta, Gamma, rot, rax)
+	Alphap, Betap, Gammap = calc.vrot(Alpha, Beta, Gamma, -rot, rax)
+	
+	magn = 3*rot
+
+	corner1 = midpoints[residue] - magn*Alphap - magn*Gammap
+	corner2 = midpoints[residue] + magn*Alphap - magn*Gammap
+	corner3 = midpoints[residue] + magn*Alphap + magn*Gammap
+	corner4 = midpoints[residue] - magn*Alphap + magn*Gammap
+	st = ".polygon "+format_v(corner1) + format_v(corner2) + format_v(corner3) + format_v(corner4)+"\n"
+	
+	corner1n = midpoints[residue] - magn*Alphan - magn*Gamman
+	corner2n = midpoints[residue] + magn*Alphan - magn*Gamman
+	corner3n = midpoints[residue] + magn*Alphan + magn*Gamman
+	corner4n = midpoints[residue] - magn*Alphan + magn*Gamman
+	st += ".polygon "+format_v(corner1n) + format_v(corner2n) + format_v(corner3n) + format_v(corner4n)+"\n"
+	
+	midax = midpoints[residue] + magn * rax
+	midaxp = midpoints[residue] - magn * rax
+	
+	# faces
+	if (axis == 0):
+		st += ".polygon "+format_v(corner1n) + format_v(corner2n) + format_v(corner2) + format_v(corner1)+"\n"
+		st += ".polygon "+format_v(corner3n) + format_v(corner4n) + format_v(corner4) + format_v(corner3)+"\n"
+		
+		st += ".polygon "+format_v(midax) + format_v(corner3) + format_v(corner3n) + "\n"
+		st += ".polygon "+format_v(midaxp) + format_v(corner4) + format_v(corner4n) + "\n"
+		st += ".polygon "+format_v(midax) + format_v(corner2) + format_v(corner2n) + "\n"
+		st += ".polygon "+format_v(midaxp) + format_v(corner1) + format_v(corner1n) + "\n"
+		
+	elif (axis == 2):
+		st += ".polygon "+format_v(corner1n) + format_v(corner4n) + format_v(corner4) + format_v(corner1)+"\n"
+		st += ".polygon "+format_v(corner2n) + format_v(corner3n) + format_v(corner3) + format_v(corner2)+"\n"
+		st += ".polygon "+format_v(midax) + format_v(corner4) + format_v(corner4n) + "\n"
+		st += ".polygon "+format_v(midaxp) + format_v(corner2) + format_v(corner2n) + "\n"
+		st += ".polygon "+format_v(midax) + format_v(corner3) + format_v(corner3n) + "\n"
+		st += ".polygon "+format_v(midaxp) + format_v(corner1) + format_v(corner1n) + "\n"
+	
+	
+	
+	
+	return st
+
+def generate_gaf_new(parms, residue, mode, min_tau, max_tau):
+	if (parms == {}):
+		return ""
+	st = ""
+	tau = 0
+	sigs = []
+	if ("slow" in mode):
+		tau = np.log(parms["taus"])
+		sigs = parms["slow"]
+	elif ("fast" in mode):
+		tau = np.log(parms["tauf"])
+		sigs = parms["fast"]
+	else:
+		return ""
+
+	if ("orientation" in parms):
+		print("New gen gaf doesn't support v* models")
+		return ""
+		
+	if (tau == -1 or sigs[0] == -1):
+		return ""
+	
+	#S = [p * 3 for p in sigs]
+	S = [p * 1.96 for p in sigs]
+	#st = ".transparency 50\n"
+	st += ".color 1 0 0\n"
+	st += gen_rot_pp(residue, S[0], 0)
+	st += ".color 1 0 1\n"
+	st += gen_rot_pp(residue, S[1], 1)
+	st += ".color 0 0 1\n"
+	st += gen_rot_pp(residue, S[2], 2)
+
+	st += ".transparency 0\n"
+	return st
+	
+#	".color 1 0 0"
+#	".color 1 0 1"
+#	".color 0 0 1"
+
 
 def generate_gaf(parms, residue, mode, min_tau, max_tau):
+	return generate_gaf_new(parms, residue, mode, min_tau, max_tau)
 	if (parms == {}):
 		return ""
 	st = ""
