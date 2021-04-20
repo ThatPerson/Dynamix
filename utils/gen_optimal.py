@@ -387,14 +387,13 @@ def generate_gaf_new(parms, residue, mode, min_tau, max_tau):
 	
 	#S = [p * 3 for p in sigs]
 	S = [p * 1.96 for p in sigs]
-	#st = ".transparency 50\n"
+	st = ".transparency 50\n"
 	st += ".color 1 0 0\n"
 	st += gen_rot_pp(residue, S[0], 0)
 	st += ".color 1 0 1\n"
 	st += gen_rot_pp(residue, S[1], 1)
 	st += ".color 0 0 1\n"
 	st += gen_rot_pp(residue, S[2], 2)
-
 	st += ".transparency 0\n"
 	return st
 	
@@ -404,10 +403,10 @@ def generate_gaf_new(parms, residue, mode, min_tau, max_tau):
 
 
 def generate_gaf(parms, residue, mode, min_tau, max_tau):
-	return generate_gaf_new(parms, residue, mode, min_tau, max_tau)
+	#return generate_gaf_new(parms, residue, mode, min_tau, max_tau)
 	if (parms == {}):
 		return ""
-	st = ""
+	st = generate_gaf_new(parms, residue, mode, min_tau, max_tau)
 	tau = 0
 	sigs = []
 	if ("slow" in mode):
