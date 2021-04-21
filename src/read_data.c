@@ -423,7 +423,7 @@ int read_system_file(char *filename, struct Model * m) {
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		if (strcmp(line, "#RELAXATION\n") == 0) {
+		if (strncmp(line, "#RELAXATION", 11) == 0) {
 			if (n_resid == -1) {
 				ERROR("Number of residues must be defined.");
 				return -1;
