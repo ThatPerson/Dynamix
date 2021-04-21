@@ -249,7 +249,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
-		if (strcmp(line, "#DATA\n") == 0) {
+		if (strncmp(line, "#DATA", 5) == 0) {
 			for (i = 0; i < m->n_residues; i++) {
 				/* first check we have enough memory */
 				if (m->residues[i].lim_relaxation - m->residues[i].n_relaxation < 5) {

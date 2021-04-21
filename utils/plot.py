@@ -159,8 +159,8 @@ def run_plot(folder):
 	fig.tight_layout(h_pad=1)
 	#plt.show(block=True)
 
-	plt.savefig('%s_params.eps' % (folder), dpi=300, facecolor='w', edgecolor='w',
-	        orientation='portrait', papertype='a4', format='eps',
+	plt.savefig('%s_params.pdf' % (folder), dpi=300, facecolor='w', edgecolor='w',
+	        orientation='portrait', papertype='a4', format='pdf',
 	        transparent=False, bbox_inches=None, pad_inches=0.5,
 	        frameon=None, metadata=None)
 
