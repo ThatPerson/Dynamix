@@ -47,6 +47,14 @@ mds = {
 		'n': 10,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf']
 	}, 
+	'bgf': {
+		'n': 8,
+		'p': ['taus', 'tauf', 'ss', 'As', 'Bs', 'sf', 'Af', 'Bf']
+	},
+	'bgft': {
+		'n': 10,
+		'p': ['taus', 'tauf', 'ss', 'As', 'Bs', 'sf', 'Af', 'Bf', 'Eas', 'Eaf']
+	},
 	'aimf': {
 		'n': 8,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf']

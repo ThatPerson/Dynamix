@@ -129,7 +129,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
     Decimal J1;
 
-    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N * T_UP);
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N * T_UP);
         d2xy = (Decimal) sq(0.000001 * omega_15N * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
@@ -202,7 +202,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     Decimal J0sum = 0;
 
 
-    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
         R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, d2x, J0);
         R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, d2y, J0);
         R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, d2xy, J0_CC);
@@ -336,12 +336,12 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
     /* CSA relaxation contribution */
     Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp;
     Decimal J0sum = 0;
-    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT  || model == MOD_BGF || model == MOD_BGFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-        R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, d2x, J0);
+        R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tau || model == MOD_BGF || model == MOD_BGFTf, pars->S2CSAxf, d2x, J0);
         R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, d2y, J0);
         R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, d2xy, J0_CC);
         R2CSA = R2CSAx + R2CSAy + 2.*R2CSAxy;
@@ -401,7 +401,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 
 
 
-    Decimal sqsigs[3] = {sq(sig[0]), sq(sig[1]), sq(sig[2])};
+    Decimal sqsigs[3] = {sq(sig[0]), sq(sig[1]), sq(sig[2])}; || model == MOD_BGF || model == MOD_BGFT
 
     /* sq_s is an array where sq_s[i+2] = i^2 */
     int sq_s[5] = {4, 1, 0, 1, 4};
@@ -467,7 +467,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
                         for (i = 0; i < length; i++) {
                             ttemp = temp;
                             if (cimag(A[i]->Y2[m+2]) < 0.00001 && cimag(B[i]->Y2[mp+2]) < 0.00001 && mode==MODE_REAL) {
-                                /* In this case then Y2 and Y2c are real numbers and therefore the last step of this is real.
+                                /* In this case then Y2 and Y2c ar || model == MOD_BGF || model == MOD_BGFTe real numbers and therefore the last step of this is real.
                                 * If mode is MODE_REAL, then, we may safely ignore any case in which
                                 *  cpow(-1*I, k-kp)
                                 * is imaginary (as this will give only an imaginary component to the Amp).
@@ -497,7 +497,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
                         //Amp += temp;
                     }
                 }
-            }
+            } || model == MOD_BGF || model == MOD_BGFT
         }
     }
     //Amp *= (4 * M_PI / 5.);

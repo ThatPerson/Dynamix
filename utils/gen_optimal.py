@@ -168,7 +168,24 @@ def read_model(name, model):
 				current_res["magf"] = kf[8:11]
 				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
 				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
-				
+			elif (model == "bgft"):
+				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
+				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
+				current_res["slow"] = [0, 0, kf[5]]
+				current_res["fast"] = [0, 0, kf[8]]
+				if ("slow" in mode):
+					current_res["orientation"] = [kf[6], kf[7], 0]
+				else:
+					current_res["orientation"] = [kf[9], kf[10], 0]
+			elif (model == "bgf"):
+				current_res["taus"] = kf[3]
+				current_res["tauf"] = kf[4]
+				current_res["slow"] = [0, 0, kf[5]]
+				current_res["fast"] = [0, 0, kf[8]]
+				if ("slow" in mode):
+					current_res["orientation"] = [kf[6], kf[7], 0]
+				else:
+					current_res["orientation"] = [kf[9], kf[10], 0]
 
 			if (model[0] == "v"):
 				current_res["orientation"] = kf[-3:]
@@ -491,7 +508,7 @@ for i in mods:
 #generate_gaf(models["gaft"][3], 3, "slow", min_tau, max_tau) 
 
 direct_mf = ["smf", "smft", "demf", "demft"]
-direct_gaf = ["gaf", "gaft", "vgaf", "vgaft"]
+direct_gaf = ["gaf", "gaft", "vgaf", "vgaft", "bgf", "bgft"]
 slow_gaf = ["egaf", "egaft", "vegaf", "vegaft"]
 aimf = ["aimf", "aimft"]
 
