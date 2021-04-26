@@ -547,6 +547,12 @@ int read_system_file(char *filename, struct Model * m) {
 				} else if (strcmp(val, "AIMFT") == 0) {
 					m->params = 10;
 					m->model = MOD_AIMFT;
+				} else if (strcmp(val, "BGF") == 0) {
+					m->params = 8;
+					m->model = MOD_BGF;
+				} else if (strcmp(val, "BGFT") == 0) {
+					m->params = 10;
+					m->model = MOD_BGFT;
 				} else {
 					printf("Model %s unknown.\n", val);
 					return -1;
@@ -584,17 +590,17 @@ int read_system_file(char *filename, struct Model * m) {
 				m->n_residues = (unsigned int) atoi(val);
 				n_resid = atoi(val);
 			} else if (strcmp(key, "N_NM_ITER") == 0) {
-                m->n_nm_iter = (unsigned int) atoi(val);
-            } else if (strcmp(key, "N_ANNEAL_ITER") == 0) {
-                m->n_anneal_iter = (unsigned int) atoi(val);
-            } else if (strcmp(key, "ANNEAL_TEMP") == 0) {
-                m->anneal_temp = atof(val);
-            } else if (strcmp(key, "ANNEAL_WOBB") == 0) {
-                m->anneal_wobb = atof(val);
-            } else if (strcmp(key, "ANNEAL_THERM") == 0) {
-                m->anneal_therm = atof(val);
-            } else if (strcmp(key, "ANNEAL_RESTART") == 0) {
-			    m->anneal_restart = atof(val);
+				m->n_nm_iter = (unsigned int) atoi(val);
+			} else if (strcmp(key, "N_ANNEAL_ITER") == 0) {
+				m->n_anneal_iter = (unsigned int) atoi(val);
+			} else if (strcmp(key, "ANNEAL_TEMP") == 0) {
+				m->anneal_temp = atof(val);
+			} else if (strcmp(key, "ANNEAL_WOBB") == 0) {
+				m->anneal_wobb = atof(val);
+			} else if (strcmp(key, "ANNEAL_THERM") == 0) {
+				m->anneal_therm = atof(val);
+			} else if (strcmp(key, "ANNEAL_RESTART") == 0) {
+				m->anneal_restart = atof(val);
 			} else if (strcmp(key, "OUTPUT") == 0) {
 				strcpy(m->outputdir, val);
 			} else if (strcmp(key, "IGNORE") == 0) {
@@ -641,7 +647,7 @@ int read_system_file(char *filename, struct Model * m) {
 					exit(-1);
 				}
 			} else {
-			    ERROR("Unrecognized argument %s (%s)\n", key, val);
+				ERROR("Unrecognized argument %s (%s)\n", key, val);
 			}
 
 			//printf("%s: %s\n", key, val);

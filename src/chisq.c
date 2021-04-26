@@ -187,6 +187,41 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
             pars->Eaf = opts[9];
         }
         pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
+    } else if (model == MOD_BGF || model == MOD_BGFT) {
+        bcpars_init(pars, 0, 0);
+        pars->taus = opts[0];
+        pars->tauf = opts[1];
+        
+        // taus, tauf, sigma_slow, alpha_slow, beta_slow, sigma_fast, alpha_fast, beta_fast
+        
+        Decimal sigs[3] = {0, 0, opts[2]};
+        Decimal alphas = opts[3];
+        Decimal betas = opts[4];
+        Decimal sigf[3] = {0, 0, opts[5]};
+        Decimal alphaf = opts[6];
+        Decimal betaf = opts[7];
+        for (i = 0; i < 3; i++) {
+            if (sigs[i] < 0 || sigs[i] > 0.52360)
+                (*violations)++;
+            if (sigf[i] < 0 || sigf[i] > 0.52360)
+                (*violations)++;
+        }
+        
+        for (i = 0; i < N_OR; i++) {
+            calculate_Y2(&(resid->orients[i]));
+            rotate_Y2(&(resid->orients[i]), alphas, betas, 0);
+        }
+        GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
+        for (i = 0; i < N_OR; i++) {
+            calculate_Y2(&(resid->orients[i]));
+            rotate_Y2(&(resid->orients[i]), alphaf, betaf, 0);
+        }
+        GAF_S2(sigf, As, Bs, S2fP, 12, MODE_REAL);
+        if (model == MOD_BGFT) {
+            pars->Eas = opts[8];
+            pars->Eaf = opts[9];
+        }
+        pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
     } else if (model == MOD_EGAF || model == MOD_EGAFT) {
         Decimal sigs[3] = {opts[2], opts[3], opts[4]};
         S2f = opts[5];

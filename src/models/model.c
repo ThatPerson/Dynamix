@@ -268,7 +268,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
 /* N CSA relaxation contribution */
     Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAc, R1CCAp;
     Decimal J1;
-    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT) {
+    if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);

@@ -28,6 +28,8 @@ typedef double _Complex Complex;
 #define MOD_EGAFT		10						///< 3D GAF for slow motions, EMF for fast motions, temperature dependence.
 #define MOD_AIMF 		23
 #define MOD_AIMFT 		24
+#define MOD_BGF         25
+#define MOD_BGFT        26
 
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
