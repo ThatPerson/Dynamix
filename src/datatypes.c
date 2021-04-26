@@ -282,7 +282,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             maxv[8] = 60000; maxv[9] = 60000;
             break;
         case MOD_AIMF:
-            minv[0] = 0.1;MOD_EGAMOD_EGAFF
+            minv[0] = 0.1;
             maxv[0] = 10; maxv[1] = 1;
             for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
             break;
