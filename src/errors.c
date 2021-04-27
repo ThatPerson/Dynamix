@@ -141,12 +141,12 @@ int calc_errors(struct Model *m, unsigned int residue) {
 	resid->S2CCb = resid->S2CC;
 
 	struct BCParameters pars;
-    int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
-    if (otb != 0) {
-        free(opts);
-        return -1;
-    }
-    int retries = 0;
+	int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
+	if (otb != 0) {
+		free(opts);
+		return -1;
+	}
+	int retries = 0;
 	for (l = 0; l < m->n_error_iter; l++) {
 		if (resid->ignore == 1) {
 			return -1;
@@ -198,20 +198,20 @@ int calc_errors(struct Model *m, unsigned int residue) {
 		// The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
 		//resid->error_params[l] = (Decimal *) malloc (sizeof(Decimal) * params);
 
-        /* Return our pointers to how they were before... */
-        free(resid->relaxation);
-        resid->relaxation = NULL;
-        resid->relaxation = resid->temp_relaxation;
-        resid->temp_relaxation = NULL;
+		/* Return our pointers to how they were before... */
+		free(resid->relaxation);
+		resid->relaxation = NULL;
+		resid->relaxation = resid->temp_relaxation;
+		resid->temp_relaxation = NULL;
 
 
-        if (min > 1000 * resid->min_val && retries < 1000) {
-            // did not converge.
-            retries++;
-            ERROR("Error iteration %d for residue %d gave min_val = %lf (base mod = %lf), indicating no convergence. Rerunning iteration.\n", l+1, residue, min, resid->min_val);
-            l--;
-            continue;
-        }
+		if (min > 1000 * resid->min_val && retries < 1000) {
+			// did not converge.
+			retries++;
+			ERROR("Error iteration %d for residue %d gave min_val = %lf (base mod = %lf), indicating no convergence. Rerunning iteration.\n", l+1, residue, min, resid->min_val);
+			l--;
+			continue;
+		}
 		fprintf(errp, "%d\t%lf", l+1, min);
 		for (k = 0; k < params; k++) {
 			resid->error_params[k][p] = opts[k];

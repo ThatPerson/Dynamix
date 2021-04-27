@@ -57,7 +57,7 @@
  */
 int main(int argc, char * argv[]) {
 	MPI_Init( &argc, &argv );
-    clock_t begin = clock();
+	clock_t begin = clock();
 
 	int numprocs, myid;
 	MPI_Comm_size( MPI_COMM_WORLD, &numprocs ); 
@@ -93,12 +93,12 @@ int main(int argc, char * argv[]) {
 
 	struct Model m;
 	int ret = read_system_file(system_file, &m);
-    if (ret == -1) {
-        printf("Error found, crashing peacefully...\n");
-        free_all(&m);
-        MPI_Finalize();
-        exit(-1);
-    }
+	if (ret == -1) {
+		printf("Error found, crashing peacefully...\n");
+		free_all(&m);
+		MPI_Finalize();
+		exit(-1);
+	}
 	m.myid = myid;
 	m.numprocs = numprocs;
 	//printf("%d params.\n", m.params);
@@ -118,10 +118,10 @@ int main(int argc, char * argv[]) {
 		ret = -1;
 	}
 
-    if (ret == -1) {
-        free_all(&m);
-        MPI_Finalize();
-    }
+	if (ret == -1) {
+		free_all(&m);
+		MPI_Finalize();
+	}
 
 
 	//printf("%d\n", ret);
@@ -154,13 +154,13 @@ int main(int argc, char * argv[]) {
 	print_gaf(&m);
 	print_backcalcs(&m);
 	
-    clock_t end = clock();
+	clock_t end = clock();
 
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-    printf("Worker %d Finished (%lf seconds elapsed)\n", m.myid+1, time_spent);
+	printf("Worker %d Finished (%lf seconds elapsed)\n", m.myid+1, time_spent);
 
-    free_all(&m);
+	free_all(&m);
 	MPI_Finalize();
 	return 0;
 }

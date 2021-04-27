@@ -46,7 +46,7 @@ Decimal optimize_global_chisq(Decimal * opts, struct Residue *r, struct Model * 
 	 *
 	 *  for SMF, [tau, S2]
 	 */
-    (void) r;
+	(void) r;
 	unsigned int l, c = 0;
 	Decimal chisq = 0;
 	for (l = 0; l < m->n_residues; l++) {
@@ -79,56 +79,56 @@ int run_global_iteration(struct Model *m, unsigned int i) {
 	//printf("%d\n", params);
 	Decimal *opts;
 	opts = (Decimal *) malloc (sizeof(Decimal) * params);
-    Decimal *anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
-    Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
-    Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
-    if (maxv == NULL || minv == NULL)
-        printf("Malloc failed.\n");
-    setup_paramlims(m, 0.7, minv, maxv);
+	Decimal *anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
+	Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
+	Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
+	if (maxv == NULL || minv == NULL)
+		printf("Malloc failed.\n");
+	setup_paramlims(m, 0.7, minv, maxv);
 
-    /*if (resid->ignore == 1) {
-        free(minv);
-        free(maxv);
-        free(anneal_pars);
-        free(opts);
-        fprintf(fp, "%d, %lf, -1, -1\n", i + 1, 1000.);
-        fclose(fp);
-        return -1;
-    }*/
+	/*if (resid->ignore == 1) {
+		free(minv);
+		free(maxv);
+		free(anneal_pars);
+		free(opts);
+		fprintf(fp, "%d, %lf, -1, -1\n", i + 1, 1000.);
+		fclose(fp);
+		return -1;
+	}*/
 
-    unsigned int q;
-    Decimal val;
-    anneal(optimize_global_chisq, anneal_pars, minv, maxv, m->params, m->anneal_temp, 1000, m->anneal_wobb, m->anneal_therm, m->anneal_restart, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, m);
+	unsigned int q;
+	Decimal val;
+	anneal(optimize_global_chisq, anneal_pars, minv, maxv, m->params, m->anneal_temp, 1000, m->anneal_wobb, m->anneal_therm, m->anneal_restart, NULL, MODE_RANDOM_RESTART+MODE_RANDOM_START, resid, m);
 
 	//printf("%le, %le\n", opts[0], opts[1]);
 	for (q = 0; q < m->n_nm_iter; q++) {
-	    for (k = 0; k < m->params; k++) {
-	        opts[k] = anneal_pars[k];
-	    }
-        val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
-        if (val >= 1000000 || val < 0) {
-            val = -1;
-            for (k = 0; k < m->params; k++) {
-                opts[k] = -1;
-            }
-        }
+		for (k = 0; k < m->params; k++) {
+			opts[k] = anneal_pars[k];
+		}
+		val = simplex(optimize_global_chisq, opts, 1.0e-16, 1, resid, m);
+		if (val >= 1000000 || val < 0) {
+			val = -1;
+			for (k = 0; k < m->params; k++) {
+				opts[k] = -1;
+			}
+		}
 
-        fprintf(fp, "%d\t%lf", i + 1, val);
-        for (k = 0; k < params; k++) {
-            fprintf(fp, "\t%le", opts[k]);
-        }
-        fprintf(fp, "\n");
-        unsigned int j;
-        for (j = 0; j < m->n_residues; j++) {
-            if (val < m->residues[j].min_val && val != -1) {
-                //printf("New lowest %lf\n", val);
-                m->residues[j].min_val = val;
-                for (k = 0; k < params; k++) {
-                    m->residues[j].parameters[k] = opts[k];
-                }
-            }
-        }
-    }
+		fprintf(fp, "%d\t%lf", i + 1, val);
+		for (k = 0; k < params; k++) {
+			fprintf(fp, "\t%le", opts[k]);
+		}
+		fprintf(fp, "\n");
+		unsigned int j;
+		for (j = 0; j < m->n_residues; j++) {
+			if (val < m->residues[j].min_val && val != -1) {
+				//printf("New lowest %lf\n", val);
+				m->residues[j].min_val = val;
+				for (k = 0; k < params; k++) {
+					m->residues[j].parameters[k] = opts[k];
+				}
+			}
+		}
+	}
 	free(minv);
 	free(maxv);
 
@@ -173,9 +173,9 @@ int calc_global_errors(struct Model *m) {
 	}
 
 
-    struct BCParameters pars;
+	struct BCParameters pars;
 
-    for (l = 0; l < m->n_error_iter; l++) {
+	for (l = 0; l < m->n_error_iter; l++) {
 		printf("Iteration %d.\n", l);
 		for (i = 0; i < m->n_residues; i++) {
 			resid = &(m->residues[i]);
@@ -183,12 +183,12 @@ int calc_global_errors(struct Model *m) {
 			resid->relaxation = NULL;
 			resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
 
-            int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
-            if (otb != 0) {
-                free(opts);
-                return -1;
-            }
-            
+			int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
+			if (otb != 0) {
+				free(opts);
+				return -1;
+			}
+			
 			for (k = 0; k < resid->n_relaxation; k++) {
 				resid->relaxation[k].field = resid->temp_relaxation[k].field;
 				resid->relaxation[k].wr = resid->temp_relaxation[k].wr;

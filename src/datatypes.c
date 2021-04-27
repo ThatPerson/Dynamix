@@ -43,8 +43,8 @@ Decimal sq(Decimal x) {
 }
 
 Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp) {
-    Decimal tfactor = (300. - temp) / (temp * 300.);
-    return tau0 * exp((Ea / RYD) * tfactor); // tau0 now at 300 K.
+	Decimal tfactor = (300. - temp) / (temp * 300.);
+	return tau0 * exp((Ea / RYD) * tfactor); // tau0 now at 300 K.
 }
 
 /**
@@ -138,33 +138,33 @@ void free_all(struct Model *m) {
 	unsigned int params = m->params;
 
 	for (res = 0; res < m->n_residues; res++) {
-        if (m->residues[res].relaxation != NULL) {
-            free(m->residues[res].relaxation);
-            m->residues[res].relaxation = NULL;
-        }
-        if (m->residues[res].parameters != NULL) {
-            free(m->residues[res].parameters);
-            m->residues[res].parameters = NULL;
-        }
+		if (m->residues[res].relaxation != NULL) {
+			free(m->residues[res].relaxation);
+			m->residues[res].relaxation = NULL;
+		}
+		if (m->residues[res].parameters != NULL) {
+			free(m->residues[res].parameters);
+			m->residues[res].parameters = NULL;
+		}
 		if (m->error_mode == 1) {
 			if (m->residues[res].error_params != NULL) {
 				for (k = 0; k < params; k++) {
 					if (m->residues[res].error_params[k] != NULL) {
-                        free(m->residues[res].error_params[k]);
-                        m->residues[res].error_params[k] = NULL;
-                    }
+						free(m->residues[res].error_params[k]);
+						m->residues[res].error_params[k] = NULL;
+					}
 				}
 				free(m->residues[res].error_params);
 				m->residues[res].error_params = NULL;
 			}
 			if (m->residues[res].errors_mean != NULL) {
-                free(m->residues[res].errors_mean);
-                m->residues[res].errors_mean = NULL;
-            }
+				free(m->residues[res].errors_mean);
+				m->residues[res].errors_mean = NULL;
+			}
 			if (m->residues[res].errors_std != NULL) {
-                free(m->residues[res].errors_std);
-                m->residues[res].errors_std = NULL;
-            }
+				free(m->residues[res].errors_std);
+				m->residues[res].errors_std = NULL;
+			}
 		}
 	}
 	free(m->residues);
@@ -233,156 +233,156 @@ void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma) {
  *  Long Decimal containing uniform random number.
  */
 Decimal uniform_rand(void) {
-    return ((Decimal) rand() + 1.) / ((Decimal) RAND_MAX + 1.);
+	return ((Decimal) rand() + 1.) / ((Decimal) RAND_MAX + 1.);
 }
 
 void gen_params(const Decimal *minv, const Decimal *maxv, Decimal *pars, unsigned int n_pars) {
-    unsigned int k;
-    for (k = 0; k < n_pars; k++)
-        pars[k] = minv[k] + (uniform_rand() * (maxv[k] - minv[k]));
+	unsigned int k;
+	for (k = 0; k < n_pars; k++)
+		pars[k] = minv[k] + (uniform_rand() * (maxv[k] - minv[k]));
 }
 
 void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * maxv) {
-    unsigned int k;
-    for (k = 0; k < m->params; k++)
-        minv[k] = 0;
+	unsigned int k;
+	for (k = 0; k < m->params; k++)
+		minv[k] = 0;
 
-    switch (m->model) {
-        case MOD_SMF:
-            maxv[0] = 10; maxv[1] = 1;
-            break;
-        case MOD_SMFT:
-            maxv[0] = 100; maxv[1] = 1; maxv[2] = 60000;
-            break;
-        case MOD_EMF:
-            minv[0] = 0.1; minv[1] = S2NH;
-            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
-            break;
-        case MOD_EMFT:
-            minv[0] = pow(10, -2); minv[1] = S2NH;
-            maxv[0] = pow(10, 2); maxv[1] = 1; maxv[2] = pow(10, -1); maxv[3] = 60000, maxv[4] = 60000;
-            break;
-        case MOD_DEMF:
-            minv[0] = 0.1; minv[1] = S2NH; minv[3] = S2NH;
-            maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
-            break;
-        case MOD_DEMFT:
-            minv[0] = pow(10, -2); minv[1] = S2NH; minv[3] = S2NH;
-            maxv[0] = pow(10, 2); maxv[1] = 1; maxv[2] = pow(10, -1); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
-            break;
-        case MOD_GAF:
-            minv[0] = 0.1;
-            maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
-            break;
-        case MOD_GAFT:
-            minv[0] = pow(10, -2);
-            maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
-            for (k = 2; k <= 7; k++) maxv[k] = 0.25;
-            maxv[8] = 60000; maxv[9] = 60000;
-            break;
-        case MOD_AIMF:
-            minv[0] = 0.1;
-            maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
-            break;
-        case MOD_AIMFT:
-            minv[0] = pow(10, -2);
-            maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
-            for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
-            maxv[8] = 60000; maxv[9] = 60000;
-            break;
-        case MOD_EGAF:
-            minv[0] = 0.1;
-            maxv[0] = 10; maxv[1] = 1;
-            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
-            minv[5] = S2NH; maxv[5] = 1;
-            break;
-        case MOD_EGAFT:
-            minv[0] = pow(10, -2);
-            maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
-            for (k = 2; k <= 4; k++) maxv[k] = 0.25;
-            minv[5] = S2NH; maxv[5] = 1;
-            maxv[6] = 60000; maxv[7] = 60000;
-            break;
-        case MOD_BGF:
-            minv[0] = pow(10, -2);
-            maxv[0] = pow(10, 2);
-            maxv[1] = pow(10, -1);
-            break;
-        case MOD_BGFT:
-            minv[0] = pow(10, -2);
-            maxv[0] = pow(10, 2);
-            maxv[1] = pow(10, -1);
-            maxv[8] = 60000;
-            maxv[9] = 60000;
-            break;
-        default: break;
-    }
+	switch (m->model) {
+		case MOD_SMF:
+			maxv[0] = 10; maxv[1] = 1;
+			break;
+		case MOD_SMFT:
+			maxv[0] = 100; maxv[1] = 1; maxv[2] = 60000;
+			break;
+		case MOD_EMF:
+			minv[0] = 0.1; minv[1] = S2NH;
+			maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1;
+			break;
+		case MOD_EMFT:
+			minv[0] = pow(10, -2); minv[1] = S2NH;
+			maxv[0] = pow(10, 2); maxv[1] = 1; maxv[2] = pow(10, -1); maxv[3] = 60000, maxv[4] = 60000;
+			break;
+		case MOD_DEMF:
+			minv[0] = 0.1; minv[1] = S2NH; minv[3] = S2NH;
+			maxv[0] = 10; maxv[1] = 1; maxv[2] = 0.1; maxv[3] = 1;
+			break;
+		case MOD_DEMFT:
+			minv[0] = pow(10, -2); minv[1] = S2NH; minv[3] = S2NH;
+			maxv[0] = pow(10, 2); maxv[1] = 1; maxv[2] = pow(10, -1); maxv[3] = 1; maxv[4] = 60000, maxv[5] = 60000;
+			break;
+		case MOD_GAF:
+			minv[0] = 0.1;
+			maxv[0] = 10; maxv[1] = 1;
+			for (k = 2; k <= 7; k++) maxv[k] = 0.25;
+			break;
+		case MOD_GAFT:
+			minv[0] = pow(10, -2);
+			maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
+			for (k = 2; k <= 7; k++) maxv[k] = 0.25;
+			maxv[8] = 60000; maxv[9] = 60000;
+			break;
+		case MOD_AIMF:
+			minv[0] = 0.1;
+			maxv[0] = 10; maxv[1] = 1;
+			for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
+			break;
+		case MOD_AIMFT:
+			minv[0] = pow(10, -2);
+			maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
+			for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
+			maxv[8] = 60000; maxv[9] = 60000;
+			break;
+		case MOD_EGAF:
+			minv[0] = 0.1;
+			maxv[0] = 10; maxv[1] = 1;
+			for (k = 2; k <= 4; k++) maxv[k] = 0.25;
+			minv[5] = S2NH; maxv[5] = 1;
+			break;
+		case MOD_EGAFT:
+			minv[0] = pow(10, -2);
+			maxv[0] = pow(10, 2); maxv[1] = pow(10, -1);
+			for (k = 2; k <= 4; k++) maxv[k] = 0.25;
+			minv[5] = S2NH; maxv[5] = 1;
+			maxv[6] = 60000; maxv[7] = 60000;
+			break;
+		case MOD_BGF:
+			minv[0] = pow(10, -2);
+			maxv[0] = pow(10, 2);
+			maxv[1] = pow(10, -1);
+			break;
+		case MOD_BGFT:
+			minv[0] = pow(10, -2);
+			maxv[0] = pow(10, 2);
+			maxv[1] = pow(10, -1);
+			maxv[8] = 60000;
+			maxv[9] = 60000;
+			break;
+		default: break;
+	}
 
-    if (m->or_variation == VARIANT_A) {
-        minv[m->params - 3] = 0; // alpha
-        minv[m->params - 2] = 0; // beta
-        minv[m->params - 1] = 0; // gamma
-        maxv[m->params - 3] = 0; // alpha
-        maxv[m->params - 2] = 0; // beta
-        maxv[m->params - 1] = 0; // gamma
-    }
+	if (m->or_variation == VARIANT_A) {
+		minv[m->params - 3] = 0; // alpha
+		minv[m->params - 2] = 0; // beta
+		minv[m->params - 1] = 0; // gamma
+		maxv[m->params - 3] = 0; // alpha
+		maxv[m->params - 2] = 0; // beta
+		maxv[m->params - 1] = 0; // gamma
+	}
 /**
-         * SMF parameters are \n
-         *   [0] tau\n
-         *   [1] S2\n
-         * SMFT parameters;\n
-         *   [0] tau\n
-         *   [1] S2\n
-         *   [2] Ea\n
-         * EMF parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   NOTE: The fast order parameter is calculated as S2NH/S2s\n
-         * EMFT parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   [3] activation energy for slow motion\n
-         *   [4] activation energy for fast motion\n
-         * DEMF parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   [3] S2 fast\n
-         * DEMFT parameters\n
-         *   [0] tau slow\n
-         *   [1] S2 slow\n
-         *   [2] tau fast\n
-         *   [3] S2 fast\n
-         *   [4] activation energy for slow motion\n
-         *   [5] activation energy for fast motion\n
-         * GAF parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5-7] alpha, beta, gamma deflections for fast motions\n
-         * GAFT parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5-7] alpha, beta, gamma deflections for fast motions\n
-         *   [8] activation energy for slow motion\n
-         *   [9] activation energy for fast motion\n
-         * EGAF parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5] fast motion order parameter\n
-         * EGAFT parameters\n
-         *   [0] tau slow\n
-         *   [1] tau fast\n
-         *   [2-4] alpha, beta, gamma deflections for slow motions\n
-         *   [5] order parameter for fast motions\n
-         *   [6] activation energy for slow motion\n
-         *   [7] activation energy for fast motion\n
-         */
+		 * SMF parameters are \n
+		 *   [0] tau\n
+		 *   [1] S2\n
+		 * SMFT parameters;\n
+		 *   [0] tau\n
+		 *   [1] S2\n
+		 *   [2] Ea\n
+		 * EMF parameters\n
+		 *   [0] tau slow\n
+		 *   [1] S2 slow\n
+		 *   [2] tau fast\n
+		 *   NOTE: The fast order parameter is calculated as S2NH/S2s\n
+		 * EMFT parameters\n
+		 *   [0] tau slow\n
+		 *   [1] S2 slow\n
+		 *   [2] tau fast\n
+		 *   [3] activation energy for slow motion\n
+		 *   [4] activation energy for fast motion\n
+		 * DEMF parameters\n
+		 *   [0] tau slow\n
+		 *   [1] S2 slow\n
+		 *   [2] tau fast\n
+		 *   [3] S2 fast\n
+		 * DEMFT parameters\n
+		 *   [0] tau slow\n
+		 *   [1] S2 slow\n
+		 *   [2] tau fast\n
+		 *   [3] S2 fast\n
+		 *   [4] activation energy for slow motion\n
+		 *   [5] activation energy for fast motion\n
+		 * GAF parameters\n
+		 *   [0] tau slow\n
+		 *   [1] tau fast\n
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n
+		 *   [5-7] alpha, beta, gamma deflections for fast motions\n
+		 * GAFT parameters\n
+		 *   [0] tau slow\n
+		 *   [1] tau fast\n
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n
+		 *   [5-7] alpha, beta, gamma deflections for fast motions\n
+		 *   [8] activation energy for slow motion\n
+		 *   [9] activation energy for fast motion\n
+		 * EGAF parameters\n
+		 *   [0] tau slow\n
+		 *   [1] tau fast\n
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n
+		 *   [5] fast motion order parameter\n
+		 * EGAFT parameters\n
+		 *   [0] tau slow\n
+		 *   [1] tau fast\n
+		 *   [2-4] alpha, beta, gamma deflections for slow motions\n
+		 *   [5] order parameter for fast motions\n
+		 *   [6] activation energy for slow motion\n
+		 *   [7] activation energy for fast motion\n
+		 */
 }
 
