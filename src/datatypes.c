@@ -247,16 +247,16 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 	for (k = 0; k < m->params; k++)
 		minv[k] = 0;
 
+	Decimal low_taus = 0.01;
+	Decimal upp_taus = 100;
+	Decimal low_tauf = 0;
+	Decimal upp_tauf = 1;
+
 	if (m->ultrafast == ENABLED) {
-		Decimal low_taus = 1000;
-		Decimal upp_taus = 100000;
-		Decimal low_tauf = 0;
-		Decimal upp_tauf = 100;
-	} else {
-		Decimal low_taus = 0.01;
-		Decimal upp_taus = 100;
-		Decimal low_tauf = 0;
-		Decimal upp_tauf = 1;
+		low_taus = 1000;
+		upp_taus = 100000;
+		low_tauf = 0;
+		upp_tauf = 100;
 	}
 	switch (m->model) {
 		case MOD_SMF:
@@ -348,7 +348,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 		maxv[m->params - 2] = 0; // beta
 		maxv[m->params - 1] = 0; // gamma
 	} else if (m->ultrafast == ENABLED) {
-		minv[m->params - 1] = 0;
+		minv[m->params - 1] = S2NH;
 		maxv[m->params - 1] = 1;
 	}
 /**

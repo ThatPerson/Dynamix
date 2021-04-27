@@ -268,9 +268,18 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 		}
 	}
 
-	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
-	Decimal upper_lim_ts = (Decimal) 1 * pow(10, -5 + T_S);
-	Decimal lower_lim_tf = (Decimal) 1 * pow(10, -13 + T_S);
+//	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
+//	Decimal upper_lim_ts = (Decimal) 1 * pow(10, -5 + T_S);
+//	Decimal lower_lim_tf = (Decimal) 1 * pow(10, -13 + T_S);
+
+	Decimal upper_lim_tf = 10; // 10 ns
+	Decimal upper_lim_ts = 10000; // 10 us
+	Decimal lower_lim_tf = 0.0001; // 100 fs
+
+	if (m->ultrafast == ENABLED) {
+		upper_lim_tf = 10000; // 10 us
+		upper_lim_ts = 10000000; // 10 ms
+	}
 
 	Decimal ttaus = pars->taus, ttauf = pars->tauf;
 	if (pars->Eas != -1 || pars->Eaf != -1) {
