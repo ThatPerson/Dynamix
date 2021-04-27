@@ -183,7 +183,7 @@ int calc_global_errors(struct Model *m) {
 			resid->relaxation = NULL;
 			resid->relaxation = (struct Relaxation *) malloc(sizeof(struct Relaxation) * resid->lim_relaxation);
 
-			int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
+			int otb = opts_to_bcpars(resid->parameters, &pars, m, resid, &ignore);
 			if (otb != 0) {
 				free(opts);
 				return -1;

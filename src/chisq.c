@@ -66,6 +66,7 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
 	pars->S2NHrf = fast;
 	pars->S2CHrs = slow;
 	pars->S2CHrf = fast;
+	pars->S2uf = 1;
 	return 0;
 }
 
@@ -86,11 +87,14 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
 		(*violations)++;
 	if (pars->S2CNf > 1 || pars->S2CNf < 0)
 		(*violations)++;
+	if (pars->S2uf > 1 || pars->S2uf < 0) 
+		(*violations)++;
 }
 
-int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model, struct Residue *resid, int *violations) {
+int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {
 	Decimal S2s, S2f;
 	int i;
+	unsigned int model = m->model;
 	Decimal *S2sP[] = {&(pars->S2NHs),
 					  &(pars->S2NCSAxs),
 					  &(pars->S2NCSAys),
@@ -255,6 +259,14 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, unsigned int model,
 		ERROR("Model %d does not exist.\n", model);
 		return 1;
 	}
+	
+	if (m->ultrafast == ENABLED) {
+		if (m->or_variation == VARIANT_A) {
+			pars->S2uf = opts[m->params-4];
+		} else {
+			pars->S2uf = opts[m->params-1];
+		}
+	}
 
 	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
 	Decimal upper_lim_ts = (Decimal) 1 * pow(10, -5 + T_S);
@@ -335,7 +347,6 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	 *  for SMF, [tau, S2]
 	 */
 
-	unsigned int model = m->model;
 	unsigned int or_variations = m->or_variation;
 	Decimal chisq = 0;
 	int violations = 0;
@@ -354,7 +365,7 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	}
 	
 	struct BCParameters pars;
-	int k = opts_to_bcpars(opts, &pars, model, resid, &violations);
+	int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
 	if (k != 0)
 		return -1;
 #pragma omp parallel for reduction(+:chisq)
@@ -379,10 +390,10 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	}
 	
 	Decimal S2NH, S2CH, S2CN, S2CC;
-	S2NH = pars.S2NHs * pars.S2NHf;
-	S2CH = pars.S2CHs * pars.S2CHf;
-	S2CN = pars.S2CNs * pars.S2CNf;
-	S2CC = pars.S2CCAps * pars.S2CCApf;
+	S2NH = pars.S2NHs * pars.S2NHf * pars.S2uf;
+	S2CH = pars.S2CHs * pars.S2CHf * pars.S2uf;
+	S2CN = pars.S2CNs * pars.S2CNf * pars.S2uf;
+	S2CC = pars.S2CCAps * pars.S2CCApf * pars.S2uf;
 
 	if (m->WS2NH != 0) chisq += m->WS2NH * ((pow(resid->S2NH - S2NH, 2.)) / pow(resid->S2NHe, 2.));
 	if (m->WS2CH != 0) chisq += m->WS2CH * ((pow(resid->S2CH - S2CH, 2.)) / pow(resid->S2CHe, 2.));
@@ -437,7 +448,7 @@ int back_calculate(Decimal * opts, struct Residue * resid, struct Model * m, cha
 		}
 	}
 	struct BCParameters pars;
-	int k = opts_to_bcpars(opts, &pars, m->model, resid, &violations);
+	int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
 	if (k != 0) {
 		return -1;
 	}

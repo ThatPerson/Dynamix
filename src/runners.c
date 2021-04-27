@@ -238,15 +238,15 @@ int print_gaf(struct Model *m) {
 		}
 
 		struct BCParameters pars;
-		int otb = opts_to_bcpars(m->residues[l].parameters, &pars, m->model, &(m->residues[l]), &ignore);
+		int otb = opts_to_bcpars(m->residues[l].parameters, &pars, m, &(m->residues[l]), &ignore);
 		if (otb != 0)
 			return -1;
 
 		double S2NH, S2CH, S2CC, S2CN;
-		S2NH = pars.S2NHs * pars.S2NHf;
-		S2CH = pars.S2CHs * pars.S2CHf;
-		S2CC = pars.S2CCAps * pars.S2CCApf;
-		S2CN = pars.S2CNs * pars.S2CNf;
+		S2NH = pars.S2NHs * pars.S2NHf * pars.S2uf;
+		S2CH = pars.S2CHs * pars.S2CHf * pars.S2uf;
+		S2CC = pars.S2CCAps * pars.S2CCApf * pars.S2uf;
+		S2CN = pars.S2CNs * pars.S2CNf * pars.S2uf;
 
 		fprintf(orderparams, "%d\t", l + 1);
 		fprintf(orderparams, "%lf\t%lf\t%lf\t", S2NH, m->residues[l].S2NH, m->residues[l].S2NHe);

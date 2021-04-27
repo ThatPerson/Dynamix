@@ -419,7 +419,7 @@ int read_system_file(char *filename, struct Model * m) {
 	m->anneal_wobb = 0.05;
 	m->anneal_temp = 6000;
 	m->anneal_therm = 1.1;
-
+	m->ultrafast = DISABLED;
 	while(fgets(line, len, fp)) {
 		if (line[0] == '%')
 			continue; // comment
@@ -578,6 +578,11 @@ int read_system_file(char *filename, struct Model * m) {
 					continue;
 				m->params += 3;
 				m->or_variation = VARIANT_A;
+			} else if (strcmp(key, "ULTRAFAST") == 0) {
+				if (m->ultrafast == ENABLED)
+					continue;
+				m->params += 1;
+				m->ultrafast = ENABLED;
 			} else if (strcmp(key, "CSISON") == 0) {
 				strcpy(csisoN, val);
 			} else if (strcmp(key, "CSISOC") == 0) {
@@ -722,6 +727,7 @@ int print_system(struct Model *m, char *filename) {
 	fprintf(fp, "Params: %d\nN threads: %d\n", m->params, m->nthreads);
 	fprintf(fp, "Error Mode: %s\n", (m->error_mode == 1)?"ON":"OFF");
 	fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == VARIANT_A)?"ON":"OFF");
+	fprintf(fp, "Ultrafast: %s\n", (m->ultrafast == ENABLED)?"ON":"OFF");
 	fprintf(fp, "C/N Ratio Compensation: %s\n", (m->cn_ratio == CNRATIO_ON)?"ON":"OFF");
 	fprintf(fp, "Global: %s\n", (m->global == GLOBAL)?"ON":"OFF");
 

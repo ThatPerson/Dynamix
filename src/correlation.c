@@ -204,7 +204,7 @@ int write_spectral_density_emf(char *fn, Decimal taus, Decimal S2s, Decimal tauf
 			(((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
 			/ (1 + ((Decimal) w * (Decimal) taus * (Decimal) w * (Decimal) taus))\
 		);*/
-		v = J0(w, taus, S2s, tauf, S2f);
+		v = J0(w, taus, S2s, tauf, S2f, 1);
 		//printf("%lf (%lf, %lf) (%lf, %lf) %lf\n", w, v, l, q, p, rt);
 		fast = ( \
 			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
@@ -242,7 +242,7 @@ int write_spectral_density_smf(char *fn, Decimal tau, Decimal S2) {
 	for (n = 0; n < n_steps; n++) {
 	//for (w = pow(10, -6)*T_DOWN; w < pow(10, 6)*T_DOWN; w*=2) {
 	    w *= 2;
-		v = J0(w, 0, 0, tau, S2) * T_DOWN;
+		v = J0(w, 0, 0, tau, S2, 1) * T_DOWN;
 		fprintf(fp, "%lf\t%le\n", w*T_UP, v);
 	}
 	fclose(fp);
@@ -423,7 +423,7 @@ int main(int argc, char * argv[]) {
 
 			int obts;
 			struct BCParameters pars;
-			obts = opts_to_bcpars(opts, &pars, m.model, &(m.residues[i]), &ignore);
+			obts = opts_to_bcpars(opts, &pars, &m, &(m.residues[i]), &ignore);
             if (obts != 0)
                 ERROR("Error converting opts to bcpars\n");
 

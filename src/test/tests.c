@@ -319,8 +319,10 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
 
     Decimal opts_smft[] = {0.01, 0.9, 3000};
+	struct Model m;
+	m.model = MOD_SMFT;
     int vio = 0;
-    opts_to_bcpars(opts_smft, &pars, MOD_SMFT, &res, &vio);
+    opts_to_bcpars(opts_smft, &pars, &m, &res, &vio);
     assert_float_equal(pars.taus, 0, 0.0001);
     assert_float_equal(pars.tauf, 0.01, 0.0001);
     assert_float_equal(pars.S2NHf, 0.9, 0.0001);
@@ -329,7 +331,8 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.Eaf, 3000, 0.0001);
 
     Decimal opts_demf[] = {0.1, 0.9, 0.01, 0.8};
-    opts_to_bcpars(opts_demf, &pars, MOD_DEMF, &res, &vio);
+	m.model = MOD_DEMF;
+    opts_to_bcpars(opts_demf, &pars, &m, &res, &vio);
     assert_float_equal(pars.taus, 0.1, 0.0001);
     assert_float_equal(pars.tauf, 0.01, 0.0001);
     assert_float_equal(pars.S2NHs, 0.9, 0.0001);
@@ -337,12 +340,14 @@ static void test_bcpars(void **state) {
 
     Decimal opts_viol_demf[] = {100000, 0.9, 0.01, 0.8};
     vio = 0;
-    opts_to_bcpars(opts_viol_demf, &pars, MOD_DEMF, &res, &vio);
+	m.model = MOD_DEMF;
+    opts_to_bcpars(opts_viol_demf, &pars, &m, &res, &vio);
     assert_int_not_equal(vio, 0);
 
     Decimal opts_viol_gaf[] = {0.1, 0.01, 1, 1, 1, 1, 1, 1};
     vio = 0;
-    opts_to_bcpars(opts_viol_gaf, &pars, MOD_GAF, &res, &vio);
+	m.model = MOD_GAF;
+    opts_to_bcpars(opts_viol_gaf, &pars, &m, &res, &vio);
     assert_int_not_equal(vio, 0);
 
     free(res.relaxation);
@@ -418,9 +423,10 @@ static void test_relaxation_gaf(void **state) {
     Decimal sigs[] = {0.1, 0.05, 0.15};
     Decimal sigf[] = {0.1, 0.02, 0.03};
     Decimal opts[] = {1, 0.01, 0.1, 0.05, 0.15, 0.1, 0.02, 0.03};
-    opts_to_bcpars(opts, &pars, MOD_GAF, &res, &ignore);
-    struct Model m;
-    m.model = MOD_GAF;
+	struct Model m;
+	m.model = MOD_GAF;
+    opts_to_bcpars(opts, &pars, &m, &res, &ignore);
+    
     //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
     Decimal oGAF_NR1 = GAF_15NR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, sigs, sigf);
     Decimal nGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m);
@@ -448,9 +454,10 @@ static void test_relaxation_egaf(void **state) {
     Decimal sigs[3] = {0.1, 0.05, 0.15};
     Decimal S2f = 0.8;
     Decimal opts[6] = {1, 0.01, 0.1, 0.05, 0.15, S2f};
-    opts_to_bcpars(opts, &pars, MOD_EGAF, &res, &ignore);
-    struct Model m;
+	struct Model m;
     m.model = MOD_EGAF;
+    opts_to_bcpars(opts, &pars, &m, &res, &ignore);
+   
     //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
     Decimal oEGAF_NR1 = EGAF_15NR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, sigs, S2f);
     Decimal nEGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m);
@@ -538,7 +545,7 @@ static void test_crosen_backcalc(void **state) {
     struct Residue *resid = &(m.residues[0]);
 
     struct BCParameters pars;
-    int otb = opts_to_bcpars(resid->parameters, &pars, m.model, resid, &ignore);
+    int otb = opts_to_bcpars(resid->parameters, &pars, &m, resid, &ignore);
     assert_int_equal(otb, 0);
 
     for (n_f = 0; n_f < N_f; n_f++) {
@@ -591,7 +598,7 @@ static void test_crosen_backcalc(void **state) {
 
     Decimal temp_R;
 
-    otb = opts_to_bcpars(opts, &pars, m.model, resid, &ignore);
+    otb = opts_to_bcpars(opts, &pars, &m, resid, &ignore);
     assert_int_equal(otb, 0);
 
     for (k = 0; k < N_rates; k++) {

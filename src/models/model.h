@@ -23,12 +23,13 @@ struct BCParameters {
     Decimal S2CCAps, S2CCApf;
     Decimal S2NHrs, S2NHrf;
     Decimal S2CHrs, S2CHrf;
+	Decimal S2uf;
 };
 
-Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f);
-Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f);
-Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal D);
-Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal D);
+Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
+Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
+Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf, Decimal D);
+Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf, Decimal D);
 Decimal CSA_R2(Decimal omega, \
 						 Decimal w1, \
 						 Decimal wr, \
@@ -36,9 +37,11 @@ Decimal CSA_R2(Decimal omega, \
 						 Decimal S2s, \
 						 Decimal tauf, \
 						 Decimal S2f, \
+						 Decimal S2uf, \
 						 Decimal D2, \
 						 Decimal  (*J_SD)(\
 						 	Decimal,\
+						 	Decimal, \
 						 	Decimal, \
 						 	Decimal, \
 						 	Decimal, \

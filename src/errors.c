@@ -141,7 +141,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
 	resid->S2CCb = resid->S2CC;
 
 	struct BCParameters pars;
-	int otb = opts_to_bcpars(resid->parameters, &pars, m->model, resid, &ignore);
+	int otb = opts_to_bcpars(resid->parameters, &pars, m, resid, &ignore);
 	if (otb != 0) {
 		free(opts);
 		return -1;

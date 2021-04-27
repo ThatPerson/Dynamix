@@ -10,8 +10,8 @@
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2),
  *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
  */
-Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
-	return ( \
+Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf) {
+	return S2uf * (( \
 			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
 			/ (1 + ((Decimal) omega * (Decimal) tauf * (Decimal) omega * (Decimal) tauf)) \
 		)\
@@ -19,15 +19,15 @@ Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) 
 		(\
 			(((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
 			/ (1 + ((Decimal) omega * (Decimal) taus * (Decimal) omega * (Decimal) taus))\
-		);
+		));
 }
 
 /** Cross correlated spectral density. Taken from Manuscript,
  * Juv(w) = (1-S2f) tf / (1 + (wtf)^2) + (1/P2) S2f (P2 - S2s) (ts / 1+(wts)^2)
  * eq 2
  */
-Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f) {
-	return ( \
+Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf) {
+	return S2uf * (( \
 			((((1 - (Decimal) S2f)) * (Decimal) tauf)) \
 			/ (1 + ((Decimal) omega * (Decimal) tauf * (Decimal) omega * (Decimal) tauf)) \
 		)\
@@ -35,33 +35,33 @@ Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2
 		2. * (\
 			(((Decimal) S2f) * (-0.5 - (Decimal) S2s) * (Decimal) taus)\
 			/ (1 + ((Decimal) omega * (Decimal) taus * (Decimal) omega * (Decimal) taus))\
-		);
+		));
 }
 
 
-Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal D) {
+Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf, Decimal D) {
 	// for SMF and SMFT models, set S2s = 0 and taus = 0.
 	Decimal q = (0.1) * sq(D) * ( \
-		(J0(omega_neigh - omega_obs, taus, S2s, tauf, S2f)) \
-		 + 3 * (J0(omega_obs, taus, S2s, tauf, S2f)) \
-		  + 6 * (J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f)) \
+		(J0(omega_neigh - omega_obs, taus, S2s, tauf, S2f, S2uf)) \
+		 + 3 * (J0(omega_obs, taus, S2s, tauf, S2f, S2uf)) \
+		  + 6 * (J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f, S2uf)) \
 	  );
 	return (Decimal) q;
 }
 
 
-Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal D) {
+Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf, Decimal D) {
 	// for SMF and SMFT models, set S2s = 0 and taus = 0.
 	return (Decimal) (\
   		(1/20.) * sq(D) * (\
-  			(2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
-  			(2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
-  			(4/3.) * J0(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f) +\
-  			(4/3.) * J0(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\
-  			(3.)   * J0(omega_obs, taus, S2s, tauf, S2f) +\
-  			(1.)   * J0(omega_neigh - omega_obs, taus, S2s, tauf, S2f) +\
-  			(6.)   * J0(omega_neigh, taus, S2s, tauf, S2f) +\
-  			(6.)   * J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f)\
+  			(2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(4/3.) * J0(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(4/3.) * J0(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(3.)   * J0(omega_obs, taus, S2s, tauf, S2f, S2uf) +\
+  			(1.)   * J0(omega_neigh - omega_obs, taus, S2s, tauf, S2f, S2uf) +\
+  			(6.)   * J0(omega_neigh, taus, S2s, tauf, S2f, S2uf) +\
+  			(6.)   * J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f, S2uf)\
   		)\
   	);
 }
@@ -78,21 +78,24 @@ Decimal CSA_R2(Decimal omega, \
 						 Decimal S2s, \
 						 Decimal tauf, \
 						 Decimal S2f, \
+						 Decimal S2uf, \
 						 Decimal D2, \
 						 Decimal  (*J_SD)(\
 						 	Decimal,\
 						 	Decimal, \
 						 	Decimal, \
 						 	Decimal, \
-						 	Decimal)\
+						 	Decimal, \
+							Decimal
+						)\
 						) {
 	return (Decimal) ( \
   		(1/45.) * (Decimal) D2 * ( \
-  			(2/3.) * J_SD(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f) +\
-  			(2/3.) * J_SD(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f) +\
-  			(4/3.) * J_SD(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f) +\
-  			(4/3.) * J_SD(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f) + \
-  			(3.)   * J_SD(omega, taus, S2s, tauf, S2f)\
+  			(2/3.) * J_SD(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(2/3.) * J_SD(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(4/3.) * J_SD(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f, S2uf) +\
+  			(4/3.) * J_SD(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f, S2uf) + \
+  			(3.)   * J_SD(omega, taus, S2s, tauf, S2f, S2uf)\
   		)\
   	);
 }
@@ -134,11 +137,11 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N * T_UP);
 		d2xy = (Decimal) sq(0.000001 * omega_15N * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-		J1 = J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+		J1 = J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
 		R1CSAx = (1 / 15.) * d2x * J1; // from Bremi1997
-		J1 = J0(omega_15N, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf);
+		J1 = J0(omega_15N, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, pars->S2uf);
 		R1CSAy = (1 / 15.) * d2y * J1;
-		J1 = J0_CC(omega_15N, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf);
+		J1 = J0_CC(omega_15N, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, pars->S2uf);
 		R1CSAxy = (1 / 15.) * d2xy * J1;
 		/** Eq A30, Bremi1997 */
 		R1CSA = R1CSAx + R1CSAy + 2. * R1CSAxy;
@@ -146,13 +149,13 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
 		d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
 		d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
 		d2tot*=sq(0.000001 * omega_15N * T_UP);
-		R1CSA = (2/15.) * d2tot * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+		R1CSA = (2/15.) * d2tot * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
 	}
 	/* N Dipolar Interactions Contributions */
-	R1NH = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHs, tauf, pars->S2NHf, D_NH);
-	R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHrs, tauf, pars->S2NHrf, D_NHr);
-	R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-	R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_NCA);
+	R1NH = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHs, tauf, pars->S2NHf, pars->S2uf, D_NH);
+	R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
+	R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
+	R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
 
 
 	return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
@@ -203,31 +206,31 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 
 
 	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
-		R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, d2x, J0);
-		R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, d2y, J0);
-		R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, d2xy, J0_CC);
+		R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf, d2x, J0);
+		R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, pars->S2uf, d2y, J0);
+		R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, pars->S2uf, d2xy, J0_CC);
 		/**
 		 * Equation for spectral density for xy taken from Manuscript
 		 */
 		R2CSA = R2CSAx + R2CSAy + 2. * R2CSAxy;
 	} else {
-		J0sum += (2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
-		J0sum += (2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
-		J0sum += (4/3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
-		J0sum += (4/3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf);
+		J0sum += (2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
+		J0sum += (2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
+		J0sum += (4/3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
+		J0sum += (4/3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
 
 		d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
 		d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
 		d2tot*=sq(0.000001 * omega_15N * T_UP);
-		R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf));
+		R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf));
 
 	}
 
 	/* N Dipolar Interactions Contributions */
-	R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHs, tauf, pars->S2NHf, D_NH);
-	R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, D_NHr);
-	R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-	R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, D_NCA);
+	R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHs, tauf, pars->S2NHf, pars->S2uf, D_NH);
+	R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
+	R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
+	R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
 	return (R2CSA + R2NH + R2NHr + R2CN + R2CaN)*T_DOWN;
 }
 
@@ -272,28 +275,28 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
 		d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
-		J1 = J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+		J1 = J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
 		R1CSAx = (1/15.) * d2x * J1; // from Bremi1997
-		J1 = J0(omega_13C, taus, pars->S2CSAys, tauf, pars->S2CSAyf);
+		J1 = J0(omega_13C, taus, pars->S2CSAys, tauf, pars->S2CSAyf, pars->S2uf);
 		R1CSAy = (1/15.) * d2y * J1;
-		J1 = J0_CC(omega_13C, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf);
+		J1 = J0_CC(omega_13C, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, pars->S2uf);
 		R1CSAxy = (1/15.) * d2xy * J1;
 		R1CSA = R1CSAx + R1CSAy + 2.*R1CSAxy;
 	} else {
 		d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
 		d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
 		d2tot*=sq(0.000001 * omega_13C * T_UP);
-		R1CSA = (2/15.) * d2tot * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+		R1CSA = (2/15.) * d2tot * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
 	}
 
 
 
 	/* N Dipolar Interactions Contributions */
-	R1CH = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHs, tauf, pars->S2CHf, D_CH);
-	R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHrs, tauf, pars->S2CHrf, D_CHr);
-	R1CN = Dipolar_R1(omega_13C, omega_15N, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-	R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAps, tauf, pars->S2CCApf, D_CCAp);
-	R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, D_CCAc);
+	R1CH = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHs, tauf, pars->S2CHf, pars->S2uf, D_CH);
+	R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
+	R1CN = Dipolar_R1(omega_13C, omega_15N, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
+	R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAps, tauf, pars->S2CCApf, pars->S2uf, D_CCAp);
+	R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, pars->S2uf, D_CCAc);
 
 	return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc)*T_DOWN;
 }
@@ -341,28 +344,28 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-		R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, d2x, J0);
-		R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, d2y, J0);
-		R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, d2xy, J0_CC);
+		R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf, d2x, J0);
+		R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, pars->S2uf, d2y, J0);
+		R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, pars->S2uf, d2xy, J0_CC);
 		R2CSA = R2CSAx + R2CSAy + 2.*R2CSAxy;
 	} else {
-		J0sum += (2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
-		J0sum += (2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
-		J0sum += (4/3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
-		J0sum += (4/3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf);
+		J0sum += (2/3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
+		J0sum += (2/3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
+		J0sum += (4/3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
+		J0sum += (4/3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
 
 		d2tot= (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
 		d2tot+=(-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
 		d2tot*=sq(0.000001 * omega_13C * T_UP);
-		R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf));
+		R2CSA = (1/45.) * d2tot * (J0sum + 3 * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf));
 
 	}
 	/* N Dipolar Interactions Contributions */
-	R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHs, tauf, pars->S2CHf, D_CH);
-	R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHrs, tauf, pars->S2CHrf, D_CHr);
-	R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, D_CN);
-	R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAps, tauf, pars->S2CCApf, D_CCAp);
-	R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, D_CCAc);
+	R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHs, tauf, pars->S2CHf, pars->S2uf, D_CH);
+	R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
+	R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
+	R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAps, tauf, pars->S2CCApf, pars->S2uf, D_CCAp);
+	R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, pars->S2uf, D_CCAc);
 
 	return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc)*(Decimal)T_DOWN);
 }

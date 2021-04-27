@@ -38,6 +38,8 @@ typedef double _Complex Complex;
 #define VARIANT_A		0
 #define INVARIANT_A		1
 
+#define ENABLED 1
+#define DISABLED 0
 
 #define DATA_S2NH		0
 #define DATA_S2CH		1
@@ -155,7 +157,7 @@ struct Model {
     unsigned int proc_end;
     int myid, numprocs;
     int WS2NH, WS2CH, WS2CN, WS2CC;
-
+	unsigned int ultrafast;
     double anneal_temp;
     double anneal_wobb;
     double anneal_therm;
