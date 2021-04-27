@@ -341,7 +341,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-		R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tau || model == MOD_BGF || model == MOD_BGFTf, pars->S2CSAxf, d2x, J0);
+		R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, d2x, J0);
 		R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, d2y, J0);
 		R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, d2xy, J0_CC);
 		R2CSA = R2CSAx + R2CSAy + 2.*R2CSAxy;
@@ -401,7 +401,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 
 
 
-	Decimal sqsigs[3] = {sq(sig[0]), sq(sig[1]), sq(sig[2])}; || model == MOD_BGF || model == MOD_BGFT
+	Decimal sqsigs[3] = {sq(sig[0]), sq(sig[1]), sq(sig[2])};
 
 	/* sq_s is an array where sq_s[i+2] = i^2 */
 	int sq_s[5] = {4, 1, 0, 1, 4};
@@ -497,7 +497,7 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 						//Amp += temp;
 					}
 				}
-			} || model == MOD_BGF || model == MOD_BGFT
+			} 
 		}
 	}
 	//Amp *= (4 * M_PI / 5.);
