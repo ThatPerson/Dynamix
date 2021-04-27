@@ -247,18 +247,17 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 	for (k = 0; k < m->params; k++)
 		minv[k] = 0;
 
-#ifdef RDC
-	Decimal low_taus = 1000;
-	Decimal upp_taus = 100000;
-	Decimal low_tauf = 0;
-	Decimal upp_tauf = 10;
-#else
-	Decimal low_taus = 0.01;
-	Decimal upp_taus = 100;
-	Decimal low_tauf = 0;
-	Decimal upp_tauf = 1;
-#endif
-
+	if (m->ultrafast == ENABLED) {
+		Decimal low_taus = 1000;
+		Decimal upp_taus = 100000;
+		Decimal low_tauf = 0;
+		Decimal upp_tauf = 100;
+	} else {
+		Decimal low_taus = 0.01;
+		Decimal upp_taus = 100;
+		Decimal low_tauf = 0;
+		Decimal upp_tauf = 1;
+	}
 	switch (m->model) {
 		case MOD_SMF:
 			maxv[0] = upp_tauf; maxv[1] = 1;
