@@ -338,7 +338,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 		maxv[m->params - 3] = 0; // alpha
 		maxv[m->params - 2] = 0; // beta
 		maxv[m->params - 1] = 0; // gamma
-		minv[m->params - 4] = 0; // S2uf
+		minv[m->params - 4] = S2NH; // S2uf
 		maxv[m->params - 4] = 1;
 	} else if (m->or_variation == VARIANT_A) {
 		minv[m->params - 3] = 0; // alpha
