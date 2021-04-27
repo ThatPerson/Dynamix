@@ -246,11 +246,18 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 	unsigned int k;
 	for (k = 0; k < m->params; k++)
 		minv[k] = 0;
-	
+
+#ifdef RDC
 	Decimal low_taus = 1000;
 	Decimal upp_taus = 100000;
 	Decimal low_tauf = 0;
 	Decimal upp_tauf = 10;
+#else
+	Decimal low_taus = 0.01;
+	Decimal upp_taus = 100;
+	Decimal low_tauf = 0;
+	Decimal upp_tauf = 1;
+#endif
 
 	switch (m->model) {
 		case MOD_SMF:
