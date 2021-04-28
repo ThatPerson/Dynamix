@@ -67,7 +67,7 @@ int main(int argc, char * argv[]) {
 
 	/* Initialisation */
 	start_time = time(0);
-	srand((unsigned int)time(NULL));
+	srand((unsigned int)time(NULL) + myid);
 	initialise_dwig(HALF_PI, Dwig);
 
 
