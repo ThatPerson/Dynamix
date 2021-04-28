@@ -118,57 +118,57 @@ def read_model(name, model):
 			# 2 - chisq
 			# 3 - first param
 			current_res = {"residue": resid}
-			if (model == "smf"):
+			if (model == "smf" or model == "usmf"):
 				current_res["taus"] = kf[3]
 				current_res["tauf"] = kf[3]
 				current_res["S2s"] = kf[4]
 				current_res["S2f"] = kf[4]
-			elif (model == "smft"):
+			elif (model == "smft" or model == "usmft"):
 				current_res["taus"] = temp_tau(kf[3], kf[5], temperature)
 				current_res["tauf"] = temp_tau(kf[3], kf[5], temperature)
 				current_res["S2s"] = kf[4]
 				current_res["S2f"] = kf[4]
-			elif (model == "demf"):
+			elif (model == "demf" or model == "udemf"):
 				current_res["taus"] = kf[3]
 				current_res["tauf"] = kf[5]
 				current_res["S2s"] = kf[4]
 				current_res["S2f"] = kf[6]
-			elif (model == "demft"):
+			elif (model == "demft" or model == "udemft"):
 				current_res["taus"] = temp_tau(kf[3], kf[7], temperature)
 				current_res["tauf"] = temp_tau(kf[5], kf[8], temperature)
 				current_res["S2s"] = kf[4]
 				current_res["S2f"] = kf[6]
-			elif (model == "gaf" or model == "vgaf"):
+			elif (model == "gaf" or model == "vgaf" or model == "ugaf" or model == "uvgaf"):
 				current_res["taus"] = kf[3]
 				current_res["tauf"] = kf[4]
 				current_res["slow"] = kf[5:8]
 				current_res["fast"] = kf[8:11]
-			elif (model == "gaft" or model == "vgaft"):
+			elif (model == "gaft" or model == "vgaft" or model == "ugaft" or model == "uvgaft"):
 				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
 				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
 				current_res["slow"] = kf[5:8]
 				current_res["fast"] = kf[8:11]
-			elif (model == "egaf" or model == "vegaf"):
+			elif (model == "egaf" or model == "vegaf" or model == "uegaf" or model == "uvegaf"):
 				current_res["taus"] = kf[3]
 				current_res["tauf"] = kf[4]
 				current_res["slow"] = kf[5:8]
 				current_res["S2f"] = kf[8]
-			elif (model == "egaft" or model == "vegaft"):
+			elif (model == "egaft" or model == "vegaft" or model == "uegaft" or model == "uvegaft"):
 				current_res["taus"] = temp_tau(kf[3], kf[9], temperature)
 				current_res["tauf"] = temp_tau(kf[4], kf[10], temperature)
 				current_res["slow"] = kf[5:8]
 				current_res["S2f"] = kf[8]
-			elif (model == "aimf" or model == "vaimf"):
+			elif (model == "aimf" or model == "vaimf" or model == "uaimf" or model == "uvaimf"):
 				current_res["mags"] = kf[5:8]
 				current_res["magf"] = kf[8:11]
 				current_res["taus"] = kf[3]
 				current_res["tauf"] = kf[4]
-			elif (model == "aimft" or model == "vaimft"):
+			elif (model == "aimft" or model == "vaimft" or model == "uaimft" or model == "uvaimft"):
 				current_res["mags"] = kf[5:8]
 				current_res["magf"] = kf[8:11]
 				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
 				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
-			elif (model == "bgft"):
+			elif (model == "bgft" or model == "ubgft"):
 				current_res["taus"] = temp_tau(kf[3], kf[11], temperature)
 				current_res["tauf"] = temp_tau(kf[4], kf[12], temperature)
 				current_res["slow"] = [0, 0, kf[5]]
@@ -177,7 +177,7 @@ def read_model(name, model):
 					current_res["orientation"] = [kf[6], kf[7], 0]
 				else:
 					current_res["orientation"] = [kf[9], kf[10], 0]
-			elif (model == "bgf"):
+			elif (model == "bgf" or model == "ubgf"):
 				current_res["taus"] = kf[3]
 				current_res["tauf"] = kf[4]
 				current_res["slow"] = [0, 0, kf[5]]
@@ -507,10 +507,10 @@ for i in mods:
 #generate_mf(models["smf"][3], 3, "slow", min_tau, max_tau)
 #generate_gaf(models["gaft"][3], 3, "slow", min_tau, max_tau) 
 
-direct_mf = ["smf", "smft", "demf", "demft"]
-direct_gaf = ["gaf", "gaft", "vgaf", "vgaft", "bgf", "bgft"]
-slow_gaf = ["egaf", "egaft", "vegaf", "vegaft"]
-aimf = ["aimf", "aimft"]
+direct_mf = ["smf", "smft", "demf", "demft", "usmf", "usmft", "udemf", "udemft"]
+direct_gaf = ["gaf", "gaft", "vgaf", "vgaft", "bgf", "bgft", "ugaf", "ugaft", "uvgaf", "uvgaft", "ubgf", "ubgft"]
+slow_gaf = ["egaf", "egaft", "vegaf", "vegaft", "uegaf", "uegaft", "uvegaf", "uvegaft"]
+aimf = ["aimf", "aimft", "uaimf", "uaimft"]
 
 with open(output_file, "w") as of:
 	for l in choices:

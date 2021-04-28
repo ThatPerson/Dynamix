@@ -86,65 +86,85 @@ mds = {
 	'vgaft': {
 		'n': 13,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf', 'alph', 'beta', 'gamm']
+	}, 	
+	'smf': {
+		'n': 3,
+		'p': ['tau', 'S2', 'S2uf']
 	}, 
-	'regaf': {
-		'n': 9,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'papbC', 'papbN', 'kex']
+	'usmft': {
+		'n': 4,
+		'p': ['tau', 'S2', 'Ea', 'S2uf']
 	}, 
-	'regaft': {
-		'n': 11,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex']
+	'uemf': {
+		'n': 4,
+		'p': ['taus', 'S2s', 'tauf', 'S2uf']
 	}, 
-	'rgaf': {
-		'n': 11,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'papbC', 'papbN', 'kex']
+	'uemft': {
+		'n': 6,
+		'p': ['taus', 'S2s', 'tauf', 'Eas', 'Eaf', 'S2uf']
 	}, 
-	'rgaft': {
-		'n': 13,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex']
-	}, 
-	'rvegaf': {
-		'n': 12,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'papbC', 'papbN', 'kex', 'alph', 'beta', 'gamm']
-	}, 
-	'rvegaft': {
-		'n': 14,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex', 'alph', 'beta', 'gamm']
-	}, 
-	'rvgaf': {
-		'n': 14,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'papbC', 'papbN', 'kex', 'alph', 'beta', 'gamm']
-	}, 
-	'rvgaft': {
-		'n': 16,
-		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex', 'alph', 'beta', 'gamm']
-	},
-	'rsmf': {
+	'udemf': {
 		'n': 5,
-		'p': ['tau', 'S2', 'papbC', 'papbN', 'kex']
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'S2uf']
 	}, 
-	'rsmft': {
-		'n': 6,
-		'p': ['tau', 'S2', 'Ea', 'papbC', 'papbN', 'kex']
-	}, 
-	'remf': {
-		'n': 6,
-		'p': ['taus', 'S2s', 'tauf', 'papbC', 'papbN', 'kex']
-	}, 
-	'remft': {
-		'n': 8,
-		'p': ['taus', 'S2s', 'tauf', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex']
-	}, 
-	'rdemf': {
+	'udemft': {
 		'n': 7,
-		'p': ['taus', 'S2s', 'tauf', 'S2f', 'papbC', 'papbN', 'kex']
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', 'S2uf']
 	}, 
-	'rdemft': {
-		'n': 9,
-		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex']
+	'uegaf': {
+		'n': 7,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'S2uf']
 	}, 
-	'demft_rdc': {
+	'uegaft': {
 		'n': 9,
-		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', 'papbC', 'papbN', 'kex']
-	}
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'Eas', 'Eaf', 'S2uf']
+	}, 
+	'ugaf': {
+		'n': 9,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'S2uf']
+	}, 
+	'ugaft': {
+		'n': 11,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf', 'S2uf']
+	}, 
+	'ubgf': {
+		'n': 9,
+		'p': ['taus', 'tauf', 'ss', 'As', 'Bs', 'sf', 'Af', 'Bf', 'S2uf']
+	},
+	'ubgft': {
+		'n': 11,
+		'p': ['taus', 'tauf', 'ss', 'As', 'Bs', 'sf', 'Af', 'Bf', 'Eas', 'Eaf', 'S2uf']
+	},
+	'uaimf': {
+		'n': 9,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'S2uf']
+	}, 
+	'uaimft': {
+		'n': 11,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'Eas', 'Eaf', 'S2uf']
+	}, 
+	'uvaimf': {
+		'n': 9,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'uvaimft': {
+		'n': 11,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'Eas', 'Eaf', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'uvegaf': {
+		'n': 10,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'uvegaft': {
+		'n': 12,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'Eas', 'Eaf', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'uvgaf': {
+		'n': 12,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'uvgaft': {
+		'n': 14,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
 }
