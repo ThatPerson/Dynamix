@@ -100,6 +100,8 @@ typedef double _Complex Complex;
 #define D_NHr	13108.322725
 #define D_CHr	31491.710460
 
+#define NULL 0
+
 #define MODE_15N		0
 #define MODE_13C		1
 

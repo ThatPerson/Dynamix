@@ -100,8 +100,6 @@ Decimal CSA_R2(Decimal omega, \
   	);
 }
 
-
-#include <stdio.h>
 Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
 	/* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
 	Decimal field = relax->field * 1000000; // conversion to Hz
