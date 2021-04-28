@@ -259,7 +259,6 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 		ERROR("Model %d does not exist.\n", model);
 		return 1;
 	}
-	
 	if (m->ultrafast == ENABLED) {
 		if (m->or_variation == VARIANT_A) {
 			pars->S2uf = opts[m->params-4];
@@ -286,9 +285,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 		ttaus = temp_tau(pars->taus, pars->Eas, 300);
 		ttauf = temp_tau(pars->tauf, pars->Eaf, 300);
 	}
-
 	check_S2_violations(pars, violations);
-
    // printf("Pars %lf (%lf)\n", ttaus, upper_lim_ts);
 	if (ttaus < ttauf)
 		(*violations)++;
@@ -301,7 +298,11 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 	for (i = 0; i < 11; i++) {
 		if (*(S2sP[0]) > 1 || (*S2sP[0]) < 0)
 			(*violations)++;
+		if (*(S2fP[0]) > 1 || (*S2fP[0]) < 0)
+            (*violations)++;
 	}
+	if (pars->S2uf > 1 || pars->S2uf < 0.5)
+        (*violations)++;
 	return 0;
 }
 
@@ -377,12 +378,14 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
 	if (k != 0)
 		return -1;
-#pragma omp parallel for reduction(+:chisq)
+#pragma omp parallel for reduction(+:chisq,violations)
 	for (i = 0; i < resid->n_relaxation; i++) {
 		Decimal calc_R, mult=1.;
+		int l_vio = 0;
 		if (resid->relaxation[i].R == -1)
 			continue;
-		calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &pars);
+		calc_R = back_calc(resid, &(resid->relaxation[i]), m, &l_vio, &pars);
+		violations += l_vio;
 		if (m->cn_ratio == CNRATIO_ON) {
 			mult = 1;
 			if (resid->relaxation[i].type == R_13CR1 && resid->relaxation[i].type == R_13CR1p)
@@ -394,6 +397,7 @@ Decimal optimize_chisq(Decimal * opts, struct Residue * resid, struct Model * m,
 	//dp += resid->n_relaxation;
 	
 	chisq += 100000 * violations;
+	//if (violations > 0) printf("%d violations\n", violations);
 	if (violations > 0) {
 		LOG("Chisq optimization had %d violations.", violations);
 	}

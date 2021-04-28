@@ -152,6 +152,7 @@ int main(int argc, char * argv[]) {
 	
 	printf("Worker %d: Printing gaf...\n", m.myid+1);
 	print_gaf(&m);
+
 	print_backcalcs(&m);
 	
 	clock_t end = clock();

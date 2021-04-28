@@ -187,7 +187,7 @@ def read_model(name, model):
 				else:
 					current_res["orientation"] = [kf[9], kf[10], 0]
 
-			if (model[0] == "v"):
+			if (model[0] == "v" or model[1] == "v"):
 				current_res["orientation"] = kf[-3:]
 			while (len(components) < resid+1):
 				components.append({})
@@ -423,7 +423,7 @@ def generate_gaf(parms, residue, mode, min_tau, max_tau):
 	#return generate_gaf_new(parms, residue, mode, min_tau, max_tau)
 	if (parms == {}):
 		return ""
-	st = generate_gaf_new(parms, residue, mode, min_tau, max_tau)
+	st = ""#generate_gaf_new(parms, residue, mode, min_tau, max_tau)
 	tau = 0
 	sigs = []
 	if ("slow" in mode):

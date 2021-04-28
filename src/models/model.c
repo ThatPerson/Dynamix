@@ -449,22 +449,14 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 	 */
 
 	for (l = -2; l <= 2; l++) {
-		//lsqsum = sq_i(l);
-		//lexp = (Decimal) -(sq(sig[1]) * lsqsum);
 		lexp = -(sqsigs[1] * sq_s[l+2]);
 		for (m = -2; m <= 2; m++) {
 			for (mp = -2; mp <= 2; mp++) {
-				//msqsum = sq_i(m) + sq_i(mp);
-				//mexp = (Decimal) -(sq(sig[2]) * msqsum/2.);
 				mexp = -(sqsigs[2] * sq_d[m+2][mp+2]);
 				for (k = -2; k <= 2; k++) {
 					for (kp = -2; kp <= 2; kp++) {
-						//ksqsum = sq_i(k) + sq_i(kp);
-						//kexp = (Decimal) -(sq(sig[0]) * ksqsum / 2.);
 						kexp = -(sqsigs[0] * sq_d[k+2][kp+2]);
-						//if (A->Y2[m+2] == A->Y2c[m+2] && B->Y2[mp+2] == B->Y2c[mp+2]) {
 						temp = 1;
-
 						temp *= exp(lexp + kexp + mexp);
 						temp *= Dwig[k+2][l+2] * Dwig[kp+2][l+2] * Dwig[m+2][k+2] * Dwig[mp+2][kp+2];
 						for (i = 0; i < length; i++) {
@@ -484,20 +476,13 @@ int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[
 								else
 									ttemp *= -1.;
 							} else {
-								//printf("Going long route...\n");
 								/* Other wise we have to go the long route... */
 								Complex multip = cpow(-1 * I, k-kp);
 								ttemp *= multip;
 							}
-
-
 							ttemp *= A[i]->Y2[m+2] * B[i]->Y2c[mp+2];
-
 							Amp[i] += ttemp;
-							//printf("Amp %d %lf\n", i, Amp[i]);
 						}
-						//temp *= A->Y2[m+2] * B->Y2c[mp+2];
-						//Amp += temp;
 					}
 				}
 			} 
