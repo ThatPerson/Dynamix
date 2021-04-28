@@ -294,7 +294,7 @@ int calc_global_errors(struct Model *m) {
 		m->residues[i].S2CH = m->residues[i].S2CHb;
 		m->residues[i].S2CN = m->residues[i].S2CNb;
 		m->residues[i].S2CC = m->residues[i].S2CCb;
-		m->residues[i].error_calcs = p;
+		m->residues[i].error_calcs = m->n_error_iter;
 	}
 	int finished = -1;
 	MPI_Send(&finished, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
@@ -302,6 +302,7 @@ int calc_global_errors(struct Model *m) {
 	// Now receive
 	// i - residue, k - parameter, p - iteration
     Decimal *buffer = (Decimal*)malloc(sizeof(Decimal) * m->params);
+    Decimal sum = 0;
     for (p = 0; p < m->n_error_iter; p++) {
         //printf("%d listening for %d\n", m->myid, p);
         MPI_Recv(buffer, m->params, MPI_DECIMAL, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -310,14 +311,17 @@ int calc_global_errors(struct Model *m) {
             for (k = 0; k < m->params; k++) {
                 //printf("%d, %d, %d (%d/%d)\n", p, i, k, m->myid+1, m->numprocs);
                 m->residues[i].error_params[k][p] = buffer[k];
+                sum = sum + buffer[k];
             }
         }
 
     }
+    printf("%d/%d CHECKSUM: %f\n", m->myid+1, m->numprocs, sum);
    // MPI_Send(paramstore[i], m->params, MPI_DECIMAL, k, 2, MPI_COMM_WORLD);
 
 	fclose(errp);
 	free(opts);
+	free(buffer);
 	return 1;
 }
 
