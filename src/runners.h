@@ -11,7 +11,6 @@ int print_backcalcs(struct Model *m);
 int print_gaf(struct Model *m);
 int print_residues(struct Model *m);
 int print_errors(struct Model *m);
-int determine_residues(struct Model *m, int myid, int numprocs, unsigned int *start, unsigned int *end);
 int run_fitting(struct Model *m);
 
 #endif //DYNAMIX_RUNNERS_H

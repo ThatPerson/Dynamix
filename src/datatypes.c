@@ -409,3 +409,17 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 		 */
 }
 
+int determine_residues(unsigned int n_res, int myid, int numprocs, unsigned int *start, unsigned int *end) {
+    // we have m->n_residues split over numprocs.
+    // so
+
+
+    unsigned int res_per_proc = (n_res / numprocs);
+    if (n_res % numprocs != 0)
+        res_per_proc++;
+    *start = res_per_proc * myid;
+    *end = *start + res_per_proc;
+    if (*end > n_res)
+        *end = n_res;
+    return 1;
+}

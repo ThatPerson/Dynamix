@@ -272,17 +272,3 @@ int print_backcalcs(struct Model *m) {
 	return 1;
 }
 
-int determine_residues(struct Model *m, int myid, int numprocs, unsigned int *start, unsigned int *end) {
-	// we have m->n_residues split over numprocs.
-	// so
-
-
-	unsigned int res_per_proc = (m->n_residues / numprocs);
-	if (m->n_residues % numprocs != 0)
-		res_per_proc++;
-	*start = res_per_proc * myid;
-	*end = *start + res_per_proc;
-	if (*end > m->n_residues)
-		*end = m->n_residues;
-	return 1;
-}

@@ -103,8 +103,7 @@ int main(int argc, char * argv[]) {
 	m.numprocs = numprocs;
 	//printf("%d params.\n", m.params);
 	//exit(-1);
-	determine_residues(&m, myid, numprocs, &(m.proc_start), &(m.proc_end));
-	printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
+
 	omp_set_num_threads(m.nthreads);
 	
 	m.error_mode = err_mod;
@@ -130,30 +129,50 @@ int main(int argc, char * argv[]) {
 		sprintf(filename, "%s/model.txt", m.outputdir);
 		print_system(&m, filename);
 	}
-	if (m.global == LOCAL)
-		run_fitting(&m);
-	else if (m.global == GLOBAL)
-		run_global(&m);
-	
-	
-	
-	printf("Worker %d: Printing residues...\n", m.myid+1);
-	print_residues(&m);
-	
-	if (m.error_mode == 1) {
-		printf("Worker %d: Running errors...\n", m.myid+1);
-		if (m.global == LOCAL)
-			run_errors(&m);
-		else
-			calc_global_errors(&m);
-		printf("Worker %d: Printing errors...\n", m.myid+1);
-		print_errors(&m);
-	}
-	
-	printf("Worker %d: Printing gaf...\n", m.myid+1);
-	print_gaf(&m);
 
-	print_backcalcs(&m);
+	if (m.global == LOCAL) {
+        determine_residues(m.n_residues, myid, numprocs, &(m.proc_start), &(m.proc_end));
+        printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
+	    run_fitting(&m);
+        printf("Worker %d: Printing residues...\n", m.myid+1);
+        print_residues(&m);
+        if (m.error_mode == 1) {
+            printf("Worker %d: Running errors...\n", m.myid+1);
+            run_errors(&m);
+            printf("Worker %d: Printing errors...\n", m.myid+1);
+            print_errors(&m);
+        }
+        printf("Worker %d: Printing gaf...\n", m.myid+1);
+        print_gaf(&m);
+        print_backcalcs(&m);
+	} else if (m.global == GLOBAL) {
+	    if (m.myid == 0) {
+            global_fit_control(&m);
+            printf("Worker %d: Fit control finished.\n", m.myid+1);
+        } else {
+            determine_residues(m.n_residues, myid - 1, numprocs - 1, &(m.proc_start), &(m.proc_end));
+            run_global(&m);
+            printf("Worker %d: Printing residues...\n", m.myid + 1);
+            print_residues(&m);
+        }
+        if (m.error_mode == 1) {
+            if (m.myid == 0) {
+                global_errors_control(&m);
+                printf("Worker %d: Error control finished.\n", m.myid+1);
+            } else {
+                printf("Worker %d: Running errors...\n", m.myid + 1);
+                calc_global_errors(&m);
+                printf("Worker %d: Printing errors...\n", m.myid + 1);
+                print_errors(&m);
+            }
+        }
+        if (m.myid != 0) {
+            printf("Worker %d: Printing gaf...\n", m.myid + 1);
+            print_gaf(&m);
+            print_backcalcs(&m);
+        }
+	}
+
 	
 	clock_t end = clock();
 

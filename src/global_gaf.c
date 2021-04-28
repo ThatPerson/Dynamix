@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpi.h>
 
 #include "datatypes.h"
 #include "model.h"
@@ -65,7 +66,7 @@ int run_global_iteration(struct Model *m, unsigned int i) {
 	struct Residue *resid = NULL;
 	FILE *fp;
 	char filename[300];
-	sprintf(filename, "%s/fitting.dat", m->outputdir);
+	sprintf(filename, "%s/fitting%d.dat", m->outputdir, m->myid);
 	fp = fopen(filename, "a");
 	if (fp == NULL) {
 		printf("%s not found.\n", filename);
@@ -129,6 +130,8 @@ int run_global_iteration(struct Model *m, unsigned int i) {
 			}
 		}
 	}
+
+	printf("Control finished.\n");
 	free(minv);
 	free(maxv);
 
@@ -138,10 +141,62 @@ int run_global_iteration(struct Model *m, unsigned int i) {
 	return 1;
 }
 
+void global_errors_control(struct Model *m) {
+    //Decimal
+    //Decimal ** error_params;
+    //m->residues[i].error_params[k][p]
+    Decimal **paramstore;
+    unsigned int i, l, k;
+    paramstore = (Decimal **) malloc(sizeof(Decimal *) * m->n_error_iter);
+    for (i = 0; i < m->n_error_iter; i++) {
+        paramstore[i] = (Decimal *) malloc(sizeof(Decimal) * m->params);
+    }
+
+    int curr = 0, buff;
+
+    int *finished = (int *) malloc(sizeof(int) * m->numprocs);
+    for (l = 1; l < m->numprocs; l++) {
+        finished[l] = 0;
+    }
+    int iter_per_proc = (m->n_error_iter / m->numprocs) + 3;
+    int co = 0;
+    for (l = 0; l < m->n_error_iter; l++) {
+        co = 0;
+        for (k = 1; k < m->numprocs; k++) {
+            co += finished[k];
+            if (finished[k] == 1)
+                continue;
+            MPI_Recv(&buff, 1, MPI_INT, k, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if (buff == -1) {
+                finished[k] = 1;
+                continue;
+            } else {
+                MPI_Recv(paramstore[buff], m->params, MPI_DECIMAL, k, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            }
+        }
+        if (co == m->numprocs-1)
+            break;
+    }
+
+    //MPI_Send(&l, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    //MPI_Send(opts, m->params, MPI_DECIMAL, 0, 1, MPI_COMM_WORLD);
+
+    for (i = 0; i < m->n_error_iter; i++) {
+        for (k = 1; k < m->numprocs; k++) {
+            MPI_Send(paramstore[i], m->params, MPI_DECIMAL, k, 2, MPI_COMM_WORLD);
+        }
+        free(paramstore[i]);
+    }
+    free(paramstore);
+    free(finished);
+}
+
 int calc_global_errors(struct Model *m) {
+    if (m->myid == 0)
+        ERROR("I shouldn't reach this.\n");
 	FILE *errp;
 	char filename[300];
-	sprintf(filename, "%s/errors.dat", m->outputdir);
+	sprintf(filename, "%s/errors%d.dat", m->outputdir, m->myid);
 	errp = fopen(filename, "a");
 	if (errp == NULL) {
 		printf("%s not found.\n", filename);
@@ -174,9 +229,12 @@ int calc_global_errors(struct Model *m) {
 
 
 	struct BCParameters pars;
+	unsigned int start, end;
+	determine_residues(m->n_error_iter, m->myid-1, m->numprocs-1, &start, &end);
 
-	for (l = 0; l < m->n_error_iter; l++) {
-		printf("Iteration %d.\n", l);
+	for (l = start; l < end; l++) {
+
+		printf("Iteration %d (%d-%d).\n", l, start, end-1);
 		for (i = 0; i < m->n_residues; i++) {
 			resid = &(m->residues[i]);
 			resid->temp_relaxation = (resid->relaxation);
@@ -220,6 +278,8 @@ int calc_global_errors(struct Model *m) {
 			fprintf(errp, "\t%le", opts[k]);
 		}
 		fprintf(errp, "\n");
+        MPI_Send(&l, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        MPI_Send(opts, m->params, MPI_DECIMAL, 0, 1, MPI_COMM_WORLD);
 		p++;
 		for (i = 0; i < m->n_residues; i++) {
 			resid = &(m->residues[i]);
@@ -236,34 +296,127 @@ int calc_global_errors(struct Model *m) {
 		m->residues[i].S2CC = m->residues[i].S2CCb;
 		m->residues[i].error_calcs = p;
 	}
+	int finished = -1;
+	MPI_Send(&finished, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+
+	// Now receive
+	// i - residue, k - parameter, p - iteration
+    Decimal *buffer = (Decimal*)malloc(sizeof(Decimal) * m->params);
+    for (p = 0; p < m->n_error_iter; p++) {
+        //printf("%d listening for %d\n", m->myid, p);
+        MPI_Recv(buffer, m->params, MPI_DECIMAL, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        //printf("%d received %d\n", m->myid, p);
+        for (i = 0; i < m->n_residues; i++) {
+            for (k = 0; k < m->params; k++) {
+                //printf("%d, %d, %d (%d/%d)\n", p, i, k, m->myid+1, m->numprocs);
+                m->residues[i].error_params[k][p] = buffer[k];
+            }
+        }
+
+    }
+   // MPI_Send(paramstore[i], m->params, MPI_DECIMAL, k, 2, MPI_COMM_WORLD);
+
 	fclose(errp);
 	free(opts);
 	return 1;
 }
 
+void global_fit_control(struct Model *m) {
+    double *scores, *params;
+    scores = (Decimal *) malloc(sizeof(Decimal) * m->numprocs);
+    params = (Decimal *) malloc(sizeof(Decimal) * m->params);
+    if (scores == NULL || params == NULL) {
+        ERROR("Allocation failed!\n");
+        free_all(m);
+        exit(-1);
+    }
 
+    unsigned int i, min_proc = 1000;
+    Decimal min = 1e9;
+    Decimal d;
+    for (i = 1; i < m->numprocs; i++) {
+        MPI_Recv(&d, 1, MPI_DECIMAL, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        scores[i] = d;
+        if (scores[i] < min) {
+            min = scores[i];
+            min_proc = i;
+        }
+    }
+
+    int w = 1, l = 0;
+    for (i = 1; i < m->numprocs; i++) {
+        if (i == min_proc)
+            MPI_Send(&w, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
+        else
+            MPI_Send(&l, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
+        MPI_Send(&min, 1, MPI_DECIMAL, i, 4, MPI_COMM_WORLD);
+    }
+    if (min_proc == 1000) {
+        ERROR("Did not find optimal!\n");
+        free(m);
+        free(params);
+        free(scores);
+        exit(-1);
+    }
+    MPI_Recv(params, m->params, MPI_DECIMAL, min_proc, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    for (i = 1; i < m->numprocs; i++) {
+        MPI_Send(params, m->params, MPI_DECIMAL, i, 3, MPI_COMM_WORLD);
+    }
+    free(params);
+    free(scores);
+}
 /**
  * Operates residue optimization. Generates random parameter guesses and passes these to the simplex function.
  * @param input
  *  Pointer to rrarg containing thread information
  */
 int run_global(struct Model *m) {
-	if (m->numprocs > 1) {
-		ERROR("Global GAF fitting _does not_ support MPI parallelisation at the moment.\n");
+	if (m->numprocs < 2) {
+		ERROR("Global GAF fitting requires at least two MPI processes (one control, one worker.\n");
 		free_all(m);
 		exit(-1);
 	}
 
-	unsigned int l;
+	unsigned int start, end;
+	unsigned int l, k;
+	int prodigal = -1;
 	for (l = 0; l < m->n_residues; l++) {
 		m->residues[l].parameters = (Decimal *) malloc (sizeof(Decimal) * m->params);
 		m->residues[l].min_val = MIN_VAL;
+		if (prodigal == -1 && m->residues[l].ignore == 0)
+		    prodigal = (int) l;
 	}
 	
 	// launch
-	for (l = 0; l < m->n_anneal_iter; l++) {
+	if (m->myid == 0) {
+		ERROR("I should not be here.\n");
+	}
+	determine_residues(m->n_anneal_iter, m->myid-1, m->numprocs-1, &start, &end);
+    printf("%d/%d -> %d-%d (%d)\n", m->myid+1, m->numprocs, start, end, m->n_anneal_iter);
+	for (l = start; l < end; l++) {
 		printf("\tRunning iteration %d\n", l);
 		run_global_iteration(m, l);
+	}
+	// send score to control.
+	// m->residues[j].parameters[k]
+	Decimal min_v = m->residues[prodigal].min_val, true_min;
+	printf("%d/%d: My score was %f, sending to Control.\n", m->myid+1, m->numprocs, min_v);
+	MPI_Send(&min_v, 1, MPI_DECIMAL, 0, 0, MPI_COMM_WORLD);
+    int chosen_one = 0;
+	MPI_Recv(&chosen_one, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	MPI_Recv(&true_min, 1, MPI_DECIMAL, 0, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	if (chosen_one == 1) {
+	    printf("%d/%d chosen.\n", m->myid+1, m->numprocs);
+	    MPI_Send(m->residues[prodigal].parameters, (int) m->params, MPI_DECIMAL, 0, 2, MPI_COMM_WORLD);
+	}
+	MPI_Recv(m->residues[prodigal].parameters, (int) m->params, MPI_DECIMAL, 0, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	for (l = 0; l < m->n_residues; l++) {
+	    if (l == prodigal)
+	        continue;
+	    for (k = 0; k < m->params; k++) {
+	        m->residues[l].min_val = true_min;
+	        m->residues[l].parameters[k] = m->residues[prodigal].parameters[k];
+	    }
 	}
 	return 1;
 }

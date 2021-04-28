@@ -7,6 +7,8 @@
 typedef double Decimal;
 typedef double _Complex Complex;
 
+#define MPI_DECIMAL MPI_DOUBLE
+
 #ifdef LOGGING
 #define LOG(a, args...) printf("LOG   %s(%s:%d %d) " a "\n",  __func__,__FILE__, __LINE__, (int) (time(0) - start_time), ##args)
 #else
@@ -285,5 +287,6 @@ void rotate_Y2(struct Orient * or, Decimal alpha, Decimal beta, Decimal gamma);
 Decimal uniform_rand(void);
 void gen_params(const Decimal *minv, const Decimal *maxv, Decimal *pars, unsigned int n_pars);
 void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * maxv);
+int determine_residues(unsigned int n_res, int myid, int numprocs, unsigned int *start, unsigned int *end);
 
 #endif
