@@ -200,6 +200,7 @@ int read_pp(struct Model *m, char *filename, unsigned int orient) {
 		m->residues[resid].orients[orient].phi = phi;
 		calculate_Y2(&(m->residues[resid].orients[orient]));
 	}
+	fclose(fp);
 	return 1;
 }
 
