@@ -151,6 +151,45 @@ mds = {
 		'n': 11,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'sAf', 'sBf', 'sCf', 'Eas', 'Eaf', 'S2uf', 'alph', 'beta', 'gamm']
 	}, 
+	
+	
+	
+	'ueaimf': {
+		'n': 7,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'S2uf']
+	}, 
+	'ueaimft': {
+		'n': 9,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'Eas', 'Eaf', 'S2uf']
+	}, 
+	'uveaimf': {
+		'n': 10,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'uveaimft': {
+		'n': 12,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'Eas', 'Eaf', 'S2uf', 'alph', 'beta', 'gamm']
+	}, 
+	'eaimf': {
+		'n': 6,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f']
+	}, 
+	'eaimft': {
+		'n': 8,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'Eas', 'Eaf']
+	}, 
+	'veaimf': {
+		'n': 9,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'alph', 'beta', 'gamm']
+	}, 
+	'veaimft': {
+		'n': 11,
+		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'Eas', 'Eaf', 'alph', 'beta', 'gamm']
+	}, 
+	
+	
+	
+	
 	'uvegaf': {
 		'n': 10,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'S2f', 'S2uf', 'alph', 'beta', 'gamm']
