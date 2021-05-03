@@ -303,6 +303,17 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 			for (k = 2; k <= 7; k++) { maxv[k] = 1; minv[k] = S2NH; }
 			maxv[8] = 60000; maxv[9] = 60000;
 			break;
+	    case MOD_EAIMF:
+	        minv[0] = low_taus;
+	        maxv[0] = upp_taus; maxv[1] = upp_tauf;
+	        for (k = 2; k <= 5; k++) {maxv[k] = 1; minv[k] = S2NH; }
+	        break;
+	    case MOD_EAIMFT:
+            minv[0] = low_taus;
+            maxv[0] = upp_taus; maxv[1] = upp_tauf;
+            for (k = 2; k <= 5; k++) {maxv[k] = 1; minv[k] = S2NH; }
+            maxv[6] = 60000; maxv[7] = 60000;
+            break;
 		case MOD_EGAF:
 			minv[0] = low_taus;
 			maxv[0] = upp_taus; maxv[1] = upp_tauf;

@@ -243,18 +243,33 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 		}
 		pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
-		bcpars_init(pars, 0, 0);
-		pars->taus = opts[0];
-		pars->tauf = opts[1];
-		Decimal sigs[3] = {opts[2], opts[3], opts[4]};
-		Decimal sigf[3] = {opts[5], opts[6], opts[7]};
-		AIMF_S2(sigs, As, S2sP, 12);
-		AIMF_S2(sigf, As, S2fP, 12);
-		if (model == MOD_AIMFT) {
-			pars->Eas = opts[8];
-			pars->Eaf = opts[9];
-		}
-		pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
+        bcpars_init(pars, 0, 0);
+        pars->taus = opts[0];
+        pars->tauf = opts[1];
+        Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+        Decimal sigf[3] = {opts[5], opts[6], opts[7]};
+        AIMF_S2(sigs, As, S2sP, 12);
+        AIMF_S2(sigf, As, S2fP, 12);
+        if (model == MOD_AIMFT) {
+            pars->Eas = opts[8];
+            pars->Eaf = opts[9];
+        }
+        pars->S2NHrs = 1;
+        pars->S2NHrf = 1;
+        pars->S2CHrs = 1;
+        pars->S2CHrf = 1;
+    } else if (model == MOD_EAIMF || model == MOD_EAIMFT) {
+	    S2f = opts[5];
+	    bcpars_init(pars, 0, S2f);
+	    pars->taus = opts[0];
+	    pars->tauf = opts[1];
+	    Decimal sigs[3] = {opts[2], opts[3], opts[4]};
+	    AIMF_S2(sigs, As, S2sP, 12);
+	    if (model == MOD_EAIMFT) {
+	        pars->Eas = opts[6];
+	        pars->Eaf = opts[7];
+	    }
+        pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
 	} else {
 		ERROR("Model %d does not exist.\n", model);
 		return 1;

@@ -32,6 +32,8 @@ typedef double _Complex Complex;
 #define MOD_AIMFT 		24
 #define MOD_BGF         25
 #define MOD_BGFT        26
+#define MOD_EAIMF       27
+#define MOD_EAIMFT      28
 
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
@@ -99,8 +101,6 @@ typedef double _Complex Complex;
 #define D_CH	22362.477236
 #define D_NHr	13108.322725
 #define D_CHr	31491.710460
-
-#define NULL 0
 
 #define MODE_15N		0
 #define MODE_13C		1
