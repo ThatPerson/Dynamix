@@ -151,10 +151,10 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 	};
 	if (model == MOD_SMF || model == MOD_SMFT) {
 		// tau, S2, [Ea]
-		bcpars_init(pars, 1, opts[1]);
-		pars->tauf = opts[0];
+		bcpars_init(pars, opts[1], 1);
+		pars->taus = opts[0];
 		if (model == MOD_SMFT)
-			pars->Eaf = opts[2];
+			pars->Eas = opts[2];
 	} else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT){
 		S2s = opts[1];
 		S2f = resid->S2NH / S2s;
