@@ -242,6 +242,17 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 			pars->Eaf = opts[7];
 		}
 		pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
+    } else if (model == MOD_BGAF || model == MOD_BGAFT) {
+        Decimal sigs[3] = {opts[1], opts[2], opts[3]};
+        S2f = 1;
+        bcpars_init(pars, 1, 1);
+        GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
+        pars->taus = opts[0];
+        if (model == MOD_BGAFT) {
+            pars->Eas = opts[4];
+            pars->Eaf = opts[5];
+        }
+        pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
         bcpars_init(pars, 0, 0);
         pars->taus = opts[0];

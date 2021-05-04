@@ -555,10 +555,10 @@ int read_system_file(char *filename, struct Model * m) {
 				    m->params = 8;
 				    m->model = MOD_EAIMFT;
 				} else if (strcmp(val, "BGF") == 0) {
-					m->params = 8;
+					m->params = 4;
 					m->model = MOD_BGF;
 				} else if (strcmp(val, "BGFT") == 0) {
-					m->params = 10;
+					m->params = 6;
 					m->model = MOD_BGFT;
 				} else {
 					printf("Model %s unknown.\n", val);
