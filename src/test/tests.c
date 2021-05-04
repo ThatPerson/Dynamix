@@ -325,12 +325,12 @@ static void test_bcpars(void **state) {
     m.model = MOD_SMFT;
     int vio = 0;
     opts_to_bcpars(opts_smft, &pars, &m, &res, &vio);
-    assert_float_equal(pars.taus, 0, 0.0001);
-    assert_float_equal(pars.tauf, 0.01, 0.0001);
-    assert_float_equal(pars.S2NHf, 0.9, 0.0001);
-    assert_float_not_equal(pars.S2NHs, 0.9, 0.0001);
-    assert_float_equal(pars.Eas, -1, 0.0001);
-    assert_float_equal(pars.Eaf, 3000, 0.0001);
+    assert_float_equal(pars.taus, 0.01, 0.0001);
+    assert_float_equal(pars.tauf, 0, 0.0001);
+    assert_float_equal(pars.S2NHs, 0.9, 0.0001);
+    assert_float_not_equal(pars.S2NHf, 0.9, 0.0001);
+    assert_float_equal(pars.Eaf, -1, 0.0001);
+    assert_float_equal(pars.Eas, 3000, 0.0001);
 
     Decimal opts_demf[] = {0.1, 0.9, 0.01, 0.8};
     m.model = MOD_DEMF;
