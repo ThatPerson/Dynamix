@@ -130,7 +130,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
 	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
 	Decimal J1;
 
-	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
+	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
 		d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N * T_UP);
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N * T_UP);
 		d2xy = (Decimal) sq(0.000001 * omega_15N * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
@@ -203,7 +203,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 	Decimal J0sum = 0;
 
 
-	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
+	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
 		R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf, d2x, J0);
 		R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, pars->S2uf, d2y, J0);
 		R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, pars->S2uf, d2xy, J0_CC);
@@ -269,7 +269,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParam
 /* N CSA relaxation contribution */
 	Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAc, R1CCAp;
 	Decimal J1;
-	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT) {
+	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF || model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
 		d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
@@ -337,7 +337,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParam
 	/* CSA relaxation contribution */
 	Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp;
 	Decimal J0sum = 0;
-	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT  || model == MOD_BGF || model == MOD_BGFT) {
+	if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT  || model == MOD_BGF || model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
 		d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
 		d2xy= (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);

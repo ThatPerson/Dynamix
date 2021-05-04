@@ -265,10 +265,17 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             pars->Eas = opts[8];
             pars->Eaf = opts[9];
         }
-        pars->S2NHrs = 1;
-        pars->S2NHrf = 1;
-        pars->S2CHrs = 1;
-        pars->S2CHrf = 1;
+        pars->S2NHrs = 1;pars->S2NHrf = 1;pars->S2CHrs = 1;pars->S2CHrf = 1;
+    } else if (model == MOD_BAIMF || model == MOD_BAIMFT) {
+        bcpars_init(pars, 1, 1);
+        pars->taus = opts[0];
+        Decimal sigs[3] = {opts[1], opts[2], opts[3]};
+        AIMF_S2(sigs, As, S2sP, 12);
+        if (model == MOD_AIMFT) {
+            pars->Eas = opts[4];
+            pars->Eaf = opts[5];
+        }
+        pars->S2NHrs = 1;pars->S2NHrf = 1;pars->S2CHrs = 1;pars->S2CHrf = 1;
     } else if (model == MOD_EAIMF || model == MOD_EAIMFT) {
 	    S2f = opts[5];
 	    bcpars_init(pars, 0, S2f);
