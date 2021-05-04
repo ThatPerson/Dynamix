@@ -542,6 +542,12 @@ int read_system_file(char *filename, struct Model * m) {
 				} else if (strcmp(val, "EGAFT") == 0) {
 					m->params = 8;
 					m->model = MOD_EGAFT;
+                } else if (strcmp(val, "BGAF") == 0) {
+                    m->params = 4;
+                    m->model = MOD_EGAF;
+                } else if (strcmp(val, "BGAFT") == 0) {
+                    m->params = 6;
+                    m->model = MOD_EGAFT;
 				} else if (strcmp(val, "AIMF") == 0) {
 					m->params = 8;
 					m->model = MOD_AIMF;
