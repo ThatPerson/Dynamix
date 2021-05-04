@@ -10,6 +10,7 @@
 #define MODE_OUTPUT_FILE 4
 
 Decimal propose(Decimal v, Decimal wobble);
+
 Decimal anneal(
         Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned int),
         Decimal parms[],

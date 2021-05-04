@@ -40,12 +40,7 @@
 #include "runners.h"
 
 
-
-
-
 #include "verification.h"
-
-
 
 
 /**
@@ -55,100 +50,99 @@
  * @opts -e
  *  Enables error mode
  */
-int main(int argc, char * argv[]) {
-	MPI_Init( &argc, &argv );
-	clock_t begin = clock();
+int main(int argc, char *argv[]) {
+    MPI_Init(&argc, &argv);
+    clock_t begin = clock();
 
-	int numprocs, myid;
-	MPI_Comm_size( MPI_COMM_WORLD, &numprocs ); 
-	MPI_Comm_rank( MPI_COMM_WORLD, &myid );
-	
-	//printf("I am %d/%d.\n", myid, numprocs);
+    int numprocs, myid;
+    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 
-	/* Initialisation */
-	start_time = time(0);
-	srand((unsigned int)time(NULL) + myid);
-	initialise_dwig(HALF_PI, Dwig);
+    //printf("I am %d/%d.\n", myid, numprocs);
 
-
-	char system_file[255] = "";
-	unsigned int i;
-	int err_mod = 0;
-	for (i = 1; i < (unsigned int) argc; i++) {
-		//printf("%s\n", argv[i]);
-		if (strcmp(argv[i], "-e") == 0)
-			err_mod = 1;
-		else if (strcmp(argv[i], "verify") == 0)
-			verify_all();
-		else
-			strcpy(system_file, argv[i]);
-	}
-
-	if (strcmp(system_file, "") == 0){
-		printf("Please provide system file.\n");
-		exit(-1);
-	}
+    /* Initialisation */
+    start_time = time(0);
+    srand((unsigned int) time(NULL) + myid);
+    initialise_dwig(HALF_PI, Dwig);
 
 
+    char system_file[255] = "";
+    unsigned int i;
+    int err_mod = 0;
+    for (i = 1; i < (unsigned int) argc; i++) {
+        //printf("%s\n", argv[i]);
+        if (strcmp(argv[i], "-e") == 0)
+            err_mod = 1;
+        else if (strcmp(argv[i], "verify") == 0)
+            verify_all();
+        else
+            strcpy(system_file, argv[i]);
+    }
 
-	struct Model m;
-	int ret = read_system_file(system_file, &m);
-	if (ret == -1) {
-		printf("Error found, crashing peacefully...\n");
-		free_all(&m);
-		MPI_Finalize();
-		exit(-1);
-	}
-	m.myid = myid;
-	m.numprocs = numprocs;
-	//printf("%d params.\n", m.params);
-	//exit(-1);
-
-	omp_set_num_threads(m.nthreads);
-	
-	m.error_mode = err_mod;
-	if (m.error_mode == 1 && m.n_error_iter == 0) {
-		printf("Please provide number of error iterations\n");
-		ret = -1;
-	}
-
-	if (m.model == MOD_UNDEFINED) {
-		printf("Model undefined\n");
-		ret = -1;
-	}
-
-	if (ret == -1) {
-		free_all(&m);
-		MPI_Finalize();
-	}
+    if (strcmp(system_file, "") == 0) {
+        printf("Please provide system file.\n");
+        exit(-1);
+    }
 
 
-	//printf("%d\n", ret);
-	if (m.myid == 0) {
-		char filename[300];
-		sprintf(filename, "%s/model.txt", m.outputdir);
-		print_system(&m, filename);
-	}
+    struct Model m;
+    int ret = read_system_file(system_file, &m);
+    if (ret == -1) {
+        printf("Error found, crashing peacefully...\n");
+        free_all(&m);
+        MPI_Finalize();
+        exit(-1);
+    }
+    m.myid = myid;
+    m.numprocs = numprocs;
+    //printf("%d params.\n", m.params);
+    //exit(-1);
 
-	if (m.global == LOCAL) {
+    omp_set_num_threads(m.nthreads);
+
+    m.error_mode = err_mod;
+    if (m.error_mode == 1 && m.n_error_iter == 0) {
+        printf("Please provide number of error iterations\n");
+        ret = -1;
+    }
+
+    if (m.model == MOD_UNDEFINED) {
+        printf("Model undefined\n");
+        ret = -1;
+    }
+
+    if (ret == -1) {
+        free_all(&m);
+        MPI_Finalize();
+    }
+
+
+    //printf("%d\n", ret);
+    if (m.myid == 0) {
+        char filename[300];
+        sprintf(filename, "%s/model.txt", m.outputdir);
+        print_system(&m, filename);
+    }
+
+    if (m.global == LOCAL) {
         determine_residues(m.n_residues, myid, numprocs, &(m.proc_start), &(m.proc_end));
-        printf("%d/%d: running %d - %d\n", myid+1, numprocs, m.proc_start, m.proc_end);
-	    run_fitting(&m);
-        printf("Worker %d: Printing residues...\n", m.myid+1);
+        printf("%d/%d: running %d - %d\n", myid + 1, numprocs, m.proc_start, m.proc_end);
+        run_fitting(&m);
+        printf("Worker %d: Printing residues...\n", m.myid + 1);
         print_residues(&m);
         if (m.error_mode == 1) {
-            printf("Worker %d: Running errors...\n", m.myid+1);
+            printf("Worker %d: Running errors...\n", m.myid + 1);
             run_errors(&m);
-            printf("Worker %d: Printing errors...\n", m.myid+1);
+            printf("Worker %d: Printing errors...\n", m.myid + 1);
             print_errors(&m);
         }
-        printf("Worker %d: Printing gaf...\n", m.myid+1);
+        printf("Worker %d: Printing gaf...\n", m.myid + 1);
         print_gaf(&m);
         print_backcalcs(&m);
-	} else if (m.global == GLOBAL) {
-	    if (m.myid == 0) {
+    } else if (m.global == GLOBAL) {
+        if (m.myid == 0) {
             global_fit_control(&m);
-            printf("Worker %d: Fit control finished.\n", m.myid+1);
+            printf("Worker %d: Fit control finished.\n", m.myid + 1);
         } else {
             determine_residues(m.n_residues, myid - 1, numprocs - 1, &(m.proc_start), &(m.proc_end));
             run_global(&m);
@@ -158,7 +152,7 @@ int main(int argc, char * argv[]) {
         if (m.error_mode == 1) {
             if (m.myid == 0) {
                 global_errors_control(&m);
-                printf("Worker %d: Error control finished.\n", m.myid+1);
+                printf("Worker %d: Error control finished.\n", m.myid + 1);
             } else {
                 printf("Worker %d: Running errors...\n", m.myid + 1);
                 calc_global_errors(&m);
@@ -171,16 +165,16 @@ int main(int argc, char * argv[]) {
             print_gaf(&m);
             print_backcalcs(&m);
         }
-	}
+    }
 
-	
-	clock_t end = clock();
 
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    clock_t end = clock();
 
-	printf("Worker %d Finished (%lf seconds elapsed)\n", m.myid+1, time_spent);
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
 
-	free_all(&m);
-	MPI_Finalize();
-	return 0;
+    printf("Worker %d Finished (%lf seconds elapsed)\n", m.myid + 1, time_spent);
+
+    free_all(&m);
+    MPI_Finalize();
+    return 0;
 }

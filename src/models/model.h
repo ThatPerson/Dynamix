@@ -4,6 +4,7 @@
 
 #ifndef DYNAMIX_MODEL_H
 #define DYNAMIX_MODEL_H
+
 #include "../datatypes.h"
 
 struct BCParameters {
@@ -23,36 +24,49 @@ struct BCParameters {
     Decimal S2CCAps, S2CCApf;
     Decimal S2NHrs, S2NHrf;
     Decimal S2CHrs, S2CHrf;
-	Decimal S2uf;
+    Decimal S2uf;
 };
 
 Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
+
 Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
-Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf, Decimal D);
-Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf, Decimal D);
+
+Decimal
+Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
+           Decimal D);
+
+Decimal
+Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf,
+           Decimal S2f, Decimal S2uf, Decimal D);
+
 Decimal CSA_R2(Decimal omega, \
-						 Decimal w1, \
-						 Decimal wr, \
-						 Decimal taus, \
-						 Decimal S2s, \
-						 Decimal tauf, \
-						 Decimal S2f, \
-						 Decimal S2uf, \
-						 Decimal D2, \
-						 Decimal  (*J_SD)(\
-						 	Decimal,\
-						 	Decimal, \
-						 	Decimal, \
-						 	Decimal, \
-						 	Decimal, \
-						 	Decimal)\
-						);
+                         Decimal w1, \
+                         Decimal wr, \
+                         Decimal taus, \
+                         Decimal S2s, \
+                         Decimal tauf, \
+                         Decimal S2f, \
+                         Decimal S2uf, \
+                         Decimal D2, \
+                         Decimal  (*J_SD)(\
+                            Decimal, \
+                            Decimal, \
+                            Decimal, \
+                            Decimal, \
+                            Decimal, \
+                            Decimal)\
+);
 
 Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m);
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m);
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m);
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation* relax, struct BCParameters *pars, struct Model *m);
-int AIMF_S2(Decimal order_params[3], struct Orient ** A, Decimal * S2[], int length);
-int GAF_S2(Decimal sig[3], struct Orient ** A, struct Orient ** B, Decimal * S2[], int length,  unsigned int mode);
+
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m);
+
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m);
+
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m);
+
+int AIMF_S2(Decimal order_params[3], struct Orient **A, Decimal *S2[], int length);
+
+int GAF_S2(Decimal sig[3], struct Orient **A, struct Orient **B, Decimal *S2[], int length, unsigned int mode);
 
 #endif //DYNAMIX_MODEL_H
