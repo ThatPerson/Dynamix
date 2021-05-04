@@ -324,7 +324,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 		(*violations)++;
 	if (ttauf > upper_lim_tf)
 		(*violations)++;
-	if (ttauf < lower_lim_tf)
+	if (ttauf < lower_lim_tf && ttauf != 0) // ttauf = 1 for models with no fast timescale.
 		(*violations)++;
 	for (i = 0; i < 11; i++) {
 		if (*(S2sP[0]) > 1 || (*S2sP[0]) < 0)
