@@ -260,10 +260,10 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 	}
 	switch (m->model) {
 		case MOD_SMF:
-			maxv[0] = upp_tauf; maxv[1] = 1;
+			maxv[0] = upp_taus; maxv[1] = 1;
 			break;
 		case MOD_SMFT:
-			maxv[0] = upp_tauf; maxv[1] = 1; maxv[2] = 60000;
+			maxv[0] = upp_taus; maxv[1] = 1; maxv[2] = 60000;
 			break;
 		case MOD_EMF:
 			minv[0] = low_taus; minv[1] = S2NH;
