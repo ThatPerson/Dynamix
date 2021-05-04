@@ -547,13 +547,13 @@ int read_system_file(char *filename, struct Model * m) {
                     m->params = 4;
                     m->model = MOD_BGAF;
                 } else if (strcmp(val, "BGAFT") == 0) {
-                    m->params = 6;
+                    m->params = 5;
                     m->model = MOD_BGAFT;
                 } else if (strcmp(val, "BAIMF") == 0) {
                     m->params = 4;
                     m->model = MOD_BAIMF;
                 } else if (strcmp(val, "BAIMFT") == 0) {
-                    m->params = 6;
+                    m->params = 5;
                     m->model = MOD_BAIMFT;
 				} else if (strcmp(val, "AIMF") == 0) {
 					m->params = 8;

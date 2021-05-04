@@ -250,7 +250,6 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         if (model == MOD_BGAFT) {
             pars->Eas = opts[4];
-            pars->Eaf = opts[5];
         }
         pars->S2NHrs = 1; pars->S2NHrf = 1; pars->S2CHrs = 1; pars->S2CHrf = 1;
 	} else if (model == MOD_AIMF || model == MOD_AIMFT) {
@@ -273,7 +272,6 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         AIMF_S2(sigs, As, S2sP, 12);
         if (model == MOD_AIMFT) {
             pars->Eas = opts[4];
-            pars->Eaf = opts[5];
         }
         pars->S2NHrs = 1;pars->S2NHrf = 1;pars->S2CHrs = 1;pars->S2CHrf = 1;
     } else if (model == MOD_EAIMF || model == MOD_EAIMFT) {
