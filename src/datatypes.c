@@ -315,21 +315,21 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
             maxv[6] = 60000; maxv[7] = 60000;
             break;
 	    case MOD_BGAF:
-	        minv[0] = low_taus;
+	        minv[0] = low_taus; maxv[0] = upp_taus;
 	        for (k = 1; k <= 3; k++) { maxv[k] = 0.25; }
 	        break;
 	    case MOD_BGAFT:
-	        minv[0] = low_taus;
+	        minv[0] = low_taus; maxv[0] = upp_taus;
             for (k = 1; k <= 3; k++) { maxv[k] = 0.25; }
             maxv[4] = 60000;
             maxv[5] = 60000;
             break;
         case MOD_BAIMF:
-            minv[0] = low_taus;
+            minv[0] = low_taus; maxv[0] = upp_taus;
             for (k = 1; k <= 3; k++) { maxv[k] = 1; minv[k] = S2NH; }
             break;
         case MOD_BAIMFT:
-            minv[0] = low_taus;
+            minv[0] = low_taus; maxv[0] = upp_taus;
             for (k = 1; k <= 3; k++) { maxv[k] = 1; minv[k] = S2NH; }
             maxv[4] = 60000;
             maxv[5] = 60000;
