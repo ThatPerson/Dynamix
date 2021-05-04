@@ -680,8 +680,8 @@ int read_system_file(char *filename, struct Model * m) {
 	unsigned int k;
 	int c_count, n_count;
 	for (i = 0; i < m->n_residues; i++) {
-		if (m->residues[i].n_relaxation < 5)
-			m->residues[i].ignore = 1;
+		//if (m->residues[i].n_relaxation < 5)
+		//	m->residues[i].ignore = 1;
 		if (m->cn_ratio == CNRATIO_OFF)
 			continue;
 		c_count = 0;
