@@ -301,7 +301,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 	Decimal upper_lim_ts = 10000; // 10 us
 	Decimal lower_lim_tf = 0.0001; // 100 fs
 
-	if (m->ultrafast == ENABLED) {
+	if (m->microsecond == ENABLED) {
 		upper_lim_tf = 10000; // 10 us
 		upper_lim_ts = 10000000; // 10 ms
 	}

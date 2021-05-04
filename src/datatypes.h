@@ -164,6 +164,7 @@ struct Model {
     int myid, numprocs;
     int WS2NH, WS2CH, WS2CN, WS2CC;
 	unsigned int ultrafast;
+	unsigned int microsecond;
     double anneal_temp;
     double anneal_wobb;
     double anneal_therm;

@@ -252,7 +252,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal * minv, Decimal * ma
 	Decimal low_tauf = 0;
 	Decimal upp_tauf = 1;
 
-	if (m->ultrafast == ENABLED) {
+	if (m->microsecond == ENABLED) {
 		low_taus = 1000;
 		upp_taus = 100000;
 		low_tauf = 0;
