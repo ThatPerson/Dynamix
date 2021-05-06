@@ -540,6 +540,8 @@ int AIMF_S2(Decimal order_params[3], struct Orient **A, Decimal *S2[], int lengt
     Decimal S2a = pow(order_params[0], 2.), S2b = pow(order_params[1], 2.), S2c = pow(order_params[2], 2.);
     Decimal SaSbSc = S2a * S2b * S2c;
     Decimal denom;
+
+    // TODO: Need to check the alignment of each vector and what this function actually does?
     for (i = 0; i < length; i++) {
         // A[i].theta, A[i].phi
         // order_params[0], [1], [2] (x, y, z)
@@ -549,8 +551,8 @@ int AIMF_S2(Decimal order_params[3], struct Orient **A, Decimal *S2[], int lengt
         sp = sin(A[i]->rot_phi);
 
         denom = 0;
-        denom += S2b * S2c * pow(st * sp, 2.);
-        denom += S2a * S2c * pow(st * cp, 2.);
+        denom += S2a * S2c * pow(st * sp, 2.);
+        denom += S2b * S2c * pow(st * cp, 2.);
         denom += S2a * S2b * pow(ct, 2.);
 
         *S2[i] = sqrt(SaSbSc / denom);

@@ -200,6 +200,8 @@ void rotate_Y2(struct Orient *or, Decimal alpha, Decimal beta, Decimal gamma) {
 
 
     // trust in Mathematica
+
+    // specifically, these equations result from successive application of rotations in the ZYZ manner.
     Decimal ca = cos(alpha), cb = cos(beta), cg = cos(gamma);
     Decimal sa = sin(alpha), sb = sin(beta), sg = sin(gamma);
     Decimal ct = cos(or->theta), st = sin(or->theta);
