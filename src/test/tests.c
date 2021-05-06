@@ -319,6 +319,17 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.S2NCSAxf, fast, 0.001);
     assert_float_equal(pars.S2NCSAyf, fast, 0.001);
     assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
+    fast = (rand() % 100) / 100.;
+    bcpars_update(&pars, -1, fast);
+    assert_float_equal(pars.S2NHf, fast, 0.001);
+    assert_float_equal(pars.S2CHf, fast, 0.001);
+    assert_float_equal(pars.S2CCApf, fast, 0.001);
+    assert_float_equal(pars.S2CCAcf, fast, 0.001);
+    assert_float_equal(pars.S2CNf, fast, 0.001);
+    assert_float_equal(pars.S2CaNf, fast, 0.001);
+    assert_float_equal(pars.S2NCSAxf, fast, 0.001);
+    assert_float_equal(pars.S2NCSAyf, fast, 0.001);
+    assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
 
     Decimal opts_smft[] = {0.01, 0.9, 3000};
     struct Model m;

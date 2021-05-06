@@ -6,9 +6,9 @@
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations);
 
 int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast);
+int bcpars_update(struct BCParameters *pars, Decimal slow, Decimal fast);
 
-Decimal
-back_calc(struct Residue *resid, struct Relaxation *relax, struct Model *m, int *violations, struct BCParameters *pars);
+Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model *m, int *violations, struct BCParameters *pars);
 
 Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, unsigned int params);
 

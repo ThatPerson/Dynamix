@@ -70,6 +70,42 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     return 0;
 }
 
+int bcpars_update(struct BCParameters *pars, Decimal slow, Decimal fast) {
+    if (slow != -1) {
+        pars->S2NHs = slow;
+        pars->S2NCSAxs = slow;
+        pars->S2NCSAys = slow;
+        pars->S2NCSAxys = slow;
+        pars->S2CSAxs = slow;
+        pars->S2CSAys = slow;
+        pars->S2CSAxys = slow;
+        pars->S2CNs = slow;
+        pars->S2CaNs = slow;
+        pars->S2CHs = slow;
+        pars->S2CCAps = slow;
+        pars->S2CCAcs = slow;
+        pars->S2NHrs = slow;
+        pars->S2CHrs = slow;
+    }
+    if (fast != -1) {
+        pars->S2NHf = fast;
+        pars->S2NCSAxf = fast;
+        pars->S2NCSAyf = fast;
+        pars->S2NCSAxyf = fast;
+        pars->S2CSAxf = fast;
+        pars->S2CSAyf = fast;
+        pars->S2CSAxyf = fast;
+        pars->S2CNf = fast;
+        pars->S2CaNf = fast;
+        pars->S2CHf = fast;
+        pars->S2CCApf = fast;
+        pars->S2CCAcf = fast;
+        pars->S2NHrf = fast;
+        pars->S2CHrf = fast;
+    }
+    return 0;
+}
+
 void check_S2_violations(struct BCParameters *pars, int *violations) {
     if (pars->S2NHs > 1 || pars->S2NHs < 0)
         (*violations)++;
@@ -252,10 +288,12 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2CHrs = 1;
         pars->S2CHrf = 1;
     } else if (model == MOD_BGAF || model == MOD_BGAFT) {
+
         Decimal sigs[3] = {opts[1], opts[2], opts[3]};
-        S2f = 1;
         bcpars_init(pars, 1, 1);
         GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
+        S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
+        bcpars_update(pars, -1, S2f);
         pars->taus = opts[0];
         if (model == MOD_BGAFT) {
             pars->Eas = opts[4];
@@ -285,6 +323,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         Decimal sigs[3] = {opts[1], opts[2], opts[3]};
         AIMF_S2(sigs, As, S2sP, 12);
+        S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
+        bcpars_update(pars, -1, S2f);
         if (model == MOD_AIMFT) {
             pars->Eas = opts[4];
         }
