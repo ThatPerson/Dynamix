@@ -187,7 +187,9 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
     };
     if (model == MOD_SMF || model == MOD_SMFT) {
         // tau, S2, [Ea]
-        bcpars_init(pars, opts[1], 1);
+        S2s = opts[1];
+        S2f = (m->microsecond == ENABLED) ? (resid->S2NH / S2s) : 1;
+        bcpars_init(pars, S2s, S2f);
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
