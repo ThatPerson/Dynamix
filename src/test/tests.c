@@ -130,6 +130,37 @@ static void test_sphericals(void **state) {
     }
 }
 
+static void test_aimf_rot(void **state) {
+    (void) state;
+    // generate orientation. Calculate Y2.
+    // perform rotation, and copy new rot_theta, rot_phi to new orientation.
+    // return original orientation, and perform rotation.
+    // perform calc Y2 on new orientation
+    // test that the results are the same.
+    int q;
+    for (q = 0; q < 100; q++) {
+        struct Orient A, B;
+        A.theta = M_PI * (rand() % 100) / 100.;
+        A.phi = 2 * M_PI * (rand() % 100) / 100.;
+        Decimal a = 2 * M_PI * (rand() % 100) / 100., b = 2 * M_PI * (rand() % 100) / 100., g =
+                2 * M_PI * (rand() % 100) / 100.;
+        calculate_Y2(&A);
+        rotate_Y2(&A, a, b, g);
+        B.theta = A.rot_theta;
+        B.phi = A.rot_phi;
+        calculate_Y2(&A);
+        rotate_Y2(&A, a, b, g);
+        calculate_Y2(&B);
+        int i;
+        Decimal epsilon = 0.001;
+        for (i = 0; i < 5; i++) {
+            assert_float_equal(creal(A.Y2[i]), creal(B.Y2[i]), epsilon);
+            assert_float_equal(cimag(A.Y2[i]), cimag(B.Y2[i]), epsilon);
+        }
+      //  printf("%f, %f -> %f, %f\n", A.theta, A.phi, B.theta, B.phi);
+    }
+}
+
 static void test_rotations(void **state) {
     (void) state;
     struct Orient CACA, CACAp; // ca ca axis
@@ -682,7 +713,8 @@ int main(void) {
             cmocka_unit_test(test_relaxation_egaf),
             cmocka_unit_test(test_relaxation_smf),
             cmocka_unit_test(test_relaxation_emf),
-            cmocka_unit_test(test_bcpars)
+            cmocka_unit_test(test_bcpars),
+            cmocka_unit_test(test_aimf_rot)
     };
     //speedy_gaf();
     return cmocka_run_group_tests(tests, NULL, NULL);

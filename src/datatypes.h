@@ -185,6 +185,7 @@ struct Model {
 struct Orient {
     Decimal phi;
     Decimal theta;
+    Decimal rot_phi, rot_theta;
     Complex Y2[5];
     Complex Y2c[5];
 };

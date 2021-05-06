@@ -543,10 +543,10 @@ int AIMF_S2(Decimal order_params[3], struct Orient **A, Decimal *S2[], int lengt
     for (i = 0; i < length; i++) {
         // A[i].theta, A[i].phi
         // order_params[0], [1], [2] (x, y, z)
-        ct = cos(A[i]->theta);
-        st = sin(A[i]->theta);
-        cp = cos(A[i]->phi);
-        sp = sin(A[i]->phi);
+        ct = cos(A[i]->rot_theta);
+        st = sin(A[i]->rot_theta);
+        cp = cos(A[i]->rot_phi);
+        sp = sin(A[i]->rot_phi);
 
         denom = 0;
         denom += S2b * S2c * pow(st * sp, 2.);

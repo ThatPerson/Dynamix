@@ -63,6 +63,9 @@ void calculate_Y2(struct Orient *or) {
     /* as given https://mathworld.wolfram.com/SphericalHarmonic.html*/
     /* Y2[0] is Y2 -2*/
 
+    or->rot_phi = or->phi;
+    or->rot_theta = or->rot_theta;
+
     or->Y2[4] = (1 / 4.) * (sqrt(15. / (2 * M_PI))) * (pow(sin(or->theta), 2.)) * cexp(2 * or->phi * I);
     or->Y2[3] = (-1 / 2.) * (sqrt(15. / (2 * M_PI))) * sin(or->theta) * cos(or->theta) * cexp(or->phi * I);
     or->Y2[2] = (1 / 4.) * (sqrt(5. / M_PI)) * (3 * pow(cos(or->theta), 2) - 1);
@@ -195,6 +198,19 @@ void rotate_Y2(struct Orient *or, Decimal alpha, Decimal beta, Decimal gamma) {
 
     initialise_dwig(beta, Dw); // we initialise Dw[][] with the reduced Wigner matrices.
 
+
+    // trust in Mathematica
+    Decimal ca = cos(alpha), cb = cos(beta), cg = cos(gamma);
+    Decimal sa = sin(alpha), sb = sin(beta), sg = sin(gamma);
+    Decimal ct = cos(or->theta), st = sin(or->theta);
+    Decimal cp = cos(or->phi), sp = sin(or->phi);
+    Decimal cpg = cos(or->phi + gamma), spg = sin(or->phi + gamma);
+
+    or->rot_theta = acos(cb * ct - cpg * sb * st);
+    Decimal num, den;
+    num = (ct * sa * sb) + (st * (cb * cpg * sa + ca * spg));
+    den = (ca * (ct * sb + cb * cpg * st)) - (sa * st * spg);
+    or->rot_phi = atan2(num, den);
 
 
     /* the Wigner D-matrix D^j_{m', m} is e^(-i m' alpha) d^j_{m', m} e^(-i m gamma) */
