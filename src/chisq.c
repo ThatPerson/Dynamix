@@ -187,9 +187,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
     };
     if (model == MOD_SMF || model == MOD_SMFT) {
         // tau, S2, [Ea]
-        S2s = opts[1];
-        S2f = (m->microsecond == ENABLED) ? (resid->S2NH / S2s) : 1;
-        bcpars_init(pars, S2s, S2f);
+        bcpars_init(pars, opts[1], 1);
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
@@ -294,8 +292,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         Decimal sigs[3] = {opts[1], opts[2], opts[3]};
         bcpars_init(pars, 1, 1);
         GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
-        S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
-        bcpars_update(pars, -1, S2f);
+        //S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
+        //bcpars_update(pars, -1, S2f);
         pars->taus = opts[0];
         if (model == MOD_BGAFT) {
             pars->Eas = opts[4];
@@ -325,8 +323,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         Decimal sigs[3] = {opts[1], opts[2], opts[3]};
         AIMF_S2(sigs, As, S2sP, 12);
-        S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
-        bcpars_update(pars, -1, S2f);
+        //S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
+        //bcpars_update(pars, -1, S2f);
         if (model == MOD_AIMFT) {
             pars->Eas = opts[4];
         }
