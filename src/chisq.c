@@ -297,6 +297,10 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
         bcpars_update(pars, -1, S2f);
         pars->taus = opts[0];
+        for (i = 0; i < 3; i++) {
+            if (sigs[i] < 0 || sigs[i] > 0.52360)
+                (*violations)++;
+        }
         if (model == MOD_BGAFT) {
             pars->Eas = opts[4];
         }
@@ -389,7 +393,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         (*violations)++;
     if (ttauf < lower_lim_tf && ttauf != 0) // ttauf = 1 for models with no fast timescale.
         (*violations)++;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < 12; i++) {
         if (*(S2sP[0]) > 1 || (*S2sP[0]) < 0)
             (*violations)++;
         if (*(S2fP[0]) > 1 || (*S2fP[0]) < 0)
