@@ -87,7 +87,7 @@ mds = {
 		'n': 13,
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sGs', 'sAf', 'sBf', 'sGf', 'Eas', 'Eaf', 'alph', 'beta', 'gamm']
 	}, 	
-	'smf': {
+	'usmf': {
 		'n': 3,
 		'p': ['tau', 'S2', 'S2uf']
 	}, 
