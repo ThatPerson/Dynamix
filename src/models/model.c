@@ -237,7 +237,13 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     if (relax->hydrogen == PROTONATED) R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
     R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
     R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
-    return (R2CSA + R2NH + R2NHr + R2CN + R2CaN) * T_DOWN;
+
+    Decimal RRDC = 0;
+    if (m->model == MOD_RDEMFT) {
+        RRDC = (pars->papbS2 * pars->kex) / (pow(w1, 2) + pow(pars->kex, 2));
+    }
+
+    return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC) * T_DOWN;
 }
 
 Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
@@ -378,8 +384,11 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
                         D_CCAp);
     R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, pars->S2uf,
                         D_CCAc);
-
-    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc) * (Decimal) T_DOWN);
+    Decimal RRDC = 0;
+    if (m->model == MOD_RDEMFT) {
+        RRDC = (pars->papbS2 * pars->kex) / (pow(w1, 2) + pow(pars->kex, 2));
+    }
+    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + RRDC) * (Decimal) T_DOWN);
 }
 
 

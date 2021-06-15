@@ -23,6 +23,10 @@ mds = {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf']
 	}, 
+	'rdemft': {
+		'n': 8,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', 'papbS', 'kex']
+	}, 
 	'demft_no600': {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf']
@@ -187,7 +191,39 @@ mds = {
 		'p': ['taus', 'tauf', 'sAs', 'sBs', 'sCs', 'S2f', 'Eas', 'Eaf', 'alph', 'beta', 'gamm']
 	}, 
 	
+	'baimf': {
+		'n': 4,
+		'p': ['tau', 'sAs', 'sBs', 'sCs']
+	}, 
+	'baimft': {
+		'n': 6,
+		'p': ['tau', 'sAs', 'sBs', 'sCs', 'Ea']
+	}, 
+	'vbaimf': {
+		'n': 7,
+		'p': ['tau', 'sAs', 'sBs', 'sCs', 'alph', 'beta', 'gamm']
+	}, 
+	'vbaimft': {
+		'n': 9,
+		'p': ['tau', 'sAs', 'sBs', 'sCs', 'Ea', 'alph', 'beta', 'gamm']
+	}, 
 	
+	'bgaf': {
+		'n': 4,
+		'p': ['tau', 'sAs', 'sBs', 'sGs']
+	}, 
+	'bgaft': {
+		'n': 6,
+		'p': ['tau', 'sAs', 'sBs', 'sGs', 'Ea']
+	}, 
+	'vbgaf': {
+		'n': 7,
+		'p': ['tau', 'sAs', 'sBs', 'sGs', 'alph', 'beta', 'gamm']
+	}, 
+	'vbgaft': {
+		'n': 9,
+		'p': ['tau', 'sAs', 'sBs', 'sGs', 'Ea', 'alph', 'beta', 'gamm']
+	}, 
 	
 	
 	'uvegaf': {

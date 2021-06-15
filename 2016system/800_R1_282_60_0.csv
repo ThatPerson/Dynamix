@@ -3,6 +3,7 @@ WR = 60000
 W1 = 0
 TEMP = 282
 TYPE = 15NR1
+PROTONATED = 1
 #DATA
 1 -1 -1
 2 -1 -1

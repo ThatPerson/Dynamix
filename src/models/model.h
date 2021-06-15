@@ -25,6 +25,7 @@ struct BCParameters {
     Decimal S2NHrs, S2NHrf;
     Decimal S2CHrs, S2CHrf;
     Decimal S2uf;
+    Decimal papbS2, kex;
 };
 
 Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);

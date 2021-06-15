@@ -38,6 +38,7 @@ typedef double _Complex Complex;
 #define MOD_BGAFT       30
 #define MOD_BAIMF       31
 #define MOD_BAIMFT      32
+#define MOD_RDEMFT      33
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
  * are allowed to vary.

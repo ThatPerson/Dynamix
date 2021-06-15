@@ -125,6 +125,10 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
         (*violations)++;
     if (pars->S2uf > 1 || pars->S2uf < 0)
         (*violations)++;
+
+    if (pars->papbS2 < 0)
+        (*violations)++;
+
 }
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {
@@ -193,22 +197,26 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
-    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT) {
+    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT) {
         S2s = opts[1];
         S2f = resid->S2NH / S2s;
-        if (model == MOD_DEMFT || model == MOD_DEMF) {
+        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT) {
             S2f = opts[3];
         }
         bcpars_init(pars, S2s, S2f);
 
         pars->taus = opts[0];
         pars->tauf = opts[2];
-        if (model == MOD_DEMFT) {
+        if (model == MOD_DEMFT || model == MOD_RDEMFT) {
             pars->Eas = opts[4];
             pars->Eaf = opts[5];
         } else if (model == MOD_EMFT) {
             pars->Eas = opts[3];
             pars->Eaf = opts[4];
+        }
+        if (model == MOD_RDEMFT) {
+            pars->papbS2 = opts[6];
+            pars->kex = opts[7];
         }
     } else if (model == MOD_GAF || model == MOD_GAFT) {
         bcpars_init(pars, 0, 0);

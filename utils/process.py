@@ -9,6 +9,9 @@ import math
 
 def xyz(f):
 	return "%f %f %f" % (f[0], f[1], f[2])
+	
+def point(f):
+	return "%f,%f,%f" % (f[0], f[1], f[2])
 
 ## from https://stackoverflow.com/questions/2413522/weighted-standard-deviation-in-numpy
 def weighted_avg_and_std(values, weights):

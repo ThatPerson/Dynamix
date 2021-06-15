@@ -1,8 +1,12 @@
 FIELD = 600
 WR = 50000
-W1 = 8000
-TEMP = 301
+W1 = 7436 
+% recalculated dataset did not do temperature for this,
+% I've approximated it with that of the one above (as the
+% conditions are ~the same)
+TEMP = 282.35
 TYPE = 15NR1p
+DEUTERATED = 1
 #DATA
 1 -1 -1
 2 1.29431 0.0215
