@@ -156,7 +156,8 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     }
     /* N Dipolar Interactions Contributions */
     R1NH = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHs, tauf, pars->S2NHf, pars->S2uf, D_NH);
-    R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
+    R1NHr = 0;
+    if (relax->hydrogen == PROTONATED) R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
 
@@ -232,7 +233,8 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
 
     /* N Dipolar Interactions Contributions */
     R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHs, tauf, pars->S2NHf, pars->S2uf, D_NH);
-    R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
+    R2NHr = 0;
+    if (relax->hydrogen == PROTONATED) R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
     R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
     R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN) * T_DOWN;
@@ -298,7 +300,8 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
 
     /* N Dipolar Interactions Contributions */
     R1CH = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHs, tauf, pars->S2CHf, pars->S2uf, D_CH);
-    R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
+    R1CHr = 0;
+    if (relax->hydrogen == PROTONATED) R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
     R1CN = Dipolar_R1(omega_13C, omega_15N, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
     R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAps, tauf, pars->S2CCApf, pars->S2uf, D_CCAp);
     R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, pars->S2uf, D_CCAc);
@@ -368,7 +371,8 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     }
     /* N Dipolar Interactions Contributions */
     R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHs, tauf, pars->S2CHf, pars->S2uf, D_CH);
-    R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
+    R2CHr = 0;
+    if (relax->hydrogen == PROTONATED) R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
     R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
     R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAps, tauf, pars->S2CCApf, pars->S2uf,
                         D_CCAp);

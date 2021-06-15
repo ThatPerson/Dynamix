@@ -120,6 +120,8 @@ typedef double _Complex Complex;
 #define T_UP            1000000000
 #define T_S                9
 
+#define DEUTERATED 0
+#define PROTONATED 1
 
 extern time_t start_time;
 extern Decimal Dwig[5][5];
@@ -282,6 +284,7 @@ struct Relaxation {
     Decimal R;
     Decimal Rerror;
     Decimal T; // in Kelvin
+    int hydrogen;
 };
 
 Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp);

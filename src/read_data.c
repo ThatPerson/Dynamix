@@ -246,6 +246,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
     Decimal w1 = -1; // in Hz
     int type = -1;
     Decimal T = -1; // in Kelvin
+    int hydrogen = PROTONATED;
     int resid;
     int rel = -1;
     Decimal R, Re;
@@ -285,6 +286,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
                 m->residues[i].relaxation[rel].w1 = w1;
                 m->residues[i].relaxation[rel].type = type;
                 m->residues[i].relaxation[rel].T = T;
+                m->residues[i].relaxation[rel].hydrogen = hydrogen; // protonation state.
 
             }
             mode = 1;
@@ -309,6 +311,10 @@ int read_relaxation_data(struct Model *m, char *filename) {
                     type = R_13CR1;
                 else if (strcmp(val, "13CR1p") == 0)
                     type = R_13CR1p;
+            } else if (strcmp(key, "PROTONATED") == 0) {
+                hydrogen = PROTONATED;
+            } else if (strcmp(key, "DEUTERATED") == 0) {
+                hydrogen = DEUTERATED;
             } else {
                 printf("Parameter %s unknown.\n", key);
                 fclose(fp);
@@ -793,8 +799,8 @@ int print_system(struct Model *m, char *filename) {
         fprintf(fp, "\tRelaxation Constraints: %d\n", m->residues[i].n_relaxation);
         for (j = 0; j < m->residues[i].n_relaxation; j++) {
             r = &(m->residues[i].relaxation[j]);
-            fprintf(fp, "\t\t%d: %d [%lf, %lf, %lf, %lf] %lf +- %lf\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R,
-                    r->Rerror);
+            fprintf(fp, "\t\t%d: %d [%lf, %lf, %lf, %lf] %lf +- %lf %s\n", j, r->type, r->field, r->wr, r->w1, r->T, r->R,
+                    r->Rerror, (r->hydrogen == PROTONATED ? "PROTONATED":"DEUTERATED"));
         }
     }
     fclose(fp);
