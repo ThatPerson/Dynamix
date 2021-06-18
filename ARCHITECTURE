@@ -12,11 +12,7 @@ This document aims to describe the high-level layout of the Dynamix code. The op
  * *read_data.c*    - functions relating to input of files.
  * *verification.c* - provides test cases of all statistics, rortation, and GAF functions.
  * *global_gaf.c*   - implements global GAF.
- * *models/smf.c*   - implements simple model free R1, R1p, and spectral densities.
- * *models/emf.c*   - implements extended model free R1, R1p, and spectral densities.
- * *models/aimf.c*  - implements anisotropic model free R1, R1p, and spectral densities.
- * *models/egaf.c*  - implements GAF/MF R1, R1p, and spectral densities.
- * *models/gaf.c*   - implements GAF R1, R1p, and spectral densities.
+ * *models/model.c* - implements spectral densities, relaxation rate calculations, and anisotropic order parameter calculation.
  
 ## Python Files
 
@@ -37,7 +33,9 @@ This document aims to describe the high-level layout of the Dynamix code. The op
  * *global/extract.py* - generates GAF orientation files.
     `python extract.py <pdb> <prefix> <mode>`
     (pdb must contain H (eg use AMBER to reduce first), prefix is the output file prefix, mode is 'local' or 'global').
-
+ * *proc.sh*           - not a python file but should be run prior to any of them to collate the output from the various MPI processes.
+ 
+ 
 ## Architecture
 
 Program starts execution at `main.c/main()`. Various components are initialised; eg MPI ranks, initialising Wigner D matrices (`datatypes.c/initialise_dwig()`). 
@@ -50,7 +48,7 @@ For verification purposes, we then print out the system to a file (`read_data.c/
 
 If we are in local mode (`struct Model:global = LOCAL`), then fitting is performed by calling `main.c/run_fitting()`. This loops over all residues assigned to this process, calling `main.c/run_residue()`, which performs `struct Model:n_iter` iterations of generating initial parameters, then calling `crosen.c/simplex()` on `chisq.c/optimize_chisq()`.
 
-`chisq.c/optimize_chisq()` starts by checking if we are in variable orientation mode. If so, it performs the requisite Y2 rotations. Then, it performs a back calculation (`chisq.c/back_calc()`) for each relaxation data point, and sums this to give a chisq value. This summation is parallelised across threads using OpenMP. Then, it back calculates the order parameters and calculates the order parameter contribution to the chisq (directly for MF models, using `models/aimf.c/AIMF_S2()` and `models/gaf.c/GAF_S2()` for AIMF/GAF respectively), before returning this. The `chisq.c/back_calc()` function calls the respective relaxation rate functions in the `models/*.c` files depending on the model of interest, which in turn call their respective spectral densities. If RDC mode is enabled then these are also calculated, though in practice this is deprecated.
+`chisq.c/optimize_chisq()` starts by checking if we are in variable orientation mode. If so, it performs the requisite Y2 rotations. Then, it performs a back calculation (`chisq.c/back_calc()`) for each relaxation data point, and sums this to give a chisq value. This summation is parallelised across threads using OpenMP. Then, it back calculates the order parameters and calculates the order parameter contribution to the chisq (directly for MF models, using `models/model.c/AIMF_S2()` and `models/model.c/GAF_S2()` for AIMF/GAF respectively), before returning this. The `chisq.c/back_calc()` function calls the relaxation rate functions in the `models/model.c` files depending on the model of interest, which in turn call their respective spectral densities. If RDC mode is enabled then these are also calculated, though in practice this is deprecated.
 
 If we are in global mode (`struct Model:global = GLOBAL`), then fitting is performed by calling `global_gaf.c/run_global()`. This complains if MPI parallelisation is being used*, defines a parameter array, and runs `struct Model:n_iter` iterations of `global_gaf.c/run_global_iteration()`, which generates random starting parameters and then calls `global_gaf.c/optimize_global_chisq()` in `crosen.c/simplex()` to optimize the parameters, before then saving the parameters for each residue. `global_gaf.c/optimize_global_chisq()` simply runs `chisq.c/optimize_chisq()` with the current parameters for each residue, and takes the average of the result.
 

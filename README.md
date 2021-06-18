@@ -55,6 +55,18 @@ As of writing, Dynamix can fit the following models;
   Six parameter model. Implements MF order parameter on fast time scale and GAF order parameter for slow motion.
 
 * Model Free with slow Gaussian Axial Fluctuations with Temperature Dependence (EGAFT)
+
+* Single timescale Gaussian Axial Fluctuation (BGAF)
+  Four parameter model, one timescale and three Gaussian deflections.
+  
+* Single timescale Anisotropic Model Free (BAIMF)
+  Four parameter model, one timescale and three order parameters.
+  
+* Single timescale Gaussian Axial Fluctuation with Temperature Dependence (BGAFT)
+  Five parameter model, one timescale and activation energy, and three Gaussian deflections.
+  
+* Single timescale Anisotropic Model Free with temperature dependence (BAIMFT)
+  Four parameter model, one timescale, one activation energy, and three order parameters.
  
 These models can be fit to $^{15}$N and $^{13}$C R$_1$ and R$_{1\rho}$ values, as well as C-C, C-H, N-H and C-N dipolar order parameters. 
 
@@ -63,6 +75,8 @@ Passing the 'OR_VARY = 1' parameter alongside a GAF model (EGAF, EGAFT, GAF, GAF
 $$ Y^{m'}_{l} (r') = \sum_{m=-l}{l} [D_{m'm}^{(l)}(R)]^* Y_{l}^{m}(r) $$
 
 The initial orientation of the X, Y, Z axis has Z aligned along CA-CA, with the CA-N positive relative to CA-C. X is roughly parallel to the C-O bond (C->O positive) and Y is perpendicular to X and Z such that the standard X, Y, Z convention is retained (eg $Y = Z \times X$). These variable models are generally termed `VGAF`, `VGAFT`, `VEGAF`, `VEGAFT`.
+
+Passing the 'ULTRAFAST = 1' will add an additional model free order parameter, S$^2_{uf}$ on an ultrafast timescale. This will also shift the other timescales up to microseconds. These models are typically termed with a preliminary `U`, eg `UDEMF`. Passing 'MICROSECOND = 1' will shift the timescales up to microseconds, which is useful for fitting eg NERRD data. The model `UVGAFT` would therefore be a variable orientation, variable temperature, 6D GAF model fitting slow motions on the order of $\mu$s, fast on the order of ns, and an ultrafast parameter which can be interpreted as picoseconds or faster.
 
 For each model, Dynamix will attempt to optimize the model parameters to best fit the data provided. This is done by performing a simulated annealing and Nelder-Mead simplex optimization. Two steps of optimization are used, as from experience these fit better on different scales. Simulated annealing is used to identify the region near to the global minima. Parameters relating to this annealing will be outlined later. This annealing process is by default optimized to be rather coarse. Once this has found a minimum, Dynamix will then perform iterations of Nelder-Mead fitting in order to locate the true minimum near to this. Each optimum is output into a `residue_N.dat` file. Once complete, it will perform back calculations for each relaxation data point, outputting these into `backcalc_N.dat` files. If one of the GAF modes is used, it will calculate effective S$^{2}_{\text{NH}}$ order parameters and output these into `gaf.dat`.
 
@@ -259,6 +273,8 @@ Will enable error calculation.
 Visualising Results
 -------------------
 
+Prior to any results processing the `utils/proc.sh` script should be run to collate the results of all individual MPI processes into respective files.
+
 **Back Calculations**
 
 Using `gnuplot` the output of Dynamix can be quickly visualised. To view residue specific back calculated data, simply run (after entering the output directory)
@@ -283,7 +299,7 @@ The outputs of Dynamix may be analysed using Python files present in the `utils`
 * `combine_aicbic.py` calculates AIC, BIC and AICc for comparison between multiple models. Input is taken as a list of folders, where the folder name is the model, e.g.; `python3 combine_aicbic.py gaf gaft egaf egaft`. This will produce three files, `AIC.csv`, `BIC.csv`, `AICc.csv` containing the corresponding IC values in columns ordered as given in the command. The output will additionally provide counts for how many residues were best fit for each model.
 * `gen_attr.py` generates an attribute file which may be used with Chimera or ChimeraX for visualising results. Arguments are of the format `python3 gen_attr.py <filename> <model> <tag> <outputfile>` where `<filename>` is the `final.dat`, `<model>` should be the model (lower case, standard form given above e.g. `gaf` for 3D-GAF), `<tag>` should be the protein tag in Chimera (typically `#1`, though this may vary for complexes), and `<outputfile>` is an attribute file. Attributes defined include `chisq`, and others which are labelled as given in the output plots from `plot.py` (or may be seen in `models.py`).
 * `plot_relax.py` generates EPS files `<model>_relax.eps` containing all relaxation data separated by conditions for easy visualisation. Arguments are taken as a list of folders containing `backcalc_*.eps` files. e.g. `python3 plot_relax.py gaf gaft egaf egaft`.
-* `plot.py` generates EPS files `<model>_params.eps` containing the calculated parameters. Input is taken as a list of folders where by default the folder name is taken as the model. For non specific folder names, the parameter `-m<model>` may be passed. If error calculation was enabled, these may be plotted as error bars using the `-e` flag. For example, `python3 plot.py gaf -mgaf -e` will plot `/gaf/` as a GAF model with error bars, while `python3 plot.py egaf egaft demf demft` will produce non error bar plots of those four models.
+* `plot.py` generates EPS files `<model>_params.eps` containing the calculated parameters. Input is taken as a list of folders where by default the folder name is taken as the model. For non specific folder names, the parameter `-m<model>` may be passed. If error calculation was enabled, these may be plotted as error bars using the `-e` flag. For example, `python3 plot.py gaf -mgaf -e` will plot `/gaf/` as a GAF model with error bars, while `python3 plot.py egaf egaft demf demft` will produce non error bar plots of those four models. The `-u` option should be passed if the data is fit with ultrafast or microsecond, as this will shift the y axes for the timescales.
 * `gen_bild.py` generates ChimeraX BILD files for GAF models. A PDB representing the protein of interest should be given in the folder, and the path to this defined on line 9. It may then be run as `python3 gen_bild.py <filename> <outputfile> <v flag> <type>`, where `<filename>` and `<outputfile>` are as given in `gen_attr.py`, `<v flag>` is `1` if variable orientation is enabled[^3].
 
 [^2]: As defined in the SI for Good, D. B., Wang, S., Ward, M. E., Struppe, J., Brown, L. S., Lewandowski, J. R. & Ladizhansky, V. Conformational Dynamics of a Seven Transmembrane Helical Protein Anabaena Sensory Rhodopsin Probed by Solid-State NMR. J Am Chem Soc 136, 2833–2842 (2014).
@@ -312,6 +328,7 @@ The remaining columns depend on which model is in use. In particular;
 * GAF: taus (ns), tauf (ns), sAs, sBs, sGs, sAf, sBf, sGf
 * GAFT: taus (ns), tauf (ns), sAs, sBs, sGs, sAf, sBf, sGf, Eas, Eaf
 
+(for others, see `utils/models.py`)
 
 This may be useful for plotting to see how varied the individual responses are, eg how responsive the model is to one parameter. If `OR_VARY` is enabled, the final three columns will be the $\alpha$, $\beta$ and $\gamma$ angles.
 
