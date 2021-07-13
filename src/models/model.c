@@ -52,8 +52,7 @@ Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, De
 }
 
 
-Decimal
-Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf,
+Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf,
            Decimal S2f, Decimal S2uf, Decimal D) {
     // for SMF and SMFT models, set S2s = 0 and taus = 0.
     return (Decimal) (\
