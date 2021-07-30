@@ -67,6 +67,42 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->S2CHrs = slow;
     pars->S2CHrf = fast;
     pars->S2uf = 1;
+    pars->dS2s = 0;
+    pars->dS2f = 0;
+    return 0;
+}
+
+int bcpars_tdep(struct BCParameters *pars, struct BCParameters *npars, Decimal tfacts, Decimal tfactf) {
+    npars->S2NHs = pars->S2NHs * tfacts;
+    npars->S2NCSAxs = pars->S2NCSAxs * tfacts;
+    npars->S2NCSAys = pars->S2NCSAys * tfacts;
+    npars->S2NCSAxys = pars->S2NCSAxys * tfacts;
+    npars->S2CSAxs = pars->S2CSAxs * tfacts;
+    npars->S2CSAys = pars->S2CSAys * tfacts;
+    npars->S2CSAxys = pars->S2CSAxys * tfacts;
+    npars->S2CNs = pars->S2CNs * tfacts;
+    npars->S2CaNs = pars->S2CaNs * tfacts;
+    npars->S2CHs = pars->S2CHs * tfacts;
+    npars->S2CCAps = pars->S2CCAps * tfacts;
+    npars->S2CCAcs = pars->S2CCAcs * tfacts;
+    npars->S2NHrs = pars->S2NHrs * tfacts;
+    npars->S2CHrs = pars->S2CHrs * tfacts;
+
+    npars->S2NHf = pars->S2NHf * tfactf;
+    npars->S2NCSAxf = pars->S2NCSAxf * tfactf;
+    npars->S2NCSAyf = pars->S2NCSAyf * tfactf;
+    npars->S2NCSAxyf = pars->S2NCSAxyf * tfactf;
+    npars->S2CSAxf = pars->S2CSAxf * tfactf;
+    npars->S2CSAyf = pars->S2CSAyf * tfactf;
+    npars->S2CSAxyf = pars->S2CSAxyf * tfactf;
+    npars->S2CNf = pars->S2CNf * tfactf;
+    npars->S2CaNf = pars->S2CaNf * tfactf;
+    npars->S2CHf = pars->S2CHf * tfactf;
+    npars->S2CCApf = pars->S2CCApf * tfactf;
+    npars->S2CCAcf = pars->S2CCAcf * tfactf;
+    npars->S2NHrf = pars->S2NHrf * tfactf;
+    npars->S2CHrf = pars->S2CHrf * tfactf;
+   
     return 0;
 }
 
@@ -197,17 +233,17 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
-    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT) {
+    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
         S2s = opts[1];
         S2f = resid->S2NH / S2s;
-        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT) {
+        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
             S2f = opts[3];
         }
         bcpars_init(pars, S2s, S2f);
 
         pars->taus = opts[0];
         pars->tauf = opts[2];
-        if (model == MOD_DEMFT || model == MOD_RDEMFT) {
+        if (model == MOD_DEMFT || model == MOD_RDEMFT || model == MOD_SDEMFT) {
             pars->Eas = opts[4];
             pars->Eaf = opts[5];
         } else if (model == MOD_EMFT) {
@@ -217,6 +253,12 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         if (model == MOD_RDEMFT) {
             pars->papbS2 = opts[6];
             pars->kex = opts[7];
+        } else if (model == MOD_SDEMFT) {
+            pars->dS2s = opts[6];
+            pars->dS2f = opts[7];
+        } else if (model == MOD_SDEMF) {
+            pars->dS2s = opts[4];
+            pars->dS2f = opts[5];
         }
     } else if (model == MOD_GAF || model == MOD_GAFT) {
         bcpars_init(pars, 0, 0);

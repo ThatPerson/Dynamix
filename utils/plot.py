@@ -127,11 +127,12 @@ def run_plot(folder):
 
 		if ("Ea" in mod['p'][pl]):
 			axs[xd].set_ylim(bottom=0, top = 60000)
-		if ('S2' in mod['p'][pl]):
+		if ('S2' in mod['p'][pl] and "dS2" not in mod['p'][pl]):
 			axs[xd].set_ylim(top=1)
 			kl = axs[xd].get_ylim()
 			if (kl[0] < 0.2):
 				axs[xd].set_ylim(bottom=0.5)
+		
 
 		if ('sA' in mod['p'][pl] or 'sB' in mod['p'][pl] or 'sG' in mod['p'][pl]):
 			axs[xd].set_ylim(bottom=0)

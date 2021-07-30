@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <complex.h>
+#include <chisq.h>
 #include "model.h"
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
@@ -133,17 +134,28 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
     Decimal J1;
 
+
+    //int bcpars_tdep(struct BCParameters *pars, struct BCParameters *npars, Decimal tfacts, Decimal tfactf) {
+
+    struct BCParameters npars = *pars;
+    if (model == MOD_SDEMFT || model == MOD_SDEMF) {
+        Decimal tfacts = 1 + pars->dS2s * (relax->T - 300);
+        Decimal tfactf = 1 + pars->dS2f * (relax->T - 300);
+
+        bcpars_tdep(pars, &npars, tfacts, tfactf);
+    }
+
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF ||
         model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_15N * T_UP);
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_15N * T_UP);
         d2xy = (Decimal) sq(0.000001 * omega_15N * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-        J1 = J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
+        J1 = J0(omega_15N, taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf);
         R1CSAx = (1 / 15.) * d2x * J1; // from Bremi1997
-        J1 = J0(omega_15N, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, pars->S2uf);
+        J1 = J0(omega_15N, taus, npars.S2NCSAys, tauf, npars.S2NCSAyf, npars.S2uf);
         R1CSAy = (1 / 15.) * d2y * J1;
-        J1 = J0_CC(omega_15N, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, pars->S2uf);
+        J1 = J0_CC(omega_15N, taus, npars.S2NCSAxys, tauf, npars.S2NCSAxyf, npars.S2uf);
         R1CSAxy = (1 / 15.) * d2xy * J1;
         /** Eq A30, Bremi1997 */
         R1CSA = R1CSAx + R1CSAy + 2. * R1CSAxy;
@@ -151,14 +163,14 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
         d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
         d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
         d2tot *= sq(0.000001 * omega_15N * T_UP);
-        R1CSA = (2 / 15.) * d2tot * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
+        R1CSA = (2 / 15.) * d2tot * J0(omega_15N, taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf);
     }
     /* N Dipolar Interactions Contributions */
-    R1NH = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHs, tauf, pars->S2NHf, pars->S2uf, D_NH);
+    R1NH = Dipolar_R1(omega_15N, omega_1H, taus, npars.S2NHs, tauf, npars.S2NHf, npars.S2uf, D_NH);
     R1NHr = 0;
-    if (relax->hydrogen == PROTONATED) R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
-    R1CN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
-    R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
+    if (relax->hydrogen == PROTONATED) R1NHr = Dipolar_R1(omega_15N, omega_1H, taus, npars.S2NHrs, tauf, npars.S2NHrf, npars.S2uf, D_NHr);
+    R1CN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
+    R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.S2uf, D_NCA);
 
 
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
@@ -189,6 +201,8 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
 
+
+
     Decimal *csa;
     csa = res->csaN;
 
@@ -207,39 +221,47 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
 
     Decimal J0sum = 0;
 
+    struct BCParameters npars = *pars;
+    if (model == MOD_SDEMFT || model == MOD_SDEMF) {
+        Decimal tfacts = 1 + pars->dS2s * (relax->T - 300);
+        Decimal tfactf = 1 + pars->dS2f * (relax->T - 300);
+
+        bcpars_tdep(pars, &npars, tfacts, tfactf);
+    }
+
 
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF ||
         model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
-        R2CSAx = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf, d2x, J0);
-        R2CSAy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAys, tauf, pars->S2NCSAyf, pars->S2uf, d2y, J0);
-        R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, pars->S2NCSAxys, tauf, pars->S2NCSAxyf, pars->S2uf, d2xy, J0_CC);
+        R2CSAx = CSA_R2(omega_15N, w1, wr, taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf, d2x, J0);
+        R2CSAy = CSA_R2(omega_15N, w1, wr, taus, npars.S2NCSAys, tauf, npars.S2NCSAyf, npars.S2uf, d2y, J0);
+        R2CSAxy = CSA_R2(omega_15N, w1, wr, taus, npars.S2NCSAxys, tauf, npars.S2NCSAxyf, npars.S2uf, d2xy, J0_CC);
         /**
          * Equation for spectral density for xy taken from Manuscript
          */
         R2CSA = R2CSAx + R2CSAy + 2. * R2CSAxy;
     } else {
-        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
-        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
-        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
-        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf);
+        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf);
+        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf);
+        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 - wr), taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf);
+        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 + wr), taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf);
 
         d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
         d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
         d2tot *= sq(0.000001 * omega_15N * T_UP);
-        R2CSA = (1 / 45.) * d2tot * (J0sum + 3 * J0(omega_15N, taus, pars->S2NCSAxs, tauf, pars->S2NCSAxf, pars->S2uf));
+        R2CSA = (1 / 45.) * d2tot * (J0sum + 3 * J0(omega_15N, taus, npars.S2NCSAxs, tauf, npars.S2NCSAxf, npars.S2uf));
 
     }
 
     /* N Dipolar Interactions Contributions */
-    R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHs, tauf, pars->S2NHf, pars->S2uf, D_NH);
+    R2NH = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, npars.S2NHs, tauf, npars.S2NHf, npars.S2uf, D_NH);
     R2NHr = 0;
-    if (relax->hydrogen == PROTONATED) R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, pars->S2NHrs, tauf, pars->S2NHrf, pars->S2uf, D_NHr);
-    R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
-    R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, pars->S2CaNs, tauf, pars->S2CaNf, pars->S2uf, D_NCA);
+    if (relax->hydrogen == PROTONATED) R2NHr = Dipolar_R2(omega_15N, omega_1H, w1, wr, taus, npars.S2NHrs, tauf, npars.S2NHrf, npars.S2uf, D_NHr);
+    R2CN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
+    R2CaN = Dipolar_R2(omega_15N, omega_13C, w1, wr, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.S2uf, D_NCA);
 
     Decimal RRDC = 0;
     if (m->model == MOD_RDEMFT) {
-        RRDC = (pars->papbS2 * pars->kex) / (pow(w1, 2) + pow(pars->kex, 2));
+        RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
 
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC) * T_DOWN;
@@ -278,7 +300,13 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
 
     Decimal *csa;
     csa = res->csaC;
+    struct BCParameters npars = *pars;
+    if (model == MOD_SDEMFT || model == MOD_SDEMF) {
+        Decimal tfacts = 1 + pars->dS2s * (relax->T - 300);
+        Decimal tfactf = 1 + pars->dS2f * (relax->T - 300);
 
+        bcpars_tdep(pars, &npars, tfacts, tfactf);
+    }
 /* N CSA relaxation contribution */
     Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAc, R1CCAp;
     Decimal J1;
@@ -287,29 +315,29 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
         d2x = (Decimal) sq(((csa[2] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2xy = (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
-        J1 = J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
+        J1 = J0(omega_13C, taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf);
         R1CSAx = (1 / 15.) * d2x * J1; // from Bremi1997
-        J1 = J0(omega_13C, taus, pars->S2CSAys, tauf, pars->S2CSAyf, pars->S2uf);
+        J1 = J0(omega_13C, taus, npars.S2CSAys, tauf, npars.S2CSAyf, npars.S2uf);
         R1CSAy = (1 / 15.) * d2y * J1;
-        J1 = J0_CC(omega_13C, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, pars->S2uf);
+        J1 = J0_CC(omega_13C, taus, npars.S2CSAxys, tauf, npars.S2CSAxyf, npars.S2uf);
         R1CSAxy = (1 / 15.) * d2xy * J1;
         R1CSA = R1CSAx + R1CSAy + 2. * R1CSAxy;
     } else {
         d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
         d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
         d2tot *= sq(0.000001 * omega_13C * T_UP);
-        R1CSA = (2 / 15.) * d2tot * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
+        R1CSA = (2 / 15.) * d2tot * J0(omega_13C, taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf);
     }
 
 
 
     /* N Dipolar Interactions Contributions */
-    R1CH = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHs, tauf, pars->S2CHf, pars->S2uf, D_CH);
+    R1CH = Dipolar_R1(omega_13C, omega_1H, taus, npars.S2CHs, tauf, npars.S2CHf, npars.S2uf, D_CH);
     R1CHr = 0;
-    if (relax->hydrogen == PROTONATED) R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
-    R1CN = Dipolar_R1(omega_13C, omega_15N, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
-    R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAps, tauf, pars->S2CCApf, pars->S2uf, D_CCAp);
-    R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, pars->S2uf, D_CCAc);
+    if (relax->hydrogen == PROTONATED) R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, npars.S2CHrs, tauf, npars.S2CHrf, npars.S2uf, D_CHr);
+    R1CN = Dipolar_R1(omega_13C, omega_15N, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
+    R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf, D_CCAp);
+    R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf, D_CCAc);
 
     return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc) * T_DOWN;
 }
@@ -348,7 +376,13 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
 
     Decimal *csa;
     csa = res->csaC;
+    struct BCParameters npars = *pars;
+    if (model == MOD_SDEMFT || model == MOD_SDEMF) {
+        Decimal tfacts = 1 + pars->dS2s * (relax->T - 300);
+        Decimal tfactf = 1 + pars->dS2f * (relax->T - 300);
 
+        bcpars_tdep(pars, &npars, tfacts, tfactf);
+    }
     /* CSA relaxation contribution */
     Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp;
     Decimal J0sum = 0;
@@ -358,34 +392,34 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
         d2y = (Decimal) sq(((csa[1] - csa[0]) * 0.000001) * omega_13C * T_UP);
         d2xy = (Decimal) sq(0.000001 * omega_13C * T_UP) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
-        R2CSAx = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf, d2x, J0);
-        R2CSAy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAys, tauf, pars->S2CSAyf, pars->S2uf, d2y, J0);
-        R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, pars->S2CSAxys, tauf, pars->S2CSAxyf, pars->S2uf, d2xy, J0_CC);
+        R2CSAx = CSA_R2(omega_13C, w1, wr, taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf, d2x, J0);
+        R2CSAy = CSA_R2(omega_13C, w1, wr, taus, npars.S2CSAys, tauf, npars.S2CSAyf, npars.S2uf, d2y, J0);
+        R2CSAxy = CSA_R2(omega_13C, w1, wr, taus, npars.S2CSAxys, tauf, npars.S2CSAxyf, npars.S2uf, d2xy, J0_CC);
         R2CSA = R2CSAx + R2CSAy + 2. * R2CSAxy;
     } else {
-        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
-        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
-        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 - wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
-        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 + wr), taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf);
+        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 - 2 * wr), taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf);
+        J0sum += (2 / 3.) * J0(2 * M_PI * (w1 + 2 * wr), taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf);
+        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 - wr), taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf);
+        J0sum += (4 / 3.) * J0(2 * M_PI * (w1 + wr), taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf);
 
         d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
         d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
         d2tot *= sq(0.000001 * omega_13C * T_UP);
-        R2CSA = (1 / 45.) * d2tot * (J0sum + 3 * J0(omega_13C, taus, pars->S2CSAxs, tauf, pars->S2CSAxf, pars->S2uf));
+        R2CSA = (1 / 45.) * d2tot * (J0sum + 3 * J0(omega_13C, taus, npars.S2CSAxs, tauf, npars.S2CSAxf, npars.S2uf));
 
     }
     /* N Dipolar Interactions Contributions */
-    R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHs, tauf, pars->S2CHf, pars->S2uf, D_CH);
+    R2CH = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, npars.S2CHs, tauf, npars.S2CHf, npars.S2uf, D_CH);
     R2CHr = 0;
-    if (relax->hydrogen == PROTONATED) R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, pars->S2CHrs, tauf, pars->S2CHrf, pars->S2uf, D_CHr);
-    R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, pars->S2CNs, tauf, pars->S2CNf, pars->S2uf, D_CN);
-    R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAps, tauf, pars->S2CCApf, pars->S2uf,
+    if (relax->hydrogen == PROTONATED) R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, npars.S2CHrs, tauf, npars.S2CHrf, npars.S2uf, D_CHr);
+    R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
+    R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf,
                         D_CCAp);
-    R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, pars->S2CCAcs, tauf, pars->S2CCAcf, pars->S2uf,
+    R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf,
                         D_CCAc);
     Decimal RRDC = 0;
     if (m->model == MOD_RDEMFT) {
-        RRDC = (pars->papbS2 * pars->kex) / (pow(w1, 2) + pow(pars->kex, 2));
+        RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
     return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + RRDC) * (Decimal) T_DOWN);
 }

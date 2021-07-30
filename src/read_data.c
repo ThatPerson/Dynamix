@@ -548,6 +548,12 @@ int read_system_file(char *filename, struct Model *m) {
                 } else if (strcmp(val, "RDEMFT") == 0) {
                     m->params = 8;
                     m->model = MOD_RDEMFT;
+                } else if (strcmp(val, "SDEMFT") == 0) {
+                    m->params = 8;
+                    m->model = MOD_SDEMFT;
+                } else if (strcmp(val, "SDEMF") == 0) {
+                    m->params = 6;
+                    m->model = MOD_SDEMF;
                 } else if (strcmp(val, "EGAF") == 0) {
                     m->params = 6;
                     m->model = MOD_EGAF;

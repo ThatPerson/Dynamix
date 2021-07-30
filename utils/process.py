@@ -199,17 +199,21 @@ class Pdb:
 	def center(self, i):
 		return self.vecs[i, 3, :]
 		
-	def read_pdb(self, fn):
+	def read_pdb(self, fn, v = 0):
 		self.coords = np.zeros((self.nres+2, 5, 3))
 		self.pp = np.zeros((self.nres+2, 6, 3))
 		types = ["H", "N", "C", "O", "CA", "CAp"]
 		# [residue, type, xyz]
 		# types go [H, N, C, O]
+		modeln = 0
 		with open(fn, "r") as f:
 			for l in f:
+				if (l[:len("MODEL")] == "MODEL"):
+					k = l.split()
+					modeln = int(k[1]) -1
 				if (l[:len("ATOM")] != "ATOM"):
 					continue
-				residue = int(l[23:27])
+				residue = int(l[23:27]) + (v * modeln)
 				x = float(l[31:39])
 				y = float(l[39:47])
 				z = float(l[47:55])
@@ -229,10 +233,10 @@ class Pdb:
 						
 		return self.coords
 		
-	def __init__(self, fn="", nres=0):
+	def __init__(self, fn="", nres=0, v=0):
 		self.nres = nres
 		if (fn != ""):
-			self.read_pdb(fn)
+			self.read_pdb(fn, v)
 
 
 class Results:

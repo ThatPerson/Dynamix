@@ -27,6 +27,14 @@ mds = {
 		'n': 8,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', 'papbS', 'kex']
 	}, 
+	'sdemft': {
+		'n': 8,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf', 'dS2s', 'dS2f']
+	}, 
+	'sdemf': {
+		'n': 6,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'dS2s', 'dS2f']
+	}, 
 	'demft_no600': {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf']

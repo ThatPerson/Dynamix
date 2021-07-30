@@ -38,6 +38,8 @@ mdict["gaf"] = "GAF + GAF"
 mdict["gaft"] = "GAF + GAF / T"
 mdict["vgaf"] = "GAF + GAF / V"
 mdict["vgaft"] = "GAF + GAF / V + T"
+mdict["sdemft"] = "MF + MF / T + dS"
+mdict["sdemf"] = "MF + MF / dS"
 
 mls_pars = [models.mds[p]["n"] for p in mls]
 mls_ticks = [(mdict[m] if (m in mdict) else m) for m in mls]
@@ -86,6 +88,8 @@ for i in range(0, len(mls)):
 		color = 'tab:green'
 	if ("V + T" in mls_ticks[i]):
 		color = 'tab:red'
+	if ("dS" in mls_ticks[i]):
+		color='tab:cyan'
 	plt.plot(x, y, fmt, color=color, alpha=1)
 
 
@@ -96,7 +100,7 @@ for i in range(0, len(mls)):
 	mlst.append("%s (%d)" % (mls_ticks[i].upper(), mls_pars[i]))
 
 ax.set_xticks(np.arange(1, len(mls)+1))
-#ax.set_yscale("log")
+ax.set_yscale("log")
 plt.xticks(rotation=90)
 ax.set_xticklabels(mlst)
 plt.ylim([0, 4000])
