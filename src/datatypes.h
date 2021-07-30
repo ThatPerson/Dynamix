@@ -287,7 +287,7 @@ struct Residue {
 struct Relaxation {
     Decimal field; // in MHz
     Decimal wr; // in Hz
-    Decimal compensate_wr;
+    Decimal compensate_w1;
     int compensate;
     Decimal w1; // in Hz
     int type;
