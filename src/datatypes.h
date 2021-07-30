@@ -83,6 +83,8 @@ typedef double _Complex Complex;
 #define COMPENSATE 1
 #define NO_COMPENSATE 0
 
+#define NONE 0
+
 #define CNRATIO_ON        1
 #define CNRATIO_OFF        0
 
@@ -285,6 +287,8 @@ struct Residue {
 struct Relaxation {
     Decimal field; // in MHz
     Decimal wr; // in Hz
+    Decimal compensate_wr;
+    int compensate;
     Decimal w1; // in Hz
     int type;
     Decimal R;

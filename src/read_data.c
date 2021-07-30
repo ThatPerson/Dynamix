@@ -242,9 +242,9 @@ int read_relaxation_data(struct Model *m, char *filename) {
     char key[255], val[255];
     unsigned int i;
     Decimal field = -1; // in MHz
-    Decimal wr = -1; // in Hz
+    Decimal wr = -1, c_wr = -1; // in Hz
     Decimal w1 = -1; // in Hz
-    int type = -1;
+    int type = -1, compensate = NO_COMPENSATE;
     Decimal T = -1; // in Kelvin
     int hydrogen = PROTONATED;
     int resid;
@@ -284,6 +284,8 @@ int read_relaxation_data(struct Model *m, char *filename) {
                 m->residues[i].relaxation[rel].field = field;
                 m->residues[i].relaxation[rel].wr = wr;
                 m->residues[i].relaxation[rel].w1 = w1;
+                m->residues[i].relaxation[rel].compensate = compensate;
+                m->residues[i].relaxation[rel].compensate_wr = (compensate == COMPENSATE ? c_wr : 0);
                 m->residues[i].relaxation[rel].type = type;
                 m->residues[i].relaxation[rel].T = T;
                 m->residues[i].relaxation[rel].hydrogen = hydrogen; // protonation state.
@@ -315,6 +317,9 @@ int read_relaxation_data(struct Model *m, char *filename) {
                 hydrogen = PROTONATED;
             } else if (strcmp(key, "DEUTERATED") == 0) {
                 hydrogen = DEUTERATED;
+            } else if (strcmp(key, "COMPENSATEWR") == 0) {
+                compensate = COMPENSATE;
+                c_wr = atof(val);
             } else {
                 printf("Parameter %s unknown.\n", key);
                 fclose(fp);

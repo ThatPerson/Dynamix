@@ -104,7 +104,9 @@ Decimal CSA_R2(Decimal omega, \
 );
 }
 
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+    (void) mode; // R1 has no wr/w1 dependence in this model.
+
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
@@ -176,10 +178,15 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
 }
 
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
-    Decimal w1 = relax->w1, wr = relax->wr;
+    Decimal w1 = relax->w1, wr;
+    if ((mode & COMPENSATE) != 0)
+        wr = relax->compensate_wr;
+    else
+        wr = relax->wr;
+
     /* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
      * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
      * software division) I've predefined it. Bond length taken as 1.02 A */
@@ -267,7 +274,8 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC) * T_DOWN;
 }
 
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+    (void) mode;
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
 
@@ -342,10 +350,14 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc) * T_DOWN;
 }
 
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m) {
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
-    Decimal w1 = relax->w1, wr = relax->wr;
+    Decimal w1 = relax->w1, wr;
+    if ((mode & COMPENSATE) != 0)
+        wr = relax->compensate_wr;
+    else
+        wr = relax->wr;
     /* In the original MATLAB code the dipolar coupling constant was calculated on the fly.
      * Here, because Planck's constant is 10^-34 (which would require a Decimal128, and
      * software division) I've predefined it. Bond length taken as 1.02 A */
