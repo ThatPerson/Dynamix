@@ -251,7 +251,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
     int rel = -1;
     Decimal R, Re;
     while (fgets(line, len, fp)) {
-        if (line[0] == '%')
+        if (line[0] == '%' || strlen(line) < 2)
             continue; // comment
         if (strncmp(line, "#DATA", 5) == 0) {
             for (i = 0; i < m->n_residues; i++) {
