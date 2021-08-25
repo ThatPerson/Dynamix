@@ -201,6 +201,7 @@ class Pdb:
 		
 	def read_pdb(self, fn, v = 0):
 		self.coords = np.zeros((self.nres+2, 5, 3))
+		print(self.nres)
 		self.pp = np.zeros((self.nres+2, 6, 3))
 		types = ["H", "N", "C", "O", "CA", "CAp"]
 		# [residue, type, xyz]
@@ -214,6 +215,7 @@ class Pdb:
 				if (l[:len("ATOM")] != "ATOM"):
 					continue
 				residue = int(l[23:27]) + (v * modeln)
+			#	print(residue)
 				x = float(l[31:39])
 				y = float(l[39:47])
 				z = float(l[47:55])
