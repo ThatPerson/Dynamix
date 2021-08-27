@@ -12,7 +12,7 @@ Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model 
 
 Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, unsigned int params);
 
-int back_calculate(Decimal *opts, struct Residue *resid, struct Model *m, char *filename, unsigned int params);
+int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsigned int params);
 
 void check_S2_violations(struct BCParameters *pars, int *violations);
 

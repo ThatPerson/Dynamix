@@ -415,6 +415,7 @@ int read_system_file(char *filename, struct Model *m) {
 
     /* Initialise */
     m->n_error_iter = 0;
+    m->n_bc_iter = 1;
     m->model = MOD_UNDEFINED;
     m->or_variation = INVARIANT_A;
     m->n_residues = 0;
@@ -643,6 +644,8 @@ int read_system_file(char *filename, struct Model *m) {
                 m->n_nm_iter = (unsigned int) atoi(val);
             } else if (strcmp(key, "N_ANNEAL_ITER") == 0) {
                 m->n_anneal_iter = (unsigned int) atoi(val);
+            } else if (strcmp(key, "N_BC_ITER") == 0) {
+                m->n_bc_iter = (unsigned int) atoi(val);
             } else if (strcmp(key, "ANNEAL_TEMP") == 0) {
                 m->anneal_temp = atof(val);
             } else if (strcmp(key, "ANNEAL_WOBB") == 0) {

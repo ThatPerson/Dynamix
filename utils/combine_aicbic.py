@@ -81,13 +81,13 @@ for model in sys.argv[1:]:
 		calc_R = x[:, 1]
 		ign = 0
 		
-		exp_R = x[:, 2]
+		exp_R = x[:, 3]
 		
 		cr = exp_R[exp_R > 0]
 		if (len(cr) < 5):
 			ign = 1
 		
-		err_R = x[:, 3]
+		err_R = x[:, 4]
 		n_data = np.size(calc_R)
 		sigma = err_R / 2.
 
@@ -117,6 +117,8 @@ for model in sys.argv[1:]:
 		if (ops_s[1] == 10):
 			max_op = 3
 		for inc in range(0, max_op):
+			if (max_op == 1):
+				continue # ignore C-H for now. TODO CHECKME WARN 
 			calc = ops[0, 1 + (inc*3)]
 			exp = ops[0, 2 + (inc*3)]
 			if (exp <= 0):

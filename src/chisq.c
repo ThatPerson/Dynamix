@@ -30,8 +30,10 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "datatypes.h"
 #include "models/model.h"
+#include "errors.h"
 
 int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->taus = 0;
@@ -598,13 +600,15 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
  *  File to output calculations into
  * @return Returns 1 if successful, else -1.
  */
-int back_calculate(Decimal *opts, struct Residue *resid, struct Model *m, char *filename, unsigned int params) {
+int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsigned int params) {
     /* opts is a pointer to an array containing;
      *
      *  for SMF, [tau, S2]
      */
     //if (opts[0] == -1)
     //	return -1;
+    if (m->n_bc_iter <= 0)
+        return 0;
     unsigned int or_variations = m->or_variation;
     Decimal calc_R;
     FILE *fp;
@@ -616,35 +620,76 @@ int back_calculate(Decimal *opts, struct Residue *resid, struct Model *m, char *
     int violations = 0;
     unsigned int i;
     Decimal alpha, beta, gamma;
-    if (or_variations == VARIANT_A) {
-        alpha = (Decimal) opts[params - 3];
-        beta = (Decimal) opts[params - 2];
-        gamma = (Decimal) opts[params - 1];
-        if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
-            violations++;
-        for (i = 0; i < N_OR; i++) {
-            calculate_Y2(&(resid->orients[i]));
-            rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
+    //(m->residues[l].parameters),
+    Decimal *pars = resid->parameters;
+    Decimal *pars_err = NULL;
+    if (m->error_mode == ENABLED) pars_err = resid->errors_std;
+
+    unsigned int c_bc_iter;
+
+    Decimal *opts = NULL;
+    opts = (Decimal *) malloc(sizeof(Decimal) * params);
+
+    Decimal **rate_temp = NULL;
+    rate_temp = (Decimal **) malloc(sizeof(Decimal *) * resid->n_relaxation);
+    if (rate_temp == NULL)
+        exit(-1);
+    for (i = 0; i < resid->n_relaxation; i++) {
+        rate_temp[i] = NULL;
+        rate_temp[i] = (Decimal *) malloc(sizeof(Decimal) * m->n_bc_iter);
+        if (rate_temp[i] == NULL)
+            exit(-1);
+    }
+
+
+    for (c_bc_iter = 0; c_bc_iter < m->n_bc_iter; c_bc_iter++) {
+        for (i = 0; i < params; i++) {
+            opts[i] = (m->error_mode == ENABLED) ? norm_rand(pars[i], pars_err[i]) : pars[i];
+        }
+        if (or_variations == VARIANT_A) {
+            alpha = (Decimal) opts[params - 3];
+            beta = (Decimal) opts[params - 2];
+            gamma = (Decimal) opts[params - 1];
+            if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
+                violations++;
+            for (i = 0; i < N_OR; i++) {
+                calculate_Y2(&(resid->orients[i]));
+                rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
+            }
+        }
+        struct BCParameters pars;
+        int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
+        if (k != 0) {
+            return -1;
+        }
+        for (i = 0; i < resid->n_relaxation; i++) {
+            calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &pars);
+            rate_temp[i][c_bc_iter] = calc_R;
+            /*fprintf(fp, "%d\t%lf\t%lf\t%lf", i, (calc_R < 0 ? -1. : calc_R), resid->relaxation[i].R,
+                    resid->relaxation[i].Rerror);
+
+            if (VERBOSE)
+                fprintf(fp, "\t%lf\t%lf\t%lf\t%lf\t%d", resid->relaxation[i].field, resid->relaxation[i].wr,
+                        resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type);
+            fprintf(fp, "\n");*/
         }
     }
-    struct BCParameters pars;
-    int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
-    if (k != 0) {
-        return -1;
-    }
-    for (i = 0; i < resid->n_relaxation; i++) {
-        calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &pars);
 
-        fprintf(fp, "%d\t%lf\t%lf\t%lf", i, (calc_R < 0 ? -1. : calc_R), resid->relaxation[i].R,
-                resid->relaxation[i].Rerror);
+    free(opts);
+    Decimal calcR, calcE;
+    for (i = 0; i < resid->n_relaxation; i++) {
+        calc_statistics(rate_temp[i], m->n_bc_iter, &calcR, &calcE);
+        fprintf(fp, "%d\t%lf\t%lf\t%lf\t%lf", i, calcR, 2 * calcE, resid->relaxation[i].R,
+                    resid->relaxation[i].Rerror);
 
         if (VERBOSE)
             fprintf(fp, "\t%lf\t%lf\t%lf\t%lf\t%d", resid->relaxation[i].field, resid->relaxation[i].wr,
-                    resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type);
+                  resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type);
         fprintf(fp, "\n");
+        free(rate_temp[i]);
     }
-
+    free(rate_temp);
 
     fclose(fp);
-    return -1;
+    return 1;
 }

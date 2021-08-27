@@ -50,25 +50,26 @@ def run_plot(folder):
 		print(np.shape(x))
 		print(np.shape(data[:, i, 2]))
 
-		R = data[:, i, 2]
-		Rerr = data[:, i, 3]
+		R = data[:, i, 3]
+		Rerr = data[:, i, 4]
 		Rcalc = data[:, i, 1]
+		Rcalcerr = data[:, i, 2]
 		R = R[Rcalc > 0]
 		Rerr = Rerr[Rcalc > 0]
 		Rcalc = Rcalc[Rcalc > 0]
 
-		axs[curr_x,curr_y].errorbar(x, data[:, i, 2], yerr=data[:, i, 3], fmt='k,')
-		axs[curr_x,curr_y].plot(x, data[:, i, 1], 'b,')
+		axs[curr_x,curr_y].errorbar(x, data[:, i, 3], yerr=data[:, i, 4], fmt='k,')
+		axs[curr_x,curr_y].errorbar(x, data[:, i, 1], yerr=data[:,i, 2], fmt='b,')
 		axs[curr_x,curr_y].set_ylim(bottom=0)
 
 
 
-		field = data[20, i, 4]
-		wr = data[20, i, 5]/1000.
-		w1 = data[20, i, 6]/1000.
-		T = data[20, i, 7]
+		field = data[20, i, 5]
+		wr = data[20, i, 6]/1000.
+		w1 = data[20, i, 7]/1000.
+		T = data[20, i, 8]
 		print(data[20, i, :])
-		typ =  int(data[20,i, 8])
+		typ =  int(data[20,i, 9])
 
 		if (typ == 0 or typ == 2):
 			krt = axs[curr_x, curr_y].get_ylim()

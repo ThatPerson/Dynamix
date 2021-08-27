@@ -158,7 +158,7 @@ extern Decimal Dwig[5][5];
    *    1 indicates that errors should be calculated, 0 indicates not.
    */
 struct Model {
-    unsigned int n_nm_iter, n_anneal_iter, n_error_iter;
+    unsigned int n_nm_iter, n_anneal_iter, n_error_iter, n_bc_iter;
     char outputdir[255];
     unsigned int model;
     unsigned int params;

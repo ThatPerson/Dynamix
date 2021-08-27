@@ -68,11 +68,11 @@ int main(int argc, char *argv[]) {
 
     char system_file[255] = "";
     unsigned int i;
-    int err_mod = 0;
+    int err_mod = DISABLED;
     for (i = 1; i < (unsigned int) argc; i++) {
         //printf("%s\n", argv[i]);
         if (strcmp(argv[i], "-e") == 0)
-            err_mod = 1;
+            err_mod = ENABLED;
         else if (strcmp(argv[i], "verify") == 0)
             verify_all();
         else
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     omp_set_num_threads(m.nthreads);
 
     m.error_mode = err_mod;
-    if (m.error_mode == 1 && m.n_error_iter == 0) {
+    if (m.error_mode == ENABLED && m.n_error_iter == 0) {
         printf("Please provide number of error iterations\n");
         ret = -1;
     }
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
         run_fitting(&m);
         printf("Worker %d: Printing residues...\n", m.myid + 1);
         print_residues(&m);
-        if (m.error_mode == 1) {
+        if (m.error_mode == ENABLED) {
             printf("Worker %d: Running errors...\n", m.myid + 1);
             run_errors(&m);
             printf("Worker %d: Printing errors...\n", m.myid + 1);
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
             printf("Worker %d: Printing residues...\n", m.myid + 1);
             print_residues(&m);
         }
-        if (m.error_mode == 1) {
+        if (m.error_mode == ENABLED) {
             if (m.myid == 0) {
                 global_errors_control(&m);
                 printf("Worker %d: Error control finished.\n", m.myid + 1);

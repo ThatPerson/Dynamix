@@ -70,45 +70,6 @@ int read_data_file(char *filename, struct Model *m) {
         return -1;
     }
 
-    unsigned int params;
-    switch (m->model) {
-        case MOD_SMF:
-            params = 2;
-            break;
-        case MOD_EMF:
-            params = 3;
-            break;
-        case MOD_EMFT:
-            params = 5;
-            break;
-        case MOD_SMFT:
-            params = 3;
-            break;
-        case MOD_DEMF:
-            params = 4;
-            break;
-        case MOD_DEMFT:
-            params = 6;
-            break;
-        case MOD_GAF:
-            params = 8;
-            break;
-        case MOD_GAFT:
-            params = 10;
-            break;
-        case MOD_EGAF:
-            params = 6;
-            break;
-        case MOD_EGAFT:
-            params = 8;
-            break;
-        default:
-            params = 0;
-            break;
-    }
-    if (m->or_variation == VARIANT_A)
-        params += 3; // theta, phi
-
     int res;
 
     unsigned int length = 0;
@@ -117,17 +78,22 @@ int read_data_file(char *filename, struct Model *m) {
 
     Decimal S2NH, chisq;
     while (fgets(line, len, fp)) {
-
+        printf("%s\n", line);
         //3	0.780000	201.669690	1.461383e+01	9.604572e-01	0
         k = sscanf(line, "%d\t%lf\t%lf\t%n", &res, &S2NH, &chisq, &length);
-        if (k != 4)
+        printf("Hello there %d (%lf, %lf, %d) -> %d\n", res, S2NH, chisq, length, k);
+        if (k != 3)
             continue;
-
+        if (chisq < 0)
+            continue;
         res--;
-        m->residues[res].parameters = (Decimal *) malloc(sizeof(Decimal) * params);
+
+        m->residues[res].parameters = (Decimal *) malloc(sizeof(Decimal) * m->params);
+        if (m->error_mode == ENABLED)
+            m->residues[res].errors_std = (Decimal *) malloc(sizeof(Decimal) * m->params);
         m->residues[res].ignore = 0;
-        for (i = 0; i < params; i++) {
-            k = sscanf(line + length, "%le\t%n", &(m->residues[res].parameters[i]), &length_d);
+        for (i = 0; i < m->params; i++) {
+            k = sscanf(line + length, "%le\t%le\t%n", &(m->residues[res].parameters[i]), &(m->residues[res].errors_std[i]), &length_d);
             //printf("%d: %lf\n", i, m->residues[res].parameters[i]);
             //m->residues[res].parameters[i] = (Decimal) param;
             //printf("K = %d\n", k);
@@ -331,7 +297,7 @@ int main(int argc, char *argv[]) {
     char output_folder[255] = "";
     unsigned int i;
     //int err_mod = 0;
-    unsigned int bc_mod = 0, cor_mod = 0, sd_mod = 0;
+    unsigned int bc_mod = 0, cor_mod = 0, sd_mod = 0, err_mod = DISABLED;
     for (i = 1; i < (unsigned int) argc; i++) {
         //printf("%s\n", argv[i]);
         if (strncmp(argv[i], "-o", 2) == 0) {
@@ -347,6 +313,8 @@ int main(int argc, char *argv[]) {
             cor_mod = 1;
         } else if (strncmp(argv[i], "-de", 3) == 0) {
             sd_mod = 1;
+        } else if (strncmp(argv[i], "-e", 2) == 0) {
+            err_mod = ENABLED;
         } else {
             printf("Please pass system file (-s), output folder (-o), and Dynamix results file (-f). Options -bc and -co.\n");
             return -1;
@@ -354,14 +322,14 @@ int main(int argc, char *argv[]) {
     }
 
     if (strcmp(system_file, "") == 0 || strcmp(output_folder, "") == 0 || strcmp(data_file, "") == 0) {
-        printf("Please pass system file (-s), output folder (-o), and Dynamix results file (-f). Options -bc and -co.\n");
+        printf("Please pass system file (-s), output folder (-o), and Dynamix results file (-f). Options -bc and -co. Pass -e to use errors.dat\n");
         exit(-1);
     }
 
 
     struct Model m;
     int ret = read_system_file(system_file, &m);
-
+    m.error_mode = err_mod;
     if (ret == -1) {
         printf("Reading system file failed.\n");
         free_all(&m);
@@ -370,44 +338,7 @@ int main(int argc, char *argv[]) {
 
     ret = read_data_file(data_file, &m);
     printf("Ret: %d\n", ret);
-    unsigned int params;
-    switch (m.model) {
-        case MOD_SMF:
-            params = 2;
-            break;
-        case MOD_EMF:
-            params = 3;
-            break;
-        case MOD_EMFT:
-            params = 5;
-            break;
-        case MOD_SMFT:
-            params = 3;
-            break;
-        case MOD_DEMF:
-            params = 4;
-            break;
-        case MOD_DEMFT:
-            params = 6;
-            break;
-        case MOD_GAF:
-            params = 8;
-            break;
-        case MOD_GAFT:
-            params = 10;
-            break;
-        case MOD_EGAF:
-            params = 6;
-            break;
-        case MOD_EGAFT:
-            params = 8;
-            break;
-        default:
-            params = 0;
-            break;
-    }
-    if (m.or_variation == VARIANT_A)
-        params += 3; // theta, phi
+    unsigned int params = m.params;
 
 
 
@@ -505,8 +436,9 @@ int main(int argc, char *argv[]) {
             }
         }
         if (bc_mod == 1) {
+            printf("Ehi ciao\n");
             sprintf(fn_BC, "%s/backcalc_%d.dat", output_folder, i + 1);
-            back_calculate(opts, resid, &m, fn_BC, params);
+            back_calculate(resid, &m, fn_BC, params);
 
 
             // int back_calculate(Decimal * opts, struct Residue * resid, unsigned int model, unsigned int or_variations, char *filename, unsigned int params) {

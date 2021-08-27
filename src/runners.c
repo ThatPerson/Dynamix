@@ -268,7 +268,7 @@ int print_backcalcs(struct Model *m) {
     unsigned int l;
     for (l = m->proc_start; l < m->proc_end; l++) {
         sprintf(filename, "%s/backcalc_%d.dat", m->outputdir, l + 1);
-        back_calculate((m->residues[l].parameters), &(m->residues[l]), m, filename, m->params);
+        back_calculate(&(m->residues[l]), m, filename, m->params);
     }
     return 1;
 }
