@@ -484,22 +484,22 @@ Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model 
         case R_15NR1:
             calc_R = Calc_15NR1(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R += Calc_15NR1(resid, relax, pars, m, relax->compensate);
+                calc_R -= Calc_15NR1(resid, relax, pars, m, relax->compensate);
             break;
         case R_15NR1p:
             calc_R = Calc_15NR2(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R += Calc_15NR2(resid, relax, pars, m, relax->compensate);
+                calc_R -= Calc_15NR2(resid, relax, pars, m, relax->compensate);
             break;
         case R_13CR1:
             calc_R = Calc_13CR1(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R += Calc_13CR1(resid, relax, pars, m, relax->compensate);
+                calc_R -= Calc_13CR1(resid, relax, pars, m, relax->compensate);
             break;
         case R_13CR1p:
             calc_R = Calc_13CR2(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R += Calc_13CR2(resid, relax, pars, m, relax->compensate);
+                calc_R -= Calc_13CR2(resid, relax, pars, m, relax->compensate);
             break;
         default:
             ERROR("Relaxation type %d unknown\n", relax->type);
