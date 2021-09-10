@@ -101,7 +101,7 @@ for model in sys.argv[1:]:
 		sigma = err_R / 2.
 
 
-		# from 'Solid-State NMR Provides Evidence for Small-Amplitude Slow Domain Motions in a Multispanning Transmembrane α-Helical Protein'
+		# from 'Solid-State NMR Provides Evidence for Small-Amplitude Slow Domain Motions in a Multispanning Transmembrane A-Helical Protein'
 
 		chisq = 0
 
