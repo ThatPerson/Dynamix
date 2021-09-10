@@ -28,15 +28,18 @@ for i in sys.argv[1:]:
 			print("sel parameter should be NH, CH, CN, CC")
 			exit(-1)
 		s2weights = [int(p) for p in list(sel)]
-	modellist.append(i)
+        else:
+                modellist.append(i)
+
+print(s2weights)
 #modellist = sys.argv[1:]
 modelbins = np.zeros((len(modellist), 3))
-num_mods = len(sys.argv) - 1
+num_mods = len(modellist)
 
 results = np.zeros((56, num_mods, 3))
 
 c = 0
-for model in sys.argv[1:]:
+for model in modellist:
 	adj = 0
 	params = -10
 	modeln = model
@@ -131,9 +134,9 @@ for model in sys.argv[1:]:
 				ign = 1
 			err = ops[0, 3 + (inc*3)]
 			ctmp = np.power(exp - calc, 2.) / np.power(err, 2.)
-			chisq += s2weight[inc] * ctmp
+			chisq += s2weights[inc] * ctmp
 
-		N_meas = sum(s2weight) + len(calc_R)
+		N_meas = sum(s2weights) + len(calc_R)
 		df = N_meas - params - 1
 		if (df <= 0 or chisq == 0 or ign == 1):
 			AIC = 1e9
@@ -187,11 +190,10 @@ for model in sys.argv[1:]:
 	c = c + 1
 
 with open("AIC.csv", "w") as aic, open('BIC.csv', 'w') as bic, open('AICc.csv', 'w') as aicc:
-	for models in sys.argv[1:]:
+	for models in modellist:
 		aic.write(", %s" % (models))
 		bic.write(", %s" % (models))
 		aicc.write(", %s" % (models))
-
 	aic.write("\n")
 	bic.write("\n")
 	aicc.write("\n")
@@ -293,3 +295,4 @@ for i in range(0, len(modellist)):
 
 		#print("%d, %f, %f\n"% (i, AIC, BIC))
 		q.write("%d, %f, %f, %f\n"% (i, AIC, BIC, AICc))'''
+
