@@ -80,7 +80,8 @@ typedef double _Complex Complex;
 #define N_OR            14
 #define OR_LIMIT        3.14
 
-#define COMPENSATE 1
+#define COMPENSATE_W1 1
+#define COMPENSATE_WR 2
 #define NO_COMPENSATE 0
 
 #define NONE 0
@@ -288,6 +289,7 @@ struct Relaxation {
     Decimal field; // in MHz
     Decimal wr; // in Hz
     Decimal compensate_w1;
+    Decimal compensate_wr;
     int compensate;
     Decimal w1; // in Hz
     int type;
