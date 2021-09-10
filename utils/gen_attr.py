@@ -21,22 +21,23 @@ of = sys.argv[4]
 x = np.loadtxt(fn, delimiter="\t")
 print(x[:, 0])
 
-def writer(f, k, v, n):
-	f.write("attribute: %s\n" % (n))
-	f.write("match mode: 1-to-1\nrecipient: residues\n")
-	for i in range(0, len(k)):
-		if (v[i] == -1):
-			continue
-		f.write("\t%s:%d\t%f\n" % (tag, k[i], v[i]))
+def writer(of, k, v, n):
+	with open(n+"_"+of, "w") as f:
+		f.write("attribute: %s\n" % (n))
+		f.write("match mode: any\nrecipient: residues\n")
+		for i in range(0, len(k)):
+			if (v[i] == -1):
+				continue
+			f.write("\t%s:%d\t%f\n" % (tag, k[i], v[i]))
 
 if (model not in models.mds):
 	print("Model doesn't exist")
 	exit(-1)
 
-with open(of, 'w') as f:
-	writer(f, x[:, 0], x[:, 2], 'chisq')
-	for i in range(0, len(models.mds[model]['p'])):
-		writer(f, x[:, 0], x[:, 3 + i], models.mds[model]['p'][i])
+
+writer(of, x[:, 0], x[:, 2], 'chisq')
+for i in range(0, len(models.mds[model]['p'])):
+	writer(of, x[:, 0], x[:, 3 + i], models.mds[model]['p'][i])
 
 #attribute: saturationRatio
 #match mode: 1-to-1
