@@ -477,8 +477,8 @@ Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model 
     Decimal calc_R = -1;
     (void) violations;
     (void) m;
-    if (relax->R <= 0)
-        return -1;
+    //if (relax->R <= 0)
+    //    return -1;
 
     switch (relax->type) {
         case R_15NR1:
