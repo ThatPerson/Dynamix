@@ -27,7 +27,7 @@ for i in sys.argv[1:]:
 		if (len(sel) != 4):
 			print("sel parameter should be NH, CH, CN, CC")
 			exit(-1)
-		s2weights = [int(p) for p in list(i)]
+		s2weights = [int(p) for p in list(sel)]
 	modellist.append(i)
 #modellist = sys.argv[1:]
 modelbins = np.zeros((len(modellist), 3))
