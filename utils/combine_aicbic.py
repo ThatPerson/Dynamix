@@ -17,10 +17,19 @@ import models
 
 #arguments are python combine_aicbic.py smf smft demf demft... etc.
 
-s2weight = 1 ## how much extra weight to put on S2 parameters?
+s2weights = [1, 0, 1, 1]  ## how much extra weight to put on S2 parameters?
  # eg in Lamley I believe the weight of these was increased (as it is for fitting) but I don't know if this is also done for the analysis.
 
-modellist = sys.argv[1:]
+modellist = []
+for i in sys.argv[1:]:
+	if (i[0] == '-'):
+		sel = i[1:]
+		if (len(sel) != 4):
+			print("sel parameter should be NH, CH, CN, CC")
+			exit(-1)
+		s2weights = [int(p) for p in list(i)]
+	modellist.append(i)
+#modellist = sys.argv[1:]
 modelbins = np.zeros((len(modellist), 3))
 num_mods = len(sys.argv) - 1
 
@@ -114,20 +123,17 @@ for model in sys.argv[1:]:
 		ops_s = np.shape(ops)
 		#print(ops_s)
 		max_op = 4
-		if (ops_s[1] == 10):
-			max_op = 3
-		for inc in range(0, max_op):
-			if (max_op == 1):
-				continue # ignore C-H for now. TODO CHECKME WARN 
+		
+		for inc in range(0, max_op): 
 			calc = ops[0, 1 + (inc*3)]
 			exp = ops[0, 2 + (inc*3)]
 			if (exp <= 0):
 				ign = 1
 			err = ops[0, 3 + (inc*3)]
 			ctmp = np.power(exp - calc, 2.) / np.power(err, 2.)
-			chisq += s2weight * ctmp
+			chisq += s2weight[inc] * ctmp
 
-		N_meas = max_op + len(calc_R)
+		N_meas = sum(s2weight) + len(calc_R)
 		df = N_meas - params - 1
 		if (df <= 0 or chisq == 0 or ign == 1):
 			AIC = 1e9
