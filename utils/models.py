@@ -35,6 +35,14 @@ mds = {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'dS2s', 'dS2f']
 	}, 
+	'gdemf': {
+		'n': 6,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'GC0', 'Gtr']
+	},
+	'gsmf': {
+		'n': 4,
+		'p': ['tau', 'S2', 'GC0', 'Gtr']
+	},
 	'demft_no600': {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf']

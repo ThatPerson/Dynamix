@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <chisq.h>
+#include <stdio.h>
 #include "model.h"
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
@@ -21,6 +22,11 @@ Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, 
             (((Decimal) S2f) * (1 - (Decimal) S2s) * (Decimal) taus)\
  / (1 + ((Decimal) omega * (Decimal) taus * (Decimal) omega * (Decimal) taus))\
 ));
+}
+
+Decimal PJ0(Decimal omega, Decimal GS2, Decimal Gtaur) {
+    return ((1 - GS2) * Gtaur) / (1 + (Gtaur * Gtaur * omega * omega));
+   // return 2 * G0 * tr / (1 + (omega * tr * omega * tr));
 }
 
 /** Cross correlated spectral density. Taken from Manuscript,
@@ -40,8 +46,7 @@ Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2
 }
 
 
-Decimal
-Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
+Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
            Decimal D) {
     // for SMF and SMFT models, set S2s = 0 and taus = 0.
     Decimal q = (0.1) * sq(D) * (\
@@ -68,6 +73,43 @@ Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal w
             (6.) * J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f, S2uf)\
 )\
 );
+}
+
+
+Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal Conc, Decimal Gtaur, Decimal D) {
+    if (Conc == 0) return 0;
+   // Decimal effR6 = pow(R, -6) / Conc;
+
+   // Decimal dw2 = (3/5.) * pow(D, 2) * effR6;
+   // Decimal G0 = (1/3.) * dw2;
+    Decimal GS2eff = GS2 / Conc;
+    /*return (Decimal) (\
+                PJ0(omega_N, GS2, Gtaur) + \
+                (7/3.) * PJ0(omega_E, GS2, Gtaur));*/
+    return (Decimal) (3/10.) * D * D * PJ0(omega_N, GS2, Gtaur);
+}
+
+Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal Conc, Decimal Gtaur, Decimal D, Decimal w1, Decimal wr) {
+    if (Conc == 0) return 0;
+   // Decimal effR6 = GS2 / Conc;
+   // Decimal dw2 = (3/5.) * pow(D, 2);// * effR6;
+    //printf("%f %f -> %f\n ", R, Conc, dw2);
+   // Decimal G0 = (1/3.) * dw2;
+    Decimal GS2eff = GS2 / Conc;
+
+    Decimal J0contrib = ((1) * PJ0(2 * M_PI * (w1 + 2 * wr), GS2eff, Gtaur) + \
+                (1) * PJ0(2 * M_PI * (w1 - 2 * wr), GS2eff , Gtaur) + \
+                (2) * PJ0(2 * M_PI * (w1 + wr), GS2eff, Gtaur) + \
+                (2) * PJ0(2 * M_PI * (w1 - wr), GS2eff, Gtaur)) / 6.;
+
+    return (Decimal) (1/5.) * D * D * (J0contrib + (3/4.) * PJ0(omega_N, GS2eff, Gtaur)); // Okuno 2020 form
+    /*return (Decimal) (\
+                (2 / 18.) * PJ0(2 * M_PI * (w1 + 2 * wr), GS2eff, Gtaur) + \
+                (2 / 18.) * PJ0(2 * M_PI * (w1 - 2 * wr), GS2eff , Gtaur) + \
+                (4 / 18.) * PJ0(2 * M_PI * (w1 + wr), GS2eff, Gtaur) + \
+                (4 / 18.) * PJ0(2 * M_PI * (w1 - wr), GS2eff, Gtaur) + \
+                (1/2.) * PJ0(omega_N, GS2eff, Gtaur) + \
+                (13/6.) * PJ0(omega_E, GS2eff, Gtaur));*/
 }
 
 /**
@@ -127,13 +169,14 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     Decimal omega_1H = T_DOWN * 2 * M_PI * field;
     Decimal omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
     Decimal omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+    Decimal omega_E = omega_1H * 658;
     Decimal d2x, d2y, d2xy, d2tot;
 
     Decimal *csa;
     csa = res->csaN;
 
     /* N CSA relaxation contribution */
-    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN;
+    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1NH, R1NHr, R1CN, R1CaN, R1E = 0;
     Decimal J1;
 
 
@@ -174,8 +217,11 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.S2uf, D_NCA);
 
+    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+        R1E = Paramagnetic_R1(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_NE);
 
-    return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN) * T_DOWN;
+
+    return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN + R1E) * T_DOWN;
 }
 
 Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
@@ -202,12 +248,12 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     }
 
     Decimal omega_1H = 2 * M_PI * field;
-    Decimal omega_13C, omega_15N;
+    Decimal omega_13C, omega_15N, omega_E;
     Decimal d2x, d2y, d2xy, d2tot;
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
-
+    omega_E = omega_1H * 658;
 
 
     Decimal *csa;
@@ -218,13 +264,14 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     d2xy = (Decimal) sq(0.000001 * omega_15N) * (csa[2] - csa[0]) * (csa[1] - csa[0]);
 
     /* N CSA relaxation contribution */
-    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN;
+    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2NH, R2NHr, R2CN, R2CaN, R2E = 0;
 
     w1 *= T_DOWN;
     wr *= T_DOWN;
     omega_1H *= T_DOWN;
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
+    omega_E *= T_DOWN;
 
     Decimal J0sum = 0;
 
@@ -270,8 +317,9 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     if (m->model == MOD_RDEMFT) {
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
-
-    return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC) * T_DOWN;
+    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+        R2E = Paramagnetic_R2(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_NE, w1, wr);
+    return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC + R2E) * T_DOWN;
 }
 
 Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
@@ -294,16 +342,18 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     }
 
     Decimal omega_1H = 2 * M_PI * field;
-    Decimal omega_13C, omega_15N, wCOCa;
+    Decimal omega_13C, omega_15N, wCOCa, omega_E;
     Decimal d2x, d2y, d2xy, d2tot;
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
+    omega_E = omega_1H * 658; // electron frequency
     wCOCa = 120 * omega_13C * 0.000001;
 
     omega_1H *= T_DOWN;
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
+    omega_E *= T_DOWN;
     wCOCa *= T_DOWN;
 
     Decimal *csa;
@@ -316,7 +366,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
         bcpars_tdep(pars, &npars, tfacts, tfactf);
     }
 /* N CSA relaxation contribution */
-    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAc, R1CCAp;
+    Decimal R1CSAx, R1CSAy, R1CSAxy, R1CSA, R1CH, R1CHr, R1CN, R1CCAc, R1CCAp, R1E = 0;
     Decimal J1;
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF ||
         model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
@@ -347,7 +397,10 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf, D_CCAp);
     R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf, D_CCAc);
 
-    return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc) * T_DOWN;
+    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+        R1E = Paramagnetic_R1(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_CE);
+
+    return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc + R1E) * T_DOWN;
 }
 
 Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
@@ -372,11 +425,12 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     }
 
     Decimal omega_1H = 2 * M_PI * field;
-    Decimal omega_13C, omega_15N, wCOCa;
+    Decimal omega_13C, omega_15N, wCOCa, omega_E;
     Decimal d2x, d2y, d2xy, d2tot;
 
     omega_13C = 2 * M_PI * field / 3.976489314034722;
     omega_15N = 2 * M_PI * field / 9.869683408806043;
+    omega_E = omega_1H * 658;
     wCOCa = 120 * omega_13C * 0.000001;
 
     w1 *= T_DOWN;
@@ -384,6 +438,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     omega_1H *= T_DOWN;
     omega_13C *= T_DOWN;
     omega_15N *= T_DOWN;
+    omega_E *= T_DOWN;
     wCOCa *= T_DOWN;
 
     Decimal *csa;
@@ -396,7 +451,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
         bcpars_tdep(pars, &npars, tfacts, tfactf);
     }
     /* CSA relaxation contribution */
-    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp;
+    Decimal R2CSAx, R2CSAy, R2CSAxy, R2CSA, R2CH, R2CHr, R2CN, R2CCAc, R2CCAp, R2E = 0;
     Decimal J0sum = 0;
     if (model == MOD_GAF || model == MOD_GAFT || model == MOD_EGAF || model == MOD_EGAFT || model == MOD_BGF ||
         model == MOD_BGFT || model == MOD_BGAF || model == MOD_BGAFT) {
@@ -433,7 +488,11 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     if (m->model == MOD_RDEMFT) {
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
-    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + RRDC) * (Decimal) T_DOWN);
+
+    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+        R2E = Paramagnetic_R2(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_CE, w1, wr);
+
+    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + RRDC + R2E) * (Decimal) T_DOWN);
 }
 
 

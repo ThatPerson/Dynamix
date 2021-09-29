@@ -281,6 +281,12 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[0] = upp_taus;
             maxv[1] = 1;
             break;
+        case MOD_GSMF:
+            maxv[0] = upp_taus;
+            maxv[1] = 1;
+            maxv[2] = 1;
+            maxv[3] = 100;
+            break;
         case MOD_SMFT:
             maxv[0] = upp_taus;
             maxv[1] = 1;
@@ -358,6 +364,19 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[4] = 0.1;
             minv[5] = -0.1;
             maxv[5] = 0.1;
+            break;
+        case MOD_GDEMF:
+            minv[0] = low_taus;
+            minv[1] = S2NH;
+            minv[3] = S2NH;
+            maxv[0] = upp_taus;
+            maxv[1] = 1;
+            maxv[2] = upp_tauf;
+            maxv[3] = 1;
+            minv[4] = 0.0;
+            maxv[4] = 1;
+            minv[5] = 0;
+            maxv[5] = 100;
             break;
         case MOD_GAF:
             minv[0] = low_taus;

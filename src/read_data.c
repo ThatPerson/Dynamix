@@ -246,6 +246,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
     Decimal w1 = -1; // in Hz
     int type = -1, compensate = NO_COMPENSATE;
     Decimal T = -1; // in Kelvin
+    Decimal Gd = 0;
     int hydrogen = PROTONATED;
     int resid;
     int rel = -1;
@@ -289,6 +290,7 @@ int read_relaxation_data(struct Model *m, char *filename) {
                 m->residues[i].relaxation[rel].compensate_wr = ((compensate & COMPENSATE_WR) != 0 ? c_wr : 0);
                 m->residues[i].relaxation[rel].type = type;
                 m->residues[i].relaxation[rel].T = T;
+                m->residues[i].relaxation[rel].Gd = Gd;
                 m->residues[i].relaxation[rel].hydrogen = hydrogen; // protonation state.
 
             }
@@ -305,6 +307,8 @@ int read_relaxation_data(struct Model *m, char *filename) {
                 w1 = atof(val);
             else if (strcmp(key, "TEMP") == 0)
                 T = atof(val);
+            else if (strcmp(key, "GD") == 0)
+                Gd = atof(val);
             else if (strcmp(key, "TYPE") == 0) {
                 if (strcmp(val, "15NR1") == 0)
                     type = R_15NR1;
@@ -564,6 +568,12 @@ int read_system_file(char *filename, struct Model *m) {
                 } else if (strcmp(val, "SDEMF") == 0) {
                     m->params = 6;
                     m->model = MOD_SDEMF;
+                } else if (strcmp(val, "GDEMF") == 0) {
+                    m->params = 6;
+                    m->model = MOD_GDEMF;
+                } else if (strcmp(val, "GSMF") == 0) {
+                    m->params = 4;
+                    m->model = MOD_GSMF;
                 } else if (strcmp(val, "EGAF") == 0) {
                     m->params = 6;
                     m->model = MOD_EGAF;

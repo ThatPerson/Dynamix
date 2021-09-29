@@ -61,6 +61,8 @@ add_executable(correl
 target_link_libraries(dynamix ${MPI_LIBRARIES})
 target_link_libraries(dynamix m)
 target_link_libraries(tests m)
+target_link_libraries(tests ${MPI_LIBRARIES})
+
 target_link_libraries(correl m)
 target_link_libraries(tests cmocka)
 

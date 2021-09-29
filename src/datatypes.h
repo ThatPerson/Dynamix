@@ -41,6 +41,8 @@ typedef double _Complex Complex;
 #define MOD_RDEMFT      33
 #define MOD_SDEMFT      34  ///< DEMFT with VT S2.
 #define MOD_SDEMF       35
+#define MOD_GDEMF       36
+#define MOD_GSMF        37
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
  * are allowed to vary.
@@ -113,6 +115,8 @@ typedef double _Complex Complex;
 #define D_CH    22362.477236
 #define D_NHr    13108.322725
 #define D_CHr    31491.710460
+#define D_CE    124921246.007677
+#define D_NE    50302611.691055
 
 #define MODE_15N        0
 #define MODE_13C        1
@@ -297,6 +301,7 @@ struct Relaxation {
     Decimal Rerror;
     Decimal T; // in Kelvin
     int hydrogen;
+    Decimal Gd;
 };
 
 Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp);

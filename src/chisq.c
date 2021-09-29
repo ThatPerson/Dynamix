@@ -71,6 +71,9 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->S2uf = 1;
     pars->dS2s = 0;
     pars->dS2f = 0;
+    pars->GS2 = 1;
+    pars->Gtaur = 0;
+
     return 0;
 }
 
@@ -166,7 +169,10 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
 
     if (pars->papbS2 < 0)
         (*violations)++;
-
+    if (pars->GS2 > 1 || pars->GS2 < 0)
+        (*violations)++;
+    if (pars->Gtaur < 1)
+        (*violations)++;
 }
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {
@@ -227,7 +233,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             &(resid->orients[OR_CCAc]),
             &(resid->orients[OR_CCAp])
     };
-    if (model == MOD_SMF || model == MOD_SMFT) {
+    if (model == MOD_SMF || model == MOD_SMFT || model == MOD_GSMF) {
         // tau, S2, [Ea]
         S2s = opts[1];
         S2f = (m->microsecond == ENABLED)?(resid->S2NH / S2s):1;
@@ -235,10 +241,14 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
-    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
+        if (model == MOD_GSMF) {
+            pars->GS2 = opts[2];
+            pars->Gtaur = opts[3];
+        }
+    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF || model == MOD_GDEMF) {
         S2s = opts[1];
         S2f = resid->S2NH / S2s;
-        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
+        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF || model == MOD_GDEMF) {
             S2f = opts[3];
         }
         bcpars_init(pars, S2s, S2f);
@@ -261,6 +271,9 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         } else if (model == MOD_SDEMF) {
             pars->dS2s = opts[4];
             pars->dS2f = opts[5];
+        } else if (model == MOD_GDEMF) {
+            pars->GS2 = opts[4];
+            pars->Gtaur = opts[5];
         }
     } else if (model == MOD_GAF || model == MOD_GAFT) {
         bcpars_init(pars, 0, 0);
@@ -683,8 +696,8 @@ int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsig
                     resid->relaxation[i].Rerror);
 
         if (VERBOSE)
-            fprintf(fp, "\t%lf\t%lf\t%lf\t%lf\t%d", resid->relaxation[i].field, resid->relaxation[i].wr,
-                  resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type);
+            fprintf(fp, "\t%lf\t%lf\t%lf\t%lf\t%d\t%f", resid->relaxation[i].field, resid->relaxation[i].wr,
+                  resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type, resid->relaxation[i].Gd);
         fprintf(fp, "\n");
         free(rate_temp[i]);
     }

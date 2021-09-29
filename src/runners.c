@@ -65,17 +65,22 @@ int run_residue(struct Model *m, unsigned int residue) {
     unsigned int l, k, q;
     unsigned int params = m->params;
     //printf("%d\n", params);
-    Decimal *opts;
+    Decimal *opts = NULL;
     opts = (Decimal *) malloc(sizeof(Decimal) * params);
-    Decimal *anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
+    Decimal *anneal_pars = NULL;
+    anneal_pars = (Decimal *) malloc(sizeof(Decimal) * params);
     resid->parameters = (Decimal *) malloc(sizeof(Decimal) * params);
-    if (resid->parameters == NULL || opts == NULL) {
-        printf("Allocation failed.\n");
+    if (resid->parameters == NULL || opts == NULL || anneal_pars == NULL) {
+        ERROR("Allocation failed.\n");
     }
     resid->min_val = MIN_VAL;
 
-    Decimal *minv = (Decimal *) malloc(sizeof(Decimal) * params);
-    Decimal *maxv = (Decimal *) malloc(sizeof(Decimal) * params);
+    Decimal *minv = NULL;
+    minv = (Decimal *) malloc(sizeof(Decimal) * params);
+    Decimal *maxv = NULL;
+    maxv = (Decimal *) malloc(sizeof(Decimal) * params);
+    if (minv == NULL || maxv == NULL)
+        ERROR("Allocation failed\n");
 
     setup_paramlims(m, resid->S2NH, minv, maxv);
     Decimal val;
@@ -89,7 +94,6 @@ int run_residue(struct Model *m, unsigned int residue) {
         fclose(fp);
         return -1;
     }
-
     for (l = 0; l < m->n_anneal_iter; l++) {
         val = anneal(optimize_chisq, anneal_pars, minv, maxv, params, m->anneal_temp, 1000, m->anneal_wobb,
                      m->anneal_therm, m->anneal_restart, NULL, MODE_RANDOM_START + MODE_RANDOM_RESTART, resid, m);
