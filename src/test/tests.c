@@ -369,11 +369,13 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.S2NCSAxf, fast, 0.001);
     assert_float_equal(pars.S2NCSAyf, fast, 0.001);
     assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
-
     Decimal opts_smft[] = {0.01, 0.9, 3000};
     struct Model m;
     m.model = MOD_SMFT;
     int vio = 0;
+    m.gd_mod = GD_NO_MOD;
+    m.or_variation = INVARIANT_A;
+    m.ultrafast = DISABLED;
     opts_to_bcpars(opts_smft, &pars, &m, &res, &vio);
     assert_float_equal(pars.taus, 0.01, 0.0001);
     assert_float_equal(pars.tauf, 0, 0.0001);
@@ -381,7 +383,6 @@ static void test_bcpars(void **state) {
     assert_float_not_equal(pars.S2NHf, 0.9, 0.0001);
     assert_float_equal(pars.Eaf, -1, 0.0001);
     assert_float_equal(pars.Eas, 3000, 0.0001);
-
     Decimal opts_demf[] = {0.1, 0.9, 0.01, 0.8};
     m.model = MOD_DEMF;
     opts_to_bcpars(opts_demf, &pars, &m, &res, &vio);
@@ -389,19 +390,16 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.tauf, 0.01, 0.0001);
     assert_float_equal(pars.S2NHs, 0.9, 0.0001);
     assert_float_equal(pars.S2NHf, 0.8, 0.0001);
-
     Decimal opts_viol_demf[] = {100000, 0.9, 0.01, 0.8};
     vio = 0;
     m.model = MOD_DEMF;
     opts_to_bcpars(opts_viol_demf, &pars, &m, &res, &vio);
     assert_int_not_equal(vio, 0);
-
     Decimal opts_viol_gaf[] = {0.1, 0.01, 1, 1, 1, 1, 1, 1};
     vio = 0;
     m.model = MOD_GAF;
     opts_to_bcpars(opts_viol_gaf, &pars, &m, &res, &vio);
     assert_int_not_equal(vio, 0);
-
     free(res.relaxation);
 }
 
@@ -477,6 +475,9 @@ static void test_relaxation_gaf(void **state) {
     Decimal opts[] = {1, 0.01, 0.1, 0.05, 0.15, 0.1, 0.02, 0.03};
     struct Model m;
     m.model = MOD_GAF;
+    m.gd_mod = GD_NO_MOD;
+    m.or_variation = INVARIANT_A;
+    m.ultrafast = DISABLED;
     opts_to_bcpars(opts, &pars, &m, &res, &ignore);
 
     //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
@@ -508,6 +509,9 @@ static void test_relaxation_egaf(void **state) {
     Decimal opts[6] = {1, 0.01, 0.1, 0.05, 0.15, S2f};
     struct Model m;
     m.model = MOD_EGAF;
+    m.gd_mod = GD_NO_MOD;
+    m.or_variation = INVARIANT_A;
+    m.ultrafast = DISABLED;
     opts_to_bcpars(opts, &pars, &m, &res, &ignore);
 
     //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {

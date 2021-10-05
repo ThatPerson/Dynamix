@@ -34,7 +34,8 @@ struct BCParameters {
 Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
 
 Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
-Decimal PJ0(Decimal omega, Decimal GS2, Decimal Gtaur);
+Decimal PJ0(Decimal omega, Decimal r, Decimal ns, Decimal Gtaur);
+//Decimal PJ0(Decimal omega, Decimal GS2, Decimal Gtaur);
 Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal Conc, Decimal Gtaur, Decimal D, Decimal w1, Decimal wr);
 Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal Conc, Decimal Gtaur, Decimal D);
 /* R is effective distance, Conc is concentration */

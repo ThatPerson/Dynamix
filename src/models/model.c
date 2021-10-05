@@ -24,8 +24,21 @@ Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, 
 ));
 }
 
-Decimal PJ0(Decimal omega, Decimal GS2, Decimal Gtaur) {
-    return ((1 - GS2) * Gtaur) / (1 + (Gtaur * Gtaur * omega * omega));
+
+/* 
+ * J. Am. Chem. Soc. 2020, 142 8281-8290
+ * use high field approx eg
+ *  Jappr(w) = J(0) / (1 + (w tc)^2)
+ *  J(0) = <r^-6>norm * ns * tc
+ *  ns ~~ conc
+ *  taking S as S~r^-3
+ *  then J(w) = S^2 * ns * tc / (1 + (w tc)^2
+ */
+
+Decimal PJ0(Decimal omega, Decimal Gr, Decimal ns, Decimal Gtaur) {
+    Decimal r6norm = pow(Gr, -6.);
+    Decimal J0 = r6norm * ns * Gtaur;
+    return J0 / (1 + (Gtaur * Gtaur * omega * omega));
    // return 2 * G0 * tr / (1 + (omega * tr * omega * tr));
 }
 
@@ -82,11 +95,11 @@ Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal C
 
    // Decimal dw2 = (3/5.) * pow(D, 2) * effR6;
    // Decimal G0 = (1/3.) * dw2;
-    Decimal GS2eff = GS2 / Conc;
+    Decimal GS2eff = GS2 * Conc;
     /*return (Decimal) (\
                 PJ0(omega_N, GS2, Gtaur) + \
                 (7/3.) * PJ0(omega_E, GS2, Gtaur));*/
-    return (Decimal) (3/10.) * D * D * PJ0(omega_N, GS2, Gtaur);
+    return (Decimal) (3/10.) * D * D * PJ0(omega_N, GS2, Conc, Gtaur);
 }
 
 Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal Conc, Decimal Gtaur, Decimal D, Decimal w1, Decimal wr) {
@@ -95,14 +108,14 @@ Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal GS2, Decimal C
    // Decimal dw2 = (3/5.) * pow(D, 2);// * effR6;
     //printf("%f %f -> %f\n ", R, Conc, dw2);
    // Decimal G0 = (1/3.) * dw2;
-    Decimal GS2eff = GS2 / Conc;
+    Decimal GS2eff = GS2 * Conc;
 
-    Decimal J0contrib = ((1) * PJ0(2 * M_PI * (w1 + 2 * wr), GS2eff, Gtaur) + \
-                (1) * PJ0(2 * M_PI * (w1 - 2 * wr), GS2eff , Gtaur) + \
-                (2) * PJ0(2 * M_PI * (w1 + wr), GS2eff, Gtaur) + \
-                (2) * PJ0(2 * M_PI * (w1 - wr), GS2eff, Gtaur)) / 6.;
+    Decimal J0contrib = ((1) * PJ0(2 * M_PI * (w1 + 2 * wr), GS2, Conc, Gtaur) + \
+                (1) * PJ0(2 * M_PI * (w1 - 2 * wr), GS2, Conc , Gtaur) + \
+                (2) * PJ0(2 * M_PI * (w1 + wr), GS2, Conc, Gtaur) + \
+                (2) * PJ0(2 * M_PI * (w1 - wr), GS2, Conc, Gtaur)) / 6.;
 
-    return (Decimal) (1/5.) * D * D * (J0contrib + (3/4.) * PJ0(omega_N, GS2eff, Gtaur)); // Okuno 2020 form
+    return (Decimal) (1/5.) * D * D * (J0contrib + (3/4.) * PJ0(omega_N, GS2, Conc, Gtaur)); // Okuno 2020 form
     /*return (Decimal) (\
                 (2 / 18.) * PJ0(2 * M_PI * (w1 + 2 * wr), GS2eff, Gtaur) + \
                 (2 / 18.) * PJ0(2 * M_PI * (w1 - 2 * wr), GS2eff , Gtaur) + \
@@ -217,7 +230,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.S2uf, D_NCA);
 
-    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+    if (m->gd_mod == GD_MOD)
         R1E = Paramagnetic_R1(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_NE);
 
 
@@ -317,7 +330,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     if (m->model == MOD_RDEMFT) {
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
-    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+    if (m->gd_mod == GD_MOD)
         R2E = Paramagnetic_R2(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_NE, w1, wr);
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC + R2E) * T_DOWN;
 }
@@ -397,7 +410,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf, D_CCAp);
     R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf, D_CCAc);
 
-    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+    if (m->gd_mod == GD_MOD)
         R1E = Paramagnetic_R1(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_CE);
 
     return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc + R1E) * T_DOWN;
@@ -489,7 +502,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
 
-    if (m->model == MOD_GDEMF || m->model == MOD_GSMF)
+    if (m->gd_mod == GD_MOD)
         R2E = Paramagnetic_R2(omega_13C, omega_E, npars.GS2, relax->Gd, npars.Gtaur, D_CE, w1, wr);
 
     return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + RRDC + R2E) * (Decimal) T_DOWN);

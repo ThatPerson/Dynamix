@@ -281,12 +281,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[0] = upp_taus;
             maxv[1] = 1;
             break;
-        case MOD_GSMF:
-            maxv[0] = upp_taus;
-            maxv[1] = 1;
-            maxv[2] = 1;
-            maxv[3] = 100;
-            break;
+
         case MOD_SMFT:
             maxv[0] = upp_taus;
             maxv[1] = 1;
@@ -365,19 +360,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             minv[5] = -0.1;
             maxv[5] = 0.1;
             break;
-        case MOD_GDEMF:
-            minv[0] = low_taus;
-            minv[1] = S2NH;
-            minv[3] = S2NH;
-            maxv[0] = upp_taus;
-            maxv[1] = 1;
-            maxv[2] = upp_tauf;
-            maxv[3] = 1;
-            minv[4] = 0.0;
-            maxv[4] = 1;
-            minv[5] = 0;
-            maxv[5] = 100;
-            break;
+
         case MOD_GAF:
             minv[0] = low_taus;
             maxv[0] = upp_taus;
@@ -494,26 +477,35 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             break;
     }
 
-    if (m->or_variation == VARIANT_A && m->ultrafast == ENABLED) {
-        minv[m->params - 3] = 0; // alpha
-        minv[m->params - 2] = 0; // beta
-        minv[m->params - 1] = 0; // gamma
-        maxv[m->params - 3] = 0; // alpha
-        maxv[m->params - 2] = 0; // beta
-        maxv[m->params - 1] = 0; // gamma
-        minv[m->params - 4] = S2NH; // S2uf
-        maxv[m->params - 4] = 1;
-    } else if (m->or_variation == VARIANT_A) {
-        minv[m->params - 3] = 0; // alpha
-        minv[m->params - 2] = 0; // beta
-        minv[m->params - 1] = 0; // gamma
-        maxv[m->params - 3] = 0; // alpha
-        maxv[m->params - 2] = 0; // beta
-        maxv[m->params - 1] = 0; // gamma
-    } else if (m->ultrafast == ENABLED) {
-        minv[m->params - 1] = S2NH;
-        maxv[m->params - 1] = 1;
+
+
+
+
+    if (m->or_variation == VARIANT_A) {
+        minv[m->OValpha] = 0;
+        maxv[m->OValpha] = 0;
+        minv[m->OVbeta] = 0;
+        maxv[m->OVbeta] = 0;
+        minv[m->OVgamma] = 0;
+        maxv[m->OVgamma] = 0;
     }
+    if (m->gd_mod == GD_MOD) {
+        minv[m->GDS2] = 1;
+        maxv[m->GDS2] = 1;
+        minv[m->GDtaur] = 0;
+        maxv[m->GDtaur] = 100;
+    }
+    if (m->ultrafast == ENABLED) {
+        minv[m->UFS2] = S2NH;
+        maxv[m->UFS2] = 1;
+        minv[m->GDtaur] = 0;
+        maxv[m->GDtaur] = 100;
+    }
+    if (m->ultrafast == ENABLED) {
+        minv[m->UFS2] = S2NH;
+        maxv[m->UFS2] = 1;
+    }
+
 /**
 		 * SMF parameters are \n
 		 *   [0] tau\n

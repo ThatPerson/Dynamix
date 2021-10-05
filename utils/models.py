@@ -39,6 +39,10 @@ mds = {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'GC0', 'Gtr']
 	},
+	'gsdemf': {
+		'n': 6,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'GC0', 'Gtr']
+	},
 	'gsmf': {
 		'n': 4,
 		'p': ['tau', 'S2', 'GC0', 'Gtr']

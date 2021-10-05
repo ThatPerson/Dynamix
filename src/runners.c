@@ -233,9 +233,9 @@ int print_gaf(struct Model *m) {
     for (l = m->proc_start; l < m->proc_end; l++) {
         Decimal alpha, beta, gamma;
         if (m->or_variation == VARIANT_A) {
-            alpha = (Decimal) m->residues[l].parameters[m->params - 3];
-            beta = (Decimal) m->residues[l].parameters[m->params - 2];
-            gamma = (Decimal) m->residues[l].parameters[m->params - 1];
+            alpha = (Decimal) m->residues[l].parameters[m->OValpha];
+            beta = (Decimal) m->residues[l].parameters[m->OVbeta];
+            gamma = (Decimal) m->residues[l].parameters[m->OVgamma];
             for (i = 0; i < N_OR; i++) {
                 calculate_Y2(&(m->residues[l].orients[i]));
                 rotate_Y2(&(m->residues[l].orients[i]), alpha, beta, gamma);

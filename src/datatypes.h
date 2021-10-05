@@ -41,8 +41,13 @@ typedef double _Complex Complex;
 #define MOD_RDEMFT      33
 #define MOD_SDEMFT      34  ///< DEMFT with VT S2.
 #define MOD_SDEMF       35
-#define MOD_GDEMF       36
-#define MOD_GSMF        37
+
+
+
+#define GD_MOD          1
+#define GD_NO_MOD       0
+
+
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors
  * are allowed to vary.
@@ -184,6 +189,8 @@ struct Model {
     double anneal_wobb;
     double anneal_therm;
     double anneal_restart;
+    int OValpha, OVbeta, OVgamma, UFS2, GDS2, GDtaur;
+    unsigned int gd_mod;
 };
 
 /** @struct Orient

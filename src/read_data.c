@@ -431,6 +431,7 @@ int read_system_file(char *filename, struct Model *m) {
     m->nthreads = 1;
     m->cn_ratio = CNRATIO_OFF;
     m->global = LOCAL;
+    m->gd_mod = GD_NO_MOD;
 
     m->n_anneal_iter = 1;
     m->n_nm_iter = 1;
@@ -453,6 +454,39 @@ int read_system_file(char *filename, struct Model *m) {
             if (n_resid == -1) {
                 ERROR("Number of residues must be defined.");
                 return -1;
+            }
+
+            if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
+                m->GDS2 = m->params - 6;
+                m->GDtaur = m->params - 5;
+                m->OValpha = m->params - 4;
+                m->OVbeta = m->params - 3;
+                m->OVgamma = m->params - 2;
+                m->UFS2 = m->params - 1;
+            } else if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED) {
+                m->GDS2 = m->params - 3;
+                m->GDtaur = m->params - 2;
+                m->UFS2 = m->params - 1;
+            } else if (m->gd_mod == GD_MOD && m->or_variation == VARIANT_A) {
+                m->GDS2 = m->params - 5;
+                m->GDtaur = m->params - 4;
+                m->OValpha = m->params - 3;
+                m->OVbeta = m->params - 2;
+                m->OVgamma = m->params - 1;
+            } else if (m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
+                m->OValpha = m->params - 4;
+                m->OVbeta = m->params - 3;
+                m->OVgamma = m->params - 2;
+                m->UFS2 = m->params - 1;
+            } else if (m->gd_mod == GD_MOD) {
+                m->GDS2 = m->params - 2;
+                m->GDtaur = m->params - 1;
+            } else if (m->ultrafast == ENABLED) {
+                m->UFS2 = m->params - 1;
+            } else if (m->or_variation == VARIANT_A) {
+                m->OValpha = m->params - 3;
+                m->OVbeta = m->params - 2;
+                m->OVgamma = m->params - 1;
             }
 
             m->residues = (struct Residue *) malloc(sizeof(struct Residue) * (long unsigned int) n_resid);
@@ -568,12 +602,6 @@ int read_system_file(char *filename, struct Model *m) {
                 } else if (strcmp(val, "SDEMF") == 0) {
                     m->params = 6;
                     m->model = MOD_SDEMF;
-                } else if (strcmp(val, "GDEMF") == 0) {
-                    m->params = 6;
-                    m->model = MOD_GDEMF;
-                } else if (strcmp(val, "GSMF") == 0) {
-                    m->params = 4;
-                    m->model = MOD_GSMF;
                 } else if (strcmp(val, "EGAF") == 0) {
                     m->params = 6;
                     m->model = MOD_EGAF;
@@ -635,6 +663,11 @@ int read_system_file(char *filename, struct Model *m) {
                     continue;
                 m->params += 3;
                 m->or_variation = VARIANT_A;
+            } else if (strcmp(key, "GDMOD") == 0) {
+                if (m->gd_mod == GD_MOD)
+                    continue;
+                m->params += 2;
+                m->gd_mod = GD_MOD;
             } else if (strcmp(key, "ULTRAFAST") == 0) {
                 if (m->ultrafast == ENABLED)
                     continue;
@@ -789,8 +822,15 @@ int print_system(struct Model *m, char *filename) {
     fprintf(fp, "Params: %d\nN threads: %d\n", m->params, m->nthreads);
     fprintf(fp, "Error Mode: %s\n", (m->error_mode == 1) ? "ON" : "OFF");
     fprintf(fp, "Orientation Variation: %s\n", (m->or_variation == VARIANT_A) ? "ON" : "OFF");
+    if (m->or_variation == VARIANT_A)
+        fprintf(fp, "\tOV alpha: %d\n\tOV beta: %d\n\tOV gamma: %d\n", m->OValpha, m->OVbeta, m->OVgamma);
     fprintf(fp, "Ultrafast: %s\n", (m->ultrafast == ENABLED) ? "ON" : "OFF");
+    if (m->ultrafast == ENABLED)
+        fprintf(fp, "\tUF S2: %d\n", m->UFS2);
     fprintf(fp, "us Timescale: %s\n", (m->microsecond == ENABLED) ? "ON" : "OFF");
+    if (m->gd_mod == GD_MOD)
+        fprintf(fp, "\tGD S2: %d\n\tGD tr: %d\n", m->GDS2, m->GDtaur);
+    fprintf(fp, "Gd PRE: %s\n", (m->gd_mod == GD_MOD)?"ON":"OFF");
     fprintf(fp, "C/N Ratio Compensation: %s\n", (m->cn_ratio == CNRATIO_ON) ? "ON" : "OFF");
     fprintf(fp, "Global: %s\n", (m->global == GLOBAL) ? "ON" : "OFF");
 

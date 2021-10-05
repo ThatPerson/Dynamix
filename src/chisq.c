@@ -169,10 +169,10 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
 
     if (pars->papbS2 < 0)
         (*violations)++;
-    if (pars->GS2 > 1 || pars->GS2 < 0)
+    if (/*pars->GS2 > 1 || */pars->GS2 < 0)
         (*violations)++;
-    if (pars->Gtaur < 1)
-        (*violations)++;
+    //if (pars->Gtaur < pow(10, -7) || pars->Gtaur > pow(10, -5))
+    if (pars->Gtaur < 0) { (*violations)++; }
 }
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {
@@ -233,7 +233,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             &(resid->orients[OR_CCAc]),
             &(resid->orients[OR_CCAp])
     };
-    if (model == MOD_SMF || model == MOD_SMFT || model == MOD_GSMF) {
+    if (model == MOD_SMF || model == MOD_SMFT) {
         // tau, S2, [Ea]
         S2s = opts[1];
         S2f = (m->microsecond == ENABLED)?(resid->S2NH / S2s):1;
@@ -241,14 +241,11 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
-        if (model == MOD_GSMF) {
-            pars->GS2 = opts[2];
-            pars->Gtaur = opts[3];
-        }
-    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF || model == MOD_GDEMF) {
+
+    } else if (model == MOD_EMF || model == MOD_DEMF || model == MOD_EMFT || model == MOD_DEMFT || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
         S2s = opts[1];
         S2f = resid->S2NH / S2s;
-        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF || model == MOD_GDEMF) {
+        if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
             S2f = opts[3];
         }
         bcpars_init(pars, S2s, S2f);
@@ -271,9 +268,6 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         } else if (model == MOD_SDEMF) {
             pars->dS2s = opts[4];
             pars->dS2f = opts[5];
-        } else if (model == MOD_GDEMF) {
-            pars->GS2 = opts[4];
-            pars->Gtaur = opts[5];
         }
     } else if (model == MOD_GAF || model == MOD_GAFT) {
         bcpars_init(pars, 0, 0);
@@ -423,11 +417,11 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         return 1;
     }
     if (m->ultrafast == ENABLED) {
-        if (m->or_variation == VARIANT_A) {
-            pars->S2uf = opts[m->params - 4];
-        } else {
-            pars->S2uf = opts[m->params - 1];
-        }
+        pars->S2uf = opts[m->UFS2];
+    }
+    if (m->gd_mod == ENABLED) {
+        pars->GS2 = opts[m->GDS2];
+        pars->Gtaur = opts[m->GDtaur];
     }
 
 //	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
@@ -492,7 +486,6 @@ Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model 
     (void) m;
     //if (relax->R <= 0)
     //    return -1;
-
     switch (relax->type) {
         case R_15NR1:
             calc_R = Calc_15NR1(resid, relax, pars, m, NONE);
@@ -545,9 +538,9 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
     unsigned int i;
     Decimal alpha, beta, gamma;
     if (or_variations == VARIANT_A) {
-        alpha = (Decimal) opts[params - 3];
-        beta = (Decimal) opts[params - 2];
-        gamma = (Decimal) opts[params - 1];
+        alpha = (Decimal) opts[m->OValpha];
+        beta = (Decimal) opts[m->OVbeta];
+        gamma = (Decimal) opts[m->OVgamma];
         if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
             violations++;
         for (i = 0; i < N_OR; i++) {
@@ -655,14 +648,15 @@ int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsig
     }
 
 
+
     for (c_bc_iter = 0; c_bc_iter < m->n_bc_iter; c_bc_iter++) {
         for (i = 0; i < params; i++) {
             opts[i] = (m->error_mode == ENABLED) ? norm_rand(pars[i], pars_err[i]) : pars[i];
         }
         if (or_variations == VARIANT_A) {
-            alpha = (Decimal) opts[params - 3];
-            beta = (Decimal) opts[params - 2];
-            gamma = (Decimal) opts[params - 1];
+            alpha = (Decimal) opts[m->OValpha];
+            beta = (Decimal) opts[m->OVbeta];
+            gamma = (Decimal) opts[m->OVgamma];
             if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
                 violations++;
             for (i = 0; i < N_OR; i++) {

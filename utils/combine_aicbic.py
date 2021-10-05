@@ -28,8 +28,8 @@ for i in sys.argv[1:]:
 			print("sel parameter should be NH, CH, CN, CC")
 			exit(-1)
 		s2weights = [int(p) for p in list(sel)]
-        else:
-                modellist.append(i)
+	else:
+		modellist.append(i)
 
 print(s2weights)
 #modellist = sys.argv[1:]
