@@ -403,6 +403,39 @@ static void test_bcpars(void **state) {
     free(res.relaxation);
 }
 
+static void test_paramagnetic(void **state) {
+    (void) state;
+
+    /*Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau);
+    Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D);
+    Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal w1, Decimal wr);*/
+    Decimal field = 700 * 1000000; // conversion to Hz
+
+    Decimal omega_1H = T_DOWN * 2 * M_PI * field;
+    Decimal omega_15N = T_DOWN * 2 * M_PI * field / 9.869683408806043;
+    Decimal omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
+    Decimal omega_E = omega_1H * 658;
+
+    printf("D_CE: %lf\n", D_CE);
+    printf("D_NE: %lf\n", D_NE);
+    printf("Omega N %lf; Omega E: %f\n", omega_15N, omega_E);
+    Decimal Gtau = 0.1;
+    Decimal w1 = 10000;
+    Decimal wr = 60000;
+    int concI, rI;
+    Decimal conc = 0, r = 0.5;
+    for (concI = 0; concI < 5; concI++) {
+        conc += 1;
+        for (rI = 0; rI < 100; rI++) {
+            r += 0.5;
+            printf("P R2, Nconc = %.1f mM, r = %.1f A (%e): %f\n",
+                   conc, r, pow(r, -6.), Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), conc, Gtau, D_NE, w1, wr));
+        }
+        r = 0.5;
+    }
+
+}
+
 static void test_relaxation_smf(void **state) {
     (void) state;
 
@@ -726,7 +759,8 @@ int main(void) {
             cmocka_unit_test(test_relaxation_smf),
             cmocka_unit_test(test_relaxation_emf),
             cmocka_unit_test(test_bcpars),
-            cmocka_unit_test(test_aimf_rot)
+            cmocka_unit_test(test_aimf_rot),
+            cmocka_unit_test(test_paramagnetic)
     };
     //speedy_gaf();
     return cmocka_run_group_tests(tests, NULL, NULL);

@@ -71,8 +71,8 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->S2uf = 1;
     pars->dS2s = 0;
     pars->dS2f = 0;
-    pars->GS2 = 1;
-    pars->Gtaur = 0;
+    pars->Gr6norm = 0;
+    pars->Gtau = 0;
 
     return 0;
 }
@@ -169,10 +169,10 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
 
     if (pars->papbS2 < 0)
         (*violations)++;
-    if (/*pars->GS2 > 1 || */pars->GS2 < 0)
+    if (/*pars->GS2 > 1 || */pars->Gr6norm < 0)
         (*violations)++;
     //if (pars->Gtaur < pow(10, -7) || pars->Gtaur > pow(10, -5))
-    if (pars->Gtaur < 0) { (*violations)++; }
+    if (pars->Gtau > 0.1) { (*violations)++; }
 }
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {
@@ -420,8 +420,8 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2uf = opts[m->UFS2];
     }
     if (m->gd_mod == ENABLED) {
-        pars->GS2 = opts[m->GDS2];
-        pars->Gtaur = opts[m->GDtaur];
+        pars->Gr6norm = opts[m->GDS2];
+        pars->Gtau = opts[m->GDtaur];
     }
 
 //	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);
