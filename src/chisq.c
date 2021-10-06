@@ -169,10 +169,9 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
 
     if (pars->papbS2 < 0)
         (*violations)++;
-    if (/*pars->GS2 > 1 || */pars->Gr6norm < 0)
-        (*violations)++;
+
     //if (pars->Gtaur < pow(10, -7) || pars->Gtaur > pow(10, -5))
-    if (pars->Gtau > 0.1) { (*violations)++; }
+    if (pars->Gtau < 0) { (*violations)++; }
 }
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {
@@ -553,7 +552,8 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
     int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
     if (k != 0)
         return -1;
-#pragma omp parallel for reduction(+:chisq, violations)
+    int mvio = 0;
+#pragma omp parallel for reduction(+:chisq, violations, mvio)
     for (i = 0; i < resid->n_relaxation; i++) {
         Decimal calc_R, mult = 1.;
         int l_vio = 0;
@@ -566,16 +566,39 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
             if (resid->relaxation[i].type == R_13CR1 && resid->relaxation[i].type == R_13CR1p)
                 mult = resid->cn;
         }
+        Decimal bchisq, add;
+        bchisq = chisq;
+        add = mult * ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
+        chisq += add;
 
-        chisq += mult * ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
+        if ((chisq - bchisq) - add > 0.00001){
+            printf("B %le; A %le; + %le, diff %le\n", bchisq, chisq, add, chisq - bchisq);
+        }
+
+        if (chisq > pow(10, 50) || chisq < 0.0000001) {
+           // printf("Violation tripped: %le\n", chisq);
+
+            mvio++;
+        }
+
     }
     //dp += resid->n_relaxation;
+    if (mvio != 0) {
+        return 1e10;
+
+    }
 
     chisq += 100000 * violations;
+
     //if (violations > 0) printf("%d violations\n", violations);
     if (violations > 0) {
         LOG("Chisq optimization had %d violations.", violations);
     }
+
+    if (chisq < 0.0000001) {
+        return 1e10;
+    }
+
 
     Decimal S2NH, S2CH, S2CN, S2CC;
     S2NH = pars.S2NHs * pars.S2NHf * pars.S2uf;
@@ -588,7 +611,8 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
     if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - S2CN, 2.)) / pow(resid->S2CNe, 2.));
     if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - S2CC, 2.)) / pow(resid->S2CCe, 2.));
     unsigned int div = resid->n_relaxation + m->WS2CC + m->WS2CH + m->WS2CN + m->WS2NH;
-
+    if (chisq < 0.0000001) // indicates overflow.
+        return 1e10;
     return (Decimal) (chisq / div);
     /* normalise to number of relaxation measurements - otherwise when using like 85 the chisq becomes huge which hinders convergence */
 }

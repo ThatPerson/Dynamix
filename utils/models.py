@@ -37,15 +37,15 @@ mds = {
 	}, 
 	'gdemf': {
 		'n': 6,
-		'p': ['taus', 'S2s', 'tauf', 'S2f', 'GC0', 'Gtr']
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Gr6norm', 'Gtau']
 	},
 	'gsdemf': {
 		'n': 6,
-		'p': ['taus', 'S2s', 'tauf', 'S2f', 'GC0', 'Gtr']
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Gr6norm', 'Gtau']
 	},
 	'gsmf': {
 		'n': 4,
-		'p': ['tau', 'S2', 'GC0', 'Gtr']
+		'p': ['tau', 'S2', 'Gr6norm', 'Gtau']
 	},
 	'demft_no600': {
 		'n': 6,

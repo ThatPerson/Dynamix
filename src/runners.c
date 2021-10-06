@@ -199,7 +199,7 @@ int print_residues(struct Model *m) {
                 m->residues[l].parameters[i] = -1.;
             }
         }
-        fprintf(fp, "%d\t%lf\t%lf", l + 1, m->residues[l].S2NH, m->residues[l].min_val);
+        fprintf(fp, "%d\t%lf\t%le", l + 1, m->residues[l].S2NH, m->residues[l].min_val);
         for (i = 0; i < m->params; i++) {
             fprintf(fp, "\t%le", m->residues[l].parameters[i]);
         }

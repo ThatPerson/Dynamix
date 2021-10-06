@@ -42,9 +42,10 @@ Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau) {
      *  ns (A^-3) = nconc * 6.022 * 10^-7 A^-3
      */
 
+
     Decimal ns = nconc * 6.022 * pow(10, -7.);
 
-    Decimal num = (r6norm * ns * tau);
+    Decimal num = (pow(10, r6norm) * ns * tau);
     Decimal den = (1 + (tau * tau * omega * omega));
    // printf("\t%e, %f, %e -> ns = %0.2e. Num: %e, Den: %e -> %e\n", r6norm, nconc, omega, ns, num, den, num/den);
     return num/den;
