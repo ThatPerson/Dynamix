@@ -416,23 +416,13 @@ static void test_paramagnetic(void **state) {
     Decimal omega_13C = T_DOWN * 2 * M_PI * field / 3.976489314034722;
     Decimal omega_E = omega_1H * 658;
 
-    printf("D_CE: %lf\n", D_CE);
-    printf("D_NE: %lf\n", D_NE);
-    printf("Omega N %lf; Omega E: %f\n", omega_15N, omega_E);
     Decimal Gtau = 0.1;
     Decimal w1 = 10000;
     Decimal wr = 60000;
-    int concI, rI;
     Decimal conc = 0, r = 0.5;
-    for (concI = 0; concI < 5; concI++) {
-        conc += 1;
-        for (rI = 0; rI < 100; rI++) {
-            r += 0.5;
-            printf("P R2, Nconc = %.1f mM, r = %.1f A (%e): %f\n",
-                   conc, r, pow(r, -6.), Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), conc, Gtau, D_NE, w1, wr));
-        }
-        r = 0.5;
-    }
+    assert_true(Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), 3, Gtau, D_NE, w1, wr) < Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), 5, Gtau, D_NE, w1, wr));
+
+
 
 }
 

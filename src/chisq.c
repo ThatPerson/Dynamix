@@ -571,9 +571,7 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
         add = mult * ((pow(resid->relaxation[i].R - calc_R, 2.)) / pow(resid->relaxation[i].Rerror, 2.));
         chisq += add;
 
-        if ((chisq - bchisq) - add > 0.00001){
-            printf("B %le; A %le; + %le, diff %le\n", bchisq, chisq, add, chisq - bchisq);
-        }
+
 
         if (chisq > pow(10, 50) || chisq < 0.0000001) {
            // printf("Violation tripped: %le\n", chisq);

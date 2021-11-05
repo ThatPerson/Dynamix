@@ -231,7 +231,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.S2uf, D_NCA);
 
     if (m->gd_mod == GD_MOD)
-        R1E = Paramagnetic_R1(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE);
+        R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE);
 
 
     return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN + R1E) * T_DOWN;
@@ -331,7 +331,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
     if (m->gd_mod == GD_MOD)
-        R2E = Paramagnetic_R2(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, w1, wr);
+        R2E = Paramagnetic_R2(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, w1, wr);
     return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC + R2E) * T_DOWN;
 }
 

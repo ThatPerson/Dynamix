@@ -193,7 +193,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
             opts[k] = resid->parameters[k];
         }
         Decimal min = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
-        LOG("%d %d min = %lf; orig = %lf", i, l, min, resid->min_val);
+        LOG("%d %d min = %lf; orig = %lf", i, l, min, resid->min_val)
         // The actual value is more or less irrelevant, we're just interested in the values now in 'opts'
         //resid->error_params[l] = (Decimal *) malloc (sizeof(Decimal) * params);
 
