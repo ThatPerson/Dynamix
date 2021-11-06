@@ -77,6 +77,52 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     return 0;
 }
 
+int bcpars_clean(struct BCParameters *pars) {
+    Decimal S2NHs, S2NHf;
+    Decimal S2NCSAxs, S2NCSAxf;
+    Decimal S2NCSAys, S2NCSAyf;
+    Decimal S2NCSAxys, S2NCSAxyf;
+    Decimal S2CSAxs, S2CSAxf;
+    Decimal S2CSAys, S2CSAyf;
+    Decimal S2CSAxys, S2CSAxyf;
+    Decimal S2CNs, S2CNf;
+    Decimal S2CaNs, S2CaNf;
+    Decimal taus, tauf;
+    Decimal Eas, Eaf;
+    Decimal S2CHs, S2CHf;
+    Decimal S2CCAcs, S2CCAcf;
+    Decimal S2CCAps, S2CCApf;
+    Decimal S2NHrs, S2NHrf;
+    Decimal S2CHrs, S2CHrf;
+    Decimal S2uf;
+    Decimal papbS2, kex;
+    Decimal dS2s, dS2f;
+    Decimal Gr6norm, Gtau;
+    pars->S2NHs = 0; pars->S2NHf = 0;
+    pars->S2NCSAxs = 0; pars->S2NCSAxf = 0;
+    pars->S2NCSAys = 0; pars->S2NCSAyf = 0;
+    pars->S2NCSAxys = 0; pars->S2NCSAxyf = 0;
+    pars->S2CSAxs = 0; pars->S2CSAxf = 0;
+    pars->S2CSAys = 0; pars->S2CSAyf = 0;
+    pars->S2CSAxys = 0; pars->S2CSAxyf = 0;
+    pars->S2CNs = 0; pars->S2CNf = 0;
+    pars->S2CaNs = 0; pars->S2CaNf = 0;
+    pars->taus = 0; pars->tauf = 0;
+    pars->Eas = 0; pars->Eaf = 0;
+    pars->S2CHs = 0; pars->S2CHf = 0;
+    pars->S2CCAcs = 0; pars->S2CCAcf = 0;
+    pars->S2CCAps = 0; pars->S2CCApf = 0;
+    pars->S2NHrs = 0; pars->S2NHrf = 0;
+    pars->S2CHrs = 0; pars->S2CHrf = 0;
+    pars->S2uf = 0;
+    pars->papbS2 = 0;
+    pars->kex = 0;
+    pars->dS2s = 0; pars->dS2f = 0;
+    pars->Gr6norm = 0; pars->Gtau = 0;
+
+
+}
+
 int bcpars_tdep(struct BCParameters *pars, struct BCParameters *npars, Decimal tfacts, Decimal tfactf) {
     npars->S2NHs = pars->S2NHs * tfacts;
     npars->S2NCSAxs = pars->S2NCSAxs * tfacts;
@@ -232,6 +278,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             &(resid->orients[OR_CCAc]),
             &(resid->orients[OR_CCAp])
     };
+    bcpars_clean(pars);
     if (model == MOD_SMF || model == MOD_SMFT) {
         // tau, S2, [Ea]
         S2s = opts[1];

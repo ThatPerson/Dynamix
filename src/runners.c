@@ -102,6 +102,7 @@ int run_residue(struct Model *m, unsigned int residue) {
                 opts[k] = anneal_pars[k];
             }
             val = simplex(optimize_chisq, opts, 1.0e-16, 1, resid, m);
+
             if (val >= 1000000 || val < 0) {
                 val = -1;
                 for (k = 0; k < params; k++) {

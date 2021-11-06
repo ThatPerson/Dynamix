@@ -418,7 +418,7 @@ int read_system_file(char *filename, struct Model *m) {
         strcpy(pp_orient[i], "");
     }
     strcpy(m->outputdir, "./");
-    unsigned int to_ignore[50];
+    unsigned int to_ignore[128];
     int ig = 0;
 
     /* Initialise */
@@ -447,6 +447,12 @@ int read_system_file(char *filename, struct Model *m) {
     m->anneal_therm = 1.1;
     m->ultrafast = DISABLED;
     m->microsecond = DISABLED;
+    m->GDS2 = -1;
+    m->GDtaur = -1;
+    m->OValpha = -1;
+    m->OVbeta = -1;
+    m->OVgamma = -1;
+    m->UFS2 = -1;
     while (fgets(line, len, fp)) {
         if (line[0] == '%')
             continue; // comment
