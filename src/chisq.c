@@ -78,26 +78,6 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
 }
 
 int bcpars_clean(struct BCParameters *pars) {
-    Decimal S2NHs, S2NHf;
-    Decimal S2NCSAxs, S2NCSAxf;
-    Decimal S2NCSAys, S2NCSAyf;
-    Decimal S2NCSAxys, S2NCSAxyf;
-    Decimal S2CSAxs, S2CSAxf;
-    Decimal S2CSAys, S2CSAyf;
-    Decimal S2CSAxys, S2CSAxyf;
-    Decimal S2CNs, S2CNf;
-    Decimal S2CaNs, S2CaNf;
-    Decimal taus, tauf;
-    Decimal Eas, Eaf;
-    Decimal S2CHs, S2CHf;
-    Decimal S2CCAcs, S2CCAcf;
-    Decimal S2CCAps, S2CCApf;
-    Decimal S2NHrs, S2NHrf;
-    Decimal S2CHrs, S2CHrf;
-    Decimal S2uf;
-    Decimal papbS2, kex;
-    Decimal dS2s, dS2f;
-    Decimal Gr6norm, Gtau;
     pars->S2NHs = 0; pars->S2NHf = 0;
     pars->S2NCSAxs = 0; pars->S2NCSAxf = 0;
     pars->S2NCSAys = 0; pars->S2NCSAyf = 0;

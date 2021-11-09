@@ -274,7 +274,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
         low_taus = 1000;
         upp_taus = 100000;
         low_tauf = 0;
-        upp_tauf = 1;
+        upp_tauf = 100;
     }
     switch (m->model) {
         case MOD_SMF:
