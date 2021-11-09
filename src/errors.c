@@ -167,6 +167,19 @@ int calc_errors(struct Model *m, unsigned int residue) {
             resid->relaxation[k].w1 = resid->temp_relaxation[k].w1;
             resid->relaxation[k].type = resid->temp_relaxation[k].type;
             resid->relaxation[k].T = resid->temp_relaxation[k].T;
+            resid->relaxation[k].compensate_wr = resid->temp_relaxation[k].compensate_wr;
+            resid->relaxation[k].compensate_w1 = resid->temp_relaxation[k].compensate_w1;
+            resid->relaxation[k].compensate = resid->temp_relaxation[k].compensate;
+            resid->relaxation[k].compensate_wr = resid->temp_relaxation[k].compensate_wr;
+            resid->relaxation[k].hydrogen = resid->temp_relaxation[k].hydrogen;
+            resid->relaxation[k].Gd = resid->temp_relaxation[k].Gd;
+
+/*struct Relaxation {
+
+
+    int hydrogen;
+    Decimal Gd;
+};*/
 
 
             temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars);
