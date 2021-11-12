@@ -17,7 +17,7 @@ rNHr = 1.8
 gamma1H = 26.75 * math.pow(10,7.)
 gamma13C = 6.73 * math.pow(10,7.)
 gamma15N = 2.71 * math.pow(10,7.)
-gammaE = gamma1H * 658.21
+gammaE = 658 * gamma1H
 
 def calc_D(r, g1, g2):
 	global hbar
@@ -34,4 +34,6 @@ print("#define D_CN\t%f" % (calc_D(rCN, gamma15N, gamma13C)))
 print("#define D_CH\t%f" % (calc_D(rCH, gamma13C, gamma1H)))
 print("#define D_NHr\t%f" % (calc_D(rNHr, gamma15N, gamma1H)))
 print("#define D_CHr\t%f" % (calc_D(rCHr, gamma13C, gamma1H)))
-print("#define D_NE\t%f" % (calc_D(1, gamma15N, gammaE)))
+print("#define D_CE\t%f" % (calc_D(1, gammaE, gamma13C)))
+print("#define D_NE\t%f" % (calc_D(1, gammaE, gamma15N)))
+
