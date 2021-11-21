@@ -101,13 +101,18 @@ Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal w
 
 Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D) {
     if (Nconc == 0) return 0;
-
+	// Jaroniec2012 equation 6. (noting S(S+1) * 2/15 = 3/4 * 2/15 * 3 = 3/10
+	// or Okuno2020 eq 3
     return (Decimal) (3/10.) * D * D * PJ0(omega_N, Gr6norm, Nconc, Gtau);
 }
 
 Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal w1, Decimal wr) {
     if (Nconc == 0) return 0;
 
+	// Jaroniec2012 eq 6, noting that the tc term is J(0) -> J(wr, w1)
+	// and so taking 4 out (hence 3/4.) you get
+	// (1/15) * 4 * S(S+1) = 1/5
+	// or Okuno2020 eq 4
     Decimal J0contrib = ((1) * PJ0(2 * M_PI * (w1 + 2 * wr), Gr6norm, Nconc, Gtau) + \
                 (1) * PJ0(2 * M_PI * (w1 - 2 * wr), Gr6norm, Nconc , Gtau) + \
                 (2) * PJ0(2 * M_PI * (w1 + wr), Gr6norm, Nconc, Gtau) + \
