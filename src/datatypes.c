@@ -490,10 +490,10 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
         maxv[m->OVgamma] = 0;
     }
     if (m->gd_mod == GD_MOD) {
-        minv[m->GDS2] = -12;
-        maxv[m->GDS2] = -6;
+        minv[m->GDS2] = -3;
+        maxv[m->GDS2] = 0;
         minv[m->GDtaur] = 0;
-        maxv[m->GDtaur] = 0.1;
+        maxv[m->GDtaur] = 100;
     }
 
     if (m->ultrafast == ENABLED) {

@@ -26,11 +26,15 @@ def calc_GAF(theta, phi, sigA, sigB, sigG, alpha, beta, gamma):
 
 def objf_GAF(x, S2exp, S2error, theta, phi):
 	sigA, sigB, sigG, alpha, beta, gamma = x
+
 	S2calc = calc_GAF(theta, phi, sigA, sigB, sigG, alpha, beta, gamma)
 	#print(np.shape(S2exp))
 #	print(np.shape(S2calc))
 #	print(np.shape(S2error))
 	chisq = np.sqrt(np.nansum(np.power(S2exp - S2calc, 2) / np.power(S2error, 2)))
+
+	if (sigA < sigB or sigB < sigG):
+		chisq += 1e3 # penalty
 	#print(chisq)
 	return chisq
 
@@ -72,6 +76,8 @@ if (args.model == "iso"):
 	
 elif (args.model == "GAF"):
 	x0 = np.random.random((6)) * 0.15
+	sig = x0[:3]
+	x0[:3] = np.sort(sig)[::-1]
 	print("Running main fit...")
 	results = so.minimize(objf_GAF, x0, args=(S2[:, 0], S2[:, 1], theta, phi), method="Powell", bounds=((0, None), (0, None), (0, None), (None, None), (None, None), (None, None)))	
 	S2bc = np.zeros((len(res), args.mc))
@@ -89,6 +95,9 @@ elif (args.model == "GAF"):
 
 elif (args.model == "GAFM"):
 	x0 = np.random.random((6)) * 0.15
+	sig = x0[:3]
+	x0[:3] = np.sort(sig)[::-1]
+	x0[-1] = 0
 	print("Running main fit...")
 	results = so.minimize(objf_GAF, x0, args=(S2[:, 0], S2[:, 1], theta, phi), method="Powell", bounds=((0, None), (0, None), (0, None), (None, None), (None, None), (-0.001, 0.001)))	
 	S2bc = np.zeros((len(res), args.mc))
