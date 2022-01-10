@@ -191,6 +191,7 @@ struct Model {
     double anneal_restart;
     int OValpha, OVbeta, OVgamma, UFS2, GDS2, GDtaur;
     unsigned int gd_mod;
+    double t_error; // 2 STD, 95% confidence error.
 };
 
 /** @struct Orient
