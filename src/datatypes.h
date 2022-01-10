@@ -180,6 +180,7 @@ struct Model {
     double anneal_wobb;
     double anneal_therm;
     double anneal_restart;
+    double t_error; // 2 STD, 95% confidence error.
 };
 
 /** @struct Orient

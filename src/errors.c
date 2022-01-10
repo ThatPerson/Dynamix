@@ -166,7 +166,9 @@ int calc_errors(struct Model *m, unsigned int residue) {
             resid->relaxation[k].wr = resid->temp_relaxation[k].wr;
             resid->relaxation[k].w1 = resid->temp_relaxation[k].w1;
             resid->relaxation[k].type = resid->temp_relaxation[k].type;
-            resid->relaxation[k].T = resid->temp_relaxation[k].T;
+            resid->relaxation[k].T = (m->t_error == 0)
+                    ? resid->temp_relaxation[k].T
+                    : norm_rand(resid->temp_relaxation[k].T, m->t_error / 2); // t_error is 2 standard deviations.
 
 
             temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars);

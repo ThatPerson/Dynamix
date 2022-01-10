@@ -436,6 +436,8 @@ int read_system_file(char *filename, struct Model *m) {
     m->WS2CN = 1;
     m->WS2CC = 1;
 
+    m->t_error = 0;
+
     m->anneal_restart = 0.01;
     m->anneal_wobb = 0.05;
     m->anneal_temp = 6000;
@@ -665,6 +667,8 @@ int read_system_file(char *filename, struct Model *m) {
                 ig++;
             } else if (strcmp(key, "CNCOMP") == 0) {
                 m->cn_ratio = CNRATIO_ON;
+            } else if (strcmp(key, "TERROR") == 0) {
+                m->t_error = atof(val);
             } else if (strcmp(key, "GLOBAL") == 0) {
                 m->global = GLOBAL;
             } else if (strcmp(key, "N_ERROR_ITER") == 0) {
