@@ -43,6 +43,16 @@
 #include "verification.h"
 
 
+void print_welcome(unsigned int seed, int numprocs) {
+    printf("== Dynamix ==\n");
+    printf("Compiled on %s at %s\n", __DATE__, __TIME__);
+    printf("%d processes, with seeds;\n", numprocs);
+    int n;
+    for (n = 0; n < numprocs; n++) {
+        printf("\tProcess %d: %d\n", n, seed + n);
+    }
+}
+
 /**
  * Start function. Initialises parameters, loads files, spawns threads and outputs data.
  * @opts filename
@@ -62,9 +72,14 @@ int main(int argc, char *argv[]) {
 
     /* Initialisation */
     start_time = time(0);
-    srand((unsigned int) time(NULL) + myid);
+
+    unsigned int seed = time(NULL);
+    srand(seed + myid);
     initialise_dwig(HALF_PI, Dwig);
 
+    if (myid == 0) {
+        print_welcome(seed, numprocs);
+    }
 
     char system_file[255] = "";
     unsigned int i;
