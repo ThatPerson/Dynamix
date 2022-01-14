@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <complex.h>
-#include "chisq.h"
+#include "../chisq.h"
 #include "model.h"
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
