@@ -47,6 +47,14 @@ mds = {
 		'n': 4,
 		'p': ['tau', 'S2', 'Gr6norm', 'Gtau']
 	},
+	'gusmf': {
+		'n': 5,
+		'p': ['tau', 'S2', 'Gr6norm', 'Gtau', 'S2uf']
+	},
+	'gudemf': {
+		'n': 7,
+		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Gr6norm', 'Gtau', 'S2uf']
+	},
 	'demft_no600': {
 		'n': 6,
 		'p': ['taus', 'S2s', 'tauf', 'S2f', 'Eas', 'Eaf']

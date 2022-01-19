@@ -681,9 +681,9 @@ int read_system_file(char *filename, struct Model *m) {
                     continue;
                 m->params += 1;
                 m->ultrafast = ENABLED;
-                m->microsecond = ENABLED;
+             //   m->microsecond = ENABLED;
             } else if (strcmp(key, "MICROSECOND") == 0) {
-                m->microsecond = ENABLED;
+                m->microsecond = (atoi(val) == 1 ? ENABLED : DISABLED);
             } else if (strcmp(key, "CSISON") == 0) {
                 strcpy(csisoN, val);
             } else if (strcmp(key, "CSISOC") == 0) {
