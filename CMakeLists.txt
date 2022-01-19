@@ -27,6 +27,19 @@ add_executable(dynamix
         src/anneal.c
         src/models/model.c)
 
+add_executable(prate
+        src/predict_rate.c
+        src/runners.c
+        src/errors.c
+        src/read_data.c
+        src/global_gaf.c
+        src/datatypes.c
+        src/verification.c
+        src/chisq.c
+        src/crosen.c
+        src/anneal.c
+        src/models/model.c)
+
 add_executable(tests
         src/test/tests.c
         src/runners.c
@@ -60,10 +73,14 @@ add_executable(correl
 
 target_link_libraries(dynamix ${MPI_LIBRARIES})
 target_link_libraries(dynamix m)
+target_link_libraries(prate ${MPI_LIBRARIES})
+target_link_libraries(prate m)
+target_link_libraries(tests ${MPI_LIBRARIES})
 target_link_libraries(tests m)
 target_link_libraries(tests ${MPI_LIBRARIES})
 
 target_link_libraries(correl m)
+target_link_libraries(correl ${MPI_LIBRARIES})
 target_link_libraries(tests cmocka)
 
 set(CMAKE_C_FLAGS "-O3 -Wall -Wextra -fopenmp ")
@@ -81,10 +98,14 @@ endif()
 if(MPI_COMPILE_FLAGS)
     set_target_properties(dynamix PROPERTIES
             COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
+    set_target_properties(tests PROPERTIES
+            COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
 endif()
 
 if(MPI_LINK_FLAGS)
     set_target_properties(dynamix PROPERTIES
+            LINK_FLAGS "${MPI_LINK_FLAGS}")
+    set_target_properties(tests PROPERTIES
             LINK_FLAGS "${MPI_LINK_FLAGS}")
 
 endif()
