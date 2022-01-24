@@ -28,7 +28,7 @@ for i in sys.argv[1:]:
 			print("sel parameter should be NH, CH, CN, CC")
 			exit(-1)
 		s2weights = [int(p) for p in list(sel)]
-        else:
+	else:
                 modellist.append(i)
 
 print(s2weights)
@@ -110,6 +110,8 @@ for model in modellist:
 
 		for il in range(0, len(calc_R)):
 			ctmp = np.power((exp_R[il] - calc_R[il]), 2.) / np.power(err_R[il], 2.)
+			if (calc_R[il] == -1 or np.isnan(calc_R[il])):
+				continue
 			chisq += ctmp
 
 		# order parameters
