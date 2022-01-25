@@ -198,6 +198,8 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
 
     //if (pars->Gtaur < pow(10, -7) || pars->Gtaur > pow(10, -5))
     if (pars->Gtau < 0) { (*violations)++; }
+    if (pars->Gr6norm < 0.1) (*violations)++; // if Gr6norm < 0.1 then PJ0 is *10.
+    // For extreme values this can end up leading to overflow
 }
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations) {

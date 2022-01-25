@@ -47,7 +47,7 @@ res = orients[:, 0]
 theta = orients[:, 1]
 phi = orients[:, 2]
 if (args.columnerrors == -1):
-	S2 = np.zeros((len(res, 2))) + 0.05
+	S2 = np.zeros((len(res), 2)) + 0.005
 	d = np.loadtxt(args.S2, usecols=[args.column - 1])
 	#print(d)
 	S2[:, 0] = d

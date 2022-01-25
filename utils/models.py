@@ -1,7 +1,7 @@
 mds = {
 	'smf': {
 		'n': 2,
-		'p': ['tau', 'S2']
+		'p': ['tauf', 'S2f']
 	}, 
 	'smft': {
 		'n': 3,
@@ -45,11 +45,15 @@ mds = {
 	},
 	'gsmf': {
 		'n': 4,
-		'p': ['tau', 'S2', 'Gr6norm', 'Gtau']
+		'p': ['tauf', 'S2f', 'Gr6norm', 'Gtau']
 	},
 	'gusmf': {
 		'n': 5,
-		'p': ['tau', 'S2', 'Gr6norm', 'Gtau', 'S2uf']
+		'p': ['tauf', 'S2f', 'Gr6norm', 'Gtau', 'S2uf']
+	},
+	'gmsmf': {
+		'n': 5,
+		'p': ['taus', 'S2s', 'Gr6norm', 'Gtau', 'S2uf']
 	},
 	'gudemf': {
 		'n': 7,
@@ -121,7 +125,11 @@ mds = {
 	}, 	
 	'usmf': {
 		'n': 3,
-		'p': ['tau', 'S2', 'S2uf']
+		'p': ['tauf', 'S2f', 'S2uf']
+	}, 
+	'msmf': {
+		'n': 3,
+		'p': ['taus', 'S2s', 'S2uf']
 	}, 
 	'usmft': {
 		'n': 4,

@@ -33,10 +33,10 @@ for i in sys.argv[1:]:
 
 print(s2weights)
 #modellist = sys.argv[1:]
-modelbins = np.zeros((len(modellist), 3))
+modelbins = np.zeros((len(modellist), 4))
 num_mods = len(modellist)
 
-results = np.zeros((56, num_mods, 3))
+results = np.zeros((56, num_mods, 4))
 
 c = 0
 for model in modellist:
@@ -108,10 +108,16 @@ for model in modellist:
 
 		chisq = 0
 
+		check_nan = False
 		for il in range(0, len(calc_R)):
 			ctmp = np.power((exp_R[il] - calc_R[il]), 2.) / np.power(err_R[il], 2.)
+			print(calc_R[il])
+			if (calc_R[il] == -1 or np.isnan(calc_R[il])):
+				continue
+			check_nan = True
 			chisq += ctmp
 
+		
 		# order parameters
 		## for now, for GAF and GAFT models I'm using S2NH, S2CH and S2CN.
 		## in order to allow for direct comparison with the other models
@@ -138,11 +144,11 @@ for model in modellist:
 
 		N_meas = sum(s2weights) + len(calc_R)
 		df = N_meas - params - 1
-		if (df <= 0 or chisq == 0 or ign == 1):
+		if (df <= 0 or chisq == 0 or ign == 1 or check_nan == False):
 			AIC = 1e9
 			BIC = 1e9
 			AICc = 1e9
-			results[i-1, c, :] = [AIC, BIC, AICc]
+			results[i-1, c, :] = [AIC, BIC, AICc, 1e9]
 			continue
 
 		AIC = chisq + 2 * params
@@ -186,29 +192,34 @@ for model in modellist:
 		if (AICc < 0 or AICc > 1000000):
 			AICc = 1e9
 
-		results[i-1, c, :] = [AIC, BIC, AICc]
+		results[i-1, c, :] = [AIC, BIC, AICc, chisq]
 	c = c + 1
 
-with open("AIC.csv", "w") as aic, open('BIC.csv', 'w') as bic, open('AICc.csv', 'w') as aicc:
+with open("AIC.csv", "w") as aic, open('BIC.csv', 'w') as bic, open('AICc.csv', 'w') as aicc, open("chisq.csv", "w") as csvv:
 	for models in modellist:
 		aic.write(", %s" % (models))
 		bic.write(", %s" % (models))
 		aicc.write(", %s" % (models))
+		csvv.write(", %s" % (models))
 	aic.write("\n")
 	bic.write("\n")
 	aicc.write("\n")
+	csvv.write("\n")
 	for i in range(0, 56):
 		aic.write("%d" % (i+1))
 		bic.write("%d" % (i+1))
 		aicc.write("%d" % (i+1))
+		csvv.write("%d" % (i+1))
 		for k in range(0, num_mods):
 			aic.write(", %f" % (results[i, k, 0]))
 			bic.write(", %f" % (results[i, k, 1]))
 			aicc.write(", %f" % (results[i, k, 2]))
+			csvv.write(", %f" % (results[i, k, 3]))
 
 		aicmin = np.argmin(results[i, :, 0])
 		bicmin = np.argmin(results[i, :, 1])
 		aiccmin = np.argmin(results[i, :, 2])
+		csvvmin = np.argmin(results[i, :, 3])
 
 		if (-1 not in results[i, :, 0] and sum(results[i, :, 0]) != num_mods * 1e9):
 			aic.write(", %s\n" % (modellist[aicmin]))
@@ -228,12 +239,18 @@ with open("AIC.csv", "w") as aic, open('BIC.csv', 'w') as bic, open('AICc.csv', 
 		else:
 			aicc.write(", \n")
 
+		if (-1 not in results[i, :, 3] and sum(results[i, :, 3]) != num_mods * 1e9):
+			csvv.write(", %s\n" % (modellist[csvvmin]))
+			modelbins[csvvmin, 3] = modelbins[csvvmin, 3] + 1
+		else:
+			csvv.write(", \n")
+
 print("Model Choices")
 print("=============")
 
-print("\t\tAIC\tBIC\tAICc ")
+print("\t\tAIC\tBIC\tAICc\tchisq")
 for i in range(0, len(modellist)):
-	print("\t%s:\t%d\t%d\t%d" % (modellist[i], modelbins[i, 0], modelbins[i, 1], modelbins[i, 2]))
+	print("\t%s:\t%d\t%d\t%d\t%d" % (modellist[i], modelbins[i, 0], modelbins[i, 1], modelbins[i, 2], modelbins[i, 3]))
 
 
 

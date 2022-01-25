@@ -273,7 +273,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
     if (m->microsecond == ENABLED) {
         low_taus = 1000;
         upp_taus = 100000;
-        low_tauf = 0;
+        low_tauf = 1;
         upp_tauf = 100;
     }
     switch (m->model) {
@@ -490,8 +490,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
         maxv[m->OVgamma] = 0;
     }
     if (m->gd_mod == GD_MOD) {
-        minv[m->GDS2] = -3;
-        maxv[m->GDS2] = 0;
+        minv[m->GDS2] = 0.1;
+        maxv[m->GDS2] = 20;
         minv[m->GDtaur] = 0;
         maxv[m->GDtaur] = 100;
     }

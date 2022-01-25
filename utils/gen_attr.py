@@ -26,7 +26,7 @@ def writer(of, k, v, n):
 		f.write("attribute: %s\n" % (n))
 		f.write("match mode: any\nrecipient: residues\n")
 		for i in range(0, len(k)):
-			if (v[i] == -1):
+			if (v[i] == -1 or np.isnan(v[i])):
 				continue
 			f.write("\t%s:%d\t%f\n" % (tag, k[i], v[i]))
 
