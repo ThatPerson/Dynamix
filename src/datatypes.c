@@ -44,7 +44,7 @@ Decimal sq(Decimal x) {
 
 Decimal temp_tau(Decimal tau0, Decimal Ea, Decimal temp) {
     Decimal tfactor = (300. - temp) / (temp * 300.);
-    return tau0 * exp((Ea / RYD) * tfactor); // tau0 now at 300 K.
+    return tau0 * exp((1000 * Ea / RYD) * tfactor); // tau0 now at 300 K.
 }
 
 /**
@@ -284,7 +284,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
         case MOD_SMFT:
             maxv[0] = upp_taus;
             maxv[1] = 1;
-            maxv[2] = 60000;
+            maxv[2] = 60;
             break;
         case MOD_EMF:
             minv[0] = low_taus;
@@ -299,7 +299,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[0] = upp_taus;
             maxv[1] = 1;
             maxv[2] = upp_tauf;
-            maxv[3] = 60000, maxv[4] = 60000;
+            maxv[3] = 60, maxv[4] = 60;
             break;
         case MOD_DEMF:
             minv[0] = low_taus;
@@ -318,7 +318,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[1] = 1;
             maxv[2] = upp_tauf;
             maxv[3] = 1;
-            maxv[4] = 60000, maxv[5] = 60000;
+            maxv[4] = 60, maxv[5] = 60;
             break;
         case MOD_RDEMFT:
             minv[0] = low_taus;
@@ -328,7 +328,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[1] = 1;
             maxv[2] = upp_tauf;
             maxv[3] = 1;
-            maxv[4] = 60000, maxv[5] = 60000;
+            maxv[4] = 60, maxv[5] = 60;
             maxv[6] = 10;
             maxv[7] = 10000;
             break;
@@ -340,7 +340,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[1] = 1;
             maxv[2] = upp_tauf;
             maxv[3] = 1;
-            maxv[4] = 60000, maxv[5] = 60000;
+            maxv[4] = 60, maxv[5] = 60;
             minv[6] = -0.1;
             maxv[6] = 0.1;
             minv[7] = -0.1;
@@ -370,8 +370,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[0] = upp_taus;
             maxv[1] = upp_tauf;
             for (k = 2; k <= 7; k++) maxv[k] = 0.25;
-            maxv[8] = 60000;
-            maxv[9] = 60000;
+            maxv[8] = 60;
+            maxv[9] = 60;
             break;
         case MOD_AIMF:
             minv[0] = low_taus;
@@ -390,8 +390,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
                 maxv[k] = 1;
                 minv[k] = S2NH;
             }
-            maxv[8] = 60000;
-            maxv[9] = 60000;
+            maxv[8] = 60;
+            maxv[9] = 60;
             break;
         case MOD_EAIMF:
             minv[0] = low_taus;
@@ -410,8 +410,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
                 maxv[k] = 1;
                 minv[k] = S2NH;
             }
-            maxv[6] = 60000;
-            maxv[7] = 60000;
+            maxv[6] = 60;
+            maxv[7] = 60;
             break;
         case MOD_BGAF:
             minv[0] = low_taus;
@@ -422,7 +422,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             minv[0] = low_taus;
             maxv[0] = upp_taus;
             for (k = 1; k <= 3; k++) { maxv[k] = 0.25; }
-            maxv[4] = 60000;
+            maxv[4] = 60;
             break;
         case MOD_BAIMF:
             minv[0] = low_taus;
@@ -439,7 +439,7 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
                 maxv[k] = 1;
                 minv[k] = S2NH;
             }
-            maxv[4] = 60000;
+            maxv[4] = 60;
             break;
         case MOD_EGAF:
             minv[0] = low_taus;
@@ -456,8 +456,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             for (k = 2; k <= 4; k++) maxv[k] = 0.25;
             minv[5] = S2NH;
             maxv[5] = 1;
-            maxv[6] = 60000;
-            maxv[7] = 60000;
+            maxv[6] = 60;
+            maxv[7] = 60;
             break;
         case MOD_BGF:
             minv[0] = low_taus;
@@ -468,8 +468,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             minv[0] = low_taus;
             maxv[0] = upp_taus;
             maxv[1] = upp_tauf;
-            maxv[8] = 60000;
-            maxv[9] = 60000;
+            maxv[8] = 60;
+            maxv[9] = 60;
             break;
         default:
             break;
