@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <complex.h>
-#include <chisq.h>
+#include "../chisq.h"
 #include <stdio.h>
 #include "model.h"
 

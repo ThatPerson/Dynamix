@@ -36,7 +36,7 @@
 #include <mpi.h>
 
 #include "datatypes.h"
-#include "model.h"
+#include "models/model.h"
 #include "chisq.h"
 #include "anneal.h"
 #include "crosen.h"
