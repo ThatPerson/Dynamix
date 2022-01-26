@@ -125,11 +125,15 @@ int main(int argc, char * argv[]) {
     int err_mod = DISABLED;
     char relaxation_file[255] = "";
     unsigned int i;
+    char outputdir[255] = "";
     for (i = 1; i < (unsigned int) argc; i++) {
         if (strcmp(argv[i], "-e") == 0) {
             err_mod = ENABLED;
         } else if (strcmp(argv[i], "-p") == 0) {
             strcpy(relaxation_file, argv[i + 1]);
+            i++;
+        } else if (strcmp(argv[i], "-o") == 0) {
+            strcpy(outputdir, argv[i + 1]);
             i++;
         } else {
             strcpy(system_file, argv[i]);
@@ -147,6 +151,9 @@ int main(int argc, char * argv[]) {
     if (read_system_file(system_file, &m) == -1) {
         ERROR("Could not read system file\n");
         goto quit;
+    }
+    if (strcmp(outputdir, "") != 0) {
+        strcpy(m.outputdir, outputdir);
     }
     omp_set_num_threads(m.nthreads);
     determine_residues(m.n_residues, 0, 1, &(m.proc_start), &(m.proc_end));
