@@ -124,7 +124,7 @@ simplex(Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned in
     for (i = 0; i < n; i++) {
         v[0][i] = start[i];
     }
-    Decimal local_scale;
+    Decimal local_scale, sabs;
     for (i = 1; i <= n; i++) {
         for (j = 0; j < n; j++) {
             /* This function as originally put would use a standard scale factor of 1 for all sites.
@@ -136,7 +136,9 @@ simplex(Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned in
              * (so for an order parameter of 0.9, 0.9 -> log10 -0.046 -> floor 0 -> 1, so scale 1
              *  for a slow timescale of 13,000 ns, 13000 -> log10 4.11 -> floor 4 -> 5 so scale 1e5
              */
-            local_scale = pow(10, (floor(log10(start[j]))) + 1);
+
+            sabs = fabs(start[j]);
+            local_scale = (sabs == 0) ? 1 : pow(10, (floor(log10(start[j]))));
             if (i - 1 == j) {
                 v[i][j] = (local_scale * pn) + start[j];
             } else {
