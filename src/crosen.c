@@ -124,13 +124,23 @@ simplex(Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned in
     for (i = 0; i < n; i++) {
         v[0][i] = start[i];
     }
-
+    Decimal local_scale;
     for (i = 1; i <= n; i++) {
         for (j = 0; j < n; j++) {
+            /* This function as originally put would use a standard scale factor of 1 for all sites.
+             * This is great if all the values are similar, but in the case of this model if a parameter
+             * is greater than 1, it will converge poorly. I could increase the scale for all parameters,
+             * but this might lead to poorer convergence for the lower values.
+             * The scale here is a local scaling based on the relative magnitude of the start values.
+             * e.g. 10^(floor(log10(start[i])) + 1)
+             * (so for an order parameter of 0.9, 0.9 -> log10 -0.046 -> floor 0 -> 1, so scale 1
+             *  for a slow timescale of 13,000 ns, 13000 -> log10 4.11 -> floor 4 -> 5 so scale 1e5
+             */
+            local_scale = pow(10, (floor(log10(start[j]))) + 1);
             if (i - 1 == j) {
-                v[i][j] = pn + start[j];
+                v[i][j] = (local_scale * pn) + start[j];
             } else {
-                v[i][j] = qn + start[j];
+                v[i][j] = (local_scale * qn) + start[j];
             }
         }
     }
