@@ -708,8 +708,9 @@ int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsig
             alpha = (Decimal) opts[m->OValpha];
             beta = (Decimal) opts[m->OVbeta];
             gamma = (Decimal) opts[m->OVgamma];
-            if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT)
+            if (fabs(alpha) > OR_LIMIT || fabs(beta) > OR_LIMIT || fabs(gamma) > OR_LIMIT) {
                 violations++;
+            }
             for (i = 0; i < N_OR; i++) {
                 calculate_Y2(&(resid->orients[i]));
                 rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
