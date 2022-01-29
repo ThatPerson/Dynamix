@@ -138,7 +138,7 @@ simplex(Decimal (*func)(Decimal[], struct Residue *, struct Model *, unsigned in
              */
 
             sabs = fabs(start[j]);
-            local_scale = (sabs == 0) ? 1 : pow(10, (floor(log10(start[j]))));
+            local_scale = (sabs == 0) ? 1 : pow(10, (floor(log10(sabs))));
             if (i - 1 == j) {
                 v[i][j] = (local_scale * pn) + start[j];
             } else {
