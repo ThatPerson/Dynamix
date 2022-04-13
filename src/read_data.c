@@ -762,11 +762,12 @@ int read_system_file(char *filename, struct Model *m) {
 
             //printf("%s: %s\n", key, val);
         } else if (mode == 1) {
+            strcpy(key, "IGNORE");
             sscanf(line, "%255s\n", key);
             //printf("Read file: %s\n", key);
             //int read_relaxation_data(struct Model *m, char *filename) {
-
-            read_relaxation_data(m, key);
+            if (strcmp(key, "IGNORE") != 0)
+                read_relaxation_data(m, key);
         }
     }
     unsigned int k;
