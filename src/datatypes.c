@@ -499,6 +499,8 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
     if (m->ultrafast == ENABLED) {
         minv[m->UFS2] = S2NH;
         maxv[m->UFS2] = 1;
+        minv[m->UFtau_uf] = 0;
+        maxv[m->UFtau_uf] = 1;
     }
 
 /**

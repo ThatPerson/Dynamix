@@ -465,15 +465,17 @@ int read_system_file(char *filename, struct Model *m) {
             }
 
             if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
-                m->GDS2 = m->params - 6;
-                m->GDtaur = m->params - 5;
-                m->OValpha = m->params - 4;
-                m->OVbeta = m->params - 3;
-                m->OVgamma = m->params - 2;
+                m->GDS2 = m->params - 7;
+                m->GDtaur = m->params - 6;
+                m->OValpha = m->params - 5;
+                m->OVbeta = m->params - 4;
+                m->OVgamma = m->params - 3;
+                m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
             } else if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED) {
-                m->GDS2 = m->params - 3;
-                m->GDtaur = m->params - 2;
+                m->GDS2 = m->params - 4;
+                m->GDtaur = m->params - 3;
+                m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
             } else if (m->gd_mod == GD_MOD && m->or_variation == VARIANT_A) {
                 m->GDS2 = m->params - 5;
@@ -482,14 +484,16 @@ int read_system_file(char *filename, struct Model *m) {
                 m->OVbeta = m->params - 2;
                 m->OVgamma = m->params - 1;
             } else if (m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
-                m->OValpha = m->params - 4;
-                m->OVbeta = m->params - 3;
-                m->OVgamma = m->params - 2;
+                m->OValpha = m->params - 5;
+                m->OVbeta = m->params - 4;
+                m->OVgamma = m->params - 3;
+                m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
             } else if (m->gd_mod == GD_MOD) {
                 m->GDS2 = m->params - 2;
                 m->GDtaur = m->params - 1;
             } else if (m->ultrafast == ENABLED) {
+                m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
             } else if (m->or_variation == VARIANT_A) {
                 m->OValpha = m->params - 3;
@@ -679,7 +683,7 @@ int read_system_file(char *filename, struct Model *m) {
             } else if (strcmp(key, "ULTRAFAST") == 0) {
                 if (m->ultrafast == ENABLED)
                     continue;
-                m->params += 1;
+                m->params += 2;
                 m->ultrafast = ENABLED;
              //   m->microsecond = ENABLED;
             } else if (strcmp(key, "MICROSECOND") == 0) {
@@ -837,7 +841,7 @@ int print_system(struct Model *m, char *filename) {
         fprintf(fp, "\tOV alpha: %d\n\tOV beta: %d\n\tOV gamma: %d\n", m->OValpha, m->OVbeta, m->OVgamma);
     fprintf(fp, "Ultrafast: %s\n", (m->ultrafast == ENABLED) ? "ON" : "OFF");
     if (m->ultrafast == ENABLED)
-        fprintf(fp, "\tUF S2: %d\n", m->UFS2);
+        fprintf(fp, "\tUF S2: %d\nUF tuf: %d\n", m->UFS2, m->UFtau_uf);
     fprintf(fp, "us Timescale: %s\n", (m->microsecond == ENABLED) ? "ON" : "OFF");
     if (m->gd_mod == GD_MOD)
         fprintf(fp, "\tGD S2: %d\n\tGD tr: %d\n", m->GDS2, m->GDtaur);

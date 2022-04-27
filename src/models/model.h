@@ -24,27 +24,27 @@ struct BCParameters {
     Decimal S2CCAps, S2CCApf;
     Decimal S2NHrs, S2NHrf;
     Decimal S2CHrs, S2CHrf;
-    Decimal S2uf;
+    Decimal tau_uf, S2uf;
     Decimal papbS2, kex;
     Decimal dS2s, dS2f;
     Decimal Gr6norm, Gtau;
 
 };
 
-Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
+Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal tau_uf, Decimal S2uf);
 
-Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf);
+Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal tau_uf, Decimal S2uf);
 Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau);
 Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D);
 Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal w1, Decimal wr);
 
 
 
-Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
+Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal tau_uf, Decimal S2uf,
            Decimal D);
 
 Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf,
-           Decimal S2f, Decimal S2uf, Decimal D);
+           Decimal S2f, Decimal tau_uf, Decimal S2uf, Decimal D);
 
 Decimal CSA_R2(Decimal omega, \
                          Decimal w1, \
@@ -53,9 +53,11 @@ Decimal CSA_R2(Decimal omega, \
                          Decimal S2s, \
                          Decimal tauf, \
                          Decimal S2f, \
+                         Decimal tau_uf, \
                          Decimal S2uf, \
                          Decimal D2, \
                          Decimal  (*J_SD)(\
+                            Decimal, \
                             Decimal, \
                             Decimal, \
                             Decimal, \

@@ -69,6 +69,7 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->S2CHrs = slow;
     pars->S2CHrf = fast;
     pars->S2uf = 1;
+    pars->tau_uf = 0;
     pars->dS2s = 0;
     pars->dS2f = 0;
     pars->Gr6norm = 0;
@@ -94,7 +95,7 @@ int bcpars_clean(struct BCParameters *pars) {
     pars->S2CCAps = 0; pars->S2CCApf = 0;
     pars->S2NHrs = 0; pars->S2NHrf = 0;
     pars->S2CHrs = 0; pars->S2CHrf = 0;
-    pars->S2uf = 0;
+    pars->S2uf = 0; pars->tau_uf = 0;
     pars->papbS2 = 0;
     pars->kex = 0;
     pars->dS2s = 0; pars->dS2f = 0;
@@ -446,6 +447,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
     }
     if (m->ultrafast == ENABLED) {
         pars->S2uf = opts[m->UFS2];
+        pars->tau_uf = opts[m->UFtau_uf];
     }
     if (m->gd_mod == ENABLED) {
         pars->Gr6norm = opts[m->GDS2];
@@ -459,6 +461,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
     Decimal upper_lim_tf = 1; // 10 ns
     Decimal upper_lim_ts = 10000; // 10 us
     Decimal lower_lim_tf = 0.0001; // 100 fs
+    Decimal upper_lim_tuf = 1;
 
     if (m->microsecond == ENABLED) {
         upper_lim_tf = 1000; // 1 us
@@ -473,6 +476,12 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
     check_S2_violations(pars, violations);
     // printf("Pars %lf (%lf)\n", ttaus, upper_lim_ts);
     if (ttaus < ttauf)
+        (*violations)++;
+    if (ttauf < pars->tau_uf)
+        (*violations)++;
+    if (ttaus < pars->tau_uf)
+        (*violations)++;
+    if (pars->tau_uf > upper_lim_tuf)
         (*violations)++;
     if (ttaus > upper_lim_ts)
         (*violations)++;
