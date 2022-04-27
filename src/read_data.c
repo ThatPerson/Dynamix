@@ -841,7 +841,7 @@ int print_system(struct Model *m, char *filename) {
         fprintf(fp, "\tOV alpha: %d\n\tOV beta: %d\n\tOV gamma: %d\n", m->OValpha, m->OVbeta, m->OVgamma);
     fprintf(fp, "Ultrafast: %s\n", (m->ultrafast == ENABLED) ? "ON" : "OFF");
     if (m->ultrafast == ENABLED)
-        fprintf(fp, "\tUF S2: %d\nUF tuf: %d\n", m->UFS2, m->UFtau_uf);
+        fprintf(fp, "\tUF S2: %d\n\tUF tuf: %d\n", m->UFS2, m->UFtau_uf);
     fprintf(fp, "us Timescale: %s\n", (m->microsecond == ENABLED) ? "ON" : "OFF");
     if (m->gd_mod == GD_MOD)
         fprintf(fp, "\tGD S2: %d\n\tGD tr: %d\n", m->GDS2, m->GDtaur);
