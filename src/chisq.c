@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include "datatypes.h"
 #include "models/model.h"
+#include "models/impact.h"
 #include "errors.h"
 
 int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast, struct Model *m) {

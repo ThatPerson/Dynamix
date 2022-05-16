@@ -2,6 +2,7 @@
 #define CHISQ_H
 
 #include "models/model.h"
+#include "models/impact.h"
 
 int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, struct Residue *resid, int *violations);
 
