@@ -17,10 +17,25 @@ Decimal J0_IMPACT(Decimal omega, Decimal *A, Decimal tau_lb, Decimal tau_ub, uns
     Decimal inc = (l_tau_ub - l_tau_lb) / (impact_n - 1);
     unsigned int i;
     for (i = 0; i < impact_n; i++) {
-        Decimal taui = l_tau_lb + i * inc;
+        Decimal taui = exp(l_tau_lb + i * inc);
         J += (Decimal) A[i] * (Decimal) taui / (1 + ((Decimal) omega * (Decimal) omega * (Decimal) taui * (Decimal) taui));
     }
     return J;
+}
+
+int TAU_IMPACT(Decimal *tau, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n){
+    // tau_lb and tau_ub are the timescales in ns.
+    Decimal l_tau_lb = log(tau_lb);
+    Decimal l_tau_ub = log(tau_ub);
+
+    Decimal J = 0;
+    Decimal inc = (l_tau_ub - l_tau_lb) / (impact_n - 1);
+    unsigned int i;
+    for (i = 0; i < impact_n; i++) {
+        Decimal taui = l_tau_lb + i * inc;
+        tau[i] = exp(l_tau_lb + i * inc);
+    }
+    return 1;
 }
 
 Decimal Dipolar_R1_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n,

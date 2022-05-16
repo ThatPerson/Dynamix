@@ -473,6 +473,12 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
             maxv[8] = 60;
             maxv[9] = 60;
             break;
+        case MOD_IMPACT:
+            for (k = 0; k < m->impact_n; k++) {
+                minv[k] = 0;
+                maxv[k] = 1;
+            }
+
         default:
             break;
     }

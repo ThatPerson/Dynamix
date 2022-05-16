@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "models/impact.h"
 #include "datatypes.h"
 
 int read_csa(struct Model *m, char *filename, int dt) {
@@ -469,7 +470,7 @@ int read_system_file(char *filename, struct Model *m) {
                 return -1;
             }
             if (m->model == MOD_IMPACT) {
-                m->params = m->impact_n;
+                m->params += m->impact_n;
             }
             if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
                 m->GDS2 = m->params - 7;
@@ -866,7 +867,17 @@ int print_system(struct Model *m, char *filename) {
     fprintf(fp, "Gd PRE: %s\n", (m->gd_mod == GD_MOD)?"ON":"OFF");
     fprintf(fp, "C/N Ratio Compensation: %s\n", (m->cn_ratio == CNRATIO_ON) ? "ON" : "OFF");
     fprintf(fp, "Global: %s\n", (m->global == GLOBAL) ? "ON" : "OFF");
+    if (m->model == MOD_IMPACT) {
+        fprintf(fp, "IMPACT N: %d\nIMPACT_LB: %e\nIMPACT_UB: %e\nIMPACT_W: %d\n", m->impact_n, m->impact_lb, m->impact_ub, m->impact_w);
 
+        Decimal *tau = (Decimal *) malloc(sizeof(Decimal) * m->impact_n);
+        TAU_IMPACT(tau, m->impact_lb, m->impact_ub, m->impact_n);
+        unsigned int i;
+        for (i = 0; i < m->impact_n; i++) {
+            fprintf(fp, "IMPACT tau_%d: %f ns\n", i+1, tau[i]);
+        }
+        free(tau);
+    }
     unsigned int i, j;
     struct Relaxation *r;
     for (i = 0; i < m->n_residues; i++) {
