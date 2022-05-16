@@ -25,7 +25,8 @@ add_executable(dynamix
         src/chisq.c
         src/crosen.c
         src/anneal.c
-        src/models/model.c)
+        src/models/model.c
+        src/models/impact.c)
 
 add_executable(prate
         src/predict_rate.c
@@ -38,7 +39,8 @@ add_executable(prate
         src/chisq.c
         src/crosen.c
         src/anneal.c
-        src/models/model.c)
+        src/models/model.c
+        src/models/impact.c)
 
 add_executable(tests
         src/test/tests.c
@@ -52,6 +54,7 @@ add_executable(tests
         src/crosen.c
         src/anneal.c
         src/models/model.c
+        src/models/impact.c
         src/test/old_model/smf.c
         src/test/old_model/emf.c
         src/test/old_model/aimf.c
@@ -69,7 +72,8 @@ add_executable(correl
         src/chisq.c
         src/crosen.c
         src/anneal.c
-        src/models/model.c)
+        src/models/model.c
+        src/models/impact.c)
 
 target_link_libraries(dynamix ${MPI_LIBRARIES})
 target_link_libraries(dynamix m)
