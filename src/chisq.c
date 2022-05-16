@@ -35,7 +35,7 @@
 #include "models/model.h"
 #include "errors.h"
 
-int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
+int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast, struct Model *m) {
     pars->taus = 0;
     pars->tauf = 0;
     pars->Eas = -1;
@@ -74,11 +74,16 @@ int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast) {
     pars->dS2f = 0;
     pars->Gr6norm = 0;
     pars->Gtau = 0;
+    unsigned int i;
+    if (m->model == MOD_IMPACT) {
+        for (i = 0; i < m->impact_n; i++)
+            pars->impact_a[i] = 0;
+    }
 
     return 0;
 }
 
-int bcpars_clean(struct BCParameters *pars) {
+int bcpars_clean(struct BCParameters *pars, struct Model *m) {
     pars->S2NHs = 0; pars->S2NHf = 0;
     pars->S2NCSAxs = 0; pars->S2NCSAxf = 0;
     pars->S2NCSAys = 0; pars->S2NCSAyf = 0;
@@ -100,7 +105,13 @@ int bcpars_clean(struct BCParameters *pars) {
     pars->kex = 0;
     pars->dS2s = 0; pars->dS2f = 0;
     pars->Gr6norm = 0; pars->Gtau = 0;
-
+    if (m->model == MOD_IMPACT) {
+        pars->impact_a = (Decimal *) malloc(sizeof(Decimal) * m->impact_n);
+        unsigned int i;
+        for (i = 0; i < m->impact_n; i++) {
+            pars->impact_a[i] = 0;
+        }
+    }
 
 }
 
@@ -174,7 +185,7 @@ int bcpars_update(struct BCParameters *pars, Decimal slow, Decimal fast) {
     return 0;
 }
 
-void check_S2_violations(struct BCParameters *pars, int *violations) {
+void check_S2_violations(struct BCParameters *pars, int *violations, struct Model *m) {
     if (pars->S2NHs > 1 || pars->S2NHs < 0)
         (*violations)++;
     if (pars->S2NHf > 1 || pars->S2NHf < 0)
@@ -200,6 +211,14 @@ void check_S2_violations(struct BCParameters *pars, int *violations) {
     //if (pars->Gtaur < pow(10, -7) || pars->Gtaur > pow(10, -5))
     if (pars->Gtau < 0) { (*violations)++; }
     if (pars->Gr6norm < 0.1) (*violations)++; // if Gr6norm < 0.1 then PJ0 is *10.
+
+    if (m->model == MOD_IMPACT) {
+        unsigned int i;
+        for (i = 0; i < m->impact_n; i++) {
+            if (pars->impact_a[i] < 0)
+                (*violations)++;
+        }
+    }
     // For extreme values this can end up leading to overflow
 }
 
@@ -261,12 +280,12 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             &(resid->orients[OR_CCAc]),
             &(resid->orients[OR_CCAp])
     };
-    bcpars_clean(pars);
+    bcpars_clean(pars, m);
     if (model == MOD_SMF || model == MOD_SMFT) {
         // tau, S2, [Ea]
         S2s = opts[1];
         S2f = (m->microsecond == ENABLED)?(resid->S2NH / S2s):1;
-        bcpars_init(pars, S2s, S2f);
+        bcpars_init(pars, S2s, S2f, m);
         pars->taus = opts[0];
         if (model == MOD_SMFT)
             pars->Eas = opts[2];
@@ -277,7 +296,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         if (model == MOD_DEMFT || model == MOD_DEMF || model == MOD_RDEMFT || model == MOD_SDEMFT || model == MOD_SDEMF) {
             S2f = opts[3];
         }
-        bcpars_init(pars, S2s, S2f);
+        bcpars_init(pars, S2s, S2f, m);
 
         pars->taus = opts[0];
         pars->tauf = opts[2];
@@ -299,7 +318,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             pars->dS2f = opts[5];
         }
     } else if (model == MOD_GAF || model == MOD_GAFT) {
-        bcpars_init(pars, 0, 0);
+        bcpars_init(pars, 0, 0, m);
         pars->taus = opts[0];
         pars->tauf = opts[1];
         Decimal sigs[3] = {opts[2], opts[3], opts[4]};
@@ -321,7 +340,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2CHrs = 1;
         pars->S2CHrf = 1;
     } else if (model == MOD_BGF || model == MOD_BGFT) {
-        bcpars_init(pars, 0, 0);
+        bcpars_init(pars, 0, 0, m);
         pars->taus = opts[0];
         pars->tauf = opts[1];
 
@@ -365,7 +384,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
             if (sigs[i] < 0 || sigs[i] > 0.52360)
                 (*violations)++;
         }
-        bcpars_init(pars, 0, S2f);
+        bcpars_init(pars, 0, S2f, m);
         GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
         pars->taus = opts[0];
         pars->tauf = opts[1];
@@ -380,7 +399,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
     } else if (model == MOD_BGAF || model == MOD_BGAFT) {
 
         Decimal sigs[3] = {opts[1], opts[2], opts[3]};
-        bcpars_init(pars, 1, 1);
+        bcpars_init(pars, 1, 1, m);
         GAF_S2(sigs, As, Bs, S2sP, 12, MODE_REAL);
         S2f = (m->microsecond == ENABLED) ? resid->S2NH / pars->S2NHs : 1;
         bcpars_update(pars, -1, S2f);
@@ -397,7 +416,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2CHrs = 1;
         pars->S2CHrf = 1;
     } else if (model == MOD_AIMF || model == MOD_AIMFT) {
-        bcpars_init(pars, 0, 0);
+        bcpars_init(pars, 0, 0, m);
         pars->taus = opts[0];
         pars->tauf = opts[1];
         Decimal sigs[3] = {opts[2], opts[3], opts[4]};
@@ -413,7 +432,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2CHrs = 1;
         pars->S2CHrf = 1;
     } else if (model == MOD_BAIMF || model == MOD_BAIMFT) {
-        bcpars_init(pars, 1, 1);
+        bcpars_init(pars, 1, 1, m);
         pars->taus = opts[0];
         Decimal sigs[3] = {opts[1], opts[2], opts[3]};
         AIMF_S2(sigs, As, S2sP, 12);
@@ -428,7 +447,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2CHrf = 1;
     } else if (model == MOD_EAIMF || model == MOD_EAIMFT) {
         S2f = opts[5];
-        bcpars_init(pars, 0, S2f);
+        bcpars_init(pars, 0, S2f, m);
         pars->taus = opts[0];
         pars->tauf = opts[1];
         Decimal sigs[3] = {opts[2], opts[3], opts[4]};
@@ -441,6 +460,11 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2NHrf = 1;
         pars->S2CHrs = 1;
         pars->S2CHrf = 1;
+    } else if (m->model == MOD_IMPACT) {
+        unsigned int n;
+        for (n = 0; n < m->impact_n; n++) {
+            pars->impact_a[n] = opts[n];
+        }
     } else {
         ERROR("Model %d does not exist.\n", model);
         return 1;
@@ -473,7 +497,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         ttaus = temp_tau(pars->taus, pars->Eas, 300);
         ttauf = temp_tau(pars->tauf, pars->Eaf, 300);
     }
-    check_S2_violations(pars, violations);
+    check_S2_violations(pars, violations, m);
     // printf("Pars %lf (%lf)\n", ttaus, upper_lim_ts);
     if (ttaus < ttauf)
         (*violations)++;
@@ -523,26 +547,39 @@ Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model 
     (void) m;
     //if (relax->R <= 0)
     //    return -1;
+
+    Decimal (*C_15NR1)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_15NR1;
+    Decimal (*C_15NR2)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_15NR2;
+    Decimal (*C_13CR1)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_13CR1;
+    Decimal (*C_13CR2)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_13CR2;
+
+    if (m->model == MOD_IMPACT) {
+        C_15NR1 = &Calc_15NR1_IMPACT;
+        C_15NR2 = &Calc_15NR2_IMPACT;
+        C_13CR1 = &Calc_13CR1_IMPACT;
+        C_13CR2 = &Calc_13CR2_IMPACT;
+    }
+
     switch (relax->type) {
         case R_15NR1:
-            calc_R = Calc_15NR1(resid, relax, pars, m, NONE);
+            calc_R = C_15NR1(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= Calc_15NR1(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_15NR1(resid, relax, pars, m, relax->compensate);
             break;
         case R_15NR1p:
-            calc_R = Calc_15NR2(resid, relax, pars, m, NONE);
+            calc_R = C_15NR2(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= Calc_15NR2(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_15NR2(resid, relax, pars, m, relax->compensate);
             break;
         case R_13CR1:
-            calc_R = Calc_13CR1(resid, relax, pars, m, NONE);
+            calc_R = C_13CR1(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= Calc_13CR1(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_13CR1(resid, relax, pars, m, relax->compensate);
             break;
         case R_13CR1p:
-            calc_R = Calc_13CR2(resid, relax, pars, m, NONE);
+            calc_R = C_13CR2(resid, relax, pars, m, NONE);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= Calc_13CR2(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_13CR2(resid, relax, pars, m, relax->compensate);
             break;
         default:
             ERROR("Relaxation type %d unknown\n", relax->type);
@@ -610,9 +647,8 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
         chisq += add;
 
 
-
         if (chisq > pow(10, 50) || chisq < 0.0000001) {
-           // printf("Violation tripped: %le\n", chisq);
+            // printf("Violation tripped: %le\n", chisq);
 
             mvio++;
         }
@@ -637,16 +673,33 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
 
 
     Decimal S2NH, S2CH, S2CN, S2CC;
-    S2NH = pars.S2NHs * pars.S2NHf * pars.S2uf;
-    S2CH = pars.S2CHs * pars.S2CHf * pars.S2uf;
-    S2CN = pars.S2CNs * pars.S2CNf * pars.S2uf;
-    S2CC = pars.S2CCAps * pars.S2CCApf * pars.S2uf;
 
-    if (m->WS2NH != 0) chisq += m->WS2NH * ((pow(resid->S2NH - S2NH, 2.)) / pow(resid->S2NHe, 2.));
-    if (m->WS2CH != 0) chisq += m->WS2CH * ((pow(resid->S2CH - S2CH, 2.)) / pow(resid->S2CHe, 2.));
-    if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - S2CN, 2.)) / pow(resid->S2CNe, 2.));
-    if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - S2CC, 2.)) / pow(resid->S2CCe, 2.));
-    unsigned int div = resid->n_relaxation + m->WS2CC + m->WS2CH + m->WS2CN + m->WS2NH;
+    unsigned int div = resid->n_relaxation;
+
+    if (m->model == MOD_IMPACT) {
+        Decimal sum_a = 0;
+        unsigned int n;
+        for (n = 0; n < m->impact_n; n++) {
+            sum_a += pars.impact_a[n];
+        }
+        free(pars.impact_a);
+        chisq += m->impact_w * ((pow((1 - resid->S2NH) - sum_a, 2.)) / pow(resid->S2NHe, 2.));
+        div += m->impact_w;
+    } else {
+        S2NH = pars.S2NHs * pars.S2NHf * pars.S2uf;
+        S2CH = pars.S2CHs * pars.S2CHf * pars.S2uf;
+        S2CN = pars.S2CNs * pars.S2CNf * pars.S2uf;
+        S2CC = pars.S2CCAps * pars.S2CCApf * pars.S2uf;
+
+        if (m->WS2NH != 0) chisq += m->WS2NH * ((pow(resid->S2NH - S2NH, 2.)) / pow(resid->S2NHe, 2.));
+        if (m->WS2CH != 0) chisq += m->WS2CH * ((pow(resid->S2CH - S2CH, 2.)) / pow(resid->S2CHe, 2.));
+        if (m->WS2CN != 0) chisq += m->WS2CN * ((pow(resid->S2CN - S2CN, 2.)) / pow(resid->S2CNe, 2.));
+        if (m->WS2CC != 0) chisq += m->WS2CC * ((pow(resid->S2CC - S2CC, 2.)) / pow(resid->S2CCe, 2.));
+        div += m->WS2CC + m->WS2CH + m->WS2CN + m->WS2NH;
+    }
+
+
+
     if (chisq < 0.0000001) // indicates overflow.
         return 1e10;
     return (Decimal) (chisq / div);

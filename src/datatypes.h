@@ -41,7 +41,7 @@ typedef double _Complex Complex;
 #define MOD_RDEMFT      33
 #define MOD_SDEMFT      34  ///< DEMFT with VT S2.
 #define MOD_SDEMF       35
-
+#define MOD_IMPACT      40
 
 
 #define GD_MOD          1
@@ -192,6 +192,8 @@ struct Model {
     int OValpha, OVbeta, OVgamma, UFS2, UFtau_uf, GDS2, GDtaur;
     unsigned int gd_mod;
     double t_error; // 2 STD, 95% confidence error.
+    unsigned int impact_n, impact_w;
+    Decimal impact_lb, impact_ub;
 };
 
 /** @struct Orient

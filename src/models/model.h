@@ -28,7 +28,7 @@ struct BCParameters {
     Decimal papbS2, kex;
     Decimal dS2s, dS2f;
     Decimal Gr6norm, Gtau;
-
+    Decimal *impact_a;
 };
 
 Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal tau_uf, Decimal S2uf);

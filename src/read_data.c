@@ -455,6 +455,11 @@ int read_system_file(char *filename, struct Model *m) {
     m->OVbeta = -1;
     m->OVgamma = -1;
     m->UFS2 = -1;
+   // m->impact = DISABLED;
+    m->impact_n = 0;
+    m->impact_lb = 0;
+    m->impact_ub = 0;
+    m->impact_w = 1;
     while (fgets(line, len, fp)) {
         if (line[0] == '%')
             continue; // comment
@@ -463,7 +468,9 @@ int read_system_file(char *filename, struct Model *m) {
                 ERROR("Number of residues must be defined.");
                 return -1;
             }
-
+            if (m->model == MOD_IMPACT) {
+                m->params = m->impact_n;
+            }
             if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
                 m->GDS2 = m->params - 7;
                 m->GDtaur = m->params - 6;
@@ -650,6 +657,9 @@ int read_system_file(char *filename, struct Model *m) {
                 } else if (strcmp(val, "BGFT") == 0) {
                     m->params = 6;
                     m->model = MOD_BGFT;
+                } else if (strcmp(val, "IMPACT") == 0) {
+                    m->params = 0;
+                    m->model = MOD_IMPACT;
                 } else {
                     printf("Model %s unknown.\n", val);
                     return -1;
@@ -670,6 +680,14 @@ int read_system_file(char *filename, struct Model *m) {
                 m->WS2CN = atoi(val);
             } else if (strcmp(key, "W_S2CC") == 0) {
                 m->WS2CC = atoi(val);
+            } else if (strcmp(key, "IMPACT_N") == 0) {
+                m->impact_n = (unsigned int) atoi(val);
+            } else if (strcmp(key, "IMPACT_LB") == 0) {
+                m->impact_lb = (Decimal) atof(val);
+            } else if (strcmp(key, "IMPACT_UB") == 0) {
+                m->impact_ub = (Decimal) atof(val);
+            } else if (strcmp(key, "IMPACT_W") == 0) {
+                m->impact_w = (unsigned int) atoi(val);
             } else if (strcmp(key, "OR_VARY") == 0) {
                 if (m->or_variation == VARIANT_A)
                     continue;

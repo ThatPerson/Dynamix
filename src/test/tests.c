@@ -335,7 +335,9 @@ static void test_bcpars(void **state) {
     Decimal slow = (rand() % 100) / 100.;
     Decimal fast = (rand() % 100) / 100.;
     struct BCParameters pars;
-    bcpars_init(&pars, slow, fast);
+    struct Model m;
+    m.model = MOD_SMFT;
+    bcpars_init(&pars, slow, fast, &m);
     assert_float_equal(pars.taus, 0, 0.001);
     assert_float_equal(pars.tauf, 0, 0.001);
     assert_float_equal(pars.Eas, -1, 0.001);
@@ -359,7 +361,7 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.S2NCSAyf, fast, 0.001);
     assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
     fast = (rand() % 100) / 100.;
-    bcpars_update(&pars, -1, fast);
+    bcpars_update(&pars, -1, fast, &m);
     assert_float_equal(pars.S2NHf, fast, 0.001);
     assert_float_equal(pars.S2CHf, fast, 0.001);
     assert_float_equal(pars.S2CCApf, fast, 0.001);
@@ -370,8 +372,7 @@ static void test_bcpars(void **state) {
     assert_float_equal(pars.S2NCSAyf, fast, 0.001);
     assert_float_equal(pars.S2NCSAxyf, fast, 0.001);
     Decimal opts_smft[] = {0.01, 0.9, 3000};
-    struct Model m;
-    m.model = MOD_SMFT;
+
     int vio = 0;
     m.gd_mod = GD_NO_MOD;
     m.or_variation = INVARIANT_A;
@@ -435,9 +436,10 @@ static void test_relaxation_smf(void **state) {
     Decimal tau = 0.1;
     Decimal S2 = 0.9;
     struct BCParameters pars;
-    bcpars_init(&pars, 1, S2);
     struct Model m;
     m.model = MOD_SMF;
+    bcpars_init(&pars, 1, S2, &m);
+
     pars.tauf = tau;
     Decimal oSMF_NR1 = SMF_R1(&res, &(res.relaxation[0]), tau, S2, MODE_15N);
     Decimal nSMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE);
@@ -466,9 +468,9 @@ static void test_relaxation_emf(void **state) {
     Decimal S2s = 0.8;
     Decimal S2f = 0.95;
     struct BCParameters pars;
-    bcpars_init(&pars, S2s, S2f);
     struct Model m;
     m.model = MOD_EMF;
+    bcpars_init(&pars, S2s, S2f, &m);
     pars.taus = taus;
     pars.tauf = tauf;
     Decimal oEMF_NR1 = EMF_R1(&res, &(res.relaxation[0]), taus, S2s, tauf, S2f, MODE_15N);
