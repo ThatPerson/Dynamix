@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "model.h"
 
+#define PARAMAGNETIC_SPIN 3.5
+
 /** Calculates spectral density function for given frequency according to extended model free analysis.
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2),
  *  as in eq 2, Clore 1990 (assuming S2 = S2s*S2f and that there is no overall tumbling).
@@ -117,7 +119,7 @@ Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decim
     if (Nconc == 0) return 0;
 	// Jaroniec2012 equation 6. (noting S(S+1) * 2/15 = 3/4 * 2/15 * 3 = 3/10
 	// or Okuno2020 eq 3
-    return (Decimal) (3/10.) * D * D * PJ0(omega_N, Gr6norm, Nconc, Gtau);
+    return (Decimal) (2/15.) * (PARAMAGNETIC_SPIN * (PARAMAGNETIC_SPIN + 1)) * D * D * 3 * PJ0(omega_N, Gr6norm, Nconc, Gtau);
 }
 
 Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal w1, Decimal wr) {
@@ -132,7 +134,7 @@ Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decim
                 (2) * PJ0(2 * M_PI * (w1 + wr), Gr6norm, Nconc, Gtau) + \
                 (2) * PJ0(2 * M_PI * (w1 - wr), Gr6norm, Nconc, Gtau)) / 6.;
 
-    Decimal res = (Decimal) (1/5.) * D * D * (J0contrib + (3/4.) * PJ0(omega_N, Gr6norm, Nconc, Gtau)); // Okuno 2020 form
+    Decimal res = (Decimal) (1/15.) * (PARAMAGNETIC_SPIN * (PARAMAGNETIC_SPIN + 1)) * D * D * (4 * J0contrib + 3 * PJ0(omega_N, Gr6norm, Nconc, Gtau)); // Okuno 2020 form
    // printf("\t\tD: %e. J0contrib = %e, result = %e\n" , D, J0contrib, res);
     return res;
     /*return (Decimal) (\
