@@ -100,7 +100,7 @@ Decimal CSA_R2_IMPACT(Decimal omega, \
 );
 }
 
-Decimal Calc_15NR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+Decimal Calc_15NR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     (void) mode; // R1 has no wr/w1 dependence in this model.
 
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
@@ -147,13 +147,22 @@ Decimal Calc_15NR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     R1CaN = Dipolar_R1_IMPACT(omega_15N, omega_13C, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NCA);
 
     if (m->gd_mod == GD_MOD)
-        R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE);
+        R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, relax->field);
 
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0)
+        Rate += R1E;
 
-    return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN + R1E) * T_DOWN;
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R1CSA + R1NH + R1NHr + R1CN + R1CaN;
+
+    return Rate * T_DOWN;
+    //return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN + R1E) * T_DOWN;
 }
 
-Decimal Calc_15NR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+
+
+Decimal Calc_15NR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal wr = relax->wr, w1 = relax->w1;
@@ -219,11 +228,23 @@ Decimal Calc_15NR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     R2CaN = Dipolar_R2_IMPACT(omega_15N, omega_13C, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NCA);
 
     if (m->gd_mod == GD_MOD)
-        R2E = Paramagnetic_R2(omega_15N, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_NE, w1, wr);
-    return (R2CSA + R2NH + R2NHr + R2CN + R2CaN  + R2E) * T_DOWN;
+        R2E = Paramagnetic_R2(omega_15N, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_NE, relax->field, w1, wr);
+
+    Decimal Rate = 0;
+
+    if ((modeRD & REL_PARAMAG) != 0) {
+        Rate += R2E;
+    }
+
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R2CSA + R2NH + R2NHr + R2CN + R2CaN;
+
+    return Rate * T_DOWN;
+
+   // return (R2CSA + R2NH + R2NHr + R2CN + R2CaN  + R2E) * T_DOWN;
 }
 
-Decimal Calc_13CR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+Decimal Calc_13CR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     (void) mode;
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
@@ -275,12 +296,21 @@ Decimal Calc_13CR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     R1CCAc = Dipolar_R1_IMPACT(omega_13C, omega_13C - wCOCa, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CCAc);
 
     if (m->gd_mod == GD_MOD)
-        R1E = Paramagnetic_R1(omega_13C, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_CE);
+        R1E = Paramagnetic_R1(omega_13C, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_CE, relax->field);
 
-    return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc + R1E) * T_DOWN;
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0)
+        Rate += R1E;
+
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc;
+
+    return Rate * T_DOWN;
+
+   // return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc + R1E) * T_DOWN;
 }
 
-Decimal Calc_13CR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+Decimal Calc_13CR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal wr = relax->wr, w1 = relax->w1;
@@ -346,7 +376,17 @@ Decimal Calc_13CR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
                         D_CCAc);
 
     if (m->gd_mod == GD_MOD)
-        R2E = Paramagnetic_R2(omega_13C, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_CE, w1, wr);
+        R2E = Paramagnetic_R2(omega_13C, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_CE, relax->field, w1, wr);
 
-    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + R2E) * (Decimal) T_DOWN);
+
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0)
+        Rate += R2E;
+
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc;
+
+    return Rate * T_DOWN;
+
+    //return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + R2E) * (Decimal) T_DOWN);
 }

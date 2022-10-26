@@ -36,6 +36,7 @@
 #include "models/impact.h"
 #include "errors.h"
 
+
 int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast, struct Model *m) {
     pars->taus = 0;
     pars->tauf = 0;
@@ -542,17 +543,17 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
  * @return calculated R value
  */
 Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model *m, const int *violations,
-                  struct BCParameters *pars) {
+                  struct BCParameters *pars, unsigned int modeRD) {
     Decimal calc_R = -1;
     (void) violations;
     (void) m;
     //if (relax->R <= 0)
     //    return -1;
 
-    Decimal (*C_15NR1)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_15NR1;
-    Decimal (*C_15NR2)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_15NR2;
-    Decimal (*C_13CR1)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_13CR1;
-    Decimal (*C_13CR2)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int) = &Calc_13CR2;
+    Decimal (*C_15NR1)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int, unsigned int) = &Calc_15NR1;
+    Decimal (*C_15NR2)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int, unsigned int) = &Calc_15NR2;
+    Decimal (*C_13CR1)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int, unsigned int) = &Calc_13CR1;
+    Decimal (*C_13CR2)(struct Residue *, struct Relaxation *, struct BCParameters *, struct Model *, unsigned int, unsigned int) = &Calc_13CR2;
 
     if (m->model == MOD_IMPACT) {
         C_15NR1 = &Calc_15NR1_IMPACT;
@@ -563,24 +564,24 @@ Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model 
 
     switch (relax->type) {
         case R_15NR1:
-            calc_R = C_15NR1(resid, relax, pars, m, NONE);
+            calc_R = C_15NR1(resid, relax, pars, m, NONE, modeRD);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= C_15NR1(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_15NR1(resid, relax, pars, m, relax->compensate, modeRD);
             break;
         case R_15NR1p:
-            calc_R = C_15NR2(resid, relax, pars, m, NONE);
+            calc_R = C_15NR2(resid, relax, pars, m, NONE, modeRD);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= C_15NR2(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_15NR2(resid, relax, pars, m, relax->compensate, modeRD);
             break;
         case R_13CR1:
-            calc_R = C_13CR1(resid, relax, pars, m, NONE);
+            calc_R = C_13CR1(resid, relax, pars, m, NONE, modeRD);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= C_13CR1(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_13CR1(resid, relax, pars, m, relax->compensate, modeRD);
             break;
         case R_13CR1p:
-            calc_R = C_13CR2(resid, relax, pars, m, NONE);
+            calc_R = C_13CR2(resid, relax, pars, m, NONE, modeRD);
             if (relax->compensate != NO_COMPENSATE)
-                calc_R -= C_13CR2(resid, relax, pars, m, relax->compensate);
+                calc_R -= C_13CR2(resid, relax, pars, m, relax->compensate, modeRD);
             break;
         default:
             ERROR("Relaxation type %d unknown\n", relax->type);
@@ -635,7 +636,7 @@ Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, un
         int l_vio = 0;
         if (resid->relaxation[i].R == -1)
             continue;
-        calc_R = back_calc(resid, &(resid->relaxation[i]), m, &l_vio, &pars);
+        calc_R = back_calc(resid, &(resid->relaxation[i]), m, &l_vio, &pars, REL_DYNAMIC | REL_PARAMAG);
         violations += l_vio;
         if (m->cn_ratio == CNRATIO_ON) {
             mult = 1;
@@ -779,13 +780,13 @@ int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsig
                 rotate_Y2(&(resid->orients[i]), alpha, beta, gamma);
             }
         }
-        struct BCParameters pars;
-        int k = opts_to_bcpars(opts, &pars, m, resid, &violations);
+        struct BCParameters parsd;
+        int k = opts_to_bcpars(opts, &parsd, m, resid, &violations);
         if (k != 0) {
             return -1;
         }
         for (i = 0; i < resid->n_relaxation; i++) {
-            calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &pars);
+            calc_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &parsd, REL_DYNAMIC | REL_PARAMAG);
             rate_temp[i][c_bc_iter] = calc_R;
             /*fprintf(fp, "%d\t%lf\t%lf\t%lf", i, (calc_R < 0 ? -1. : calc_R), resid->relaxation[i].R,
                     resid->relaxation[i].Rerror);
@@ -797,7 +798,6 @@ int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsig
         }
     }
 
-    free(opts);
     Decimal calcR, calcE;
     for (i = 0; i < resid->n_relaxation; i++) {
         calc_statistics(rate_temp[i], m->n_bc_iter, &calcR, &calcE);
@@ -807,9 +807,25 @@ int back_calculate(struct Residue *resid, struct Model *m, char *filename, unsig
         if (VERBOSE)
             fprintf(fp, "\t%lf\t%lf\t%lf\t%lf\t%d\t%f", resid->relaxation[i].field, resid->relaxation[i].wr,
                   resid->relaxation[i].w1, resid->relaxation[i].T, resid->relaxation[i].type, resid->relaxation[i].Gd);
+
+        struct BCParameters parsd;
+        for (unsigned int k = 0; k < params; k++) {
+            opts[k] = pars[k];
+        }
+        int k = opts_to_bcpars(opts, &parsd, m, resid, &violations);
+        if (k != 0) {
+            return -1;
+        }
+
+        Decimal dynamic_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &parsd, REL_DYNAMIC);
+        Decimal paramag_R = back_calc(resid, &(resid->relaxation[i]), m, &violations, &parsd, REL_PARAMAG);
+
+        fprintf(fp, "\t%lf\t%lf", dynamic_R, paramag_R);
+
         fprintf(fp, "\n");
         free(rate_temp[i]);
     }
+    free(opts);
     free(rate_temp);
 
     fclose(fp);

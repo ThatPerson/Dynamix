@@ -30,15 +30,15 @@ Decimal CSA_R2_IMPACT(Decimal omega, \
 );
 
 Decimal Calc_15NR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m,
-                          unsigned int mode);
+                          unsigned int mode, unsigned int modeRD);
 
 Decimal Calc_15NR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m,
-                          unsigned int mode);
+                          unsigned int mode, unsigned int modeRD);
 
 Decimal Calc_13CR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m,
-                          unsigned int mode);
+                          unsigned int mode, unsigned int modeRD);
 
 Decimal Calc_13CR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m,
-                          unsigned int mode);
+                          unsigned int mode, unsigned int modeRD);
 
 #endif //DYNAMIX_MODEL_H

@@ -47,6 +47,8 @@ typedef double _Complex Complex;
 #define GD_MOD          1
 #define GD_NO_MOD       0
 
+#define REL_PARAMAG 1
+#define REL_DYNAMIC 2
 
 /*
  * For GAF/EGAF models. If VARIANT_A flag set in model struct, then the orientations of the orientation vectors

@@ -34,9 +34,9 @@ struct BCParameters {
 Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal tau_uf, Decimal S2uf);
 
 Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal tau_uf, Decimal S2uf);
-Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau);
-Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D);
-Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal w1, Decimal wr);
+Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau, Decimal field);
+Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal field);
+Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal field, Decimal w1, Decimal wr);
 
 
 
@@ -66,13 +66,13 @@ Decimal CSA_R2(Decimal omega, \
                             Decimal)\
 );
 
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode);
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD);
 
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode);
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD);
 
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode);
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD);
 
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode);
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD);
 
 int AIMF_S2(Decimal order_params[3], struct Orient **A, Decimal *S2[], int length);
 

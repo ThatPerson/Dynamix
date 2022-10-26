@@ -9,6 +9,7 @@
 #include "model.h"
 
 #define PARAMAGNETIC_SPIN 3.5
+#define T1ERELFIELD 700
 
 /** Calculates spectral density function for given frequency according to extended model free analysis.
  *  Implements J(w) = (1 - S2f) tauf / (1 + (w tauf)^2) + S2f (1 - S2s) taus / (1 + (w taus)^2),
@@ -47,18 +48,29 @@ Decimal J0(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, 
  *  then J(w) = S^2 * ns * tc / (1 + (w tc)^2
  */
 
-Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau) {
+Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau, Decimal field) {
     /* nconc is in mM. Conversion to number density ->
      *  ns = nconc * NA
      * then some unit fiddling. Ends up as
      *  ns (A^-3) = nconc * 6.022 * 10^-7 A^-3
      */
 
+    /* Design of Gd(III)-Based Magnetic Resonance Imaging Contrast Agents:  Static and Transient Zero-Field Splitting Contributions to the Electronic Relaxation and Their Impact on Relaxivity
+     * Meriem Benmelouka, Alain Borel, Loick Moriggi, Lothar Helm, and André E Merbach
+     *  equation 6 - high field limit. T1e ~= k * ws^2 * tr for ws tr >> 1
+     *  So taking prefactors and tr into k, we have
+     *    T1e ~ A wI^2
+     *    A = T1e / wI^2
+     *    so
+     *    T1e700 / (700)^2 = T1e1000 / (1000)^2
+     *    T1e1000 = (1000 / 700)^2 * T1e700
+     */
 
+    Decimal tauadj = sq(field / T1ERELFIELD) * tau;
     Decimal ns = nconc * 6.022 * pow(10, -7.);
 
-    Decimal num = ((1 /r6norm) * ns * tau);
-    Decimal den = (1 + (tau * tau * omega * omega));
+    Decimal num = ((1 /r6norm) * ns * tauadj);
+    Decimal den = (1 + (tauadj * tauadj * omega * omega));
    // printf("\t%e, %f, %e -> ns = %0.2e. Num: %e, Den: %e -> %e\n", r6norm, nconc, omega, ns, num, den, num/den);
     return num/den;
    // return 2 * G0 * tr / (1 + (omega * tr * omega * tr));
@@ -115,26 +127,26 @@ Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal w
 }
 
 
-Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D) {
+Decimal Paramagnetic_R1(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal field) {
     if (Nconc == 0) return 0;
 	// Jaroniec2012 equation 6. (noting S(S+1) * 2/15 = 3/4 * 2/15 * 3 = 3/10
 	// or Okuno2020 eq 3
-    return (Decimal) (2/15.) * (PARAMAGNETIC_SPIN * (PARAMAGNETIC_SPIN + 1)) * D * D * 3 * PJ0(omega_N, Gr6norm, Nconc, Gtau);
+    return (Decimal) (2/15.) * (PARAMAGNETIC_SPIN * (PARAMAGNETIC_SPIN + 1)) * D * D * 3 * PJ0(omega_N, Gr6norm, Nconc, Gtau, field);
 }
 
-Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal w1, Decimal wr) {
+Decimal Paramagnetic_R2(Decimal omega_N, Decimal omega_E, Decimal Gr6norm, Decimal Nconc, Decimal Gtau, Decimal D, Decimal field, Decimal w1, Decimal wr) {
     if (Nconc == 0) return 0;
 
 	// Jaroniec2012 eq 6, noting that the tc term is J(0) -> J(wr, w1)
 	// and so taking 4 out (hence 3/4.) you get
 	// (1/15) * 4 * S(S+1) = 1/5
 	// or Okuno2020 eq 4
-    Decimal J0contrib = ((1) * PJ0(2 * M_PI * (w1 + 2 * wr), Gr6norm, Nconc, Gtau) + \
-                (1) * PJ0(2 * M_PI * (w1 - 2 * wr), Gr6norm, Nconc , Gtau) + \
-                (2) * PJ0(2 * M_PI * (w1 + wr), Gr6norm, Nconc, Gtau) + \
-                (2) * PJ0(2 * M_PI * (w1 - wr), Gr6norm, Nconc, Gtau)) / 6.;
+    Decimal J0contrib = ((1) * PJ0(2 * M_PI * (w1 + 2 * wr), Gr6norm, Nconc, Gtau, field) + \
+                (1) * PJ0(2 * M_PI * (w1 - 2 * wr), Gr6norm, Nconc , Gtau, field) + \
+                (2) * PJ0(2 * M_PI * (w1 + wr), Gr6norm, Nconc, Gtau, field) + \
+                (2) * PJ0(2 * M_PI * (w1 - wr), Gr6norm, Nconc, Gtau, field)) / 6.;
 
-    Decimal res = (Decimal) (1/15.) * (PARAMAGNETIC_SPIN * (PARAMAGNETIC_SPIN + 1)) * D * D * (4 * J0contrib + 3 * PJ0(omega_N, Gr6norm, Nconc, Gtau)); // Okuno 2020 form
+    Decimal res = (Decimal) (1/15.) * (PARAMAGNETIC_SPIN * (PARAMAGNETIC_SPIN + 1)) * D * D * (4 * J0contrib + 3 * PJ0(omega_N, Gr6norm, Nconc, Gtau, field)); // Okuno 2020 form
    // printf("\t\tD: %e. J0contrib = %e, result = %e\n" , D, J0contrib, res);
     return res;
     /*return (Decimal) (\
@@ -182,7 +194,10 @@ Decimal CSA_R2(Decimal omega, \
 );
 }
 
-Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+
+
+
+Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     (void) mode; // R1 has no wr/w1 dependence in this model.
 
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
@@ -254,13 +269,20 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.tau_uf, npars.S2uf, D_NCA);
 
     if (m->gd_mod == GD_MOD)
-        R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE);
+        R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, relax->field);
 
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0) {
+        Rate += R1E;
+    }
 
-    return (Decimal) (R1CSA + R1NH + R1NHr + R1CN + R1CaN + R1E) * T_DOWN;
+    if ((modeRD & REL_DYNAMIC) != 0) {
+        Rate += R1CSA + R1NH + R1NHr + R1CN + R1CaN;
+    }
+    return Rate * T_DOWN;
 }
 
-Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal wr = relax->wr, w1 = relax->w1;
@@ -354,11 +376,19 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
     if (m->gd_mod == GD_MOD)
-        R2E = Paramagnetic_R2(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, w1, wr);
-    return (R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC + R2E) * T_DOWN;
+        R2E = Paramagnetic_R2(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, relax->field, w1, wr);
+
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0)
+        Rate += R2E;
+
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R2CSA + R2NH + R2NHr + R2CN + R2CaN + RRDC;
+
+    return Rate * T_DOWN;
 }
 
-Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     (void) mode;
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
@@ -434,12 +464,19 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.tau_uf, npars.S2uf, D_CCAc);
 
     if (m->gd_mod == GD_MOD)
-        R1E = Paramagnetic_R1(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_CE);
+        R1E = Paramagnetic_R1(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_CE, relax->field);
 
-    return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc + R1E) * T_DOWN;
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0)
+        Rate += R1E;
+
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc;
+
+    return Rate * T_DOWN;
 }
 
-Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode) {
+Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParameters *pars, struct Model *m, unsigned int mode, unsigned int modeRD) {
     /* Takes in residue and relaxation data, and outputs an R1 for given tau and S2. */
     Decimal field = relax->field * 1000000; // conversion to Hz
     Decimal wr = relax->wr, w1 = relax->w1;
@@ -526,9 +563,16 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     }
 
     if (m->gd_mod == GD_MOD)
-        R2E = Paramagnetic_R2(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_CE, w1, wr);
+        R2E = Paramagnetic_R2(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_CE, relax->field, w1, wr);
 
-    return (Decimal) ((R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc + RRDC + R2E) * (Decimal) T_DOWN);
+    Decimal Rate = 0;
+    if ((modeRD & REL_PARAMAG) != 0)
+        Rate += R2E;
+
+    if ((modeRD & REL_DYNAMIC) != 0)
+        Rate += R2CSA + R2CH + R2CHr + R2CN + R2CCAp + R2CCAc;
+
+    return (Decimal) Rate * T_DOWN;
 }
 
 

@@ -442,13 +442,13 @@ static void test_relaxation_smf(void **state) {
 
     pars.tauf = tau;
     Decimal oSMF_NR1 = SMF_R1(&res, &(res.relaxation[0]), tau, S2, MODE_15N);
-    Decimal nSMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE);
+    Decimal nSMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE, REL_DYNAMIC);
     Decimal oSMF_NR2 = SMF_R2(&res, &(res.relaxation[1]), tau, S2, MODE_15N);
-    Decimal nSMF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE);
+    Decimal nSMF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE, REL_DYNAMIC);
     Decimal oSMF_CR1 = SMF_R1(&res, &(res.relaxation[2]), tau, S2, MODE_13C);
-    Decimal nSMF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE);
+    Decimal nSMF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE, REL_DYNAMIC);
     Decimal oSMF_CR2 = SMF_R2(&res, &(res.relaxation[3]), tau, S2, MODE_13C);
-    Decimal nSMF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE);
+    Decimal nSMF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE, REL_DYNAMIC);
     assert_float_equal(oSMF_NR1, nSMF_NR1, 0.0001);
     assert_float_equal(oSMF_NR2, nSMF_NR2, 0.0001);
     assert_float_equal(oSMF_CR1, nSMF_CR1, 0.0001);
@@ -470,17 +470,18 @@ static void test_relaxation_emf(void **state) {
     struct BCParameters pars;
     struct Model m;
     m.model = MOD_EMF;
+    m.gd_mod = GD_NO_MOD;
     bcpars_init(&pars, S2s, S2f, &m);
     pars.taus = taus;
     pars.tauf = tauf;
     Decimal oEMF_NR1 = EMF_R1(&res, &(res.relaxation[0]), taus, S2s, tauf, S2f, MODE_15N);
-    Decimal nEMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE);
+    Decimal nEMF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oEMF_NR2 = EMF_R2(&res, &(res.relaxation[1]), taus, S2s, tauf, S2f, MODE_15N);
-    Decimal nEMF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE);
+    Decimal nEMF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oEMF_CR1 = EMF_R1(&res, &(res.relaxation[2]), taus, S2s, tauf, S2f, MODE_13C);
-    Decimal nEMF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE);
+    Decimal nEMF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oEMF_CR2 = EMF_R2(&res, &(res.relaxation[3]), taus, S2s, tauf, S2f, MODE_13C);
-    Decimal nEMF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE);
+    Decimal nEMF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     assert_float_equal(oEMF_NR1, nEMF_NR1, 0.0001); //fails
     assert_float_equal(oEMF_NR2, nEMF_NR2, 0.0001); //fails
     assert_float_equal(oEMF_CR1, nEMF_CR1, 0.0001); //fails
@@ -507,13 +508,13 @@ static void test_relaxation_gaf(void **state) {
 
     //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
     Decimal oGAF_NR1 = GAF_15NR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, sigs, sigf);
-    Decimal nGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE);
+    Decimal nGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oGAF_NR2 = GAF_15NR2(&res, &(res.relaxation[1]), pars.taus, pars.tauf, sigs, sigf);
-    Decimal nGAF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE);
+    Decimal nGAF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oGAF_CR1 = GAF_13CR1(&res, &(res.relaxation[2]), pars.taus, pars.tauf, sigs, sigf);
-    Decimal nGAF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE);
+    Decimal nGAF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oGAF_CR2 = GAF_13CR2(&res, &(res.relaxation[3]), pars.taus, pars.tauf, sigs, sigf);
-    Decimal nGAF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE);
+    Decimal nGAF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     assert_float_equal(oGAF_NR1, nGAF_NR1, 0.0001);
     assert_float_equal(oGAF_NR2, nGAF_NR2, 0.0001);
     assert_float_equal(oGAF_CR1, nGAF_CR1, 0.0001);
@@ -541,13 +542,13 @@ static void test_relaxation_egaf(void **state) {
 
     //Decimal GAF_15NR1(struct Residue *res, struct Relaxation* relax, Decimal taus, Decimal tauf, Decimal * sigs, Decimal * sigf) {
     Decimal oEGAF_NR1 = EGAF_15NR1(&res, &(res.relaxation[0]), pars.taus, pars.tauf, sigs, S2f);
-    Decimal nEGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE);
+    Decimal nEGAF_NR1 = Calc_15NR1(&res, &(res.relaxation[0]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oEGAF_NR2 = EGAF_15NR2(&res, &(res.relaxation[1]), pars.taus, pars.tauf, sigs, S2f);
-    Decimal nEGAF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE);
+    Decimal nEGAF_NR2 = Calc_15NR2(&res, &(res.relaxation[1]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oEGAF_CR1 = EGAF_13CR1(&res, &(res.relaxation[2]), pars.taus, pars.tauf, sigs, S2f);
-    Decimal nEGAF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE);
+    Decimal nEGAF_CR1 = Calc_13CR1(&res, &(res.relaxation[2]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
     Decimal oEGAF_CR2 = EGAF_13CR2(&res, &(res.relaxation[3]), pars.taus, pars.tauf, sigs, S2f);
-    Decimal nEGAF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE);
+    Decimal nEGAF_CR2 = Calc_13CR2(&res, &(res.relaxation[3]), &pars, &m, NONE, REL_DYNAMIC | REL_PARAMAG);
 
 
     assert_float_equal(oEGAF_NR1, nEGAF_NR1, 0.0001);
