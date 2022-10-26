@@ -170,6 +170,9 @@ void free_all(struct Model *m) {
             }
         }
     }
+    if (m->model == MOD_IMPACT)
+        free(m->impact_tau);
+
     free(m->residues);
     m->residues = NULL;
 
@@ -500,6 +503,10 @@ void setup_paramlims(struct Model *m, Decimal S2NH, Decimal *minv, Decimal *maxv
         maxv[m->GDS2] = 20;
         minv[m->GDtaur] = 0;
         maxv[m->GDtaur] = 100;
+    }
+    if (m->gd_mod == GD_MOD_FIXTAU) {
+        minv[m->GDS2] = 0.1;
+        maxv[m->GDS2] = 20;
     }
 
     if (m->ultrafast == ENABLED) {

@@ -456,6 +456,7 @@ int read_system_file(char *filename, struct Model *m) {
     m->OVbeta = -1;
     m->OVgamma = -1;
     m->UFS2 = -1;
+
    // m->impact = DISABLED;
     m->impact_n = 0;
     m->impact_lb = 0;
@@ -471,6 +472,13 @@ int read_system_file(char *filename, struct Model *m) {
             }
             if (m->model == MOD_IMPACT) {
                 m->params += m->impact_n;
+                if (m->impact_alloc == 0) {
+                    //int TAU_IMPACT(Decimal *tau, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n);
+                    TAU_IMPACT(m->impact_tau, m->impact_lb, m->impact_ub, m->impact_n);
+                } else if (m->impact_alloc < m->impact_n) {
+                    ERROR("Not enough impact tau provided.");
+                    exit(-1);
+                }
             }
             if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
                 m->GDS2 = m->params - 7;
@@ -480,14 +488,30 @@ int read_system_file(char *filename, struct Model *m) {
                 m->OVgamma = m->params - 3;
                 m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
+            } else if (m->gd_mod == GD_MOD_FIXTAU && m->ultrafast == ENABLED && m->or_variation == VARIANT_A) {
+                    m->GDS2 = m->params - 6;
+                    m->OValpha = m->params - 5;
+                    m->OVbeta = m->params - 4;
+                    m->OVgamma = m->params - 3;
+                    m->UFtau_uf = m->params - 2;
+                    m->UFS2 = m->params - 1;
             } else if (m->gd_mod == GD_MOD && m->ultrafast == ENABLED) {
                 m->GDS2 = m->params - 4;
                 m->GDtaur = m->params - 3;
                 m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
+            } else if (m->gd_mod == GD_MOD_FIXTAU && m->ultrafast == ENABLED) {
+                m->GDS2 = m->params - 3;
+                m->UFtau_uf = m->params - 2;
+                m->UFS2 = m->params - 1;
             } else if (m->gd_mod == GD_MOD && m->or_variation == VARIANT_A) {
                 m->GDS2 = m->params - 5;
                 m->GDtaur = m->params - 4;
+                m->OValpha = m->params - 3;
+                m->OVbeta = m->params - 2;
+                m->OVgamma = m->params - 1;
+            } else if (m->gd_mod == GD_MOD_FIXTAU && m->or_variation == VARIANT_A) {
+                m->GDS2 = m->params - 4;
                 m->OValpha = m->params - 3;
                 m->OVbeta = m->params - 2;
                 m->OVgamma = m->params - 1;
@@ -500,6 +524,9 @@ int read_system_file(char *filename, struct Model *m) {
             } else if (m->gd_mod == GD_MOD) {
                 m->GDS2 = m->params - 2;
                 m->GDtaur = m->params - 1;
+            } else if (m->gd_mod == GD_MOD_FIXTAU) {
+                printf("Setting GDS2 = %d\n", m->params - 1);
+                m->GDS2 = m->params - 1;
             } else if (m->ultrafast == ENABLED) {
                 m->UFtau_uf = m->params - 2;
                 m->UFS2 = m->params - 1;
@@ -661,6 +688,7 @@ int read_system_file(char *filename, struct Model *m) {
                 } else if (strcmp(val, "IMPACT") == 0) {
                     m->params = 0;
                     m->model = MOD_IMPACT;
+                    m->impact_alloc = 0;
                 } else {
                     printf("Model %s unknown.\n", val);
                     return -1;
@@ -683,12 +711,21 @@ int read_system_file(char *filename, struct Model *m) {
                 m->WS2CC = atoi(val);
             } else if (strcmp(key, "IMPACT_N") == 0) {
                 m->impact_n = (unsigned int) atoi(val);
+                m->impact_tau = (Decimal*) malloc(sizeof(Decimal) * m->impact_n);
+                m->impact_alloc = 0;
             } else if (strcmp(key, "IMPACT_LB") == 0) {
                 m->impact_lb = (Decimal) atof(val);
             } else if (strcmp(key, "IMPACT_UB") == 0) {
                 m->impact_ub = (Decimal) atof(val);
             } else if (strcmp(key, "IMPACT_W") == 0) {
                 m->impact_w = (unsigned int) atoi(val);
+            } else if (strcmp(key, "ADD_IMPACT_TAU") == 0) {
+                if (m->impact_alloc + 1 > m->impact_n) {
+                    ERROR("Too many IMPACT tau added.\n");
+                    continue;
+                }
+                m->impact_tau[m->impact_alloc] = atof(val);
+                m->impact_alloc++;
             } else if (strcmp(key, "OR_VARY") == 0) {
                 if (m->or_variation == VARIANT_A)
                     continue;
@@ -699,6 +736,15 @@ int read_system_file(char *filename, struct Model *m) {
                     continue;
                 m->params += 2;
                 m->gd_mod = GD_MOD;
+            } else if (strcmp(key, "GDMOD_FIXTAU") == 0) {
+                if (m->gd_mod == GD_MOD_FIXTAU )
+                    continue;
+                if (m->gd_mod == GD_MOD) {
+                    m->params -= 2;
+                }
+                m->params += 1;
+                m->gd_mod = GD_MOD_FIXTAU;
+                m->fixed_taugd = atof(val);
             } else if (strcmp(key, "ULTRAFAST") == 0) {
                 if (m->ultrafast == ENABLED)
                     continue;
@@ -864,19 +910,19 @@ int print_system(struct Model *m, char *filename) {
     fprintf(fp, "us Timescale: %s\n", (m->microsecond == ENABLED) ? "ON" : "OFF");
     if (m->gd_mod == GD_MOD)
         fprintf(fp, "\tGD S2: %d\n\tGD tr: %d\n", m->GDS2, m->GDtaur);
-    fprintf(fp, "Gd PRE: %s\n", (m->gd_mod == GD_MOD)?"ON":"OFF");
+    if (m->gd_mod == GD_MOD_FIXTAU)
+        fprintf(fp, "\tGD S2: %d\n\tFixed taupara: %f\n", m->GDS2, m->fixed_taugd);
+
+    fprintf(fp, "Gd PRE: %s\n", (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)?"ON":"OFF");
     fprintf(fp, "C/N Ratio Compensation: %s\n", (m->cn_ratio == CNRATIO_ON) ? "ON" : "OFF");
     fprintf(fp, "Global: %s\n", (m->global == GLOBAL) ? "ON" : "OFF");
     if (m->model == MOD_IMPACT) {
         fprintf(fp, "IMPACT N: %d\nIMPACT_LB: %e\nIMPACT_UB: %e\nIMPACT_W: %d\n", m->impact_n, m->impact_lb, m->impact_ub, m->impact_w);
 
-        Decimal *tau = (Decimal *) malloc(sizeof(Decimal) * m->impact_n);
-        TAU_IMPACT(tau, m->impact_lb, m->impact_ub, m->impact_n);
         unsigned int i;
         for (i = 0; i < m->impact_n; i++) {
-            fprintf(fp, "IMPACT tau_%d: %f ns\n", i+1, tau[i]);
+            fprintf(fp, "IMPACT tau_%d: %f ns\n", i+1, m->impact_tau[i]);
         }
-        free(tau);
     }
     unsigned int i, j;
     struct Relaxation *r;

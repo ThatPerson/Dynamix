@@ -44,6 +44,7 @@ typedef double _Complex Complex;
 #define MOD_IMPACT      40
 
 
+#define GD_MOD_FIXTAU   2
 #define GD_MOD          1
 #define GD_NO_MOD       0
 
@@ -196,6 +197,9 @@ struct Model {
     double t_error; // 2 STD, 95% confidence error.
     unsigned int impact_n, impact_w;
     Decimal impact_lb, impact_ub;
+    Decimal *impact_tau;
+    unsigned int impact_alloc;
+    Decimal fixed_taugd;
 };
 
 /** @struct Orient

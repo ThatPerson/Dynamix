@@ -9,15 +9,12 @@
 #include "model.h"
 #include "impact.h"
 
-Decimal J0_IMPACT(Decimal omega, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n){
-    // tau_lb and tau_ub are the timescales in ns.
-    Decimal l_tau_lb = log(tau_lb);
-    Decimal l_tau_ub = log(tau_ub);
+Decimal J0_IMPACT(Decimal omega, Decimal *A, Decimal *impact_tau, unsigned int impact_n){
+
     Decimal J = 0;
-    Decimal inc = (l_tau_ub - l_tau_lb) / (impact_n - 1);
     unsigned int i;
     for (i = 0; i < impact_n; i++) {
-        Decimal taui = exp(l_tau_lb + i * inc);
+        Decimal taui = impact_tau[i];
         J += (Decimal) A[i] * (Decimal) taui / (1 + ((Decimal) omega * (Decimal) omega * (Decimal) taui * (Decimal) taui));
     }
     return J;
@@ -38,30 +35,30 @@ int TAU_IMPACT(Decimal *tau, Decimal tau_lb, Decimal tau_ub, unsigned int impact
     return 1;
 }
 
-Decimal Dipolar_R1_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n,
+Decimal Dipolar_R1_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal *A, Decimal *impact_tau, unsigned int impact_n,
            Decimal D) {
     // for SMF and SMFT models, set S2s = 0 and taus = 0.
     Decimal q = (0.1) * sq(D) * (\
-        (J0_IMPACT(omega_neigh - omega_obs, A, tau_lb, tau_ub, impact_n)) \
- + 3 * (J0_IMPACT(omega_obs, A, tau_lb, tau_ub, impact_n)) \
- + 6 * (J0_IMPACT(omega_neigh + omega_obs, A, tau_lb, tau_ub, impact_n)) \
+        (J0_IMPACT(omega_neigh - omega_obs, A, impact_tau, impact_n)) \
+ + 3 * (J0_IMPACT(omega_obs, A, impact_tau, impact_n)) \
+ + 6 * (J0_IMPACT(omega_neigh + omega_obs, A, impact_tau, impact_n)) \
 );
     return (Decimal) q;
 }
 
 
-Decimal Dipolar_R2_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n, Decimal D) {
+Decimal Dipolar_R2_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal *A, Decimal *impact_tau, unsigned int impact_n, Decimal D) {
     // for SMF and SMFT models, set S2s = 0 and taus = 0.
     return (Decimal) (\
         (1 / 20.) * sq(D) * (\
-            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 + 2 * wr), A, tau_lb, tau_ub, impact_n) + \
-            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 - 2 * wr), A, tau_lb, tau_ub, impact_n) + \
-            (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 + wr), A, tau_lb, tau_ub, impact_n) + \
-            (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 - wr), A, tau_lb, tau_ub, impact_n) + \
-            (3.) * J0_IMPACT(omega_obs, A, tau_lb, tau_ub, impact_n) + \
-            (1.) * J0_IMPACT(omega_neigh - omega_obs, A, tau_lb, tau_ub, impact_n) + \
-            (6.) * J0_IMPACT(omega_neigh, A, tau_lb, tau_ub, impact_n) + \
-            (6.) * J0_IMPACT(omega_neigh + omega_obs, A, tau_lb, tau_ub, impact_n)\
+            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 + 2 * wr), A, impact_tau, impact_n) + \
+            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 - 2 * wr), A, impact_tau, impact_n) + \
+            (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 + wr), A, impact_tau, impact_n) + \
+            (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 - wr), A, impact_tau, impact_n) + \
+            (3.) * J0_IMPACT(omega_obs, A, impact_tau, impact_n) + \
+            (1.) * J0_IMPACT(omega_neigh - omega_obs, A, impact_tau, impact_n) + \
+            (6.) * J0_IMPACT(omega_neigh, A, impact_tau, impact_n) + \
+            (6.) * J0_IMPACT(omega_neigh + omega_obs, A, impact_tau, impact_n)\
 )\
 );
 }
@@ -137,16 +134,16 @@ Decimal Calc_15NR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
     d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
     d2tot *= sq(0.000001 * omega_15N * T_UP);
-    R1CSA = (2 / 15.) * d2tot * J0_IMPACT(omega_15N, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
+    R1CSA = (2 / 15.) * d2tot * J0_IMPACT(omega_15N, pars->impact_a, m->impact_tau, m->impact_n);
 
     /* N Dipolar Interactions Contributions */
-    R1NH = Dipolar_R1_IMPACT(omega_15N, omega_1H, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NH);
+    R1NH = Dipolar_R1_IMPACT(omega_15N, omega_1H, pars->impact_a, m->impact_tau, m->impact_n, D_NH);
     R1NHr = 0;
-    if (relax->hydrogen == PROTONATED) R1NHr = Dipolar_R1_IMPACT(omega_15N, omega_1H, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NHr);
-    R1CN = Dipolar_R1_IMPACT(omega_15N, omega_13C, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CN);
-    R1CaN = Dipolar_R1_IMPACT(omega_15N, omega_13C, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NCA);
+    if (relax->hydrogen == PROTONATED) R1NHr = Dipolar_R1_IMPACT(omega_15N, omega_1H, pars->impact_a, m->impact_tau, m->impact_n, D_NHr);
+    R1CN = Dipolar_R1_IMPACT(omega_15N, omega_13C, pars->impact_a, m->impact_tau, m->impact_n, D_CN);
+    R1CaN = Dipolar_R1_IMPACT(omega_15N, omega_13C, pars->impact_a, m->impact_tau, m->impact_n, D_NCA);
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, relax->field);
 
     Decimal Rate = 0;
@@ -209,25 +206,25 @@ Decimal Calc_15NR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     Decimal J0sum = 0;
 
 
-    J0sum += (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 - 2 * wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
-    J0sum += (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 + 2 * wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
-    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 - wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
-    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 + wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
+    J0sum += (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 - 2 * wr), pars->impact_a, m->impact_tau, m->impact_n);
+    J0sum += (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 + 2 * wr), pars->impact_a, m->impact_tau, m->impact_n);
+    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 - wr), pars->impact_a, m->impact_tau, m->impact_n);
+    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 + wr), pars->impact_a, m->impact_tau, m->impact_n);
 
     d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
     d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
     d2tot *= sq(0.000001 * omega_15N * T_UP);
-    R2CSA = (1 / 45.) * d2tot * (J0sum + 3 * J0_IMPACT(omega_15N, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n));
+    R2CSA = (1 / 45.) * d2tot * (J0sum + 3 * J0_IMPACT(omega_15N, pars->impact_a, m->impact_tau, m->impact_n));
 
 
     /* N Dipolar Interactions Contributions */
-    R2NH = Dipolar_R2_IMPACT(omega_15N, omega_1H, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NH);
+    R2NH = Dipolar_R2_IMPACT(omega_15N, omega_1H, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_NH);
     R2NHr = 0;
-    if (relax->hydrogen == PROTONATED) R2NHr = Dipolar_R2_IMPACT(omega_15N, omega_1H, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NHr);
-    R2CN = Dipolar_R2_IMPACT(omega_15N, omega_13C, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CN);
-    R2CaN = Dipolar_R2_IMPACT(omega_15N, omega_13C, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_NCA);
+    if (relax->hydrogen == PROTONATED) R2NHr = Dipolar_R2_IMPACT(omega_15N, omega_1H, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_NHr);
+    R2CN = Dipolar_R2_IMPACT(omega_15N, omega_13C, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_CN);
+    R2CaN = Dipolar_R2_IMPACT(omega_15N, omega_13C, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_NCA);
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R2E = Paramagnetic_R2(omega_15N, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_NE, relax->field, w1, wr);
 
     Decimal Rate = 0;
@@ -283,19 +280,19 @@ Decimal Calc_13CR1_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
     d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
     d2tot *= sq(0.000001 * omega_13C * T_UP);
-    R1CSA = (2 / 15.) * d2tot * J0_IMPACT(omega_13C, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
+    R1CSA = (2 / 15.) * d2tot * J0_IMPACT(omega_13C, pars->impact_a, m->impact_tau, m->impact_n);
 
 
 
     /* N Dipolar Interactions Contributions */
-    R1CH = Dipolar_R1_IMPACT(omega_13C, omega_1H, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CH);
+    R1CH = Dipolar_R1_IMPACT(omega_13C, omega_1H, pars->impact_a, m->impact_tau, m->impact_n, D_CH);
     R1CHr = 0;
-    if (relax->hydrogen == PROTONATED) R1CHr = Dipolar_R1_IMPACT(omega_13C, omega_1H, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CHr);
-    R1CN = Dipolar_R1_IMPACT(omega_13C, omega_15N, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CN);
-    R1CCAp = Dipolar_R1_IMPACT(omega_13C, omega_13C - wCOCa, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CCAp);
-    R1CCAc = Dipolar_R1_IMPACT(omega_13C, omega_13C - wCOCa, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CCAc);
+    if (relax->hydrogen == PROTONATED) R1CHr = Dipolar_R1_IMPACT(omega_13C, omega_1H, pars->impact_a, m->impact_tau, m->impact_n, D_CHr);
+    R1CN = Dipolar_R1_IMPACT(omega_13C, omega_15N, pars->impact_a, m->impact_tau, m->impact_n, D_CN);
+    R1CCAp = Dipolar_R1_IMPACT(omega_13C, omega_13C - wCOCa, pars->impact_a, m->impact_tau, m->impact_n, D_CCAp);
+    R1CCAc = Dipolar_R1_IMPACT(omega_13C, omega_13C - wCOCa, pars->impact_a, m->impact_tau, m->impact_n, D_CCAc);
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R1E = Paramagnetic_R1(omega_13C, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_CE, relax->field);
 
     Decimal Rate = 0;
@@ -352,30 +349,30 @@ Decimal Calc_13CR2_IMPACT(struct Residue *res, struct Relaxation *relax, struct 
     Decimal J0sum = 0;
 
     J0sum +=
-            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 - 2 * wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
+            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 - 2 * wr), pars->impact_a, m->impact_tau, m->impact_n);
     J0sum +=
-            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 + 2 * wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
-    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 - wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
-    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 + wr), pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n);
+            (2 / 3.) * J0_IMPACT(2 * M_PI * (w1 + 2 * wr), pars->impact_a, m->impact_tau, m->impact_n);
+    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 - wr), pars->impact_a, m->impact_tau, m->impact_n);
+    J0sum += (4 / 3.) * J0_IMPACT(2 * M_PI * (w1 + wr), pars->impact_a, m->impact_tau, m->impact_n);
 
     d2tot = (sq(csa[2]) + sq(csa[1]) + sq(csa[0]));
     d2tot += (-(csa[2] * csa[1] + csa[1] * csa[0] + csa[2] * csa[0]));
     d2tot *= sq(0.000001 * omega_13C * T_UP);
     R2CSA = (1 / 45.) * d2tot *
-            (J0sum + 3 * J0_IMPACT(omega_13C, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n));
+            (J0sum + 3 * J0_IMPACT(omega_13C, pars->impact_a, m->impact_tau, m->impact_n));
 
 
     /* N Dipolar Interactions Contributions */
-    R2CH = Dipolar_R2_IMPACT(omega_13C, omega_1H, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CH);
+    R2CH = Dipolar_R2_IMPACT(omega_13C, omega_1H, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_CH);
     R2CHr = 0;
-    if (relax->hydrogen == PROTONATED) R2CHr = Dipolar_R2_IMPACT(omega_13C, omega_1H, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CHr);
-    R2CN = Dipolar_R2_IMPACT(omega_13C, omega_15N, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n, D_CN);
-    R2CCAp = Dipolar_R2_IMPACT(omega_13C, omega_13C - wCOCa, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n,
+    if (relax->hydrogen == PROTONATED) R2CHr = Dipolar_R2_IMPACT(omega_13C, omega_1H, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_CHr);
+    R2CN = Dipolar_R2_IMPACT(omega_13C, omega_15N, w1, wr, pars->impact_a, m->impact_tau, m->impact_n, D_CN);
+    R2CCAp = Dipolar_R2_IMPACT(omega_13C, omega_13C - wCOCa, w1, wr, pars->impact_a, m->impact_tau, m->impact_n,
                         D_CCAp);
-    R2CCAc = Dipolar_R2_IMPACT(omega_13C, omega_13C - wCOCa, w1, wr, pars->impact_a, m->impact_lb, m->impact_ub, m->impact_n,
+    R2CCAc = Dipolar_R2_IMPACT(omega_13C, omega_13C - wCOCa, w1, wr, pars->impact_a, m->impact_tau, m->impact_n,
                         D_CCAc);
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R2E = Paramagnetic_R2(omega_13C, omega_E, pars->Gr6norm, relax->Gd, pars->Gtau, D_CE, relax->field, w1, wr);
 
 

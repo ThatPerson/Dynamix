@@ -475,9 +475,12 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
         pars->S2uf = opts[m->UFS2];
         pars->tau_uf = opts[m->UFtau_uf];
     }
-    if (m->gd_mod == ENABLED) {
+    if (m->gd_mod == GD_MOD) {
         pars->Gr6norm = opts[m->GDS2];
         pars->Gtau = opts[m->GDtaur];
+    } else if (m->gd_mod == GD_MOD_FIXTAU) {
+        pars->Gr6norm = opts[m->GDS2];
+        pars->Gtau = m->fixed_taugd;
     }
 
 //	Decimal upper_lim_tf = (Decimal) 1 * pow(10, -8 + T_S);

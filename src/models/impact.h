@@ -7,11 +7,11 @@
 
 #include "../datatypes.h"
 
-Decimal J0_IMPACT(Decimal omega, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n);
+Decimal J0_IMPACT(Decimal omega, Decimal *A, Decimal *impact_tau, unsigned int impact_n);
 int TAU_IMPACT(Decimal *tau, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n);
-Decimal Dipolar_R1_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n,
+Decimal Dipolar_R1_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal *A, Decimal *impact_tau, unsigned int impact_n,
                           Decimal D);
-Decimal Dipolar_R2_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal *A, Decimal tau_lb, Decimal tau_ub, unsigned int impact_n, Decimal D);
+Decimal Dipolar_R2_IMPACT(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal *A, Decimal *impact_tau, unsigned int impact_n, Decimal D);
 Decimal CSA_R2_IMPACT(Decimal omega, \
                          Decimal w1, \
                          Decimal wr, \

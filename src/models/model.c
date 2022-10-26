@@ -268,7 +268,7 @@ Decimal Calc_15NR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CNs, tauf, npars.S2CNf, npars.tau_uf, npars.S2uf, D_CN);
     R1CaN = Dipolar_R1(omega_15N, omega_13C, taus, npars.S2CaNs, tauf, npars.S2CaNf, npars.tau_uf, npars.S2uf, D_NCA);
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R1E = Paramagnetic_R1(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, relax->field);
 
     Decimal Rate = 0;
@@ -375,7 +375,7 @@ Decimal Calc_15NR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     if (m->model == MOD_RDEMFT) {
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R2E = Paramagnetic_R2(omega_15N, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_NE, relax->field, w1, wr);
 
     Decimal Rate = 0;
@@ -463,7 +463,7 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.tau_uf, npars.S2uf, D_CCAp);
     R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.tau_uf, npars.S2uf, D_CCAc);
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R1E = Paramagnetic_R1(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_CE, relax->field);
 
     Decimal Rate = 0;
@@ -562,7 +562,7 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
         RRDC = (npars.papbS2 * npars.kex) / (pow(w1, 2) + pow(npars.kex, 2));
     }
 
-    if (m->gd_mod == GD_MOD)
+    if (m->gd_mod == GD_MOD || m->gd_mod == GD_MOD_FIXTAU)
         R2E = Paramagnetic_R2(omega_13C, omega_E, npars.Gr6norm, relax->Gd, npars.Gtau, D_CE, relax->field, w1, wr);
 
     Decimal Rate = 0;
