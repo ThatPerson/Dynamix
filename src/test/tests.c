@@ -421,7 +421,7 @@ static void test_paramagnetic(void **state) {
     Decimal w1 = 10000;
     Decimal wr = 60000;
     Decimal conc = 0, r = 0.5;
-    assert_true(Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), 3, Gtau, D_NE, w1, wr) < Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), 5, Gtau, D_NE, w1, wr));
+    assert_true(Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), 3, Gtau, D_NE, 700, w1, wr) < Paramagnetic_R2(omega_15N, omega_E, pow(r, -6.), 5, Gtau, D_NE,700, w1, wr));
 
 
 
