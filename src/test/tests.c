@@ -641,7 +641,7 @@ static void test_crosen_backcalc(void **state) {
                         r->T = temps[n_T];
                         r->type = (int) n_t;
                         r->R = 1;
-                        r->R = back_calc(resid, r, &m, &ignore, &pars);
+                        r->R = back_calc(resid, r, &m, &ignore, &pars, REL_DYNAMIC | REL_PARAMAG);
                         r->Rerror = 0.2 * r->R;
                         k++;
                     }
@@ -683,7 +683,7 @@ static void test_crosen_backcalc(void **state) {
 
     for (k = 0; k < N_rates; k++) {
         r = &(m.residues[0].relaxation[k]);
-        temp_R = back_calc(resid, r, &m, &ignore, &pars);
+        temp_R = back_calc(resid, r, &m, &ignore, &pars, REL_DYNAMIC | REL_PARAMAG);
         assert_float_equal(temp_R, r->R, 2 * r->Rerror);
     }
 
