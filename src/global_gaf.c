@@ -255,7 +255,7 @@ int calc_global_errors(struct Model *m) {
                 resid->relaxation[k].type = resid->temp_relaxation[k].type;
                 resid->relaxation[k].T = resid->temp_relaxation[k].T;
 
-                temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars);
+                temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars, REL_PARAMAG | REL_DYNAMIC);
                 resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror / 2.));
                 LOG("%d %d %d prior: %lf, backcalc: %lf, new: %lf, error: %lf", i, l, k, resid->temp_relaxation[k].R,
                     temp_R, resid->relaxation[k].R, resid->temp_relaxation[k].Rerror / 2.);

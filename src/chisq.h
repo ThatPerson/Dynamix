@@ -9,7 +9,7 @@ int opts_to_bcpars(Decimal *opts, struct BCParameters *pars, struct Model *m, st
 int bcpars_init(struct BCParameters *pars, Decimal slow, Decimal fast, struct Model *m);
 int bcpars_update(struct BCParameters *pars, Decimal slow, Decimal fast, struct Model *m);
 int bcpars_tdep(struct BCParameters *pars, struct BCParameters *npars, Decimal tfacts, Decimal tfactf);
-Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model *m, int *violations, struct BCParameters *pars);
+Decimal back_calc(struct Residue *resid, struct Relaxation *relax, struct Model *m, int *violations, struct BCParameters *pars, unsigned int modeRD);
 int bcpars_clean(struct BCParameters *pars);
 Decimal optimize_chisq(Decimal *opts, struct Residue *resid, struct Model *m, unsigned int params);
 

@@ -184,7 +184,7 @@ int calc_errors(struct Model *m, unsigned int residue) {
                     : norm_rand(resid->temp_relaxation[k].T, m->t_error / 2); // t_error is 2 standard deviations.
 
 
-            temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars);
+            temp_R = back_calc(resid, &(resid->temp_relaxation[k]), m, &ignore, &pars, REL_PARAMAG | REL_DYNAMIC);
             //if (i == 2 && k == 2)
             //	printf("Iteration %d, R = %lf\n", l, temp_R); // should be the same each time
             resid->relaxation[k].R = norm_rand(temp_R, (resid->temp_relaxation[k].Rerror / 2.));
