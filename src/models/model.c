@@ -66,7 +66,7 @@ Decimal PJ0(Decimal omega, Decimal r6norm, Decimal nconc, Decimal tau, Decimal f
      *    T1e1000 = (1000 / 700)^2 * T1e700
      */
 
-    Decimal tauadj = sq(field / T1ERELFIELD) * tau;
+    Decimal tauadj = /*sq(field / T1ERELFIELD) * */tau;
     Decimal ns = nconc * 6.022 * pow(10, -7.);
 
     Decimal num = ((1 /r6norm) * ns * tauadj);
