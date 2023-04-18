@@ -40,8 +40,7 @@ Decimal J0_CC(Decimal omega, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2
 }
 
 
-Decimal
-Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
+Decimal Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
            Decimal D) {
     // for SMF and SMFT models, set S2s = 0 and taus = 0.
     Decimal q = (0.1) * sq(D) * (\
@@ -52,6 +51,14 @@ Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, De
     return (Decimal) q;
 }
 
+Decimal Homo_Dipolar_R1(Decimal omega_obs, Decimal omega_neigh, Decimal taus, Decimal S2s, Decimal tauf, Decimal S2f, Decimal S2uf,
+           Decimal D) {
+    // for SMF and SMFT models, set S2s = 0 and taus = 0.
+    Decimal q = (0.3) * sq(D) * (\
+        (J0(omega_obs, taus, S2s, tauf, S2f, S2uf)) 
+        + 4 * J0(omega_obs + omega_neigh, taus, S2s, tauf, S2f, S2uf));
+    return (Decimal) q;
+}
 
 Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf,
            Decimal S2f, Decimal S2uf, Decimal D) {
@@ -66,6 +73,21 @@ Decimal Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal w
             (1.) * J0(omega_neigh - omega_obs, taus, S2s, tauf, S2f, S2uf) + \
             (6.) * J0(omega_neigh, taus, S2s, tauf, S2f, S2uf) + \
             (6.) * J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f, S2uf)\
+)\
+);
+}
+
+Decimal Homo_Dipolar_R2(Decimal omega_obs, Decimal omega_neigh, Decimal w1, Decimal wr, Decimal taus, Decimal S2s, Decimal tauf,
+           Decimal S2f, Decimal S2uf, Decimal D) {
+    // for SMF and SMFT models, set S2s = 0 and taus = 0.
+    return (Decimal) (\
+        (3 / 20.) * sq(D) * (\
+            (1 / 2.) * J0(2 * M_PI * (w1 + 2 * wr), taus, S2s, tauf, S2f, S2uf) + \
+            (1 / 2.) * J0(2 * M_PI * (w1 - 2 * wr), taus, S2s, tauf, S2f, S2uf) + \
+            (6 / 6.) * J0(2 * M_PI * (w1 + wr), taus, S2s, tauf, S2f, S2uf) + \
+            (6 / 6.) * J0(2 * M_PI * (w1 - wr), taus, S2s, tauf, S2f, S2uf) + \
+            (5.) * J0(omega_obs, taus, S2s, tauf, S2f, S2uf) + \
+            (2.) * J0(omega_neigh + omega_obs, taus, S2s, tauf, S2f, S2uf)\
 )\
 );
 }
@@ -344,8 +366,8 @@ Decimal Calc_13CR1(struct Residue *res, struct Relaxation *relax, struct BCParam
     R1CHr = 0;
     if (relax->hydrogen == PROTONATED) R1CHr = Dipolar_R1(omega_13C, omega_1H, taus, npars.S2CHrs, tauf, npars.S2CHrf, npars.S2uf, D_CHr);
     R1CN = Dipolar_R1(omega_13C, omega_15N, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
-    R1CCAp = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf, D_CCAp);
-    R1CCAc = Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf, D_CCAc);
+    R1CCAp = Homo_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf, D_CCAp);
+    R1CCAc = Homo_Dipolar_R1(omega_13C, omega_13C - wCOCa, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf, D_CCAc);
 
     return (Decimal) (R1CSA + R1CH + R1CHr + R1CN + R1CCAp + R1CCAc) * T_DOWN;
 }
@@ -425,9 +447,9 @@ Decimal Calc_13CR2(struct Residue *res, struct Relaxation *relax, struct BCParam
     R2CHr = 0;
     if (relax->hydrogen == PROTONATED) R2CHr = Dipolar_R2(omega_13C, omega_1H, w1, wr, taus, npars.S2CHrs, tauf, npars.S2CHrf, npars.S2uf, D_CHr);
     R2CN = Dipolar_R2(omega_13C, omega_15N, w1, wr, taus, npars.S2CNs, tauf, npars.S2CNf, npars.S2uf, D_CN);
-    R2CCAp = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf,
+    R2CCAp = Homo_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, npars.S2CCAps, tauf, npars.S2CCApf, npars.S2uf,
                         D_CCAp);
-    R2CCAc = Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf,
+    R2CCAc = Homo_Dipolar_R2(omega_13C, omega_13C - wCOCa, w1, wr, taus, npars.S2CCAcs, tauf, npars.S2CCAcf, npars.S2uf,
                         D_CCAc);
     Decimal RRDC = 0;
     if (m->model == MOD_RDEMFT) {
